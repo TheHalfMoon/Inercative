@@ -23,7 +23,7 @@ Examples include dependency order, capability authorization, required verificati
 
 Use a bounded decision model when the task is fundamentally classification, scoring, ranking, gating, or selecting among known options.
 
-Initial planned implementation: TypeSafe Jev behind an internal adapter.
+Initial planned implementation: a provider-neutral bounded decision-model adapter.
 
 Suitable jobs:
 
@@ -38,7 +38,7 @@ Suitable jobs:
 - likely impacted Product Graph region;
 - candidate prioritization.
 
-Jev is advisory unless a decision is explicitly defined as non-safety-critical. Permissions and hard policy remain deterministic.
+Decision-model output is advisory unless a decision is explicitly defined as non-safety-critical. Permissions and hard policy remain deterministic.
 
 ### Generative intelligence
 
@@ -54,7 +54,7 @@ Use a generative/reasoning model for open-ended synthesis:
 - debugging hypotheses;
 - repair patches.
 
-Initial internal provider may be DeepSeek. Core contracts must not depend on its SDK or provider-specific message shape.
+The initial generative provider is an internal deployment choice. Core contracts must not depend on any provider SDK or provider-specific message shape.
 
 ## 3. Provider disclosure policy
 
