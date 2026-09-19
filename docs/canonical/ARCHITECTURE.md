@@ -350,7 +350,7 @@ The context compiler should select the smallest useful context from:
 
 Do not send whole repositories to a model by default.
 
-Jev may assist with keep/truncate/drop or routing decisions where bounded typed choices are appropriate, but deterministic requirements are always retained regardless of model preference.
+A bounded decision-model adapter may assist with keep/truncate/drop or routing decisions where typed choices are appropriate, but deterministic requirements are always retained regardless of model preference.
 
 ## 9. Multi-agent policy
 
