@@ -43,7 +43,7 @@ Provider/model identity is an internal operational fact and must remain availabl
 Initial planned roles:
 
 - a generative/reasoning model adapter for open-ended planning and code generation;
-- TypeSafe Jev as a bounded decision fabric where typed choices, scores, or confidence-aware gates are a better fit than text generation;
+- a bounded decision-model adapter where typed choices, scores, or confidence-aware gates are a better fit than text generation;
 - deterministic code/policy whenever a rule can be expressed without a model.
 
 Models propose. Code, policy, capability grants, runtime observations, tests, and evidence decide.
