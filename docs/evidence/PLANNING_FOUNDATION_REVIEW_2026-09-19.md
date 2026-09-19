@@ -30,12 +30,24 @@ The program task table was normalized to full stable task IDs.
 
 Observed validation:
 
-- task handles: 89;
+- task handles after final hardening: 93;
 - missing dependency references: 0;
 - dependency references to same/later table positions: 0;
-- bare task-number shorthand is not authoritative.
+- bare task-number shorthand is not authoritative;
+- explicit tasks cover migration recovery, run ambiguity/checkpoint reconciliation, producer/verifier separation, and clean-room portability.
 
 This is a structural dependency check, not SpecGrain readiness.
+
+### Final hardening
+
+The final planning pass added canonical contracts for:
+
+- generated-product portability and ownership;
+- partial failure, idempotency, checkpoints, reconciliation, and migration recovery;
+- producer/verifier independence for acceptance-critical proof;
+- V1/Beta/Later/Out product capability scope;
+- P00 acceptance/evidence handoff;
+- explicit planning-readiness verdict.
 
 ### Supabase separation
 
