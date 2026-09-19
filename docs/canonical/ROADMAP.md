@@ -41,7 +41,9 @@ The earliest useful external alpha is after P08 and P10 gates, not when the firs
 - map R0-R3 profiles;
 - prove a harmless repository change end to end.
 
-### P00-S04 Provenance
+### P00-S04 License and provenance
+- select and commit the license for Ineractive-owned code before importing donor product code;
+- define third-party notice/attribution policy without pretending the Ineractive license overrides donor obligations;
 - add machine-readable donor/import schema;
 - add notice inventory mechanism;
 - establish source-import checklist.
@@ -89,7 +91,14 @@ Build:
 - responsive shell;
 - first Ineractive brand system.
 
-**Exit:** shell runs with typed event/contracts and no fake generation claims.
+### P01-S05 Control-plane identity and project store
+- establish the minimum Ineractive control-plane Supabase project;
+- implement Ineractive user/session identity;
+- persist Ineractive project metadata and membership needed by the shell;
+- keep generated-application data in separate backend identities;
+- use RLS and least-privilege service boundaries from the first persisted control-plane slice.
+
+**Exit:** shell runs with typed event/contracts, real Ineractive user/project identity, and no fake generation claims. Generated-app backends remain isolated from the control plane.
 
 ## P02 — Product Graph and intent compiler
 
