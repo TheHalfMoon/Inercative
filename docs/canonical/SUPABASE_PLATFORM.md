@@ -79,7 +79,7 @@ Data
 
 The user can use the visual surface, chat, SQL/code, or Supabase directly. All roads must reconcile with canonical migration/config state.
 
-## 4. Local-first development topology
+## 5. Local-first development topology
 
 Generated apps should develop against an isolated local Supabase stack by default.
 
@@ -108,7 +108,7 @@ Benefits:
 - faster repair loops;
 - production credentials stay outside the build sandbox.
 
-## 4. Desired-state compiler
+## 5. Desired-state compiler
 
 The Product Graph compiles backend semantics into a typed BackendPlan:
 
@@ -130,7 +130,7 @@ The Product Graph compiles backend semantics into a typed BackendPlan:
 
 The compiler then produces normal Supabase artifacts.
 
-## 5. Schema flow
+## 6. Schema flow
 
 ~~~text
 Product Graph
@@ -159,7 +159,7 @@ accept migration into source
 
 Never apply model-generated SQL directly to production.
 
-## 6. Remote ownership modes
+## 7. Remote ownership modes
 
 ### Bring Your Own Supabase
 
@@ -193,7 +193,7 @@ Requirements:
 
 Managed mode must not make export/self-host impossible.
 
-## 7. Environments
+## 8. Environments
 
 Canonical environment model:
 
@@ -205,7 +205,7 @@ Do not require paid Supabase preview branches for basic Ineractive functionality
 
 If the user's Supabase plan and policy allow hosted branches, they are an optional accelerator. Each branch is a distinct Supabase environment and incurs its own usage, so branch creation is cost-bearing and must not be hidden.
 
-## 8. Auth compiler
+## 9. Auth compiler
 
 The product spec can express:
 
@@ -224,7 +224,7 @@ Use application-controlled authorization state such as app metadata and/or datab
 
 Session-sensitive actions need explicit security semantics; deleting a user alone is not assumed to revoke every existing access token immediately.
 
-## 9. RLS compiler
+## 10. RLS compiler
 
 Every exposed table is treated as denied until policies are defined.
 
@@ -247,7 +247,7 @@ Rules:
 - security-definer functions are exceptional, isolated, reviewed, and explicitly callable only by intended roles;
 - RLS tests execute against real local Supabase roles/tokens.
 
-## 10. Data API exposure
+## 11. Data API exposure
 
 Ineractive must not assume a table becomes available to REST/GraphQL merely because it exists.
 
@@ -261,7 +261,7 @@ as separate concerns.
 
 This remains correct even as platform defaults change.
 
-## 11. Storage compiler
+## 12. Storage compiler
 
 A storage declaration includes:
 
@@ -277,7 +277,7 @@ A storage declaration includes:
 
 Upsert verification must cover the required INSERT + SELECT + UPDATE policy combination rather than checking upload-only behavior.
 
-## 12. Realtime
+## 13. Realtime
 
 Realtime is generated only when product behavior needs it.
 
@@ -285,7 +285,7 @@ Ineractive must not modify Supabase's locked realtime schema.
 
 Generated realtime authorization/config must use supported public contracts and be integration-tested with real subscriptions.
 
-## 13. Functions, jobs, and privileged logic
+## 14. Functions, jobs, and privileged logic
 
 Use server/Edge Functions when behavior needs:
 
@@ -307,7 +307,7 @@ Function generation requires:
 - local/integration test;
 - caller policy.
 
-## 14. Secrets
+## 15. Secrets
 
 Secret values are never copied into model context unless a provider contract explicitly requires a value and policy allows it; ordinary generation should use secret references.
 
@@ -315,7 +315,7 @@ The app code receives only the credential class appropriate for its trust bounda
 
 Never put service-role/secret keys in browser bundles or NEXT_PUBLIC variables.
 
-## 15. Migration safety
+## 16. Migration safety
 
 Every remote database change has:
 
@@ -332,7 +332,7 @@ Production destructive operations require elevated approval.
 
 Remote reset/wipe commands are forbidden against production.
 
-## 16. Drift
+## 17. Drift
 
 Ineractive compares:
 
@@ -350,7 +350,7 @@ Drift states:
 
 Do not silently overwrite remote changes.
 
-## 17. Backend verification pack
+## 18. Backend verification pack
 
 For every generated app with Supabase:
 
@@ -366,7 +366,7 @@ For every generated app with Supabase:
 - advisors/security checks;
 - browser E2E against actual local backend.
 
-## 18. Platform-change discipline
+## 19. Platform-change discipline
 
 Supabase changes rapidly. Implementation work must verify current docs/changelog.
 
@@ -380,7 +380,7 @@ Known planning-sensitive 2026 changes include:
 
 Do not encode transient platform assumptions as permanent Ineractive semantics.
 
-## 19. User ownership/export
+## 20. User ownership/export
 
 At any point, the user should be able to leave with:
 
