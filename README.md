@@ -23,4 +23,24 @@ The product name is **Ineractive**. The current GitHub repository locator is `Th
 - Alibaba Open Code Review is the designated AI review engine, not the acceptance authority.
 - Exact repository truth and executed evidence outrank agent self-report.
 
-The canonical planning package will live under `docs/canonical/` and `specs/`.
+The canonical planning package lives under `docs/canonical/` and `specs/`.
+
+## Planning map
+
+- [Canonical planning index](docs/canonical/README.md)
+- [Founder decisions](docs/canonical/FOUNDER_DECISIONS.md)
+- [Product thesis](docs/canonical/PRODUCT_THESIS.md)
+- [Canonical architecture](docs/canonical/ARCHITECTURE.md)
+- [Product Graph](docs/canonical/PRODUCT_GRAPH.md)
+- [Harness and routing](docs/canonical/HARNESS_AND_ROUTING.md)
+- [Supabase platform](docs/canonical/SUPABASE_PLATFORM.md)
+- [UX and design](docs/canonical/UX_AND_DESIGN.md)
+- [Runtime and security](docs/canonical/RUNTIME_AND_SECURITY.md)
+- [Quality and review](docs/canonical/QUALITY_AND_REVIEW.md)
+- [Source ledger](docs/canonical/SOURCE_LEDGER.md)
+- [Planning governance](docs/canonical/PLANNING_GOVERNANCE.md)
+- [Roadmap](docs/canonical/ROADMAP.md)
+- [Current frontier](specs/CURRENT.md)
+- [Program task index](specs/tasks.md)
+
+Planning evidence is recorded in [the foundation review](docs/evidence/PLANNING_FOUNDATION_REVIEW_2026-09-19.md).
