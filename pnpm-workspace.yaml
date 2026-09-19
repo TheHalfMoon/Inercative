@@ -1,0 +1,14 @@
+packages:
+  - "packages/*"
+
+# Deterministic, security-relevant install policy. See docs/adr/ADR-0001-p00-toolchain-baseline.md.
+# Prefer explicit configuration over pnpm defaults so a default change is a reviewable diff.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  # Reviewed exception: eslint@10.11.0 is published by the ESLint org through a GitHub OIDC
+  # trusted publisher and carries a registry provenance attestation, but is younger than the
+  # release-age window. Recorded rather than silently accepted.
+  - eslint@10.11.0
+blockExoticSubdeps: true
+engineStrict: true
+disallowWorkspaceCycles: true
