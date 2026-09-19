@@ -38,7 +38,23 @@ Exact-head qualification
 
 No layer silently substitutes for another.
 
-## 3. SpecGrain role
+## 3. Producer / verifier separation
+
+The same generation path must not be allowed to define implementation, write self-confirming tests, and then grant its own acceptance claim.
+
+Acceptance-critical proof should combine independent sources such as:
+
+- deterministic invariants compiled from Product Graph requirements;
+- repository/toolchain checks;
+- Supabase policy tests executed under real roles/tokens;
+- browser journeys derived from requirements rather than implementation details;
+- seeded fault fixtures;
+- independent semantic review through Alibaba OCR;
+- Diffcipline exact-diff proof.
+
+A model-generated test is a candidate test. It becomes acceptance evidence only after its oracle is grounded in an independent requirement, invariant, fixture, or observed external contract.
+
+## 4. SpecGrain role
 
 SpecGrain owns:
 
@@ -54,7 +70,7 @@ SpecGrain owns:
 
 If a unit cannot be independently verified, refine it further.
 
-## 4. Diffcipline role
+## 5. Diffcipline role
 
 Diffcipline is the proof-before-done layer.
 
@@ -69,7 +85,7 @@ NOT RUN is never PASS.
 
 Diffcipline operates on the exact candidate source state.
 
-## 5. Alibaba Open Code Review
+## 6. Alibaba Open Code Review
 
 Alibaba Open Code Review is Ineractive's designated AI code-review engine.
 
@@ -100,7 +116,7 @@ fixed base/head
 
 OCR is a reviewer, not the canonical acceptance authority.
 
-## 6. OCR coverage contract
+## 7. OCR coverage contract
 
 Every changed material file ends as one of:
 
@@ -120,7 +136,7 @@ Review evidence records:
 - findings;
 - unresolved state.
 
-## 7. Finding model
+## 8. Finding model
 
 Normalize review, test, runtime, design, and security observations into a common Finding shape:
 
@@ -139,7 +155,7 @@ Normalize review, test, runtime, design, and security observations into a common
 
 A model finding is not a fact merely because confidence is high.
 
-## 8. Verification classes
+## 9. Verification classes
 
 Generated applications can require:
 
@@ -165,7 +181,7 @@ Generated applications can require:
 
 The active Grain chooses the required subset from policy/risk. A successful subset does not imply omitted classes passed.
 
-## 9. Browser proof
+## 10. Browser proof
 
 Critical user journeys should be exercised in a real browser against the running application and real local backend.
 
@@ -182,7 +198,7 @@ Capture:
 
 For generated CRUD/auth apps, browser proof should include negative paths, not only the happy path.
 
-## 10. Changed-code evidence
+## 11. Changed-code evidence
 
 Where practical, connect code changes to exercised behavior.
 
@@ -196,7 +212,7 @@ Track:
 - unexercised material paths;
 - unresolved instrumentation limits.
 
-## 11. Design proof
+## 12. Design proof
 
 A design gate combines:
 
@@ -209,7 +225,7 @@ A design gate combines:
 
 Taste findings can be REVIEW rather than hard FAIL unless they violate explicit design requirements.
 
-## 12. Security proof
+## 13. Security proof
 
 Security-sensitive generated apps should include:
 
@@ -223,7 +239,7 @@ Security-sensitive generated apps should include:
 
 Ascout/Sentrdel/Kodac patterns are the internal source pool for assurance architecture.
 
-## 13. Repair and rerun discipline
+## 14. Repair and rerun discipline
 
 When a check fails:
 
@@ -237,13 +253,13 @@ Do not discard the first failure and report only the final green retry.
 
 Repeated flaky/contradictory outcomes become FLAKY/INCONCLUSIVE, not clean PASS.
 
-## 14. Exact-head rule
+## 15. Exact-head rule
 
 The reviewed/tested/proven head must equal the merge/publish head.
 
 Any material source change after acceptance-critical evidence invalidates or requires explicit reconciliation of that evidence.
 
-## 15. CI strategy
+## 16. CI strategy
 
 CI should eventually include:
 
@@ -258,7 +274,7 @@ CI should eventually include:
 
 Pin production actions/tools to reviewed immutable versions where practical.
 
-## 16. Benchmark corpus
+## 17. Benchmark corpus
 
 Maintain canonical build challenges:
 
@@ -302,7 +318,7 @@ Import a non-trivial repo and add a feature without unnecessary rewrite.
 
 Start from a deliberately broken build and converge using evidence.
 
-## 17. Metrics
+## 18. Metrics
 
 Track:
 
