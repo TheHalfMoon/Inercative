@@ -234,6 +234,10 @@ Every graph revision must be diffable. User requests update the graph before bro
 - typed schema validation at every external boundary;
 - OpenTelemetry-compatible events.
 
+The control-plane Supabase identity stores Ineractive accounts, organizations, project metadata, collaboration state, and run/task metadata. It is a separate trust and data domain from every generated application's Supabase backend.
+
+Generated applications use independent local/remote backend identities, credentials, migrations, policies, and export/delete lifecycles. A generated application's service-role or secret authority never becomes ambient authority in the Ineractive browser/control plane.
+
 Do not couple the compiler to a particular web framework used by the Ineractive UI.
 
 ### Generated web product target
