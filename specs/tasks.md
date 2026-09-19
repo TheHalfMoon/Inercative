@@ -13,8 +13,9 @@ This file provides stable dependency-order handles. SpecGrain is the authority f
 | IN-P00-S02-T01 | P00 | Initialize SpecGrain from canonical roadmap | T02 |
 | IN-P00-S03-T01 | P00 | Initialize Diffcipline risk/proof policy | T02 |
 | IN-P00-S03-T02 | P00 | Prove one harmless exact-diff change end to end | T01 |
-| IN-P00-S04-T01 | P00 | Implement donor provenance/import record schema | T02 |
-| IN-P00-S04-T02 | P00 | Add provenance validation and notice inventory | T01 |
+| IN-P00-S04-T01 | P00 | Select and commit Ineractive-owned code license and third-party notice policy | T02 |
+| IN-P00-S04-T02 | P00 | Implement donor provenance/import record schema | T01 |
+| IN-P00-S04-T03 | P00 | Add provenance validation and notice inventory | T02 |
 | IN-P00-S05-T01 | P00 | Establish Alibaba OCR local exact-diff review procedure | T02 |
 | IN-P00-S05-T02 | P00 | Define OCR review evidence/file-accounting contract | T01 |
 | IN-P01-S01-T01 | P01 | Qualify control-plane framework | P00 exit |
@@ -22,6 +23,7 @@ This file provides stable dependency-order handles. SpecGrain is the authority f
 | IN-P01-S02-T02 | P01 | Implement run/event/evidence/finding schemas | T01 |
 | IN-P01-S03-T01 | P01 | Build project/workspace shell | T02 |
 | IN-P01-S04-T01 | P01 | Build first accessible tokenized UI system | T01 |
+| IN-P01-S05-T01 | P01 | Establish minimum Supabase-backed control-plane user/project store with generated-app data-plane separation | T01,T02,T03 |
 | IN-P02-S01-T01 | P02 | Prototype Product Graph persistence/interface alternatives | P01 exit |
 | IN-P02-S01-T02 | P02 | Select and implement Product Graph v1 contracts | T01 |
 | IN-P02-S02-T01 | P02 | Implement domain nodes/edges and deterministic validators | T02 |
