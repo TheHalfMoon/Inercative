@@ -4,7 +4,7 @@
 
 Ineractive is an AI product-building platform being designed to turn a product idea into a real, inspectable, testable, deployable application: interface, data model, authentication, storage, workflows, tests, security controls, and deployment.
 
-> **Status:** foundation planning. No working product is claimed yet.
+> **Status:** P00 repository and delivery foundation in progress. No working product is claimed yet.
 
 ## Canonical product name
 
@@ -49,3 +49,21 @@ The canonical planning package lives under `docs/canonical/` and `specs/`.
 - [Program task index](specs/tasks.md)
 
 Planning evidence is recorded in [the foundation review](docs/evidence/PLANNING_FOUNDATION_REVIEW_2026-09-19.md).
+
+## Implementation foundation
+
+The implementation frontier is **P00 — repository and delivery foundation**. P00 evidence is recorded as it is produced.
+
+- [Toolchain and baseline checks](docs/engineering/TOOLCHAIN.md)
+- [ADR-0001 — P00 toolchain baseline](docs/adr/ADR-0001-p00-toolchain-baseline.md)
+- [P00-S01-T01 toolchain qualification evidence](docs/evidence/P00_S01_T01_TOOLCHAIN_QUALIFICATION_2026-09-19.md)
+- [P00-S01-T02 skeleton and baseline checks evidence](docs/evidence/P00_S01_T02_SKELETON_2026-09-19.md)
+
+### Local checks
+
+```bash
+npx --yes pnpm@12.4.2 install --frozen-lockfile
+npx --yes pnpm@12.4.2 run check
+```
+
+A local pass is not a substitute for CI evidence on the same commit.

@@ -1,0 +1,4 @@
+# Keep line endings deterministic across supported platforms. Combined with
+# .editorconfig and Prettier's endOfLine setting, formatting checks must not depend
+# on the operating system that performed the checkout.
+* text=auto eol=lf

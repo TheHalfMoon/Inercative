@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+**/node_modules/**
+**/coverage/**
+**/dist/**
+.specgrain/**
+# Markdown is authored review authority (canonical planning, ADRs, evidence), not generated
+# formatting output. Reformatting docs/canonical/* would create an unreviewed diff against
+# canonical planning text. See docs/adr/ADR-0001-p00-toolchain-baseline.md.
+**/*.md

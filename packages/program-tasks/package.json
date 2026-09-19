@@ -1,0 +1,14 @@
+{
+  "name": "@ineractive/program-tasks",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deterministic validation of the canonical program task index (specs/tasks.md).",
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}
