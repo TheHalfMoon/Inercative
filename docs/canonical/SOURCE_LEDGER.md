@@ -138,13 +138,11 @@ Adopt:
 
 OCR does not grant PASS.
 
-### TypeSafe Jev
+### Decision-model ecosystem
 
-Internal decision-fabric provider/reference.
+REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Concrete runtime providers are intentionally not declared in this public planning ledger.
 
-Use for bounded typed choices/scores/probability-aware decisions, not general code generation.
-
-Hard permissions and deterministic invariants stay in code.
+Use bounded decision models for classification/routing/gating rather than general code generation. Hard permissions and deterministic invariants stay in code.
 
 ## 8. Import rule
 
