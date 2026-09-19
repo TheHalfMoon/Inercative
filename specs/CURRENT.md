@@ -39,8 +39,9 @@ No P01+ implementation is authorized merely because its roadmap exists.
 2. P00-S01-T02 — create the minimum monorepo skeleton and deterministic baseline checks.
 3. P00-S02-T01 — initialize SpecGrain using the live installed/current supported CLI rather than hand-authoring hidden state.
 4. P00-S03-T01 — initialize Diffcipline and prove one harmless bounded change.
-5. P00-S04-T01 — implement provenance/import record schema and validation.
-6. P00-S05-T01 — establish Alibaba OCR local review procedure and exact-head evidence contract.
+5. P00-S04-T01 — select and commit the Ineractive-owned code license and third-party notice policy.
+6. P00-S04-T02 — implement provenance/import record schema and validation before any donor product-code import.
+7. P00-S05-T01 — establish Alibaba OCR local review procedure and exact-head evidence contract.
 
 These tasks must be shaped/refined into actual SpecGrain Grains before implementation.
 
