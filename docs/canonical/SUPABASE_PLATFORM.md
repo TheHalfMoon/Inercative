@@ -79,7 +79,7 @@ Data
 
 The user can use the visual surface, chat, SQL/code, or Supabase directly. All roads must reconcile with canonical migration/config state.
 
-## 5. Local-first development topology
+## 4. Local-first development topology
 
 Generated apps should develop against an isolated local Supabase stack by default.
 
