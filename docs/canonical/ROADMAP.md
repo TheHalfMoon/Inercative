@@ -269,7 +269,9 @@ Default V1 target:
 - constraints/indexes;
 - migrations;
 - generated types;
-- recreate-from-empty proof.
+- recreate-from-empty proof;
+- classify additive/transformative/restrictive/destructive changes;
+- define expand/contract and recovery behavior before remote execution.
 
 ### P06-S03 Auth and tenancy
 - user lifecycle;
@@ -318,7 +320,10 @@ Default V1 target:
 ### P07-S02 Build orchestrator
 - execute independent units;
 - avoid write conflicts;
-- checkpoint after proven slices.
+- checkpoint after proven slices;
+- durable run state;
+- external-effect receipts;
+- reconcile ambiguous/disconnected operations before retry.
 
 ### P07-S03 Runtime observation
 - build;
@@ -429,7 +434,9 @@ Build from one product prompt:
 ### P10-S01 Assurance kernel
 - normalized findings/evidence/coverage;
 - claim requirements;
-- freshness/staleness.
+- freshness/staleness;
+- producer/verifier separation for acceptance-critical claims;
+- deterministic/independent oracles derived from requirements and runtime observations rather than trusting tests produced by the same generation path.
 
 ### P10-S02 Ascout adapters
 - tests;
@@ -475,10 +482,12 @@ Build from one product prompt:
 - exact source/evidence binding;
 - environment variables through broker.
 
-### P11-S03 Production deployment
+### P11-S03 Production deployment and portability
 Initial qualified targets:
 - one simple managed web deployment path;
 - Docker/self-host export.
+
+Prove clean-room portability: exported source + documented dependencies must build, reconstruct its backend, run, and pass critical browser journeys without access to Ineractive-specific runtime services.
 
 Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing breadth.
 
@@ -629,6 +638,9 @@ Every phase preserves:
 - OCR semantic review;
 - Diffcipline proof;
 - provenance for copied/adapted code;
+- producer/verifier separation for acceptance-critical proof;
+- generated-product runtime independence from Ineractive;
+- explicit partial-failure/recovery semantics for side effects;
 - no unnecessary user interrogation.
 
 ## 3. First benchmark product
