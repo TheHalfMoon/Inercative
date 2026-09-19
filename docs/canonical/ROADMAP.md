@@ -143,7 +143,7 @@ Build:
 - timeouts/retries/errors.
 
 ### P03-S03 Decision fabric
-- Jev adapter for typed choice/score/probability tasks;
+- provider-neutral bounded decision adapter for typed choice/score/probability tasks;
 - deterministic fallback/error policy;
 - confidence thresholds;
 - no permission authority.
