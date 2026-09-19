@@ -20,7 +20,39 @@ Ineractive must preserve normal Supabase artifacts and ownership:
 - policies;
 - project/branch identity.
 
-## 2. Backend product surface
+## 2. Control plane vs generated-product data plane
+
+Ineractive has two distinct Supabase roles and they must never collapse into one trust domain.
+
+### Ineractive control plane
+
+Stores Ineractive product accounts and operational metadata such as:
+
+- users and sessions;
+- organizations/teams;
+- Ineractive projects;
+- project membership;
+- run/task metadata;
+- non-secret integration references;
+- billing/plan metadata when introduced;
+- collaboration/activity metadata.
+
+It does **not** become the canonical database for generated customer application data.
+
+### Generated-product data plane
+
+Each generated application has its own backend identity and lifecycle:
+
+- local isolated Supabase during build;
+- optional user-owned or Ineractive-managed remote Supabase;
+- independent credentials;
+- independent migrations;
+- independent RLS/auth/storage configuration;
+- independent export/transfer/delete lifecycle.
+
+A generated application's service-role/secret authority is never shared with the Ineractive control-plane browser session.
+
+## 3. Backend product surface
 
 The Ineractive Data surface should eventually expose:
 
