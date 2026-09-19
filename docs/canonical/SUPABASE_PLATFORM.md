@@ -323,14 +323,21 @@ Every remote database change has:
 - exact project identity;
 - migration set;
 - dry-run/plan where supported;
-- destructive-change classification;
+- additive / transformative / restrictive / destructive classification;
+- current drift/migration preconditions;
 - backup/recovery expectation;
 - policy admission;
 - post-deploy verification.
 
+Prefer expand/contract for production-bound breaking schema changes when practical.
+
+Rollback is not assumed to mean reverse SQL. The plan must state whether recovery is transaction rollback, reverse migration, forward repair, backup restore, or application rollback against a forward-compatible schema.
+
 Production destructive operations require elevated approval.
 
 Remote reset/wipe commands are forbidden against production.
+
+The detailed partial-failure and migration contract is [Failure, Recovery, and Change Safety](FAILURE_RECOVERY_AND_CHANGE_SAFETY.md).
 
 ## 17. Drift
 
