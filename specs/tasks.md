@@ -30,7 +30,7 @@ This file provides stable dependency-order handles. SpecGrain is the authority f
 | IN-P02-S05-T01 | P02 | Build Product Graph user views | T02,T04 |
 | IN-P03-S01-T01 | P03 | Implement Run lifecycle/event store | P01 contracts |
 | IN-P03-S02-T01 | P03 | Implement provider-neutral generative adapter | T01 |
-| IN-P03-S03-T01 | P03 | Implement Jev decision adapter and thresholds | T01 |
+| IN-P03-S03-T01 | P03 | Implement bounded decision adapter and thresholds | T01 |
 | IN-P03-S04-T01 | P03 | Implement model capability registry/router | T02,T03 |
 | IN-P03-S05-T01 | P03 | Implement context compiler and context provenance | P02 exit,T04 |
 | IN-P04-S01-T01 | P04 | Implement capability request/grant kernel | P01 contracts |
