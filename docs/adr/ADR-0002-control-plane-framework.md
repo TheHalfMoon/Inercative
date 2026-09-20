@@ -1,6 +1,6 @@
-# ADR-0002 — Ineractive control-plane framework baseline
+# ADR-0002 — Ineractive Control-Plane Framework Baseline
 
-**Status:** Accepted candidate pending SG-000009 exact-head qualification  
+**Status:** Candidate — requires SG-000009 execution evidence  
 **Date:** 2026-09-20  
 **Task:** IN-P01-S01-T01  
 **SpecGrain:** SG-000009
@@ -10,117 +10,113 @@
 Ineractive needs a production React framework for its own control plane before public
 protocol and workspace-shell implementation begins.
 
-This decision is intentionally narrower than the generated-application compiler target.
-Selecting a control-plane framework does not make that framework mandatory for every
-future target or imported application.
+This decision is narrower than the generated-application compiler target. Selecting a
+control-plane framework does not force every generated/imported application to use it.
 
-The qualification criteria are:
+Decision criteria:
 
-- stable React 19 compatibility;
-- compatibility with the repository Node 24 qualification environment;
-- server-first rendering and explicit server/client boundaries;
-- routing and data-loading semantics suitable for a long-lived product control plane;
+- React 19 support;
+- Node 24 compatibility;
+- explicit server/client boundary model;
+- routing/data model suitable for a long-lived control plane;
 - provider-neutral self-hosting;
-- observability and diagnostic surfaces;
-- security-support posture;
-- agent/tooling alignment;
-- consistency with existing Ineractive architecture without making a hosting vendor an
-  ownership dependency.
+- observability/tooling;
+- security/release maintenance surface;
+- repository/architecture alignment.
 
 ## Decision
 
-Qualify **Next.js App Router 16.3.3 with React 19.3.0 / React DOM 19.3.0** as the
-Ineractive control-plane framework baseline.
+Qualify **Next.js App Router 16.3.5 with React 19.3.0 / React DOM 19.3.0**.
 
-Exact source identities used for this qualification:
+Exact selected source/package identities:
 
-- Next.js `v16.3.3`: `vercel/next.js@a9a1cb7859f178f830ad3773b303130c21b19586`;
-- React `v19.3.0`: `react/react@1d34f91dfde6bba84d08b683aaba164c7194dacb`.
+- Next.js release: `v16.3.5`;
+- Next.js tag commit: `ca2c75eb7f8d9dd012a8bb83c06132149fe221f9`;
+- React release: `v19.3.0`;
+- package versions: `next@16.3.5`, `react@19.3.0`, `react-dom@19.3.0`;
+- package manager: `pnpm@12.4.2`;
+- runtime qualification: Node 24.x.
 
-The fixture uses exact package versions and `output: "standalone"`. Qualification
-requires both a production build and an HTTP smoke against the self-hosted standalone
-server on Node 24.
+The fixture uses `output: "standalone"` and must prove both a production build and a
+real HTTP request against the generated standalone Node server.
 
-The selected baseline may advance only through a later explicit qualification change.
-A security patch is not blocked merely because this ADR names the version observed on
-2026-09-20.
+## Why
 
-## Candidate comparison
+All three evaluated candidates satisfy the basic Node/React/self-host requirement.
 
-### Next.js App Router 16.3.3
+Next.js is selected for qualification because:
 
-Observed official-source facts:
+1. its current stable package supports Node 24 and React 19;
+2. official Node.js/Docker deployment supports the full framework feature set;
+3. official instrumentation guidance provides a mature monitoring/logging/OpenTelemetry path;
+4. App Router provides the server/client component boundary already assumed by current
+   Ineractive frontend architecture;
+5. canonical Ineractive planning already targets Next.js for generated-app V1 and later
+   qualifies Next.js-specific diagnostics, reducing duplicate framework-specific tooling;
+6. self-hosting does not require a Vercel account or proprietary runtime.
 
-- 16.x is the Active LTS major under the Next.js support policy;
-- 16.3.3 is the August 2026 security release and fixes two Critical-severity issues;
-- package peer dependencies accept React 19;
-- App Router provides Server Components and server/client boundaries aligned with the
-  server-first Ineractive control-plane architecture;
-- official source supports `output: "standalone"` for self-hosting and documents
-  self-hosted OpenTelemetry;
-- the existing Ineractive frontend research/tooling direction already qualifies
-  Next.js-specific diagnostics and rule packs, reducing duplicate framework tooling.
+## Alternatives
 
-Material costs:
+### React Router Framework Mode 8.4.0
 
-- caching, RSC, and server/client semantics are opinionated and require explicit policy;
-- Vercel is the primary upstream steward, so Ineractive must continuously prove that
-  self-hosting and provider adapters remain real rather than assuming Vercel deployment;
-- framework security patches must be treated as active operational requirements.
+Observed identity:
 
-### React Router framework mode 8.4.0
+- release: `react-router@8.4.0`;
+- tag commit: `7ccdcecdd944e15be0cd0dcb702b86c9af1214a8`;
+- license: MIT;
+- Node engine: `>=22.22.0`;
+- React/ReactDOM peer baseline: `>=19.2.7`.
 
-Exact source identity:
+It is not rejected as technically incapable. Its Node/Docker deployment and
+instrumentation model are strong. It is not selected because P01 currently has no
+evidence-backed need to maintain a second full-stack framework model alongside the
+already-canonical Next.js generated-app/tooling direction.
 
-- `remix-run/react-router@7ccdcecdd944e15be0cd0dcb702b86c9af1214a8`.
+### TanStack Start 1.168.56
 
-Observed strengths:
+Observed identity:
 
-- MIT licensed;
-- stable 8.4.0 release published 2026-09-15;
-- Node baseline is compatible with Node 24;
-- React peer requirement is compatible with React 19.3;
-- explicit framework/library modes and Node/Express/serve packages provide strong
-  deployment control.
+- release tag: `release-2026-09-16-2153`;
+- annotated tag target commit: `84bde660a12d82e8c74859b3240157af7566f843`;
+- package: `@tanstack/react-start@1.168.56`;
+- license: MIT;
+- Node engine: `>=22.12.0`;
+- React peer range includes React 19.
 
-Reason not selected for the first control-plane baseline:
-
-- current upstream release notes still mark important RSC/framework surfaces as unstable;
-- adopting it would create a second framework-specific diagnostics/rule ecosystem while
-  Ineractive's already-approved frontend architecture and generated-web research are
-  Next.js-oriented.
-
-It remains a qualified alternative to re-evaluate if portability or framework
-complexity evidence changes.
-
-### TanStack Start
-
-Observed source snapshot:
-
-- `TanStack/router@ac223be01377f09fa8fd70ff52c9ba4b5dbcddfc`;
-- observed `@tanstack/react-start` package version: `1.168.56`;
-- MIT licensed;
-- Node and React ranges are compatible with the Ineractive baseline;
-- full-document SSR, streaming, server functions, typed routing, and deployable bundles
-  are strong architectural matches.
-
-Reason not selected now:
-
-- the official TanStack Start documentation snapshot still describes the framework as
-  Release Candidate. Ineractive should not make its first control-plane baseline depend
-  on an RC when stable alternatives satisfy the requirements.
-
-Requalify after the framework reaches final stable status or if later evidence shows a
-material architectural advantage.
+Its typed/compositional model is a strong architectural fit. It is not selected because
+the current Node hosting path adds Vite/Nitro or equivalent operational surfaces, while
+direct OpenTelemetry support is still documented as experimental/manual. That extra
+surface is not justified by a P01 requirement today.
 
 ## Consequences
 
-- IN-P01-S03-T01 may build the actual control-plane shell on this baseline only after the
-  intervening protocol tasks complete.
-- The control plane defaults to server-first rendering. Client Components are pushed to
-  the smallest interaction boundary.
-- Provider-neutral ownership remains mandatory; standalone/self-host evidence is part of
-  qualification.
-- No Vercel account, billing product, or proprietary runtime is required by this decision.
-- Generated products remain governed by their own FrontendQualityProfile and later
-  compiler qualification gates.
+Positive:
+
+- one primary full-stack React framework model across early Ineractive engineering;
+- first-class Node self-host path;
+- direct alignment with planned Next.js diagnostics;
+- less framework-specific operational duplication.
+
+Costs:
+
+- caching, version-skew, and server/client semantics must be governed explicitly;
+- framework conventions are deeper than a thin router;
+- control-plane and generated-app upgrades remain independently qualified.
+
+## Guardrails
+
+- no Vercel-only API is required;
+- no provider deployment occurs in SG-000009;
+- no real Ineractive workspace shell is created;
+- the fixture is disposable qualification code;
+- failed build/self-host evidence reopens the decision.
+
+## Acceptance
+
+This ADR becomes **Accepted** only when the exact pinned fixture:
+
+- installs from a committed exact lockfile;
+- produces a production build on Node 24;
+- starts the generated standalone Node server;
+- returns `INERACTIVE_CONTROL_PLANE_FRAMEWORK_QUALIFIED` over HTTP;
+- and the final repository candidate passes exact-head Ubuntu + Windows CI.

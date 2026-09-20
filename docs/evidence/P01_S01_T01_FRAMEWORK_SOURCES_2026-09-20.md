@@ -8,52 +8,81 @@
 
 ### Next.js
 
-- repository: `vercel/next.js`
-- selected release: `v16.3.3`
-- immutable tag commit: `a9a1cb7859f178f830ad3773b303130c21b19586`
-- license: MIT
-- release date: 2026-08-25
-- support state observed: Next.js 16.x Active LTS
-- security state observed: 16.3.3 is the August 2026 security release for two Critical
-  issues
-- React peer range includes React 19
-- self-host evidence surfaces: standalone build output and Node production server
-- observability surface: official self-host OpenTelemetry guidance
+- repository: `vercel/next.js`;
+- current stable release observed: `v16.3.5`;
+- published: 2026-09-11;
+- tag commit: `ca2c75eb7f8d9dd012a8bb83c06132149fe221f9`;
+- package: `next@16.3.5`;
+- license: MIT;
+- Node engine: `>=20.9.0`;
+- React peer support includes `^19.0.0`;
+- official Node.js/Docker deployment supports all framework features;
+- official self-host guidance covers reverse proxy, caching, multi-instance, and deployment concerns;
+- official instrumentation guidance supports monitoring/logging and OpenTelemetry patterns.
+
+References:
+
+- https://github.com/vercel/next.js/releases/tag/v16.3.5
+- https://github.com/vercel/next.js/blob/v16.3.5/packages/next/package.json
+- https://nextjs.org/docs/app/getting-started/deploying
+- https://nextjs.org/docs/app/guides/self-hosting
+- https://nextjs.org/docs/app/guides/instrumentation
 
 ### React
 
-- repository: `react/react`
-- selected release: `v19.3.0`
-- immutable tag commit: `1d34f91dfde6bba84d08b683aaba164c7194dacb`
-- release date: 2026-09-09
-- license: MIT
-- stable release includes stable View Transition and Fragment Ref APIs
+- current stable release observed: `v19.3.0`;
+- published: 2026-09-09;
+- selected packages: `react@19.3.0`, `react-dom@19.3.0`;
+- license: MIT.
 
-### React Router
+Reference:
 
-- repository: `remix-run/react-router`
-- observed release: `react-router@8.4.0`
-- immutable tag commit: `7ccdcecdd944e15be0cd0dcb702b86c9af1214a8`
-- release date: 2026-09-15
-- license: MIT
-- Node engine: `>=22.22.0`
-- React/ReactDOM peer baseline: `>=19.2.7`
-- upstream changelog still identifies selected RSC/framework capabilities as unstable
+- https://github.com/facebook/react/releases/tag/v19.3.0
+
+### React Router Framework Mode
+
+- repository: `remix-run/react-router`;
+- current stable release observed: `react-router@8.4.0`;
+- published: 2026-09-15;
+- tag commit: `7ccdcecdd944e15be0cd0dcb702b86c9af1214a8`;
+- license: MIT;
+- Node engine: `>=22.22.0`;
+- React/ReactDOM peer baseline: `>=19.2.7`;
+- official deployment includes full-stack Node/Docker and custom-server templates;
+- official instrumentation supports logging, tracing, error reporting, and OpenTelemetry integration.
+
+References:
+
+- https://github.com/remix-run/react-router/releases/tag/react-router%408.4.0
+- https://github.com/remix-run/react-router/blob/react-router%408.4.0/packages/react-router/package.json
+- https://reactrouter.com/start/framework/deploying
+- https://reactrouter.com/how-to/instrumentation
 
 ### TanStack Start
 
-- repository: `TanStack/router`
-- source snapshot: `ac223be01377f09fa8fd70ff52c9ba4b5dbcddfc`
-- observed package version: `@tanstack/react-start@1.168.56`
-- license: MIT
-- Node engine: `>=22.12.0`
-- React peer range includes React 19
-- upstream documentation snapshot describes TanStack Start as Release Candidate
+- repository: `TanStack/router`;
+- current repository release observed: `release-2026-09-16-2153`;
+- published: 2026-09-16;
+- annotated tag target commit: `84bde660a12d82e8c74859b3240157af7566f843`;
+- package: `@tanstack/react-start@1.168.56`;
+- license: MIT;
+- Node engine: `>=22.12.0`;
+- React peer range includes React 19;
+- Vite peer baseline is 7+;
+- official Node hosting uses the current Start deployment shape, including Nitro for Vite-based output;
+- official OpenTelemetry integration is currently documented as experimental/manual.
 
-## Decision record
+References:
 
-ADR-0002 selects Next.js App Router 16.3.3 + React 19.3.0 for the Ineractive control
-plane, subject to the SG-000009 build/self-host smoke and exact-head repository CI.
+- https://github.com/TanStack/router/releases/tag/release-2026-09-16-2153
+- https://github.com/TanStack/router/blob/release-2026-09-16-2153/packages/react-start/package.json
+- https://tanstack.com/start/latest/docs/framework/react/guide/hosting
+- https://tanstack.com/start/latest/docs/framework/react/guide/observability
 
-This source record is a dated qualification snapshot, not a promise that these versions
-remain current indefinitely.
+## Selection
+
+ADR-0002 selects **Next.js App Router 16.3.5 + React 19.3.0** for bounded control-plane
+qualification.
+
+This is a dated evidence snapshot. Later framework/security upgrades require a separate
+qualification decision; this record does not assert that these versions remain current forever.

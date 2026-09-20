@@ -14,7 +14,7 @@
     "qualify": "pnpm run build && pnpm run smoke"
   },
   "dependencies": {
-    "next": "16.3.3",
+    "next": "16.3.5",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   }
