@@ -179,20 +179,24 @@ describe("validateImportAdmission", () => {
   });
 
   it("rejects partial dependency closure", () => {
-    const record = structuredClone(VALID_RECORD);
-    record.dependencyClosure = {
-      status: "PARTIAL",
-      references: ["package.json"],
+    const record: DonorImportRecord = {
+      ...VALID_RECORD,
+      dependencyClosure: {
+        status: "PARTIAL",
+        references: ["package.json"],
+      },
     };
 
     expect(admissionCodes([record])).toContain("DEPENDENCY_CLOSURE_INCOMPLETE");
   });
 
   it("rejects unresolved dependency closure", () => {
-    const record = structuredClone(VALID_RECORD);
-    record.dependencyClosure = {
-      status: "UNRESOLVED",
-      references: [],
+    const record: DonorImportRecord = {
+      ...VALID_RECORD,
+      dependencyClosure: {
+        status: "UNRESOLVED",
+        references: [],
+      },
     };
 
     expect(admissionCodes([record])).toContain("DEPENDENCY_CLOSURE_INCOMPLETE");

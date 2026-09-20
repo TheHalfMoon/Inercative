@@ -597,7 +597,7 @@ function canonicalJsonValue(value: unknown): unknown {
 }
 
 function canonicalJson(value: unknown): string {
-  return JSON.stringify(canonicalJsonValue(value));
+  return JSON.stringify(canonicalJsonValue(value)) ?? "undefined";
 }
 
 function admissionIssue(
