@@ -1,3 +1,4 @@
+# SG-000009 qualification retry: evidence whitespace repair
 # SG-000009 qualification retry: explicit standalone tracing root
 name: P01 final one-shot framework qualification
 
@@ -96,10 +97,10 @@ jobs:
           lines = [
               "# P01-S01-T01 — Control-Plane Framework Qualification Evidence",
               "",
-              "**Task:** IN-P01-S01-T01  ",
-              "**SpecGrain:** SG-000009  ",
-              "**Date:** 2026-09-20  ",
-              f"**Qualification run:** {os.environ['GITHUB_RUN_ID']}  ",
+              "**Task:** IN-P01-S01-T01",
+              "**SpecGrain:** SG-000009",
+              "**Date:** 2026-09-20",
+              f"**Qualification run:** {os.environ['GITHUB_RUN_ID']}",
               f"**Tested branch head before evidence commit:** {os.environ['QUAL_TESTED_HEAD']}",
               "",
               "## Exact runtime and fixture",

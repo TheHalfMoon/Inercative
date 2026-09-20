@@ -37,3 +37,10 @@ that lifecycle gap is recorded rather than bypassed with fabricated states.
   the fixture-root `.next/standalone/server.js`. The monorepo tracing boundary was
   therefore made explicit with `outputFileTracingRoot`; this failed run is not re-used
   as acceptance evidence.
+
+
+- run `35524668994`: exact Next.js 16.3.5 / React 19.3.0 isolated install,
+  production build, generated standalone server, and HTTP marker smoke all passed after
+  the tracing-root repair. The run failed only at final `git diff --cached --check`
+  because generated evidence metadata used Markdown trailing-space hard breaks. That
+  integration failure is preserved; whitespace is removed before the fresh run.
