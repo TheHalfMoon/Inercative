@@ -1,0 +1,53 @@
+{
+  "acceptance": [
+    "ocr --version recorded; local exact-diff review procedure documented; OCR executed once against a real diff or a truthful external blocker (LLM credentials) is recorded"
+  ],
+  "change_surface": [
+    "docs/engineering/**",
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 2500
+  },
+  "dependencies": [],
+  "evidence": {
+    "required": [
+      "ocr --version; ocr review --format json output or recorded credential blocker; committed procedure doc"
+    ]
+  },
+  "id": "SG-000006",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "installed-dependency",
+        "rationale": "Use the designated Alibaba Open Code Review CLI; do not substitute CodeRabbit/cubic"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "OCR installed/pinned; local exact-diff review procedure documented and executed once",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S05-T01; roadmap dep IN-P00-S01-T02 merged via PR #2",
+  "risk": {
+    "level": "medium",
+    "recovery": "Uninstall ocr binary; remove procedure doc; no persistent side effects"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Install/pin Alibaba OCR CLI; document local exact-diff review procedure; record version/config/base/head"
+  ],
+  "scope_out": [
+    "CI OCR credential wiring (needs credentials); reviewing a product change; evidence/file-accounting contract (S05-T02)"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S05-T01 Establish Alibaba OCR local exact-diff review procedure"
+}

@@ -1,0 +1,54 @@
+{
+  "acceptance": [
+    "diffcipline check --base origin/main --run returns PASS bound to the exact candidate head of one harmless bounded change; changing head invalidates stale proof"
+  ],
+  "change_surface": [
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 5000,
+    "estimated_tokens": 2000
+  },
+  "dependencies": [
+    "SG-000002"
+  ],
+  "evidence": {
+    "required": [
+      "diffcipline check --run output (PASS/REVIEW/FAIL) bound to exact head; git head recorded"
+    ]
+  },
+  "id": "SG-000003",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "installed-dependency",
+        "rationale": "Exercise the already-initialized Diffcipline CLI; no new code"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "One harmless bounded change is proven via Diffcipline PASS on its exact head",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S03-T02; depends on Diffcipline policy init",
+  "risk": {
+    "level": "low",
+    "recovery": "Revert the harmless change; proof is read-only against git state"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "One harmless bounded repository change proven end to end via Diffcipline"
+  ],
+  "scope_out": [
+    "Product behavior; multiple changes; any risky surface"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S03-T02 Prove one harmless exact-diff change end to end"
+}

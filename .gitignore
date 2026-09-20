@@ -7,3 +7,5 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+# SpecGrain runtime coordination/transient files (locks, authoring journals) are not state.
+.specgrain/tmp/
