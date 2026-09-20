@@ -65,6 +65,10 @@ Never concatenate donor applications into the product architecture.
 | Motion Primitives | source-owned motion components | OPTIONAL QUALIFIED SOURCE |
 | tweakcn | shadcn theme/token exploration and possible import patterns | REFERENCE |
 | 21st | external component discovery/registry/MCP catalog | OPTIONAL EXTERNAL REGISTRY |
+| Agentation | structured visual annotation → selector/context feedback for coding agents | REFERENCE only unless separately license-qualified |
+| stagewise | browser/DOM/console/debugger + agent co-working and visual change loop | REFERENCE; AGPL/code reuse requires explicit provenance/license decision |
+| Domscribe | bidirectional DOM/source mapping and MCP context | REFERENCE / ADAPT after provenance review |
+| Design Mode | browser visual manipulation and MCP handoff patterns | REFERENCE |
 
 ## 4. Agent/runtime/sandbox pool
 
