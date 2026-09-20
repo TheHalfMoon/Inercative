@@ -159,7 +159,46 @@ accept migration into source
 
 Never apply model-generated SQL directly to production.
 
-## 7. Remote ownership modes
+## 7. Connection and resource lifecycle
+
+Supabase authorization and project binding are durable typed state.
+
+Connection states include:
+
+~~~text
+UNCONFIGURED
+AUTH_REQUIRED
+CONNECTING
+CONNECTED
+DEGRADED
+EXPIRED
+REVOKED
+DENIED
+UNVERIFIABLE
+DISCONNECTED
+~~~
+
+Project binding states include:
+
+~~~text
+UNBOUND
+DISCOVERED
+PROVISIONING
+HEALTHY
+PAUSED
+DEGRADED
+DRIFTED
+ACCESS_REVOKED
+DELETION_REQUESTED
+DELETED
+UNVERIFIABLE
+~~~
+
+Loss of Ineractive management authority does not imply the user's Supabase project or running application is gone.
+
+Connection/binding state follows [Platform Lifecycle, Ownership, and Provisioning](PLATFORM_LIFECYCLE_AND_OWNERSHIP.md).
+
+## 8. Remote ownership modes
 
 ### Bring Your Own Supabase
 
@@ -193,7 +232,7 @@ Requirements:
 
 Managed mode must not make export/self-host impossible.
 
-## 8. Environments
+## 9. Environments
 
 Canonical environment model:
 
@@ -201,11 +240,22 @@ Canonical environment model:
 - optional remote preview/staging;
 - production.
 
+Every environment binds source revision, backend resource/project/branch, config revision, secret-reference set, data class/policy, region, release identity, and observed health.
+
+Environment allocation follows capability and budget:
+
+1. local Supabase is always the baseline;
+2. hosted preview branch may be used when qualified, available, and authorized;
+3. a dedicated staging project is an explicit alternative;
+4. local-only backend preview remains a valid fallback when remote preview cannot be provisioned.
+
 Do not require paid Supabase preview branches for basic Ineractive functionality.
 
-If the user's Supabase plan and policy allow hosted branches, they are an optional accelerator. Each branch is a distinct Supabase environment and incurs its own usage, so branch creation is cost-bearing and must not be hidden.
+If the user's Supabase plan and policy allow hosted branches, they are an optional accelerator. Branch creation is cost-bearing and must not be hidden.
 
-## 9. Auth compiler
+Production data and storage objects are not automatically copied into preview/staging environments.
+
+## 10. Auth compiler
 
 The product spec can express:
 
@@ -224,7 +274,7 @@ Use application-controlled authorization state such as app metadata and/or datab
 
 Session-sensitive actions need explicit security semantics; deleting a user alone is not assumed to revoke every existing access token immediately.
 
-## 10. RLS compiler
+## 11. RLS compiler
 
 Every exposed table is treated as denied until policies are defined.
 
@@ -247,7 +297,7 @@ Rules:
 - security-definer functions are exceptional, isolated, reviewed, and explicitly callable only by intended roles;
 - RLS tests execute against real local Supabase roles/tokens.
 
-## 11. Data API exposure
+## 12. Data API exposure
 
 Ineractive must not assume a table becomes available to REST/GraphQL merely because it exists.
 
@@ -261,7 +311,7 @@ as separate concerns.
 
 This remains correct even as platform defaults change.
 
-## 12. Storage compiler
+## 13. Storage compiler
 
 A storage declaration includes:
 
@@ -277,7 +327,7 @@ A storage declaration includes:
 
 Upsert verification must cover the required INSERT + SELECT + UPDATE policy combination rather than checking upload-only behavior.
 
-## 13. Realtime
+## 14. Realtime
 
 Realtime is generated only when product behavior needs it.
 
@@ -285,7 +335,7 @@ Ineractive must not modify Supabase's locked realtime schema.
 
 Generated realtime authorization/config must use supported public contracts and be integration-tested with real subscriptions.
 
-## 14. Functions, jobs, and privileged logic
+## 15. Functions, jobs, and privileged logic
 
 Use server/Edge Functions when behavior needs:
 
@@ -307,7 +357,7 @@ Function generation requires:
 - local/integration test;
 - caller policy.
 
-## 15. Secrets
+## 16. Secrets
 
 Secret values are never copied into model context unless a provider contract explicitly requires a value and policy allows it; ordinary generation should use secret references.
 
@@ -315,7 +365,29 @@ The app code receives only the credential class appropriate for its trust bounda
 
 Never put service-role/secret keys in browser bundles or NEXT_PUBLIC variables.
 
-## 16. Migration safety
+Secret references are environment-scoped and versioned. Rotation/revocation/expiry must be observable, and any deployment/function requiring a changed secret is reverified. Production secrets are not copied into preview by default.
+
+## 17. Dataset and import lifecycle
+
+Business-data import follows:
+
+~~~text
+inspect read-only
+→ profile
+→ classify
+→ preview mapping
+→ stage
+→ validate
+→ apply
+→ reconcile counts/relationships
+→ finalize DatasetVersion binding
+~~~
+
+For large imports, execution may be chunked/streamed with durable batch identity. Partial failure resumes or reconciles by batch rather than silently duplicating rows.
+
+Production data is never automatically reused for seed/test data. Synthetic data is preferred; masked/sanitized subsets require explicit policy and lineage.
+
+## 18. Migration safety
 
 Every remote database change has:
 
@@ -339,7 +411,7 @@ Remote reset/wipe commands are forbidden against production.
 
 The detailed partial-failure and migration contract is [Failure, Recovery, and Change Safety](FAILURE_RECOVERY_AND_CHANGE_SAFETY.md).
 
-## 17. Drift
+## 19. Drift
 
 Ineractive compares:
 
@@ -357,7 +429,7 @@ Drift states:
 
 Do not silently overwrite remote changes.
 
-## 18. Backend verification pack
+## 20. Backend verification pack
 
 For every generated app with Supabase:
 
@@ -373,7 +445,7 @@ For every generated app with Supabase:
 - advisors/security checks;
 - browser E2E against actual local backend.
 
-## 19. Platform-change discipline
+## 21. Platform-change discipline
 
 Supabase changes rapidly. Implementation work must verify current docs/changelog.
 
@@ -387,7 +459,7 @@ Known planning-sensitive 2026 changes include:
 
 Do not encode transient platform assumptions as permanent Ineractive semantics.
 
-## 20. User ownership/export
+## 22. User ownership/export
 
 At any point, the user should be able to leave with:
 
