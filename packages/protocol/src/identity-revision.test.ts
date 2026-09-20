@@ -159,7 +159,6 @@ describe("@ineractive/protocol package boundary", () => {
   });
 });
 
-
 describe("machine-readable identity/revision schema", () => {
   it("matches the canonical runtime formats", async () => {
     const rawSchema = await readFile(

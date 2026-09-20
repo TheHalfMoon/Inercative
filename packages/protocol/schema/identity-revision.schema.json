@@ -29,10 +29,7 @@
     "revisionBinding": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "identity",
-        "revision"
-      ],
+      "required": ["identity", "revision"],
       "properties": {
         "identity": {
           "$ref": "#/$defs/logicalIdentity"
