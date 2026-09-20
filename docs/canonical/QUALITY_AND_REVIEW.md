@@ -198,6 +198,8 @@ Capture:
 
 For generated CRUD/auth apps, browser proof should include negative paths, not only the happy path.
 
+Every broad browser-support claim must name a support matrix. Critical journeys are executed on each browser engine and representative viewport actually claimed as supported. A Chromium-only run cannot justify a cross-browser claim; unsupported engines/viewports must be stated explicitly rather than implied.
+
 ## 11. Changed-code evidence
 
 Where practical, connect code changes to exercised behavior.
@@ -310,7 +312,7 @@ Users, private records, validation, error states.
 
 ### B03 — Multi-tenant CRM
 
-Organizations, invitations, roles, RLS, cross-tenant negative tests.
+Organizations, invitations, roles, RLS, cross-tenant negative tests, and realistic search/filter/sort/pagination over tenant-scoped business data.
 
 ### B04 — Files and storage
 
@@ -342,7 +344,7 @@ Start from a deliberately broken build and converge using evidence.
 
 ### B11 — Release compatibility and recovery
 
-Promote a candidate whose application and backend schema evolve together, then inject a deployment failure and prove last-known-good recovery without unsafe database rollback.
+Promote a candidate whose application and backend schema evolve together, discover the connected provider's backup/PITR/restore capabilities, then inject a deployment failure and prove last-known-good recovery without unsafe database rollback. Execute a bounded restore/PITR drill where supported; otherwise prove the typed blocker/manual-recovery path and do not claim restore coverage.
 
 ### B12 — Generated-product operations
 
@@ -366,7 +368,7 @@ After P13 qualification, build an exported AI-enabled product with provider-neut
 
 ### B17 — Idea to owned production product
 
-Start from a product brief plus business data and prove the complete GitHub/Supabase/deployment/recovery/post-launch lifecycle with no manual developer coding in the golden path.
+Start from a product brief plus business data and prove the complete GitHub/Supabase/deployment/recovery/post-launch lifecycle with no manual developer coding in the golden path, including search/filter/sort/list behavior, Product Admin/Data Studio administration, one applicable DataPolicy data-rights/consent flow, and explicit provider-aware backup/restore expectations.
 
 ### B18 — Frontend component supply and quality
 
@@ -378,7 +380,7 @@ Build and change a component-rich Next.js product while proving:
 - external component admission is provenance/security/a11y/compatibility checked;
 - server/client boundaries remain bounded;
 - Arabic/RTL and responsive states survive;
-- component states and critical browser journeys pass;
+- component states and critical browser journeys pass across the declared browser/device support matrix;
 - visual/design quality evidence is exact-source bound;
 - optional frontend dependencies are justified rather than injected by default.
 

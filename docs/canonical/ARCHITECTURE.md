@@ -155,6 +155,7 @@ Output:
 - desired backend plan;
 - migration/policy/function/storage/auth config candidates;
 - dataset/import/seed plans;
+- safe query/list/search/filter/sort/pagination contracts and index candidates where required by product semantics;
 - validation plan.
 
 It must be able to compare desired state with observed local/remote state before mutation.
@@ -176,6 +177,26 @@ Output:
 - verification plan.
 
 It never treats ambiguous coercion as confirmed truth.
+
+### ProductAdminStudio
+
+Input:
+
+- observed local/remote backend state;
+- Product Graph/DataPolicy semantics;
+- current environment/resource bindings;
+- authenticated user authority and capability policy.
+
+Output:
+
+- safe table/relation/row exploration and bounded mutation;
+- auth/user/organization/session administration where permitted;
+- RLS/API/storage-policy inspection;
+- function/job/webhook/log/health/release/recovery views;
+- import/export/data-quality actions;
+- exact mutation receipts and refreshed drift/evidence state.
+
+It is an Ineractive management surface over user-owned infrastructure, not a hidden proprietary data plane. Every mutation passes capability admission, environment identity checks, policy validation, and post-action reconciliation. Direct production table editing is never treated as a shortcut around migrations, DataPolicy, RLS, or audit requirements.
 
 ### PlatformLifecycle
 

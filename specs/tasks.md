@@ -68,23 +68,26 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P05-S07-T04 | P05 | Establish Ineractive Qualified Registry baseline and initial RegistryAdmissionGate | IN-P05-S07-T03, IN-P00-S04-T03, IN-P04-S03-T01 |
 | IN-P05-S07-T05 | P05 | Implement on-demand dependency policies for forms/query/table/i18n/motion/component-workbench tooling | IN-P05-S07-T01, IN-P05-S07-T02 |
 | IN-P05-S07-T06 | P05 | Qualify Next.js DevTools MCP diagnostics through Tool Catalog/trust/capability policy | IN-P05-S07-T01, IN-P04-S06-T04 |
+| IN-P05-S08-T01 | P05 | Implement first-class search/filter/sort/pagination/list-detail UX compiler with accessible states and Product Graph bindings | IN-P05-S02-T01, IN-P05-S03-T01, IN-P05-S07-T05 |
 | IN-P06-S01-T01 | P06 | Integrate isolated local Supabase CLI stack | IN-P04-S02-T02, IN-P04-S03-T01 |
 | IN-P06-S02-T01 | P06 | Implement schema/migration/type compiler | IN-P02-S02-T01, IN-P06-S01-T01 |
 | IN-P06-S02-T02 | P06 | Implement migration risk classification, expand/contract, and recovery planning | IN-P06-S02-T01 |
 | IN-P06-S03-T01 | P06 | Implement auth/organization/membership compiler | IN-P06-S02-T01 |
-| IN-P06-S04-T01 | P06 | Implement explicit Data API/RLS compiler | IN-P06-S02-T01, IN-P06-S03-T01 |
+| IN-P06-S04-T01 | P06 | Implement explicit Data API/RLS plus safe filter/sort/pagination/search query-contract compiler and index candidates | IN-P06-S02-T01, IN-P06-S03-T01 |
 | IN-P06-S04-T02 | P06 | Implement cross-tenant negative policy tests | IN-P06-S04-T01 |
 | IN-P06-S05-T01 | P06 | Implement Storage compiler and policy tests | IN-P06-S01-T01, IN-P06-S04-T01 |
 | IN-P06-S06-T01 | P06 | Implement Realtime/functions/jobs subset | IN-P06-S03-T01, IN-P06-S04-T01 |
 | IN-P06-S07-T01 | P06 | Implement Supabase OAuth/Management API connection flow | IN-P04-S03-T01, IN-P06-S01-T01 |
 | IN-P06-S07-T02 | P06 | Implement remote drift/migration plan | IN-P06-S02-T02, IN-P06-S07-T01 |
 | IN-P06-S08-T01 | P06 | Implement data lifecycle/export/delete/audit compiler from Product Graph policy semantics | IN-P02-S02-T02, IN-P06-S04-T01, IN-P06-S06-T01 |
+| IN-P06-S08-T02 | P06 | Compile applicable consent/privacy-preference/data-rights policy into UI/backend/integration enforcement with explicit unsupported-requirement blockers | IN-P06-S08-T01, IN-P05-S03-T01 |
 | IN-P06-S09-T01 | P06 | Implement REST/webhook/email/in-app integration and notification compiler | IN-P02-S02-T02, IN-P04-S03-T01, IN-P06-S06-T01 |
 | IN-P06-S09-T02 | P06 | Implement integration idempotency/reconciliation/external-effect receipt fixtures | IN-P06-S09-T01 |
 | IN-P06-S10-T01 | P06 | Implement Data Workspace import/profile/mapping/quality/lineage pipeline for CSV/XLSX/JSON and qualified sources | IN-P02-S07-T01, IN-P06-S01-T01, IN-P06-S02-T01, IN-P06-S08-T01 |
 | IN-P06-S10-T02 | P06 | Implement verified dataset-to-Supabase import/transformation/reconciliation pipeline | IN-P06-S10-T01, IN-P06-S04-T01 |
 | IN-P06-S10-T03 | P06 | Implement staged/chunked dataset import with durable batch resume, count reconciliation, and masked-nonproduction policy | IN-P06-S10-T02, IN-P03-S09-T01, IN-P04-S01-T01 |
 | IN-P06-S11-T01 | P06 | Implement deterministic seed/synthetic dataset generation with role/state/edge-case coverage | IN-P02-S07-T01, IN-P06-S02-T01 |
+| IN-P06-S12-T01 | P06 | Implement capability-gated Product Admin/Data Studio over user-owned local/remote backend state with drift/evidence refresh | IN-P05-S08-T01, IN-P06-S06-T01, IN-P06-S07-T02, IN-P06-S08-T02, IN-P06-S09-T02, IN-P06-S10-T03 |
 | IN-P07-S01-T01 | P07 | Implement Product Graph delta -> bounded WorkPlan | IN-P02-S05-T01, IN-P03-S06-T01 |
 | IN-P07-S01-T02 | P07 | Implement requirements-derived Build Contract compiler | IN-P07-S01-T01, IN-P02-S02-T02 |
 | IN-P07-S01-T03 | P07 | Implement independent evaluator challenge/acceptance handshake for high-risk or novel work | IN-P07-S01-T02, IN-P04-S05-T01 |
@@ -95,7 +98,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P07-S03-T01 | P07 | Normalize build/browser/backend failures | IN-P07-S02-T02, IN-P05-S04-T01, IN-P06-S04-T02 |
 | IN-P07-S03-T02 | P07 | Implement structured Failure Ledger with artifact/source/attempt provenance | IN-P07-S03-T01, IN-P03-S09-T01 |
 | IN-P07-S04-T01 | P07 | Implement bounded repair loop | IN-P07-S03-T02 |
-| IN-P07-S05-T01 | P07 | Complete golden multi-tenant CRM vertical slice | IN-P07-S01-T03, IN-P07-S01-T04, IN-P07-S02-T03, IN-P07-S04-T01, IN-P05-S04-T01, IN-P06-S04-T02, IN-P06-S08-T01, IN-P06-S09-T02 |
+| IN-P07-S05-T01 | P07 | Complete golden multi-tenant CRM vertical slice including realistic tenant-scoped search/filter/sort/pagination | IN-P07-S01-T03, IN-P07-S01-T04, IN-P07-S02-T03, IN-P07-S04-T01, IN-P05-S04-T01, IN-P05-S08-T01, IN-P06-S04-T02, IN-P06-S08-T01, IN-P06-S09-T02 |
 | IN-P08-S01-T01 | P08 | Generate compact product/brand/design artifacts | IN-P05-S04-T01 |
 | IN-P08-S02-T01 | P08 | Integrate Impeccable-derived deterministic design checks | IN-P08-S01-T01 |
 | IN-P08-S03-T01 | P08 | Implement render/critique/repair design loop | IN-P08-S02-T01, IN-P04-S05-T01 |
@@ -128,8 +131,8 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P10-S06-T01 | P10 | Implement Evaluation Lab benchmark corpus and live/recorded replay runner | IN-P03-S09-T02, IN-P07-S05-T01, IN-P08-S09-T02, IN-P09-S05-T01 |
 | IN-P10-S06-T02 | P10 | Implement multidimensional harness correctness/security/design/cost/latency/question regression reports | IN-P10-S06-T01, IN-P03-S08-T01 |
 | IN-P10-S07-T01 | P10 | Implement generated-app supply-chain/source/asset/build-artifact integrity pack and optional SBOM | IN-P00-S04-T03, IN-P05-S01-T01, IN-P08-S10-T01 |
-| IN-P10-S08-T01 | P10 | Implement i18n/RTL/SEO/accessibility/performance production-web quality pack | IN-P05-S05-T01, IN-P05-S06-T01, IN-P04-S05-T01 |
-| IN-P10-S09-T01 | P10 | Implement dataset quality/lineage/count/referential-integrity/privacy and deterministic-seed assurance pack | IN-P06-S10-T03, IN-P06-S11-T01, IN-P10-S01-T02 |
+| IN-P10-S08-T01 | P10 | Implement i18n/RTL/SEO/accessibility/performance plus declared cross-browser/device support-matrix production-web quality pack | IN-P05-S05-T01, IN-P05-S06-T01, IN-P04-S05-T01 |
+| IN-P10-S09-T01 | P10 | Implement dataset quality/lineage/count/referential-integrity/privacy/data-rights/consent and deterministic-seed assurance pack | IN-P06-S08-T02, IN-P06-S10-T03, IN-P06-S11-T01, IN-P10-S01-T02 |
 | IN-P10-S10-T01 | P10 | Integrate React Doctor changed-scope deterministic scanning into normalized frontend findings/evidence | IN-P05-S07-T01, IN-P10-S01-T01 |
 | IN-P10-S10-T02 | P10 | Fully qualify RegistryAdmissionGate for external component provenance/security/a11y/server-client/RTL/reduced-motion/performance compatibility | IN-P05-S07-T04, IN-P08-S11-T03, IN-P10-S07-T01, IN-P10-S08-T01 |
 | IN-P10-S10-T03 | P10 | Implement exact-source FrontendEvidenceBundle across rule packs, component tests, browser/accessibility/visual/performance diagnostics, and independent critique | IN-P10-S10-T01, IN-P10-S10-T02, IN-P10-S01-T02 |
@@ -149,12 +152,13 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P11-S06-T01 | P11 | Implement ReleaseManifest, promotion states, last-known-good identity, and app/schema compatibility gate | IN-P11-S03-T01, IN-P11-S05-T01, IN-P10-S07-T01 |
 | IN-P11-S07-T01 | P11 | Implement portable generated-app health/log/error/release-identity and optional telemetry/analytics baseline | IN-P11-S02-T01, IN-P05-S06-T01 |
 | IN-P11-S08-T01 | P11 | Qualify production recovery across deploy/migration/credential/drift/last-known-good scenarios | IN-P11-S06-T01, IN-P11-S07-T01, IN-P06-S02-T02 |
+| IN-P11-S08-T02 | P11 | Qualify provider-aware backup/PITR/restore expectations and execute an isolated restore drill where supported, otherwise prove typed blocker/manual recovery path | IN-P11-S08-T01, IN-P11-S00-T04, IN-P06-S07-T02 |
 | IN-P11-S09-T01 | P11 | Implement least-privilege GitHub App connect/create repository ownership flow | IN-P11-S01-T02, IN-P11-S00-T04, IN-P04-S03-T01 |
 | IN-P11-S09-T02 | P11 | Implement user-owned Supabase connect/create ownership orchestration through qualified OAuth/Management surfaces | IN-P06-S07-T02, IN-P11-S05-T01, IN-P11-S00-T04, IN-P04-S03-T01 |
 | IN-P11-S09-T03 | P11 | Bind GitHub/Supabase/deployment/environment identities into one Connected Ownership Orchestrator | IN-P11-S09-T01, IN-P11-S09-T02, IN-P11-S06-T01, IN-P11-S04-T02, IN-P11-S04-T03 |
 | IN-P11-S09-T04 | P11 | Implement OwnershipManifest, provider detach/reconnect/transfer-export/delete distinctions, and connected-resource reconciliation UX contract | IN-P11-S09-T03, IN-P11-S00-T03 |
 | IN-P11-S10-T02 | P11 | Generate minimal operational/ownership/recovery documentation from real manifests and enforce ProductCompleteness gate | IN-P07-S01-T04, IN-P11-S06-T01, IN-P11-S09-T04 |
-| IN-P11-S10-T01 | P11 | Pass B17 idea+spreadsheet-to-owned-production-product end-to-end benchmark including post-launch change | IN-P06-S10-T03, IN-P06-S11-T01, IN-P10-S09-T01, IN-P11-S08-T01, IN-P11-S09-T04, IN-P11-S10-T02 |
+| IN-P11-S10-T01 | P11 | Pass B17 idea+spreadsheet-to-owned-production-product end-to-end benchmark including Data Studio, data-rights policy, recovery, and post-launch change | IN-P06-S10-T03, IN-P06-S11-T01, IN-P06-S12-T01, IN-P10-S09-T01, IN-P11-S08-T02, IN-P11-S09-T04, IN-P11-S10-T02 |
 | IN-P11-S11-T01 | P11 | Pass A-to-exit benchmark: revoke Ineractive access, preserve expected runtime/ownership, reconnect and reconcile without duplicate resources | IN-P11-S10-T01, IN-P11-S09-T04, IN-P11-S03-T02 |
 | IN-P12-S01-T01 | P12 | Implement Ineractive teams/projects/roles | IN-P11-S11-T01 |
 | IN-P12-S02-T01 | P12 | Implement collaboration/activity/comment primitives | IN-P12-S01-T01 |

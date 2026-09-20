@@ -40,6 +40,7 @@ The matrix distinguishes:
 | Exploration branches / compare directions | BETA | Product/design/context/source branching |
 | Plan/task visibility while building | BETA | SpecGrain-backed, not a second planning authority |
 | Spreadsheet/data starting point | V1 CORE | Product can begin from business data, not only a prompt |
+| Product Admin/Data Studio | V1 CORE | Ordinary backend/data/auth/security/operations administration without requiring Supabase Dashboard |
 | Existing Supabase starting point | BETA | Reconcile backend truth before mutation |
 | Connections/Ship readiness surface | BETA | Product-level provider/blocker/completeness UX |
 
@@ -63,6 +64,7 @@ The matrix distinguishes:
 | Notifications | V1 CORE | Basic product behavior |
 | Integration definitions | V1 CORE | Typed external boundaries |
 | Data classification/policy | V1 CORE | Retention/export/delete/audit semantics when needed |
+| Policy-driven consent/data-rights workflows | V1 CORE | Compile only when applicable; never claim blanket regulatory compliance |
 | External-effect semantics | V1 CORE | Consequence/idempotency/reconciliation |
 | Design-system revision reference | BETA | Design OS binding |
 | Skill references | BETA | Workflow semantics, not capability grants |
@@ -202,6 +204,7 @@ The matrix distinguishes:
 | Design anti-pattern detectors | V1 CORE | Impeccable-derived |
 | Versioned design/frontend rule packs | V1 CORE | Impeccable + interface/React rule packs; findings not authority |
 | Responsive viewport checks | V1 CORE | |
+| Declared browser/device support matrix | BETA | Critical journeys run on the actually claimed engines/viewports before broad support claims |
 | Accessibility checks | V1 CORE | |
 | Screenshot critique loop | BETA | P08 |
 | DOM/source mapping | BETA | P08 |

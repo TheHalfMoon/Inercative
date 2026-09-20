@@ -313,7 +313,7 @@ A-to-Z is therefore testable rather than only aspirational.
 
 At the final frontend/tooling hardening pass:
 
-- stable task handles: **172**;
+- stable task handles: **176**;
 - duplicate task IDs: **0**;
 - missing dependency references: **0**;
 - dependencies pointing to the same/later task position: **0**.
@@ -377,7 +377,7 @@ CURRENT_EXECUTION_FRONTIER
 = P00_IN_PROGRESS
 
 CANDIDATE_TASK_HANDLES
-= 172
+= 176
 
 CANDIDATE_DAG_STRUCTURALLY_VALID
 = YES
@@ -407,6 +407,34 @@ Founder-supplied creative-media and decision-routing sources were reconciled aft
 
 The reconciliation identified one bounded planning gap: generated creative assets lacked an explicit end-to-end contract spanning structured visual intent, provider-neutral media generation/editing, bounded provider/model routing, asset provenance/evaluation, and product-bound raster refinement.
 
-That gap is now represented by `VisualPromptProtocol`, `MediaGenerationRequest`, `MediaProviderAdapter`, `CreativeAsset`, P08-S12, P13-S08, and three new stable task handles. The candidate task index therefore contains **172** handles.
+That gap is now represented by `VisualPromptProtocol`, `MediaGenerationRequest`, `MediaProviderAdapter`, `CreativeAsset`, P08-S12, P13-S08, and three new stable task handles. The candidate task index therefore contains **176** handles.
 
 This addendum changes planning coverage only. It does not grant P01+ implementation authority or claim any media provider/model/source import has executed.
+
+
+---
+
+# 14. Final coverage red-team addendum — 2026-09-20
+
+A second systematic coverage pass compared the capability matrix, roadmap, Product Graph, backend/platform/recovery contracts, assurance benchmarks, and executable task index.
+
+It found four material areas that were described or implied but did not yet have sufficiently explicit task ownership/proof paths:
+
+1. V1 business search/filter/sort/pagination;
+2. execution of consent/privacy-preference/data-rights requirements represented by DataPolicy;
+3. Product Admin/Data Studio as an actual build task rather than an aspirational surface;
+4. provider-aware backup/PITR/restore qualification.
+
+It also found one evidence-specific weakness: responsive browser proof did not explicitly require a declared cross-browser/device support matrix.
+
+The candidate plan now closes those gaps through:
+
+- P05-S08 and `IN-P05-S08-T01`;
+- strengthened P06-S04 query contracts;
+- `IN-P06-S08-T02`;
+- P06-S12 and `IN-P06-S12-T01`;
+- strengthened P10-S08/P10-S09 assurance;
+- `IN-P11-S08-T02`;
+- strengthened B03/B11/B17/B18.
+
+The candidate task index now contains **176** stable handles. This is still planning coverage, not implementation PASS evidence.

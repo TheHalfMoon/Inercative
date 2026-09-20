@@ -190,9 +190,9 @@ P01 may not begin until:
 
 ## 7. Candidate graph validation
 
-The candidate task index contains **172 stable task handles**.
+The candidate task index contains **176 stable task handles**.
 
-Structural validation after the A-to-Z + frontend/tooling hardening pass:
+Structural validation after the A-to-Z + frontend/tooling + final coverage hardening pass:
 
 - duplicate task IDs: 0;
 - missing dependency references: 0;
@@ -200,13 +200,23 @@ Structural validation after the A-to-Z + frontend/tooling hardening pass:
 
 Existing P00 task IDs and execution authority remain unchanged.
 
+Final coverage red-team additionally closed explicit ownership/proof paths for:
+
+- business search/filter/sort/pagination;
+- policy-driven consent/privacy-preference/data-rights execution;
+- Product Admin/Data Studio;
+- provider-aware backup/PITR/restore qualification;
+- declared cross-browser/device support evidence.
+
+See `docs/research/FINAL_PLAN_COVERAGE_AUDIT_2026-09-20.md`.
+
 ## 8. Planning readiness verdict
 
 **CURRENT_EXECUTION_FRONTIER = P00_IN_PROGRESS**
 
 **CANDIDATE_POST_P00_PLAN_STRUCTURALLY_READY = YES**
 
-**KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_CURRENT_RED_TEAM**
+**KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_FINAL_COVERAGE_RED_TEAM**
 
 **PR6_MERGED = NO**
 

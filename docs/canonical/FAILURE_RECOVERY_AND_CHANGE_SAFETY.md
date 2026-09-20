@@ -212,6 +212,21 @@ Timeout means UNKNOWN/PENDING until provider/DNS state is reconciled.
 
 Do not retry create operations blindly when an external resource may already exist.
 
+## 12.1 Backup / PITR / restore qualification
+
+Backup and restore are provider capabilities, not assumptions.
+
+Before a production-risk migration or release, Ineractive records:
+
+- whether backup, point-in-time recovery, snapshot, or restore is supported;
+- plan/region/retention constraints;
+- latest known recovery point where observable;
+- restore target/isolation strategy;
+- expected data-loss window;
+- whether an executed restore drill exists.
+
+Where a safe non-production or isolated restore target is supported, qualification includes a bounded restore/PITR drill and post-restore integrity checks. Where the provider/plan does not expose the required capability, Ineractive records a typed ExternalBlocker or manual-recovery requirement and must not report backup/restore as proven.
+
 ## 13. Deployment recovery
 
 Production deployment records:
@@ -257,6 +272,8 @@ The benchmark suite should include:
 - provider plan/quota blocker;
 - disconnect/reconnect of user-owned infrastructure;
 - partial data-import batch failure;
+- backup/PITR/restore capability absent or plan-blocked;
+- successful isolated restore/PITR drill where supported, including integrity/reconciliation checks;
 - partial file write/checkpoint recovery.
 
 Recovery claims require executed evidence.

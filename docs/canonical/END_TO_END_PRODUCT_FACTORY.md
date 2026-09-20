@@ -510,6 +510,18 @@ Operations
 
 This is an Ineractive management surface over user-owned infrastructure, not a proprietary replacement for ownership.
 
+Safety invariants:
+
+- all mutations are bound to exact project/environment/resource identity;
+- capability admission and user authority precede consequential changes;
+- production schema changes still flow through migrations/change-safety rules;
+- row/data mutations respect RLS/DataPolicy/audit semantics;
+- admin actions produce receipts and refresh drift/evidence state;
+- the surface never exposes service-role secrets to the browser;
+- provider limitations remain visible rather than being papered over.
+
+The implementation owner is P06-S12; B17 must exercise this surface rather than relying on direct Supabase Dashboard administration.
+
 ---
 
 # 9. Import existing business data
@@ -623,6 +635,9 @@ The benchmark must prove:
 17. promote production candidate;
 18. verify health/log/release identity;
 19. export/restore from source;
+20. exercise ordinary Product Admin/Data Studio administration;
+21. prove one applicable policy-driven data-rights/consent flow;
+22. record and, where supported, execute provider-aware backup/PITR/restore recovery;
 20. perform one incremental post-launch feature change.
 
 Success means no manual developer coding in the golden path.

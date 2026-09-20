@@ -352,7 +352,18 @@ Define and implement:
 
 Do not turn the generated stack into a dependency zoo. Reuse qualified source components before synthesis.
 
-**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, use a coherent primitive/component supply model, avoid accidental client-boundary/dependency bloat, and can meet production-grade locale/RTL/public-web contracts where applicable.
+### P05-S08 Business list/query UX
+
+Compile first-class business-data interaction patterns:
+
+- search, filter, sort, pagination, list/detail, and table state;
+- URL/shareable state when product semantics require it;
+- server-first query execution with bounded client state;
+- loading/empty/error/no-results states;
+- keyboard/accessibility behavior;
+- Product Graph bindings rather than page-local ad hoc query logic.
+
+**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, use a coherent primitive/component supply model, avoid accidental client-boundary/dependency bloat, support the declared business list/query interactions, and can meet production-grade locale/RTL/public-web contracts where applicable.
 
 ## P06 — Supabase compiler V1
 
@@ -385,7 +396,10 @@ Do not turn the generated stack into a dependency zoo. Reuse qualified source co
 - explicit grants/exposure;
 - ownership/membership policies;
 - cross-tenant negative tests;
-- view/function safety.
+- view/function safety;
+- safe generated query contracts for filtering/sorting/pagination/search;
+- index/query-plan candidates where product semantics and observed workload justify them;
+- no arbitrary client-side privileged query path.
 
 ### P06-S05 Storage
 - buckets;
@@ -409,8 +423,11 @@ Do not turn the generated stack into a dependency zoo. Reuse qualified source co
 
 ### P06-S08 Data lifecycle compiler
 - compile data classification/retention/export/deletion/audit requirements;
+- compile policy-driven consent/privacy-preference/data-rights workflows when applicable;
+- propagate consent/retention/redaction requirements across UI, API, jobs, integrations, analytics, and exports;
 - log/redaction implications;
 - deletion/export browser and backend flows;
+- make unsupported legal/provider requirements explicit blockers rather than silently weakening policy;
 - no automatic regulatory-compliance claim.
 
 ### P06-S09 Integration and notification compiler
@@ -454,7 +471,20 @@ Pipeline:
 - reusable seed fixtures committed with generated source;
 - later AI corpus/eval dataset preparation only after P13 qualification.
 
-**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, can ingest and verify a real business spreadsheet/data source, can generate safe representative seed data, and can execute one qualified external integration/notification path safely.
+### P06-S12 Product Admin / Data Studio
+
+Build the safe management surface over the generated application's user-owned backend:
+
+- tables/relations/rows/import/dataset versions/data quality/export;
+- users/organizations/roles/sessions/invitations;
+- RLS/API/storage policy inspection and findings;
+- functions/realtime/jobs/webhooks/logs;
+- environments/migrations/drift/release/health/recovery;
+- capability-gated bounded mutations with exact environment/resource identity;
+- refresh drift/evidence after every material mutation;
+- never bypass migrations, RLS, DataPolicy, audit, or production approval rules.
+
+**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, supports search/filter/sort/list workflows, can ingest and verify a real business spreadsheet/data source, exposes ordinary administration through Product Admin/Data Studio without requiring Supabase Dashboard, can generate safe representative seed data, and can execute one qualified external integration/notification path safely.
 
 ## P07 — Full product build and repair loop
 
@@ -698,15 +728,18 @@ Combine rule-pack findings with real rendered/browser evidence rather than treat
 - accessibility;
 - SEO metadata where applicable;
 - performance regression budgets;
+- explicit browser/device support matrix;
+- critical journeys on every engine/viewport actually claimed as supported;
 - realistic-data browser journeys.
 
-### P10-S09 Dataset quality and lineage assurance
+### P10-S09 Dataset quality, lineage, and data-rights assurance
 - schema/type verification;
 - row/object count reconciliation;
 - duplicate/missingness/domain checks;
 - referential-integrity verification;
 - transformation lineage;
 - sensitive-data handling assertions;
+- policy-driven consent/privacy-preference/export/delete/audit assertions when applicable;
 - deterministic seed/synthetic-data reproducibility.
 
 ### P10-S10 Frontend quality qualification
@@ -800,7 +833,10 @@ Maintain last-known-good identity. Promotion requires joint app/backend compatib
 - generated product never requires Ineractive telemetry to run.
 
 ### P11-S08 Production recovery qualification
-- backup/restore awareness and documented expectations;
+- discover provider backup/PITR/restore capabilities and plan/region limitations;
+- record explicit backup/recovery expectations in EnvironmentManifest/ReleaseManifest;
+- execute a bounded restore/PITR drill when the connected provider/plan supports it;
+- otherwise produce a typed ExternalBlocker/manual recovery requirement rather than claiming restore coverage;
 - failed deploy after migration;
 - app rollback against forward-compatible schema;
 - credential revocation;
@@ -843,9 +879,11 @@ Prove **B17 — Idea to owned production product**:
 - begin from a product brief plus business spreadsheet;
 - derive Product Graph and DatasetVersion;
 - build bilingual web product;
-- compile/test Supabase backend;
+- compile/test Supabase backend including search/filter/sort/list behavior;
+- exercise Product Admin/Data Studio for ordinary data/auth/security/operations administration;
+- compile and prove one applicable DataPolicy data-rights/consent path;
 - connect/create user-owned GitHub and Supabase through qualified authorization;
-- preview, qualify, promote, observe, recover;
+- preview, qualify, promote, observe, recover with provider-aware backup/PITR/restore expectations;
 - perform one post-launch feature change;
 - satisfy the ProductCompletenessManifest;
 - generate minimal run/ownership/recovery documentation from real configuration;

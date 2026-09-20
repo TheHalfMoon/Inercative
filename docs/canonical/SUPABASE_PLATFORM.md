@@ -125,6 +125,8 @@ The Product Graph compiles backend semantics into a typed BackendPlan:
 - server functions;
 - scheduled/background behavior;
 - generated types;
+- safe query/list/search/filter/sort/pagination contracts;
+- index/query-plan candidates where semantics and observed workload justify them;
 - seed fixtures;
 - verification cases.
 
@@ -387,6 +389,21 @@ For large imports, execution may be chunked/streamed with durable batch identity
 
 Production data is never automatically reused for seed/test data. Synthetic data is preferred; masked/sanitized subsets require explicit policy and lineage.
 
+### 17.1 Policy-driven consent and data rights
+
+When Product Graph DataPolicy declares consent, privacy preferences, retention, export, deletion, audit, or redaction requirements, the compiler must translate those requirements into explicit UI/backend/integration behavior rather than leaving them as documentation-only metadata.
+
+The compiled plan records:
+
+- policy scope and affected entities/fields;
+- user-visible preference/consent state when applicable;
+- server-side enforcement point;
+- analytics/integration/job propagation requirements;
+- export/delete/audit workflow;
+- unsupported legal/provider requirements as explicit blockers.
+
+Ineractive may implement declared product semantics; it must not claim legal or regulatory compliance merely because a workflow exists.
+
 ## 18. Migration safety
 
 Every remote database change has:
@@ -397,6 +414,7 @@ Every remote database change has:
 - dry-run/plan where supported;
 - additive / transformative / restrictive / destructive classification;
 - current drift/migration preconditions;
+- discovered provider backup/PITR/restore capability and plan/region limitation;
 - backup/recovery expectation;
 - policy admission;
 - post-deploy verification.
