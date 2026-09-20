@@ -51,3 +51,14 @@ provisioned. This candidate records that state; it does not convert it into PASS
 - candidate `911027b23b01501ff2faf6ab34f9e577d7415214`: frozen install passed; Ubuntu failed only at `format:check` for the three new OCR evidence contract files;
 - one-shot formatter run `35522144380` used repository-pinned Prettier 3.9.8, verified the exact three files, committed a format-only repair, and removed its temporary workflow from the branch;
 - the formatter-generated head is not accepted by itself; acceptance requires fresh exact-head Ubuntu and Windows CI after this connector-authored evidence update.
+
+
+## Integrity-review repair history
+
+- exact head `7ae4d4ada87e34b769da59be92496c8ce73f16ff` passed CI #96 on Ubuntu and Windows;
+- OCR evidence run `35522309799` reviewed that exact head with checksum-verified Alibaba OCR v1.12.7: 9 changed files, 3 OCR-reviewable, 6 deterministically excluded; rule resolution executed for all 3 reviewable files; semantic review remained blocked with all scoped OCR/Anthropic endpoint variables unset;
+- manual separate review of the excluded governance/docs/test surfaces identified a provenance defect in this evidence file's baseline and two validator-integrity gaps: semantic findings were not constrained to OCR-reviewable paths, and an exact-head reconciliation could carry a mismatched `fromHead`;
+- candidate `305950a21ba782cccc706750e44501f3fdd6edc7` corrected the canonical baseline and added fail-closed finding-path, unique-finding-id, and reconciliation-source validation plus negative fixtures;
+- one-shot formatter run `35522452719` used repository-pinned Prettier 3.9.8 and produced format-only head `22c92b57d562e7d7ab9ec05d57d934f6430bf762`, removing its temporary workflow in the same commit;
+- CI #99 on the bot-authored formatter head was `action_required` with no acceptance jobs, so it is not acceptance evidence;
+- acceptance requires fresh exact-head Ubuntu and Windows CI and fresh OCR exact-candidate evidence after this connector-authored commit.
