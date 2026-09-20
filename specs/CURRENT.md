@@ -43,7 +43,7 @@ their current delivery state:
 | SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | DONE (this branch) | `docs/evidence/P00_S03_T02_DIFFCIPLINE_PROOF_2026-09-20.md` |
 | SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | ELIGIBLE (founder decision gate) | — |
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | blocked on SG-000004 | — |
-| SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | ELIGIBLE | — |
+| SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -51,9 +51,13 @@ advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and i
 `docs/evidence/`, not by fabricating SpecGrain lifecycle state.
 
 Remaining eligible frontier: SG-000004 (license/notice policy — requires the founder
-license decision if still undecided) and SG-000006 (Alibaba OCR local review
-procedure). SG-000005 follows SG-000004; IN-P00-S04-T03 and IN-P00-S05-T02 will be
-shaped into Grains when their dependencies complete (rolling-wave).
+license decision if still undecided). SG-000005 follows SG-000004; IN-P00-S04-T03 and
+IN-P00-S05-T02 will be shaped into Grains when their dependencies complete
+(rolling-wave).
+
+**Founder-decision blocker (active):** SG-000004 needs the Ineractive-owned source
+license chosen. Alibaba OCR semantic review (SG-000006 follow-up) needs a scoped LLM
+endpoint/token provisioned.
 
 ## Not run (truthfully)
 
@@ -70,15 +74,16 @@ qualification evidence.
 
 ## First execution order
 
-Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof).
+Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof),
+SG-000006 (P00-S05 OCR procedure; deterministic layer executed, semantic layer blocked
+on a recorded credential blocker).
 
 Remaining eligible P00 frontier:
 
-1. SG-000004 / IN-P00-S04-T01 — license + third-party notice policy (founder decision if undecided).
-2. SG-000006 / IN-P00-S05-T01 — Alibaba OCR local exact-diff review procedure.
-3. SG-000005 / IN-P00-S04-T02 — provenance/import record schema (after SG-000004).
-4. IN-P00-S04-T03 — provenance validation/notice inventory (after SG-000005).
-5. IN-P00-S05-T02 — OCR review evidence/file-accounting contract (after SG-000006).
+1. SG-000004 / IN-P00-S04-T01 — license + third-party notice policy (founder decision — see blocker above).
+2. SG-000005 / IN-P00-S04-T02 — provenance/import record schema (after SG-000004).
+3. IN-P00-S04-T03 — provenance validation/notice inventory (after SG-000005).
+4. IN-P00-S05-T02 — OCR review evidence/file-accounting contract (after SG-000006).
 
 ## Hard constraints
 
