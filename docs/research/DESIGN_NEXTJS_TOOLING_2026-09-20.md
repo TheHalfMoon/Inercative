@@ -467,7 +467,67 @@ Ineractive must work fully without 21st.
 
 ---
 
-# 12. Next.js architecture policy
+# 12. Browser-first visual feedback tools
+
+A second research pass identified complementary browser-to-agent patterns.
+
+## Agentation
+
+Useful mechanism:
+
+- annotate clicked elements, selected text, multiple elements, or regions;
+- capture selectors/positions/context;
+- freeze animation to describe a precise visual state;
+- emit structured feedback that helps an agent locate source.
+
+License note: the observed repository uses PolyForm Shield 1.0.0. Treat as REFERENCE unless separately license-qualified.
+
+## stagewise
+
+Useful mechanism:
+
+- running app, open web, DOM, console/debugger, codebase, and agent in one workspace;
+- browser-first editing context rather than forcing the user to translate a visual issue into file names.
+
+Observed repository license: AGPL-3.0. Treat as REFERENCE unless a deliberate compatible reuse decision is made.
+
+## Domscribe
+
+Useful mechanism:
+
+- bidirectional mapping from clicked DOM element to source;
+- query from a source location back to the live rendered element;
+- stable build/runtime IDs;
+- MCP-compatible agent bridge;
+- no production runtime requirement claimed by the project.
+
+Strong reference for Ineractive semantic source/rendered bindings.
+
+## Design Mode
+
+Useful mechanism:
+
+- direct visual editing in the browser;
+- change capture;
+- MCP handoff to coding agents.
+
+Reference for visual-change intent, not canonical state.
+
+## Planning conclusion
+
+These tools validate the existing Ineractive direction:
+
+~~~text
+Annotation Intent
++ rendered/source semantic binding
++ browser observations
++ visual direct manipulation
++ normal source diff
+~~~
+
+No additional top-level subsystem is needed.
+
+# 13. Next.js architecture policy
 
 ## 12.1 Server-first
 
@@ -547,7 +607,7 @@ Vercel may be one deployment adapter, never the only runtime contract.
 
 ---
 
-# 13. FrontendQualityProfile
+# 14. FrontendQualityProfile
 
 Introduce a generated-project quality profile.
 
@@ -581,7 +641,7 @@ Imported applications preserve compatible existing architecture rather than bein
 
 ---
 
-# 14. Frontend quality evidence pipeline
+# 15. Frontend quality evidence pipeline
 
 Candidate pipeline:
 
@@ -608,7 +668,7 @@ No single score or tool grants PASS.
 
 ---
 
-# 15. Proposed default web stack
+# 16. Proposed default web stack
 
 At implementation time, requalify the then-current patched versions.
 
@@ -650,7 +710,7 @@ React Scan runtime performance visualization
 
 ---
 
-# 16. Explicit rejections
+# 17. Explicit rejections
 
 Do not:
 
@@ -669,7 +729,7 @@ Do not:
 
 ---
 
-# 17. Planning recommendation
+# 18. Planning recommendation
 
 The candidate canonical plan should add:
 
