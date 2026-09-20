@@ -1,6 +1,6 @@
 # ADR-0002 — Ineractive Control-Plane Framework Baseline
 
-**Status:** Candidate — requires SG-000009 execution evidence  
+**Status:** Qualified candidate — exact-head repository CI pending  
 **Date:** 2026-09-20  
 **Task:** IN-P01-S01-T01  
 **SpecGrain:** SG-000009
@@ -113,7 +113,9 @@ Costs:
 
 ## Acceptance
 
-This ADR becomes **Accepted** only when the exact pinned fixture:
+Qualification run `35524783752` has proven the first four conditions below. This ADR becomes **Accepted** only when the final repository candidate also passes exact-head Ubuntu + Windows CI.
+
+The exact pinned fixture:
 
 - installs from a committed exact lockfile;
 - produces a production build on Node 24;

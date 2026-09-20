@@ -33,3 +33,15 @@ is not the P01-S03 project/workspace shell.
 The fixture source and lockfile tested in this run are committed by the same
 one-shot job. Final SG-000009 acceptance still requires exact-head repository CI
 on Ubuntu and Windows after this temporary workflow is removed.
+
+
+## Qualification attempt history
+
+Earlier attempts are preserved rather than re-run to green:
+
+- run `35524354849`: Next.js 16.3.5 build and HTTP smoke succeeded on a duplicate fixture, but evidence integration failed; that duplicate path was removed.
+- run `35524555076`: consolidated fixture build succeeded; standalone smoke exposed a monorepo tracing-root assumption and failed.
+- run `35524668994`: after explicit tracing-root repair, build + standalone HTTP smoke + evidence generation succeeded; final commit validation failed only on Markdown trailing whitespace.
+- run `35524783752`: exact consolidated fixture qualification and evidence integration succeeded end to end.
+
+Only run `35524783752` is the successful qualification execution record. Final repository acceptance still requires exact-head Ubuntu and Windows CI.
