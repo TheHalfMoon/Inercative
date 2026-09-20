@@ -211,6 +211,45 @@ Output:
 
 A category is explicitly REQUIRED, NOT_APPLICABLE, BLOCKED, IN_PROGRESS, READY, PROVEN, or STALE; it cannot disappear because a model omitted it.
 
+### FrontendCompiler
+
+Input:
+
+- frontend-relevant Product Graph slice;
+- FrontendQualityProfile;
+- DesignSystemRevision;
+- current source/component catalog.
+
+Output:
+
+- Next.js/React source changes;
+- component selection/provenance;
+- server/client boundaries;
+- optional dependency decisions;
+- frontend verification requirements.
+
+The compiler resolves existing qualified source components before synthesizing new primitives.
+
+### ComponentSupply
+
+Input:
+
+- requested component capability;
+- project primitive-base identity;
+- project source/Product Kit;
+- qualified registry catalog;
+- authorized external registry observations.
+
+Output:
+
+- selected source-owned component candidate or explicit synthesis requirement;
+- provenance;
+- compatibility/admission findings.
+
+Core concepts include ComponentRegistryAdapter, ComponentResolver, Ineractive Qualified Registry, and RegistryAdmissionGate.
+
+External registries are untrusted discovery sources until admission succeeds.
+
 ### DesignEngine
 
 Input:
@@ -275,7 +314,10 @@ It should represent at minimum:
 - DesignSystemRevisionRef;
 - SkillRef;
 - ExplorationBranch;
-- Release.
+- Release;
+- FrontendQualityProfileRef;
+- ComponentRegistryRef;
+- PrimitiveBaseRef.
 
 Edges express relationships such as:
 
@@ -313,13 +355,19 @@ Do not couple the compiler to a particular web framework used by the Ineractive 
 
 V1 default target:
 
-- Next.js;
+- Next.js App Router;
 - React;
 - TypeScript;
 - Tailwind CSS;
-- accessible component primitives;
+- source-owned accessible component primitives;
 - Supabase client/server integration;
 - generated typed database interfaces.
+
+The current candidate direction is a shadcn-compatible source distribution adapter with one primary primitive base per project. Base UI is the candidate default for new generated projects, React Aria is a qualified alternate, and compatible Radix architecture is preserved in imported/existing projects rather than migrated for novelty.
+
+Optional packages are requirement-driven rather than globally installed. FrontendQualityProfile records the selected framework/styling/primitive/component/data/form/table/i18n/motion/testing policies.
+
+Implementation requalifies current security-supported framework versions before changing the compiler baseline.
 
 This target is a product decision for V1, not a permanent restriction. Additional compiler targets require their own qualification.
 
