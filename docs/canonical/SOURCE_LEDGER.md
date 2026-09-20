@@ -50,6 +50,8 @@ Never concatenate donor applications into the product architecture.
 | Penpot | open design-system/canvas reference |
 | pbakaus/impeccable | design guidance, live visual iteration, deterministic AI-design detectors |
 | Pentagram work/methodology | identity strategy: one central idea expressed across brand/product/motion; reference only, never copy a client identity |
+| Anthropic Claude Design | design-system ingestion, multimodal design creation, direct/annotated refinement, design-to-build handoff | REFERENCE |
+| Figma Make / Figma MCP / Code Connect / Skills / Make kits | native design/code round trip, design-system truth, annotations, Skills, real-code editing | REFERENCE / INTEGRATE |
 
 ## 4. Agent/runtime/sandbox pool
 
@@ -61,6 +63,9 @@ Never concatenate donor applications into the product architecture.
 - OpenHands — coding-agent runtime and workspace patterns.
 - Cline / Roo Code / Continue / Aider / Goose / SWE-agent — coding-agent context/tool/execution references.
 - Agent Client Protocol, A2A, MCP, Agent Skills — interoperability references.
+- FoundationAgents/OpenManus — inspectable general-agent, ToolCallAgent, planning, MCP, browser, sandbox, and data-analysis mechanisms; selective adaptation only after provenance review.
+- Manus — Projects, Project Skills, approved self-updating context, Branch, Wide Research, scheduled tasks, sandbox/computer/browser trust patterns, and context-engineering reference.
+- Anthropic Claude agent/harness publications — planner/generator/evaluator separation, build contracts, checkpoints, hooks, context continuation, and intent-aware safety layers.
 
 ## 5. Backend/business app pool
 
@@ -71,6 +76,17 @@ Never concatenate donor applications into the product architecture.
 - NocoBase, Baserow, NocoDB, Saltcorn, Corteza, Windmill, Directus — data/workflow/admin patterns.
 
 These sources inform backend UX and operational features; Supabase remains the first compiler target.
+
+## 5A. Current competitive baseline references
+
+These are BENCHMARK / REFERENCE sources rather than automatic code donors.
+
+- Replit Agent 4 — infinite design canvas, parallel isolated tasks, shared collaboration, full-stack build, multi-artifact direction, and plan-while-building workflow.
+- Bolt — integrated database/auth/functions/storage/secrets/analytics/domains and external Supabase/deployment/payment integration baseline.
+- v0 / Vercel — prompt-to-live product flow including database, email notifications, domains, GitHub, and payment/database integrations.
+- Lovable — prompt-to-product workflow plus built-in dependency/secret/database/RLS/code security scanning and external security-integration direction.
+
+Use these references to define market baseline and benchmark pressure. Do not let competitor feature breadth override Ineractive's evidence-first dependency order.
 
 ## 6. Internal TheHalfMoon source pool
 
