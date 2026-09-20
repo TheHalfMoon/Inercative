@@ -127,58 +127,63 @@ class NormalizedRelationalSession implements PrototypeQuerySession {
   }
 }
 
-export const normalizedRelationalAdapter: PrototypePersistenceAdapter<NormalizedRelationalSnapshot> = {
-  id: "normalized-relational",
+export const normalizedRelationalAdapter: PrototypePersistenceAdapter<NormalizedRelationalSnapshot> =
+  {
+    id: "normalized-relational",
 
-  persist(state) {
-    const graph = canonicalGraphState(state);
-    const revision = semanticGraphRevision(graph);
+    persist(state) {
+      const graph = canonicalGraphState(state);
+      const revision = semanticGraphRevision(graph);
 
-    return {
-      representation: "normalized-relational-v1",
-      revisionRow: {
-        graphId: graph.graphId,
-        schemaVersion: 1,
-        revision,
-      },
-      nodeRows: graph.nodes.map((node) => ({
-        graphId: graph.graphId,
-        revision,
-        nodeId: node.id,
-        kind: node.kind,
-        attributesJson: JSON.stringify(node.attributes),
-      })),
-      edgeRows: graph.edges.map((edge) => ({
-        graphId: graph.graphId,
-        revision,
-        edgeId: edge.id,
-        kind: edge.kind,
-        fromNodeId: edge.from,
-        toNodeId: edge.to,
-        attributesJson: JSON.stringify(edge.attributes),
-      })),
-    };
-  },
+      return {
+        representation: "normalized-relational-v1",
+        revisionRow: {
+          graphId: graph.graphId,
+          schemaVersion: 1,
+          revision,
+        },
+        nodeRows: graph.nodes.map((node) => ({
+          graphId: graph.graphId,
+          revision,
+          nodeId: node.id,
+          kind: node.kind,
+          attributesJson: JSON.stringify(node.attributes),
+        })),
+        edgeRows: graph.edges.map((edge) => ({
+          graphId: graph.graphId,
+          revision,
+          edgeId: edge.id,
+          kind: edge.kind,
+          fromNodeId: edge.from,
+          toNodeId: edge.to,
+          attributesJson: JSON.stringify(edge.attributes),
+        })),
+      };
+    },
 
-  restore(persisted) {
-    return canonicalGraphState({
-      schemaVersion: persisted.revisionRow.schemaVersion,
-      graphId: persisted.revisionRow.graphId,
-      nodes: persisted.nodeRows.map((row) => rowToNode(row)),
-      edges: persisted.edgeRows.map((row) => rowToEdge(row)),
-    });
-  },
+    restore(persisted) {
+      return canonicalGraphState({
+        schemaVersion: persisted.revisionRow.schemaVersion,
+        graphId: persisted.revisionRow.graphId,
+        nodes: persisted.nodeRows.map((row) => rowToNode(row)),
+        edges: persisted.edgeRows.map((row) => rowToEdge(row)),
+      });
+    },
 
-  serialize(persisted) {
-    return JSON.stringify({
-      representation: persisted.representation,
-      revisionRow: persisted.revisionRow,
-      nodeRows: [...persisted.nodeRows].sort((left, right) => compareText(left.nodeId, right.nodeId)),
-      edgeRows: [...persisted.edgeRows].sort((left, right) => compareText(left.edgeId, right.edgeId)),
-    });
-  },
+    serialize(persisted) {
+      return JSON.stringify({
+        representation: persisted.representation,
+        revisionRow: persisted.revisionRow,
+        nodeRows: [...persisted.nodeRows].sort((left, right) =>
+          compareText(left.nodeId, right.nodeId),
+        ),
+        edgeRows: [...persisted.edgeRows].sort((left, right) =>
+          compareText(left.edgeId, right.edgeId),
+        ),
+      });
+    },
 
-  open(persisted) {
-    return new NormalizedRelationalSession(persisted);
-  },
-};
+    open(persisted) {
+      return new NormalizedRelationalSession(persisted);
+    },
+  };

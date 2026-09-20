@@ -2,9 +2,7 @@ import { createHash } from "node:crypto";
 
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue =
-  | JsonPrimitive
-  | readonly JsonValue[]
-  | { readonly [key: string]: JsonValue };
+  JsonPrimitive | readonly JsonValue[] | { readonly [key: string]: JsonValue };
 
 export interface PrototypeNode {
   readonly id: string;
@@ -122,10 +120,7 @@ export function semanticGraphRevision(state: PrototypeGraphState): string {
   return `sha256:${createHash("sha256").update(canonicalGraphJson(state)).digest("hex")}`;
 }
 
-export function semanticGraphEqual(
-  left: PrototypeGraphState,
-  right: PrototypeGraphState,
-): boolean {
+export function semanticGraphEqual(left: PrototypeGraphState, right: PrototypeGraphState): boolean {
   return canonicalGraphJson(left) === canonicalGraphJson(right);
 }
 

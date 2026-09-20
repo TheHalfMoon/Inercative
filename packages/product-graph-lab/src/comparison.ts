@@ -130,8 +130,7 @@ export function buildPrototypeComparisonReport(): PrototypeComparisonReport {
       edgeCount: representativeGraphFixture.edges.length,
     },
     parity: {
-      semanticRevisionEqual:
-        documentSnapshot.revision === relationalSnapshot.revisionRow.revision,
+      semanticRevisionEqual: documentSnapshot.revision === relationalSnapshot.revisionRow.revision,
       roundTripEqual:
         semanticGraphEqual(representativeGraphFixture, documentRoundTrip) &&
         semanticGraphEqual(representativeGraphFixture, relationalRoundTrip),
@@ -152,9 +151,7 @@ export function buildPrototypeComparisonReport(): PrototypeComparisonReport {
       synthetic: {
         nodeCount: 1000,
         edgeCount: 2000,
-        structuredDocumentBytes: byteLength(
-          structuredDocumentAdapter.serialize(syntheticDocument),
-        ),
+        structuredDocumentBytes: byteLength(structuredDocumentAdapter.serialize(syntheticDocument)),
         normalizedRelationalBytes: byteLength(
           normalizedRelationalAdapter.serialize(syntheticRelational),
         ),

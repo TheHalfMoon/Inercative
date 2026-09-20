@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "task": "IN-P02-S01-T01",
+  "selection": "DEFERRED_TO_IN-P02-S01-T02",
+  "fixture": {
+    "graphId": "fixture:operations-console",
+    "nodeCount": 8,
+    "edgeCount": 8
+  },
+  "parity": {
+    "semanticRevisionEqual": true,
+    "roundTripEqual": true,
+    "insertionOrderStable": true,
+    "queryResultsEqual": true
+  },
+  "measured": {
+    "representative": {
+      "structuredDocumentBytes": 1793,
+      "normalizedRelationalBytes": 4091,
+      "normalizedRelationalRows": 17
+    },
+    "synthetic": {
+      "nodeCount": 1000,
+      "edgeCount": 2000,
+      "structuredDocumentBytes": 316628,
+      "normalizedRelationalBytes": 733642,
+      "normalizedRelationalRows": 3001
+    }
+  },
+  "canonicalCriteria": {
+    "deterministicDiff": {
+      "structuredDocument": "Canonical sorting and attribute-key normalization produce a stable document diff; array edits can still widen textual diff context.",
+      "normalizedRelational": "Stable explicit node/edge row identities localize semantic changes; row serialization remains deterministic."
+    },
+    "mergeability": {
+      "structuredDocument": "One human-readable artifact is simple to inspect but concurrent edits near the same arrays can conflict.",
+      "normalizedRelational": "Independent node/edge rows offer narrower logical merge units but require a storage migration layer."
+    },
+    "migrationVersioning": {
+      "structuredDocument": "Schema-versioned whole-document transforms are straightforward for early prototypes but can become expensive for large revisions.",
+      "normalizedRelational": "Explicit revision/node/edge row schemas support incremental migrations but increase migration surface and coordination."
+    },
+    "sliceQueryErgonomics": {
+      "structuredDocument": "Derived in-memory indexes give direct node/outgoing lookups after loading one canonical document.",
+      "normalizedRelational": "Normalized rows map naturally to indexed relational queries and partial loading without whole-document hydration."
+    },
+    "testability": {
+      "structuredDocument": "Single canonical fixture, deterministic serialization, and round-trip assertions are compact.",
+      "normalizedRelational": "Row-level fixtures make constraints and query plans explicit but require more fixture material."
+    },
+    "humanInspectability": {
+      "structuredDocument": "Highest direct inspectability: semantic state is readable as one canonical JSON-shaped artifact.",
+      "normalizedRelational": "Rows are explicit but reconstructing the semantic whole requires joins or a projection."
+    },
+    "performance": {
+      "structuredDocument": "Measured serialized size is compact and indexed in-memory query work is constant after whole-document hydration.",
+      "normalizedRelational": "Measured row/storage overhead is higher in the prototype, but indexed partial reads avoid mandatory whole-document hydration."
+    }
+  },
+  "unresolvedTradeoffs": [
+    "Expected real project-size distribution and largest supported graph revision.",
+    "Concurrent edit/merge pressure versus whole-revision inspectability.",
+    "Whether partial server-side graph slices dominate whole-revision reads in later harness phases.",
+    "Migration cadence once domain/data-governance semantics expand in P02-S02."
+  ]
+}

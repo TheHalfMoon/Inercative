@@ -5,11 +5,7 @@ import { describe, expect, it } from "vitest";
 import { buildPrototypeComparisonReport } from "./comparison.ts";
 import { structuredDocumentAdapter } from "./document-prototype.ts";
 import { representativeGraphFixture } from "./fixtures.ts";
-import {
-  canonicalGraphJson,
-  reversedInsertionOrder,
-  semanticGraphEqual,
-} from "./model.ts";
+import { canonicalGraphJson, reversedInsertionOrder, semanticGraphEqual } from "./model.ts";
 import { normalizedRelationalAdapter } from "./relational-prototype.ts";
 
 describe("Product Graph persistence prototypes", () => {
