@@ -25,3 +25,15 @@ The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-auth
 P00 dependencies are canonically delivered in Git/evidence, but the current SpecGrain CLI
 does not expose VERIFIED/CONTROLLED transitions for them. Any waiting_on result caused by
 that lifecycle gap is recorded rather than bypassed with fabricated states.
+
+
+## Qualification attempt history
+
+- run `35524354849`: Next.js 16.3.5 production build and HTTP marker smoke succeeded
+  in the now-removed duplicate fixture, but the evidence-writing shell step failed. The
+  run is preserved as failed and is not acceptance evidence.
+- run `35524555076`: isolated install and production build succeeded on the consolidated
+  `next-app` fixture; standalone smoke failed because the generated server was not at
+  the fixture-root `.next/standalone/server.js`. The monorepo tracing boundary was
+  therefore made explicit with `outputFileTracingRoot`; this failed run is not re-used
+  as acceptance evidence.
