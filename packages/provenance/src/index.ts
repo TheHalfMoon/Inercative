@@ -483,3 +483,216 @@ export function validateDonorImportRecord(input: unknown): ImportRecordValidatio
     },
   };
 }
+
+
+export const NOTICE_INVENTORY_SCHEMA_VERSION = 1 as const;
+
+export interface NoticeInventoryEntry {
+  readonly sourceRepository: string;
+  readonly sourceRevision: string;
+  readonly sourcePaths: readonly string[];
+  readonly destinationPaths: readonly string[];
+  readonly useMode: ImportUseMode;
+  readonly authorityKind: AuthorityKind;
+  readonly authorityReference: string;
+  readonly licenseExpression: string;
+  readonly noticeRequired: boolean;
+  readonly noticeReference: string | null;
+}
+
+export interface NoticeInventory {
+  readonly schemaVersion: typeof NOTICE_INVENTORY_SCHEMA_VERSION;
+  readonly sourceRecordCount: number;
+  readonly entries: readonly NoticeInventoryEntry[];
+}
+
+export type ImportAdmissionIssueCode =
+  | "EXPECTED_ARRAY"
+  | "RECORD_INVALID"
+  | "DEPENDENCY_CLOSURE_INCOMPLETE"
+  | "DESTINATION_COLLISION";
+
+export interface ImportAdmissionIssue {
+  readonly code: ImportAdmissionIssueCode;
+  readonly recordIndex: number | null;
+  readonly path: string;
+  readonly message: string;
+}
+
+export type ImportAdmissionResult =
+  | {
+      readonly ok: true;
+      readonly records: readonly DonorImportRecord[];
+      readonly noticeInventory: NoticeInventory;
+    }
+  | {
+      readonly ok: false;
+      readonly issues: readonly ImportAdmissionIssue[];
+    };
+
+function compareText(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function sortedStrings(values: readonly string[]): readonly string[] {
+  return [...values].sort(compareText);
+}
+
+function noticeInventoryEntry(record: DonorImportRecord): NoticeInventoryEntry {
+  return {
+    sourceRepository: record.source.repository,
+    sourceRevision: record.source.revision,
+    sourcePaths: sortedStrings(record.source.paths),
+    destinationPaths: sortedStrings(record.destination.paths),
+    useMode: record.useMode,
+    authorityKind: record.authority.kind,
+    authorityReference: record.authority.reference,
+    licenseExpression: record.licensing.licenseExpression,
+    noticeRequired: record.licensing.noticeRequired,
+    noticeReference: record.licensing.noticeReference,
+  };
+}
+
+function noticeInventoryEntryKey(entry: NoticeInventoryEntry): string {
+  return JSON.stringify([
+    entry.sourceRepository,
+    entry.sourceRevision,
+    entry.sourcePaths,
+    entry.destinationPaths,
+    entry.useMode,
+    entry.authorityKind,
+    entry.authorityReference,
+    entry.licenseExpression,
+    entry.noticeRequired,
+    entry.noticeReference,
+  ]);
+}
+
+function buildNoticeInventory(records: readonly DonorImportRecord[]): NoticeInventory {
+  const byKey = new Map<string, NoticeInventoryEntry>();
+  for (const record of records) {
+    const entry = noticeInventoryEntry(record);
+    byKey.set(noticeInventoryEntryKey(entry), entry);
+  }
+
+  const entries = [...byKey.entries()]
+    .sort(([left], [right]) => compareText(left, right))
+    .map(([, entry]) => entry);
+
+  return {
+    schemaVersion: NOTICE_INVENTORY_SCHEMA_VERSION,
+    sourceRecordCount: records.length,
+    entries,
+  };
+}
+
+function canonicalJsonValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalJsonValue(item));
+  }
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort(compareText)
+        .map((key) => [key, canonicalJsonValue(value[key])]),
+    );
+  }
+  return value;
+}
+
+function canonicalJson(value: unknown): string {
+  return JSON.stringify(canonicalJsonValue(value));
+}
+
+function admissionIssue(
+  issues: ImportAdmissionIssue[],
+  code: ImportAdmissionIssueCode,
+  recordIndex: number | null,
+  path: string,
+  message: string,
+): void {
+  issues.push({ code, recordIndex, path, message });
+}
+
+export function validateImportAdmission(input: unknown): ImportAdmissionResult {
+  if (!Array.isArray(input)) {
+    return {
+      ok: false,
+      issues: [
+        {
+          code: "EXPECTED_ARRAY",
+          recordIndex: null,
+          path: "$",
+          message: "Import admission input must be an array of donor import records.",
+        },
+      ],
+    };
+  }
+
+  const issues: ImportAdmissionIssue[] = [];
+  const records: DonorImportRecord[] = [];
+  const destinationOwners = new Map<string, number>();
+
+  for (const [recordIndex, candidate] of input.entries()) {
+    const validation = validateDonorImportRecord(candidate);
+    if (!validation.ok) {
+      for (const validationIssue of validation.issues) {
+        const suffix =
+          validationIssue.path === "$" ? "" : validationIssue.path.slice(1);
+        admissionIssue(
+          issues,
+          "RECORD_INVALID",
+          recordIndex,
+          `$[${recordIndex.toString()}]${suffix}`,
+          validationIssue.message,
+        );
+      }
+      continue;
+    }
+
+    const record = validation.value;
+    records.push(record);
+
+    if (record.dependencyClosure.status !== "COMPLETE") {
+      admissionIssue(
+        issues,
+        "DEPENDENCY_CLOSURE_INCOMPLETE",
+        recordIndex,
+        `$[${recordIndex.toString()}].dependencyClosure.status`,
+        "Only COMPLETE dependency closure can enter the admitted-source set.",
+      );
+    }
+
+    for (const destinationPath of record.destination.paths) {
+      const previousOwner = destinationOwners.get(destinationPath);
+      if (previousOwner !== undefined) {
+        admissionIssue(
+          issues,
+          "DESTINATION_COLLISION",
+          recordIndex,
+          `$[${recordIndex.toString()}].destination.paths`,
+          `Destination path ${destinationPath} is already claimed by record ${previousOwner.toString()}.`,
+        );
+      } else {
+        destinationOwners.set(destinationPath, recordIndex);
+      }
+    }
+  }
+
+  if (issues.length > 0) {
+    return { ok: false, issues };
+  }
+
+  return {
+    ok: true,
+    records,
+    noticeInventory: buildNoticeInventory(records),
+  };
+}
+
+export function noticeInventoryMatches(
+  admittedRecords: readonly DonorImportRecord[],
+  candidateInventory: unknown,
+): boolean {
+  return canonicalJson(buildNoticeInventory(admittedRecords)) === canonicalJson(candidateInventory);
+}

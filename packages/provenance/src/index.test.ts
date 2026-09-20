@@ -1,6 +1,13 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { type DonorImportRecord, validateDonorImportRecord } from "./index.ts";
+import {
+  type DonorImportRecord,
+  noticeInventoryMatches,
+  validateDonorImportRecord,
+  validateImportAdmission,
+} from "./index.ts";
 
 const VALID_RECORD: DonorImportRecord = {
   schemaVersion: 1,
@@ -131,5 +138,117 @@ describe("validateDonorImportRecord", () => {
     record.reviewEvidence = ["ocr: exact-head finding set", "ocr: exact-head finding set"];
 
     expect(issueCodes(record)).toContain("DUPLICATE_ARRAY_ITEM");
+  });
+});
+
+
+function secondRecord(): DonorImportRecord {
+  return {
+    ...structuredClone(VALID_RECORD),
+    source: {
+      repository: "https://github.com/example/second-donor",
+      revision: "abcdef0123456789abcdef0123456789abcdef01",
+      paths: ["src/second.ts"],
+    },
+    destination: {
+      paths: ["packages/example/src/second.ts"],
+    },
+    licensing: {
+      licenseExpression: "MIT",
+      noticeRequired: false,
+      noticeReference: null,
+    },
+  };
+}
+
+function admissionCodes(input: unknown): readonly string[] {
+  const result = validateImportAdmission(input);
+  return result.ok ? [] : result.issues.map((issue) => issue.code);
+}
+
+describe("validateImportAdmission", () => {
+  it("admits a complete record and produces a non-empty notice inventory", () => {
+    const result = validateImportAdmission([VALID_RECORD]);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.records).toHaveLength(1);
+      expect(result.noticeInventory.sourceRecordCount).toBe(1);
+      expect(result.noticeInventory.entries).toHaveLength(1);
+      expect(result.noticeInventory.entries[0]?.noticeReference).toBe("upstream/NOTICE");
+    }
+  });
+
+  it("rejects partial dependency closure", () => {
+    const record = structuredClone(VALID_RECORD);
+    record.dependencyClosure = {
+      status: "PARTIAL",
+      references: ["package.json"],
+    };
+
+    expect(admissionCodes([record])).toContain("DEPENDENCY_CLOSURE_INCOMPLETE");
+  });
+
+  it("rejects unresolved dependency closure", () => {
+    const record = structuredClone(VALID_RECORD);
+    record.dependencyClosure = {
+      status: "UNRESOLVED",
+      references: [],
+    };
+
+    expect(admissionCodes([record])).toContain("DEPENDENCY_CLOSURE_INCOMPLETE");
+  });
+
+  it("rejects a notice-required record with no notice reference", () => {
+    const record = structuredClone(VALID_RECORD) as unknown as Record<string, unknown>;
+    const licensing = record.licensing as Record<string, unknown>;
+    licensing.noticeReference = null;
+
+    expect(admissionCodes([record])).toContain("RECORD_INVALID");
+  });
+
+  it("rejects destination collisions across otherwise valid records", () => {
+    const second = secondRecord();
+    const collision: DonorImportRecord = {
+      ...second,
+      destination: {
+        paths: [...VALID_RECORD.destination.paths],
+      },
+    };
+
+    expect(admissionCodes([VALID_RECORD, collision])).toContain("DESTINATION_COLLISION");
+  });
+
+  it("generates stable inventory independent of record order", () => {
+    const first = validateImportAdmission([VALID_RECORD, secondRecord()]);
+    const second = validateImportAdmission([secondRecord(), VALID_RECORD]);
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    if (first.ok && second.ok) {
+      expect(first.noticeInventory).toEqual(second.noticeInventory);
+    }
+  });
+
+  it("accepts an empty inventory only for zero admitted records", () => {
+    const currentInventory = JSON.parse(
+      readFileSync("third_party/notice-inventory.json", "utf8"),
+    ) as unknown;
+
+    expect(noticeInventoryMatches([], currentInventory)).toBe(true);
+    expect(noticeInventoryMatches([VALID_RECORD], currentInventory)).toBe(false);
+  });
+
+  it("matches the generated inventory for the admitted set", () => {
+    const result = validateImportAdmission([VALID_RECORD, secondRecord()]);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(noticeInventoryMatches(result.records, result.noticeInventory)).toBe(true);
+    }
+  });
+
+  it("rejects non-array admission input", () => {
+    expect(admissionCodes({ records: [VALID_RECORD] })).toContain("EXPECTED_ARRAY");
   });
 });
