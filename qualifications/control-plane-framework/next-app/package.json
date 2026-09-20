@@ -1,0 +1,21 @@
+{
+  "name": "ineractive-control-plane-framework-qualification",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12.4.2 <13"
+  },
+  "scripts": {
+    "build": "next build",
+    "smoke": "node smoke.mjs",
+    "qualify": "pnpm run build && pnpm run smoke"
+  },
+  "dependencies": {
+    "next": "16.3.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}
