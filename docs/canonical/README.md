@@ -21,10 +21,11 @@ Read in this order:
 13. [Source Ledger](SOURCE_LEDGER.md)
 14. [Planning Governance](PLANNING_GOVERNANCE.md)
 15. [Roadmap](ROADMAP.md)
-16. [Implementation Readiness](IMPLEMENTATION_READINESS.md)
-17. [P00 Bootstrap Handoff](P00_BOOTSTRAP_HANDOFF.md)
-18. [Current Frontier](../../specs/CURRENT.md)
-19. [Program Task Index](../../specs/tasks.md)
+16. [Design, Skills, and Agent Harness Expansion Proposal](DESIGN_SKILLS_AGENT_HARNESS_EXPANSION_PROPOSAL.md)
+17. [Implementation Readiness](IMPLEMENTATION_READINESS.md)
+18. [P00 Bootstrap Handoff](P00_BOOTSTRAP_HANDOFF.md)
+19. [Current Frontier](../../specs/CURRENT.md)
+20. [Program Task Index](../../specs/tasks.md)
 
 ## Authority
 
