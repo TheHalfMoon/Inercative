@@ -58,3 +58,10 @@ The records reuse SG-000010 logical identity and exact revision primitives.
 - exact-head Ubuntu and Windows frozen install, format, lint, typecheck, and tests.
 
 No CI result is claimed before it executes on the final candidate head.
+
+## CI repair history
+
+- candidate `db324ce0f347fd7efdc8679103c5aaf94ebb1ac8`: frozen install passed; Ubuntu failed only at `format:check` for the three new protocol record files;
+- one-shot formatter run `35529182964` used repository-pinned Prettier 3.9.8, verified the exact files, committed the format-only repair, and removed its temporary workflow;
+- bot-authored head `dcbb5d3f636e8db4fd0a56f9d5d53e3453535b85` produced `action_required` with zero CI jobs and is not acceptance evidence;
+- acceptance requires fresh exact-head Ubuntu and Windows CI after this evidence-only connector commit.
