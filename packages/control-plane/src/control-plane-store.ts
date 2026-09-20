@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const CONTROL_PLANE_SCOPE = "CONTROL_PLANE" as const;
+const CONTROL_PLANE_CONFIG_BRAND = Symbol("ineractive.control-plane-supabase-config");
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 
@@ -8,6 +9,7 @@ export interface ControlPlaneSupabaseConfig {
   readonly scope: typeof CONTROL_PLANE_SCOPE;
   readonly url: string;
   readonly publishableKey: string;
+  readonly [CONTROL_PLANE_CONFIG_BRAND]: true;
 }
 
 export interface VerifiedControlPlaneActor {
@@ -109,6 +111,7 @@ export function readControlPlaneSupabaseConfig(
     scope: CONTROL_PLANE_SCOPE,
     url,
     publishableKey,
+    [CONTROL_PLANE_CONFIG_BRAND]: true,
   };
 }
 
@@ -227,9 +230,15 @@ export async function createVerifiedControlPlaneStore(
 ): Promise<SupabaseControlPlaneStore> {
   requireServerRuntime();
   validateActor(actor);
-  if (config.scope !== CONTROL_PLANE_SCOPE) {
-    throw new Error("Invalid Supabase trust domain for control-plane store.");
+  if (
+    config.scope !== CONTROL_PLANE_SCOPE ||
+    config[CONTROL_PLANE_CONFIG_BRAND] !== true
+  ) {
+    throw new Error(
+      "Control-plane Supabase configuration must be produced by the dedicated server parser.",
+    );
   }
+  assertNonPrivilegedPublishableKey(config.publishableKey);
 
   const client = createClient(config.url, config.publishableKey, {
     auth: {

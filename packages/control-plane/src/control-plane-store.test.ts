@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
+  createVerifiedControlPlaneStore,
   readControlPlaneSupabaseConfig,
   type ControlPlaneSupabaseConfig,
   type VerifiedControlPlaneActor,
@@ -14,11 +15,12 @@ const ACTOR: VerifiedControlPlaneActor = {
   accessToken: "signed-user-access-token",
 };
 
-const CONFIG: ControlPlaneSupabaseConfig = {
-  scope: "CONTROL_PLANE",
-  url: "https://control-plane.example.supabase.co",
-  publishableKey: "sb_publishable_control_plane",
-};
+const CONFIG_ENV = {
+  INERACTIVE_CONTROL_PLANE_SUPABASE_URL: "https://control-plane.example.supabase.co",
+  INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_control_plane",
+} as const;
+
+const CONFIG: ControlPlaneSupabaseConfig = readControlPlaneSupabaseConfig(CONFIG_ENV);
 
 const migrationPath = fileURLToPath(
   new URL(
@@ -36,10 +38,7 @@ function migrationSql(): string {
 describe("control-plane Supabase configuration", () => {
   it("reads only dedicated server-side control-plane configuration", () => {
     expect(
-      readControlPlaneSupabaseConfig({
-        INERACTIVE_CONTROL_PLANE_SUPABASE_URL: CONFIG.url,
-        INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY: CONFIG.publishableKey,
-      }),
+      readControlPlaneSupabaseConfig(CONFIG_ENV),
     ).toEqual(CONFIG);
   });
 
@@ -87,6 +86,18 @@ describe("control-plane Supabase configuration", () => {
   it("keeps the verified actor contract server-scoped", () => {
     expect(ACTOR.userId).toMatch(/^[0-9a-f-]{36}$/u);
     expect(ACTOR.accessToken.startsWith("NEXT_PUBLIC_")).toBe(false);
+  });
+
+  it("rejects a manually forged control-plane configuration", async () => {
+    const forged = {
+      scope: "CONTROL_PLANE",
+      url: CONFIG.url,
+      publishableKey: CONFIG.publishableKey,
+    } as unknown as ControlPlaneSupabaseConfig;
+
+    await expect(createVerifiedControlPlaneStore(forged, ACTOR)).rejects.toThrow(
+      /dedicated server parser/u,
+    );
   });
 });
 
