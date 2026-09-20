@@ -98,3 +98,18 @@ Use Impeccable as a primary design-quality/process source.
 Study Pentagram's identity method: a strong strategic idea expressed coherently through brand, product, typography, layout, motion, and storytelling.
 
 Do not copy a Pentagram client identity.
+
+
+## FD-011 — Ineractive-owned source license
+
+Ineractive-owned source code is licensed under the **Apache License 2.0**.
+
+Rationale:
+
+- the explicit patent grant is appropriate for an engineering platform that executes, generates, and integrates third-party code;
+- the license is permissive enough for broad adoption and commercial use;
+- it remains compatible with selective reuse of permissively licensed sources when their own obligations are satisfied.
+
+This decision applies only to material owned by the Ineractive project. It does **not** relicense third-party code, assets, models, datasets, fonts, documentation, or other incorporated material.
+
+Third-party intake remains subject to exact provenance, immutable source revision, license/notice obligations, dependency closure, security review, modification tracking, and independent qualification.

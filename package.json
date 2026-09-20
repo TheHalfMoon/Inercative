@@ -4,7 +4,7 @@
   "private": true,
   "description": "Ineractive — AI Product Compiler. P00 repository and delivery foundation.",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=22.13.0",
     "pnpm": ">=12.4.2 <13"

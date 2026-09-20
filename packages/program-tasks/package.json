@@ -4,7 +4,7 @@
   "private": true,
   "description": "Deterministic validation of the canonical program task index (specs/tasks.md).",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts"
   },
