@@ -198,6 +198,8 @@ Capture:
 
 For generated CRUD/auth apps, browser proof should include negative paths, not only the happy path.
 
+Every broad browser-support claim must name a support matrix. Critical journeys are executed on each browser engine and representative viewport actually claimed as supported. A Chromium-only run cannot justify a cross-browser claim; unsupported engines/viewports must be stated explicitly rather than implied.
+
 ## 11. Changed-code evidence
 
 Where practical, connect code changes to exercised behavior.
@@ -212,16 +214,31 @@ Track:
 - unexercised material paths;
 - unresolved instrumentation limits.
 
-## 12. Design proof
+## 12. Frontend and design proof
 
-A design gate combines:
+A frontend/design gate can combine:
 
-- deterministic Impeccable-derived detectors;
-- accessibility tooling;
+- FrontendQualityProfile revision;
+- component provenance and primitive-base identity;
+- deterministic Impeccable findings;
+- pinned Vercel Web Interface Guidelines findings;
+- pinned Vercel React Best Practices findings;
+- deterministic React quality findings through a qualified React Doctor adapter;
+- component states/interactions through Storybook/Vitest or a qualified equivalent when configured;
+- automated axe findings;
+- explicit keyboard/focus browser journeys;
 - responsive overflow/layout checks;
 - rendered screenshot inspection;
-- visual regression where a baseline exists;
-- semantic/UX critique for high-value surfaces.
+- Playwright visual comparison where a controlled baseline exists;
+- navigation/performance observations;
+- semantic/UX critique for high-value surfaces;
+- unresolved RegistryAdmissionGate findings for external component candidates.
+
+These normalize into an exact-source FrontendEvidenceBundle.
+
+No design score, React score, detector count, screenshot, or single external rule pack grants PASS.
+
+Automated accessibility scanning is partial evidence and must not be presented as complete standards compliance.
 
 Taste findings can be REVIEW rather than hard FAIL unless they violate explicit design requirements.
 
@@ -269,6 +286,13 @@ CI should eventually include:
 - browser suite;
 - security/advisor checks;
 - source/provenance checks;
+- supply-chain/secret/asset integrity checks;
+- harness replay/regression fixtures;
+- production-web quality fixtures;
+- FrontendQualityProfile/compiler fixtures;
+- component-registry/admission fixtures;
+- deterministic React-quality fixtures;
+- component-state/accessibility/browser/visual frontend evidence fixtures;
 - Diffcipline gate;
 - OCR review workflow on PRs when credentials/execution are configured.
 
@@ -288,7 +312,7 @@ Users, private records, validation, error states.
 
 ### B03 — Multi-tenant CRM
 
-Organizations, invitations, roles, RLS, cross-tenant negative tests.
+Organizations, invitations, roles, RLS, cross-tenant negative tests, and realistic search/filter/sort/pagination over tenant-scoped business data.
 
 ### B04 — Files and storage
 
@@ -318,6 +342,48 @@ Import a non-trivial repo and add a feature without unnecessary rewrite.
 
 Start from a deliberately broken build and converge using evidence.
 
+### B11 — Release compatibility and recovery
+
+Promote a candidate whose application and backend schema evolve together, discover the connected provider's backup/PITR/restore capabilities, then inject a deployment failure and prove last-known-good recovery without unsafe database rollback. Execute a bounded restore/PITR drill where supported; otherwise prove the typed blocker/manual-recovery path and do not claim restore coverage.
+
+### B12 — Generated-product operations
+
+Deploy a product with health/release identity/log/error surfaces, inject a production-like failure, and prove that the failure is observable without an Ineractive-only runtime dependency.
+
+### B13 — Design/code divergence
+
+Change bound code and external design state independently, detect DIVERGED state, and reconcile without silent overwrite.
+
+### B14 — Brownfield backend reconstruction
+
+Import a non-trivial source repository plus existing backend/schema/policies and add a feature without unnecessary rewrite or false semantic certainty.
+
+### B15 — Harness replay regression
+
+Replay a recorded-observation task after a harness/context/skill/router change and detect any correctness, security, cost, or unnecessary-question regression.
+
+### B16 — AI-enabled product
+
+After P13 qualification, build an exported AI-enabled product with provider-neutral generated-app integration, secret isolation, usage limits, and eval fixtures.
+
+### B17 — Idea to owned production product
+
+Start from a product brief plus business data and prove the complete GitHub/Supabase/deployment/recovery/post-launch lifecycle with no manual developer coding in the golden path, including search/filter/sort/list behavior, Product Admin/Data Studio administration, one applicable DataPolicy data-rights/consent flow, and explicit provider-aware backup/restore expectations.
+
+### B18 — Frontend component supply and quality
+
+Build and change a component-rich Next.js product while proving:
+
+- local/project/qualified-registry reuse happens before synthesis;
+- no duplicate primitive system is introduced;
+- one primary primitive base remains coherent;
+- external component admission is provenance/security/a11y/compatibility checked;
+- server/client boundaries remain bounded;
+- Arabic/RTL and responsive states survive;
+- component states and critical browser journeys pass across the declared browser/device support matrix;
+- visual/design quality evidence is exact-source bound;
+- optional frontend dependencies are justified rather than injected by default.
+
 ## 18. Metrics
 
 Track:
@@ -330,8 +396,23 @@ Track:
 - RLS/security failures caught before publish;
 - browser journey success;
 - design/a11y findings;
+- duplicate component/primitive introduction rate;
+- registry reuse vs synthesis rate;
+- unnecessary client-boundary expansion rate;
+- frontend optional-dependency justification rate;
+- FrontendEvidenceBundle completeness/freshness;
 - flaky evidence rate;
 - time/cost to proven vertical slice;
+- budget adherence;
+- latency;
+- unnecessary-question rate;
+- required context retained vs optional context waste;
+- skill selection accuracy;
+- tool-selection waste;
+- release/recovery success;
+- supply-chain/provenance failures caught before publish;
 - regressions after accepted change.
+
+The Evaluation Lab must preserve separate correctness, security, design, cost, latency, and usability dimensions. One aggregate score must never hide a material correctness/security failure.
 
 The goal is not to maximize green checks. The goal is trustworthy product delivery.

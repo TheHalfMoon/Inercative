@@ -95,7 +95,16 @@ Update Product Graph
 Compile bounded work
       |
       v
-Select context/capabilities/models
+Compile Build Contract
+      |
+      v
+Select context/skills/capabilities/models/budget
+      |
+      v
+Propose action
+      |
+      v
+Capability + intent admission
       |
       v
 Execute in sandbox
@@ -104,7 +113,10 @@ Execute in sandbox
 Observe runtime/browser/backend
       |
       v
-Evaluate evidence
+Untrusted-content handling
+      |
+      v
+Independent evaluation
       |
       +--> repair candidate -> execute/observe again
       |
@@ -199,6 +211,57 @@ V1 routing may use a simple policy:
 - provider failure -> approved fallback when policy permits;
 - no approved compatible adapter -> block visibly.
 
+### 7.1 Creative-media routing
+
+Creative media uses the same provider-neutral routing philosophy as code/reasoning, with a narrower typed contract.
+
+A `MediaGenerationRequest` carries:
+
+- modality and operation;
+- quality floor;
+- latency preference;
+- cost ceiling;
+- privacy class;
+- prompt/reference complexity;
+- text/typography fidelity needs;
+- edit precision;
+- dimensions/duration;
+- eligible provider/model capabilities;
+- fallback policy.
+
+Routing sequence:
+
+```text
+request
+-> deterministic compatibility/policy filter
+-> bounded decision ranking
+-> qualified MediaProviderAdapter
+-> generation/edit
+-> CreativeAsset lineage
+-> independent visual/product evaluation
+```
+
+The bounded decision model may rank compatible options. It cannot authorize a forbidden provider, exceed a budget, grant a capability, or waive provenance/evidence.
+
+### 7.2 Decision-adapter qualification
+
+The bounded decision interface remains provider-neutral.
+
+Candidate implementations and benchmarks may include specialized System-1 models such as the Apache-2.0 `convaiinnovations/laya` family, provided they pass Ineractive-owned evaluation for the actual target distribution.
+
+Qualification must measure at least:
+
+- task-family accuracy;
+- calibration/error;
+- confidence/selective-risk behavior;
+- latency/throughput;
+- deterministic schema conformance;
+- input-length/cardinality limits;
+- multilingual/domain coverage where required;
+- failure/escalation behavior.
+
+Published benchmark claims are research inputs, not Ineractive qualification evidence. Arithmetic, counting, permission checks, dependency checks, exact dates, and other deterministic invariants remain in code.
+
 ## 8. Fallback semantics
 
 Fallback is not invisible equivalence.
@@ -226,11 +289,39 @@ Never let a decision model drop acceptance criteria, security policy, exact sour
 
 HarnessMind patterns should be adapted so Ineractive can explain what context, skills, rules, and tools entered a run and why.
 
+### Project Context
+
+Durable project context is versioned product intelligence, not transcript memory.
+
+It may include accepted decisions, assumptions, domain vocabulary, architecture facts, design rules, source/runtime facts, and qualified project Skills.
+
+A deterministic Execution Header reintroduces the current WorkPacket, required proof, allowed/forbidden surfaces, blockers, and remaining budget near the active context.
+
+### Context continuation
+
+Long-running work can choose:
+
+- CONTINUE;
+- COMPACT;
+- RESET_WITH_HANDOFF;
+- BRANCH;
+- DELEGATE_FRESH.
+
+The policy is evidence-driven by context pressure, model capability, task phase, failures, drift, and WorkPacket boundaries.
+
+### Artifact Store
+
+Large logs, screenshots, DOM snapshots, traces, research, reports, database plans, and build outputs live outside the active model transcript behind stable artifact references.
+
 ## 10. Tool Router
 
 A model chooses among requested intents, not arbitrary ambient functions.
 
-Tool descriptors include action, resource type, risk class, input schema, output schema, capability required, side-effect class, idempotency, retry semantics, and evidence emitted.
+The harness maintains a versioned Stable Tool Catalog with persistent identities/namespaces. Runtime eligibility is controlled by policy/capability masking rather than allowing tool identity to drift silently between turns.
+
+Tool descriptors include action, resource type, provider/provenance, risk class, input schema, output schema, capability required, side-effect class, idempotency, retry semantics, redaction rules, and evidence emitted.
+
+MCP/server instructions are external integration metadata, not system authority.
 
 Tool calls are validated before capability admission.
 
@@ -256,6 +347,16 @@ deploy.production
 ~~~
 
 A capability can carry resource scope, runtime scope, expiry, use count, cost/spend ceiling, network target, allowed command family, and approval source.
+
+High-risk proposed actions can additionally pass an independent intent-alignment guard that sees the user-authorized intent, executable action, resource target, and deterministic policy state. It must not rely on generator persuasion or private reasoning.
+
+External observations can pass an untrusted-content/prompt-injection probe before entering model context. A denied action normally returns a structured boundary so the harness can seek a safer path; bounded repeated denials escalate rather than loop forever.
+
+### Budget Governor
+
+BudgetPolicy governs model/tool/browser/sandbox/network/backend usage, wall-clock time, retry/repair count, and parallelism.
+
+Budget outcomes can continue, reduce optional work, choose a cheaper approved route, reduce parallelism, require approval, or block. The model cannot increase its own budget.
 
 ## 12. Repair loop
 
@@ -287,6 +388,8 @@ Do not repeatedly regenerate the whole application.
 
 Background/long-running work must have finite task graph, budgets, deadlines, stop conditions, checkpointing, resumable event state, external-effect policy, and notification/escalation rules.
 
+Wide Work is allowed only when subunits are sufficiently dependency-independent, write ownership is isolated, per-unit budgets/evidence are retained, and synthesis is explicit.
+
 "Keep trying until it works" is not a valid runtime policy.
 
 ## 14. Harness evaluation
@@ -307,6 +410,8 @@ Build a reproducible internal corpus across:
 - security failures;
 - ambiguous requirements.
 
+The Evaluation Lab supports live execution plus recorded-observation replay for deterministic harness regression without repeating irreversible external effects.
+
 Measure the harness separately from the underlying model:
 
 - first-pass compile rate;
@@ -319,6 +424,13 @@ Measure the harness separately from the underlying model:
 - routing accuracy;
 - policy violations;
 - escaped defects;
-- model/provider sensitivity.
+- model/provider sensitivity;
+- budget adherence and cost;
+- latency;
+- question count;
+- context required vs context wasted;
+- security/correctness regressions under replay.
+
+Do not collapse correctness, security, design, cost, and speed into one score that can hide a critical failure.
 
 The goal is to make the system improve even when the underlying model stays constant.

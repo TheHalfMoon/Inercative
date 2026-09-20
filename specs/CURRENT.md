@@ -10,11 +10,15 @@
 
 ## Current state
 
-Canonical planning (PR #1, merge commit `ded44c1492f8a46982a8ce404bed561600e62fcf`)
-and the P00-S01 repository bootstrap baseline (PR #2, accepted head
-`d13d9623d5e8ffa18ad0ac50cd0d7df6e5d613d7`, merge commit
-`3aa382e3b2acf517bac5a4a0bd08c6bb78738620`) are merged. `main` is at
-`3aa382e3b2acf517bac5a4a0bd08c6bb78738620`.
+Canonical planning (PR #1), the P00-S01 repository bootstrap baseline (PR #2),
+SpecGrain initialization (PR #3), Diffcipline policy/exact-diff proof (PR #4),
+and the Alibaba OCR deterministic local procedure (PR #5) are merged.
+
+Live canonical `main` at the latest reconciliation for this planning branch:
+
+`e8014ea1feb9cb9c37a05f2399f23b33465490fa`
+
+(PR #5 merge commit).
 
 Completed with executed evidence:
 
@@ -63,7 +67,9 @@ endpoint/token provisioned.
 
 The following are **NOT RUN** and are not claimed as PASS:
 
-- Alibaba Open Code Review: NOT RUN. Established by SG-000006 / IN-P00-S05-T02.
+- Alibaba Open Code Review **semantic LLM review**: NOT RUN. The deterministic OCR
+  file-accounting/rule-resolution layer executed under SG-000006; semantic review remains
+  blocked on a scoped LLM endpoint/token and IN-P00-S05-T02 evidence completion.
 - Diffcipline GitHub Action in CI: NOT RUN (policy + local CLI proof are done; the CI
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current

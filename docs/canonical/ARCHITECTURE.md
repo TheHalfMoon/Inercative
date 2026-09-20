@@ -23,7 +23,7 @@ The architecture is **typed-state first**:
 ```text
 +------------------------------------------------------------------+
 |                         User Surfaces                            |
-| Chat/Command | Product Preview | Visual Edit | Code | Data | Git |
+| Chat/Command | Product Preview | Visual Edit | Code | Data | Connections | Git |
 +----------------------------------+-------------------------------+
                                    |
                                    v
@@ -62,7 +62,15 @@ The architecture is **typed-state first**:
 +--------------------------------+  +------------------------------+
                     |                        |
                     +------------+-----------+
+                                 |
                                  v
++------------------------------------------------------------------+
+|                    Platform Lifecycle Layer                      |
+| Connections | Provider Adapters | Resource Bindings | Envs       |
+| Provisioning Saga | Ownership | Drift | External Blockers        |
++----------------------------------+-------------------------------+
+                                   |
+                                   v
 +------------------------------------------------------------------+
 |                    Observation & Assurance                       |
 | Runtime events | Browser | Tests | Security | Design | OCR       |
@@ -139,15 +147,129 @@ No model is permitted to bypass it.
 
 Input:
 
-- backend-relevant Product Graph revision.
+- backend-relevant Product Graph revision;
+- Dataset/DataPolicy semantics.
 
 Output:
 
 - desired backend plan;
 - migration/policy/function/storage/auth config candidates;
+- dataset/import/seed plans;
+- safe query/list/search/filter/sort/pagination contracts and index candidates where required by product semantics;
 - validation plan.
 
 It must be able to compare desired state with observed local/remote state before mutation.
+
+### DataWorkspaceCompiler
+
+Input:
+
+- Dataset/DataImport/DataMapping semantics;
+- authorized source observations;
+- target backend/environment.
+
+Output:
+
+- profile/quality observations;
+- proposed mapping/normalization;
+- staged import/transform plan;
+- DatasetVersion/lineage;
+- verification plan.
+
+It never treats ambiguous coercion as confirmed truth.
+
+### ProductAdminStudio
+
+Input:
+
+- observed local/remote backend state;
+- Product Graph/DataPolicy semantics;
+- current environment/resource bindings;
+- authenticated user authority and capability policy.
+
+Output:
+
+- safe table/relation/row exploration and bounded mutation;
+- auth/user/organization/session administration where permitted;
+- RLS/API/storage-policy inspection;
+- function/job/webhook/log/health/release/recovery views;
+- import/export/data-quality actions;
+- exact mutation receipts and refreshed drift/evidence state.
+
+It is an Ineractive management surface over user-owned infrastructure, not a hidden proprietary data plane. Every mutation passes capability admission, environment identity checks, policy validation, and post-action reconciliation. Direct production table editing is never treated as a shortcut around migrations, DataPolicy, RLS, or audit requirements.
+
+### PlatformLifecycle
+
+Input:
+
+- provider connection/resource intent;
+- Product/Environment/Release state;
+- capability/budget policy.
+
+Output:
+
+- ProviderAdapter preflight;
+- Connection and ResourceBinding state;
+- EnvironmentManifest updates;
+- durable ProvisioningSaga;
+- OwnershipManifest;
+- typed external blockers and reconciliation actions.
+
+It does not confuse loss of Ineractive management access with deletion or runtime failure.
+
+### ProductCompleteness
+
+Input:
+
+- Product Graph;
+- product category;
+- environment/release state;
+- proof state.
+
+Output:
+
+- ProductCompletenessManifest covering applicable product/data/backend/frontend/design/security/delivery/operations/ownership categories.
+
+A category is explicitly REQUIRED, NOT_APPLICABLE, BLOCKED, IN_PROGRESS, READY, PROVEN, or STALE; it cannot disappear because a model omitted it.
+
+### FrontendCompiler
+
+Input:
+
+- frontend-relevant Product Graph slice;
+- FrontendQualityProfile;
+- DesignSystemRevision;
+- current source/component catalog.
+
+Output:
+
+- Next.js/React source changes;
+- component selection/provenance;
+- server/client boundaries;
+- optional dependency decisions;
+- frontend verification requirements.
+
+The compiler resolves existing qualified source components before synthesizing new primitives.
+
+### ComponentSupply
+
+Input:
+
+- requested component capability;
+- project primitive-base identity;
+- project source/Product Kit;
+- qualified registry catalog;
+- authorized external registry observations.
+
+Output:
+
+- selected source-owned component candidate or explicit synthesis requirement;
+- provenance;
+- compatibility/admission findings.
+
+Core concepts include ComponentRegistryAdapter, ComponentResolver, Ineractive Qualified Registry, and RegistryAdmissionGate.
+
+External registries are untrusted discovery sources until admission succeeds.
 
 ### DesignEngine
 
@@ -206,7 +328,17 @@ It should represent at minimum:
 - Assumption;
 - Decision;
 - DesignTokenSet;
-- DeploymentTarget.
+- DeploymentTarget;
+- Dataset / DatasetVersion;
+- DataImport / DataMapping / DataProfile / DataQualityRule;
+- DataClass / DataPolicy;
+- DesignSystemRevisionRef;
+- SkillRef;
+- ExplorationBranch;
+- Release;
+- FrontendQualityProfileRef;
+- ComponentRegistryRef;
+- PrimitiveBaseRef.
 
 Edges express relationships such as:
 
@@ -244,13 +376,19 @@ Do not couple the compiler to a particular web framework used by the Ineractive 
 
 V1 default target:
 
-- Next.js;
+- Next.js App Router;
 - React;
 - TypeScript;
 - Tailwind CSS;
-- accessible component primitives;
+- source-owned accessible component primitives;
 - Supabase client/server integration;
 - generated typed database interfaces.
+
+The current candidate direction is a shadcn-compatible source distribution adapter with one primary primitive base per project. Base UI is the candidate default for new generated projects, React Aria is a qualified alternate, and compatible Radix architecture is preserved in imported/existing projects rather than migrated for novelty.
+
+Optional packages are requirement-driven rather than globally installed. FrontendQualityProfile records the selected framework/styling/primitive/component/data/form/table/i18n/motion/testing policies.
+
+Implementation requalifies current security-supported framework versions before changing the compiler baseline.
 
 This target is a product decision for V1, not a permanent restriction. Additional compiler targets require their own qualification.
 
@@ -285,6 +423,14 @@ Every run should emit typed events such as:
 
 ```text
 run.started
+connection.observed
+provider.preflight
+provisioning.started
+provisioning.step
+provisioning.reconciled
+resource.bound
+environment.changed
+external_blocker.created
 context.selected
 decision.requested
 decision.resolved
@@ -304,6 +450,10 @@ repair.proposed
 repair.applied
 review.completed
 proof.completed
+release.qualified
+release.promoted
+ownership.changed
+connection.revoked
 run.completed
 ```
 

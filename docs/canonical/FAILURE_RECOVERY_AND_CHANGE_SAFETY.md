@@ -173,7 +173,61 @@ Webhook/API/email/SMS/payment-like side effects require an external-effect recei
 
 Retries first reconcile when provider state may have changed.
 
-## 10. Deployment recovery
+## 10. Provisioning saga recovery
+
+Multi-provider setup is a distributed saga, not an atomic transaction.
+
+Examples:
+
+- repository created but backend provisioning times out;
+- Supabase project created but deployment provider connection fails;
+- domain DNS update accepted but certificate remains pending;
+- provider returns timeout after resource creation;
+- OAuth/repository access is revoked during configuration.
+
+Each provisioning step records external identity, idempotency/reconciliation class, observed result, and safe compensation behavior.
+
+PARTIAL is a valid state. Do not delete successful user-owned resources merely to simulate rollback unless explicit cleanup is authorized.
+
+## 11. Connection, credential, and secret recovery
+
+Recovery fixtures include:
+
+- expired connection token;
+- revoked GitHub installation/repository access;
+- revoked Supabase authorization;
+- secret rotation;
+- secret expiry;
+- provider account/organization permission loss.
+
+Management-access loss must be distinguished from product-runtime failure.
+
+Reconnect begins by discovering/reconciling existing resources before any create/mutation.
+
+## 12. DNS and asynchronous provider state
+
+DNS propagation, certificate issuance, project provisioning, deployment creation, and branch creation can remain pending after an API request returns.
+
+Timeout means UNKNOWN/PENDING until provider/DNS state is reconciled.
+
+Do not retry create operations blindly when an external resource may already exist.
+
+## 12.1 Backup / PITR / restore qualification
+
+Backup and restore are provider capabilities, not assumptions.
+
+Before a production-risk migration or release, Ineractive records:
+
+- whether backup, point-in-time recovery, snapshot, or restore is supported;
+- plan/region/retention constraints;
+- latest known recovery point where observable;
+- restore target/isolation strategy;
+- expected data-loss window;
+- whether an executed restore drill exists.
+
+Where a safe non-production or isolated restore target is supported, qualification includes a bounded restore/PITR drill and post-restore integrity checks. Where the provider/plan does not expose the required capability, Ineractive records a typed ExternalBlocker or manual-recovery requirement and must not report backup/restore as proven.
+
+## 13. Deployment recovery
 
 Production deployment records:
 
@@ -186,7 +240,7 @@ Production deployment records:
 
 If deployment fails after database mutation, Ineractive must not blindly roll the database backward. It follows the declared recovery relationship between application and schema.
 
-## 11. Repair-loop safety
+## 14. Repair-loop safety
 
 Automated repair has finite:
 
@@ -197,7 +251,7 @@ Automated repair has finite:
 
 Repeated failure changes state to BLOCKED or INCONCLUSIVE rather than endlessly regenerating.
 
-## 12. Recovery testing
+## 15. Recovery testing
 
 The benchmark suite should include:
 
@@ -210,6 +264,16 @@ The benchmark suite should include:
 - network timeout after external request;
 - deployment failure after successful backend migration;
 - revoked credentials;
+- revoked provider installation/repository access;
+- partial multi-provider provisioning;
+- duplicate create after ambiguous timeout;
+- DNS propagation/certificate delay;
+- secret rotation requiring redeploy/reverification;
+- provider plan/quota blocker;
+- disconnect/reconnect of user-owned infrastructure;
+- partial data-import batch failure;
+- backup/PITR/restore capability absent or plan-blocked;
+- successful isolated restore/PITR drill where supported, including integrity/reconciliation checks;
 - partial file write/checkpoint recovery.
 
 Recovery claims require executed evidence.

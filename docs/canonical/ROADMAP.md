@@ -109,8 +109,11 @@ Build:
 - choose representation by evidence;
 - implement stable typed node/edge/revision contracts.
 
-### P02-S02 Domain and requirements model
+### P02-S02 Domain, requirements, and data-governance model
 - personas, roles, entities, pages, actions, workflows, permissions, assumptions, requirements;
+- data classification, retention, export, deletion, audit, consent, and residency constraints;
+- locale/timezone semantics;
+- external-effect/integration consequence semantics;
 - deterministic validators.
 
 ### P02-S03 Change Intent
@@ -131,7 +134,36 @@ Build:
 - Workflows;
 - Assumptions.
 
-**Exit:** representative product intents become inspectable graph revisions and bounded unresolved decisions.
+### P02-S07 Dataset semantics
+Define product-level semantics for:
+- Dataset;
+- DatasetVersion;
+- DataImport;
+- DataMapping;
+- DataProfile;
+- DataQualityRule;
+- SeedDataset;
+- SyntheticDataset;
+- later VectorCorpus/EvalDataset references.
+
+Dataset semantics carry provenance, privacy class, transformation lineage, environment, and verification requirements.
+
+### P02-S08 Product completeness semantics
+Define a ProductCompletenessManifest with explicit categories for:
+- product semantics;
+- data/datasets;
+- frontend/design;
+- backend/auth/storage/integrations;
+- i18n/accessibility/security;
+- source/Git;
+- environments/deployment/domain;
+- operations/release/recovery;
+- documentation;
+- ownership/portability.
+
+Each category is REQUIRED / NOT_APPLICABLE(reason) / BLOCKED(blocker) / IN_PROGRESS / READY / PROVEN / STALE.
+
+**Exit:** representative product intents and supplied business data become inspectable graph/data revisions with bounded unresolved decisions, and no applicable product-completeness category can disappear through model omission.
 
 ## P03 — Harness kernel and intelligence routing
 
@@ -171,7 +203,34 @@ Build:
 - memory hook;
 - HarnessMind-style provenance.
 
-**Exit:** one synthetic WorkPacket can route decisions/generation through typed adapters with full run provenance.
+### P03-S06 Project Context substrate
+- governed durable project facts/decisions/assumptions;
+- versioned context revisions;
+- deterministic Execution Header;
+- conflict/freshness rules;
+- collaboration UI remains deferred to P12.
+
+### P03-S07 System / Project Skills substrate
+- versioned SkillManifest;
+- selective skill discovery/loading;
+- provenance;
+- fixture/eval hooks;
+- skills never grant capabilities.
+
+### P03-S08 Budget Governor
+- model/tool/browser/sandbox/network/backend budgets;
+- cost/latency/parallelism policy;
+- bounded retry/repair spend;
+- cheaper-path/degrade/stop/approval outcomes;
+- model cannot expand its own budget.
+
+### P03-S09 Artifact Store and harness replay contract
+- stable large-artifact references for logs/screenshots/DOM/traces/reports/research;
+- deterministic metadata/provenance;
+- live replay vs recorded-observation replay interfaces;
+- no repeated external side effects during deterministic harness regression tests.
+
+**Exit:** one synthetic WorkPacket can route decisions/generation through typed adapters with durable context, selective skills, bounded budgets, artifact provenance, and replayable run evidence.
 
 ## P04 — Runtime, sandbox, tools, browser, Git
 
@@ -215,7 +274,17 @@ Build:
 - deterministic actions;
 - browser journey evidence.
 
-**Exit:** harness can modify a toy app in an isolated workspace, run it, inspect it in a browser, and produce exact evidence without host-ambient authority.
+### P04-S06 Tool trust and action safety
+- stable Tool Catalog identities/namespaces;
+- capability/eligibility masking;
+- MCP/connector trust metadata;
+- untrusted-content/prompt-injection probe for external observations;
+- independent intent-aware guard for risk-bearing executable actions;
+- bounded deny-and-continue behavior;
+- typed Lifecycle Hook Bus;
+- distinguish build/test/research/authenticated-user browser trust classes.
+
+**Exit:** harness can modify a toy app in an isolated workspace, run it, inspect it in a browser, and produce exact evidence without host-ambient authority or treating external content/tools as trusted instructions.
 
 ## P05 — Web product compiler V1
 
@@ -251,7 +320,50 @@ Default V1 target:
 - source binding to Product Graph;
 - bounded diff rather than regeneration.
 
-**Exit:** static and stateful UI benchmark products compile, run, and survive incremental change.
+### P05-S05 Internationalization and RTL
+- locale-aware routing/config;
+- message catalogs and formatting;
+- timezone/date/number behavior;
+- RTL and logical layout behavior;
+- Arabic/English browser fixtures.
+
+### P05-S06 Production web semantics
+- metadata/canonical URL/social preview/sitemap/robots where relevant;
+- image/font loading strategy;
+- route performance budgets;
+- accessible loading/error/empty states under realistic data;
+- no claim that every product requires SEO.
+
+### P05-S07 Frontend Quality and Component Supply
+Define and implement:
+- FrontendQualityProfile;
+- qualified current Next.js/React/Tailwind compiler baseline;
+- server-first/client-boundary policy;
+- one primary primitive-base identity per project;
+- Base UI candidate default for new products;
+- React Aria qualified alternate;
+- preserve compatible Radix architecture in imported/existing products;
+- provider-neutral ComponentRegistryAdapter;
+- ComponentResolver: local source → project Product Kit/registry → Ineractive Qualified Registry → explicitly authorized external registry → synthesis;
+- Ineractive Qualified Registry baseline;
+- RegistryAdmissionGate;
+- on-demand dependency policy for query/table/forms/i18n/motion/workbench tooling;
+- Next.js DevTools MCP diagnostic adapter through Tool Catalog/capability policy.
+
+Do not turn the generated stack into a dependency zoo. Reuse qualified source components before synthesis.
+
+### P05-S08 Business list/query UX
+
+Compile first-class business-data interaction patterns:
+
+- search, filter, sort, pagination, list/detail, and table state;
+- URL/shareable state when product semantics require it;
+- server-first query execution with bounded client state;
+- loading/empty/error/no-results states;
+- keyboard/accessibility behavior;
+- Product Graph bindings rather than page-local ad hoc query logic.
+
+**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, use a coherent primitive/component supply model, avoid accidental client-boundary/dependency bloat, support the declared business list/query interactions, and can meet production-grade locale/RTL/public-web contracts where applicable.
 
 ## P06 — Supabase compiler V1
 
@@ -284,7 +396,10 @@ Default V1 target:
 - explicit grants/exposure;
 - ownership/membership policies;
 - cross-tenant negative tests;
-- view/function safety.
+- view/function safety;
+- safe generated query contracts for filtering/sorting/pagination/search;
+- index/query-plan candidates where product semantics and observed workload justify them;
+- no arbitrary client-side privileged query path.
 
 ### P06-S05 Storage
 - buckets;
@@ -306,7 +421,70 @@ Default V1 target:
 - local-to-remote migration plan;
 - drift detection.
 
-**Exit:** multi-tenant authenticated CRUD benchmark with RLS and storage reconstructs from source and passes negative security tests.
+### P06-S08 Data lifecycle compiler
+- compile data classification/retention/export/deletion/audit requirements;
+- compile policy-driven consent/privacy-preference/data-rights workflows when applicable;
+- propagate consent/retention/redaction requirements across UI, API, jobs, integrations, analytics, and exports;
+- log/redaction implications;
+- deletion/export browser and backend flows;
+- make unsupported legal/provider requirements explicit blockers rather than silently weakening policy;
+- no automatic regulatory-compliance claim.
+
+### P06-S09 Integration and notification compiler
+Initial V1 subset:
+- generic REST API;
+- signed webhook producer/consumer;
+- transactional email;
+- in-app notifications;
+- typed secret/config references;
+- retry/idempotency/reconciliation;
+- external-effect receipts and failure UI.
+
+SMS/WhatsApp/payments remain separately qualified high-risk adapters.
+
+### P06-S10 Data Workspace and Dataset Compiler
+Support authorized business-data starting points:
+- CSV;
+- XLSX/spreadsheets;
+- JSON;
+- existing Supabase tables;
+- Postgres/SQL sources where qualified;
+- API samples;
+- manually described records.
+
+Pipeline:
+- inspect/profile;
+- infer types/relationships;
+- classify sensitive data;
+- identify duplicates/missingness/outliers;
+- propose normalization/mapping;
+- preview before mutation;
+- import/transform;
+- verify row counts/constraints/relationships;
+- version Dataset lineage;
+- bind imported data to Product Graph/DataSource.
+
+### P06-S11 Seed and synthetic data
+- deterministic representative development/test data;
+- role/workflow/edge-case coverage;
+- no production-data cloning by default;
+- reusable seed fixtures committed with generated source;
+- later AI corpus/eval dataset preparation only after P13 qualification.
+
+### P06-S12 Product Admin / Data Studio
+
+Build the safe management surface over the generated application's user-owned backend:
+
+- tables/relations/rows/import/dataset versions/data quality/export;
+- users/organizations/roles/sessions/invitations;
+- RLS/API/storage policy inspection and findings;
+- functions/realtime/jobs/webhooks/logs;
+- environments/migrations/drift/release/health/recovery;
+- capability-gated bounded mutations with exact environment/resource identity;
+- refresh drift/evidence after every material mutation;
+- never bypass migrations, RLS, DataPolicy, audit, or production approval rules.
+
+**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, supports search/filter/sort/list workflows, can ingest and verify a real business spreadsheet/data source, exposes ordinary administration through Product Admin/Data Studio without requiring Supabase Dashboard, can generate safe representative seed data, and can execute one qualified external integration/notification path safely.
 
 ## P07 — Full product build and repair loop
 
@@ -342,6 +520,15 @@ Default V1 target:
 - broader acceptance;
 - bounded attempts.
 
+### P07-S06 Build Contract, Failure Ledger, and Wide Work
+- compile requirements into explicit Build Contract;
+- independent evaluator may challenge high-risk/novel acceptance criteria before build;
+- structured Failure Ledger retained across repair attempts;
+- Context Continuation Policy can continue/compact/reset-with-handoff/branch/delegate-fresh;
+- Wide Work only for dependency-independent subunits;
+- isolated write ownership and explicit synthesis;
+- per-unit budget/evidence.
+
 ### P07-S05 Golden vertical slice
 Build from one product prompt:
 - auth;
@@ -353,7 +540,7 @@ Build from one product prompt:
 - browser journeys;
 - Git history.
 
-**Exit:** B03 multi-tenant CRM can be produced from intent to proven local product with no manual code edits in the golden path.
+**Exit:** B03 multi-tenant CRM can be produced from intent to proven local product with no manual code edits in the golden path, with a requirements-derived Build Contract and structured failure/repair evidence.
 
 ## P08 — Design engine and visual editing
 
@@ -396,7 +583,54 @@ Build from one product prompt:
 - product/marketing motion and layout system;
 - avoid donor/client identity copying.
 
-**Exit:** B01 and B08 reach design/a11y/responsive quality gates and visual edits remain clean source diffs.
+### P08-S07 Design Context Compiler and DesignSystemRevision
+- ingest source/design-system packages/tokens/brand artifacts/rendered evidence;
+- normalize design principles/component catalog/token graph/interaction/responsive rules;
+- every inferred rule carries confidence/provenance/status.
+
+### P08-S08 Semantic component binding and drift
+- Product Graph component ↔ source symbol ↔ rendered element ↔ design component;
+- CLEAN / CODE_AHEAD / DESIGN_AHEAD / DIVERGED / UNBOUND states;
+- no silent divergence resolution.
+
+### P08-S09 Annotation Intent, direct manipulation, and design exploration
+- anchored annotations compile to typed ChangeIntent/locality;
+- direct manipulation remains real source/semantic diff;
+- design branches can compare alternatives;
+- independent Design Evaluator uses real rendered product.
+
+### P08-S10 Asset/font provenance
+- generated/imported asset provenance;
+- font source/license metadata where known;
+- source-to-asset inventory;
+- no claim of rights merely because an asset was discovered/generated.
+
+### P08-S11 Frontend Design Quality OS
+Integrate versioned, provenance-bound design/frontend rule packs:
+- Impeccable;
+- Vercel Web Interface Guidelines;
+- Vercel React Best Practices.
+
+Qualify a component workbench and agent-introspection path:
+- Storybook for Ineractive's own design system;
+- Storybook stories/state catalogs for complex generated component systems where justified;
+- Storybook MCP as a qualified component discovery/test adapter;
+- component-level interaction/accessibility tests;
+- no paid visual-testing service required for baseline proof.
+
+Combine rule-pack findings with real rendered/browser evidence rather than treating any rule set as aesthetic authority.
+
+### P08-S12 Creative-media generation and bounded asset refinement
+- compile `VisualPromptProtocol` from Product Graph, brand/design truth, copy constraints, reference assets, and rights/policy constraints;
+- emit provider-neutral `MediaGenerationRequest` records for generate/edit/variation/extend/remove/composite operations;
+- route only among deterministically eligible media providers/models using bounded decision intelligence for quality/cost/latency fit;
+- record generated/edited `CreativeAsset` lineage, provider/model/configuration evidence, source references, and Product Graph/DesignSystemRevision bindings;
+- evaluate candidates against product/design requirements before acceptance;
+- provide bounded raster/compositing refinement for product-bound assets: crop/resize/transform, masks/alpha, layers/blending, background removal, erase/fill, tonal/color adjustments, limited retouching, and export;
+- preserve reduced-motion/performance/accessibility rules for motion/animated outputs;
+- do not expand into a general-purpose Photoshop/After Effects replacement.
+
+**Exit:** B01 and B08 reach design/a11y/responsive quality gates, visual edits remain clean source diffs, design/code round-trip state is explicit rather than silently overwritten, and reusable component states are independently inspectable/testable.
 
 ## P09 — Import and multimodal starting points
 
@@ -418,14 +652,22 @@ Build from one product prompt:
 - distinguish inspiration from copying;
 - reconstruct behavior/design intent.
 
-### P09-S04 Design import
+### P09-S04 Design import and provider adapter
+- provider-neutral DesignProvider contract;
 - Figma/design integration where authorized;
-- asset/token/component mapping.
+- native editable design context where supported;
+- asset/token/component mapping;
+- code/design round-trip reconciliation.
 
 ### P09-S05 Brownfield change
 - add feature to imported app without unnecessary rewrite.
 
-**Exit:** B09 passes on a non-trivial existing project.
+### P09-S06 Existing backend reconstruction
+- inspect schema/migrations/auth/policies/storage/functions from an existing project;
+- propose Product Graph/backend bindings with confidence;
+- reconcile remote backend truth instead of assuming source is complete.
+
+**Exit:** B09 passes on a non-trivial existing project with source/runtime/backend reconstruction and bounded feature change.
 
 ## P10 — Assurance, review, and security convergence
 
@@ -465,11 +707,69 @@ Build from one product prompt:
 - sandbox policy;
 - negative fixtures.
 
-**Exit:** golden product produces a machine-readable proof bundle with zero unresolved material review findings.
+### P10-S06 Ineractive Evaluation Lab
+- fixed new-product, change, repair, brownfield, design, security, recovery, routing, and context benchmarks;
+- live and recorded-observation replay;
+- quality/correctness/security/cost/latency/question metrics;
+- no single aggregate score can hide correctness or security failure;
+- harness changes receive regression evidence.
+
+### P10-S07 Supply-chain and artifact integrity
+- lockfile/dependency integrity;
+- vulnerability/license/notice checks;
+- source/import provenance;
+- secret scan;
+- asset/font inventory;
+- build artifact/source binding;
+- optional SBOM before production publish.
+
+### P10-S08 Production-web quality pack
+- i18n/RTL fixtures;
+- accessibility;
+- SEO metadata where applicable;
+- performance regression budgets;
+- explicit browser/device support matrix;
+- critical journeys on every engine/viewport actually claimed as supported;
+- realistic-data browser journeys.
+
+### P10-S09 Dataset quality, lineage, and data-rights assurance
+- schema/type verification;
+- row/object count reconciliation;
+- duplicate/missingness/domain checks;
+- referential-integrity verification;
+- transformation lineage;
+- sensitive-data handling assertions;
+- policy-driven consent/privacy-preference/export/delete/audit assertions when applicable;
+- deterministic seed/synthetic-data reproducibility.
+
+### P10-S10 Frontend quality qualification
+- integrate React Doctor changed-scope deterministic scanning into normalized Finding/Evidence;
+- fully qualify RegistryAdmissionGate for external components/blocks;
+- verify provenance/license/dependency closure/supply-chain state;
+- verify server/client boundary, accessibility, focus/keyboard behavior, responsive states, RTL, reduced motion, runtime/bundle cost, and primitive/token compatibility;
+- combine component tests, Storybook/Vitest where configured, axe findings, Playwright browser journeys/visual evidence, Next.js diagnostics, performance observations, and independent design critique;
+- emit FrontendEvidenceBundle tied to exact source and FrontendQualityProfile revisions;
+- no aggregate design/React score can grant PASS.
+
+**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings; imported/generated datasets have explicit lineage and quality evidence; frontend component supply and implementation quality have independent exact-source evidence; and the harness has repeatable regression evidence.
 
 ## P11 — Git, preview, publish, and deployment
 
 **Goal:** let users own and ship the result.
+
+### P11-S00 Platform lifecycle substrate
+Implement the provider-neutral platform layer before provider-specific happy paths:
+- ProviderAdapter contract;
+- Connection lifecycle;
+- ResourceBinding;
+- EnvironmentManifest;
+- OwnershipManifest;
+- durable ProvisioningSaga;
+- provider capability discovery/preflight;
+- ExternalBlocker manifest;
+- reconciliation/idempotency rules;
+- detach vs delete semantics;
+- provider state sync/revocation handling.
 
 ### P11-S01 GitHub integration
 - create/connect repository;
@@ -493,7 +793,12 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 
 ### P11-S04 Domains/environment/secrets
 - environment-specific settings;
+- versioned SecretRef/SecretBinding lifecycle;
+- secret validation/rotation/revocation;
 - custom domains;
+- DNS required-record plan;
+- propagation/verification/certificate states;
+- manual DNS fallback where automation is unavailable;
 - deploy smoke tests;
 - rollback/recovery model.
 
@@ -503,7 +808,99 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 - post-deploy verification;
 - drift state.
 
-**Exit:** a user can build locally, inspect proof, push source, connect their Supabase, and publish a working product they own.
+### P11-S06 Release Manifest and promotion
+Bind a production candidate to:
+- source head;
+- Product Graph/design revisions;
+- build artifact;
+- backend migration set;
+- schema/application compatibility;
+- environment config and secret references;
+- proof bundle;
+- recovery plan.
+
+Promotion states include CANDIDATE / PREVIEW / QUALIFIED / PROMOTED / DEGRADED / ROLLED_BACK / SUPERSEDED.
+
+Maintain last-known-good identity. Promotion requires joint app/backend compatibility evidence.
+
+### P11-S07 Generated-product operations baseline
+- health/readiness where applicable;
+- structured logs and deploy/source identity;
+- error boundary/reporting adapter;
+- backend function/job logs;
+- optional OpenTelemetry-compatible instrumentation;
+- optional portable product analytics/events;
+- generated product never requires Ineractive telemetry to run.
+
+### P11-S08 Production recovery qualification
+- discover provider backup/PITR/restore capabilities and plan/region limitations;
+- record explicit backup/recovery expectations in EnvironmentManifest/ReleaseManifest;
+- execute a bounded restore/PITR drill when the connected provider/plan supports it;
+- otherwise produce a typed ExternalBlocker/manual recovery requirement rather than claiming restore coverage;
+- failed deploy after migration;
+- app rollback against forward-compatible schema;
+- credential revocation;
+- environment drift;
+- last-known-good recovery drill.
+
+### P11-S09 Connected Ownership Orchestrator
+Provide one coherent user-owned infrastructure flow.
+
+Before mutation, every provider runs preflight for permissions, ownership, plan/feature availability, billing, quota, region/residency, naming conflicts, and relevant organization/repository policy.
+
+Provider limitations become typed ExternalBlockers rather than generic failures.
+
+#### GitHub
+
+#### GitHub
+- install/authorize least-privilege GitHub App;
+- connect existing repository or create one when authorized;
+- initialize/push normal source, migrations, config, fixtures, and docs;
+- branches/PR/checks remain normal GitHub truth.
+
+#### Supabase
+- connect existing user-owned project through qualified OAuth/integration flow;
+- or create a project in an authorized user organization when supported and permitted;
+- configure/link using supported Management API/CLI surfaces;
+- preserve repository-owned migrations/configuration;
+- reconcile drift before mutation.
+
+#### Combined
+- bind project/repository/backend/deployment/environment identities;
+- maintain OwnershipManifest;
+- never require users to copy long-lived PATs/secrets through chat;
+- manual fallback only where provider API, plan, or organization policy requires it;
+- revocation/deauthorization is observable and safe;
+- reconnect starts with discovery/reconciliation instead of creating duplicates;
+- detach never implies delete.
+
+### P11-S10 A-to-Z Product Factory benchmark
+Prove **B17 — Idea to owned production product**:
+- begin from a product brief plus business spreadsheet;
+- derive Product Graph and DatasetVersion;
+- build bilingual web product;
+- compile/test Supabase backend including search/filter/sort/list behavior;
+- exercise Product Admin/Data Studio for ordinary data/auth/security/operations administration;
+- compile and prove one applicable DataPolicy data-rights/consent path;
+- connect/create user-owned GitHub and Supabase through qualified authorization;
+- preview, qualify, promote, observe, recover with provider-aware backup/PITR/restore expectations;
+- perform one post-launch feature change;
+- satisfy the ProductCompletenessManifest;
+- generate minimal run/ownership/recovery documentation from real configuration;
+- no manual developer coding in the golden path.
+
+### P11-S11 A-to-exit / reconnect benchmark
+Prove provider independence:
+- connect user-owned GitHub/Supabase/deployment resources;
+- build and ship through Ineractive;
+- export all required source/config/runbook state;
+- revoke Ineractive provider management access;
+- verify expected product runtime remains operational;
+- verify direct provider ownership remains intact;
+- reconnect and reconcile the same resources without duplication;
+- prove detach is not delete.
+
+**Exit:** a user can move from idea/data to a tested, GitHub-owned, Supabase-connected, deployed and observable product through one coherent Ineractive workflow, then leave/reconnect without losing ownership or creating duplicate infrastructure.
 
 ## P12 — Collaboration and durable project intelligence
 
@@ -521,20 +918,28 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 - shared preview;
 - conflict-aware edits.
 
-### P12-S03 Project memory
-Adapt Morize/HarnessMind patterns for:
+### P12-S03 Project intelligence UX
+Build the collaborative UX over the P03 Project Context substrate:
 - decisions;
 - assumptions;
 - conventions;
 - successful repairs;
 - rejected approaches;
-- scoped preferences.
+- scoped preferences;
+- loaded-context/provenance visibility.
 
 ### P12-S04 Tasks/issues
 - connect Product Graph/SpecGrain work to lightweight project activity;
 - do not build a generic project-management suite.
 
-**Exit:** two users can safely collaborate on a product with shared durable decisions and source ownership.
+### P12-S05 Project Learning, team Skills, and branch comparison
+- evidence-backed learning proposals;
+- approval/version/rollback for durable context updates;
+- project/team Skill proposal and qualification UX;
+- compare ExplorationBranches across graph/design/source/evidence;
+- selective merge with conflict visibility.
+
+**Exit:** two users can safely collaborate on a product with shared durable decisions, governed project learning, reusable team workflows, and source ownership.
 
 ## P13 — Extensibility and ecosystem
 
@@ -561,7 +966,50 @@ Adapt Morize/HarnessMind patterns for:
 - sandbox/permission model;
 - compatibility tests.
 
-**Exit:** external capabilities can extend Ineractive without bypassing core policy/evidence.
+### P13-S05 Generated AI-product primitives
+Provider-neutral generated-app pack:
+- text/chat;
+- streaming;
+- structured output;
+- embeddings/vector retrieval;
+- tool/function calling;
+- moderation/policy hook;
+- prompt/version configuration;
+- usage/rate limits;
+- secret isolation;
+- eval fixtures.
+
+Generated apps own/configure their provider dependencies; they never depend on Ineractive's internal model provider.
+
+### P13-S06 High-risk integration qualification
+Qualify adapters independently for side effects such as:
+- payments;
+- SMS/WhatsApp;
+- financial/irreversible webhooks.
+
+Require idempotency, reconciliation, external-effect receipts, negative tests, and explicit user authority.
+
+### P13-S07 Product Kits
+Combine reusable:
+- component packages;
+- design tokens;
+- brand assets;
+- Product Graph fragments;
+- project Skills;
+- backend patterns;
+- verification rules.
+
+Kits accelerate normal source/graph generation; they are not opaque templates.
+
+### P13-S08 Creative-media provider ecosystem
+- qualify multiple real image/video/media adapters behind `MediaProviderAdapter`;
+- qualify bounded routing by modality, operation, quality floor, cost, latency, privacy, policy, and current provider health;
+- keep provider identity out of callers and public product claims unless explicitly required;
+- preserve fallback lineage and requalification when a fallback materially changes capability;
+- benchmark specialized decision adapters, including Laya-class System-1 models, behind the provider-neutral bounded-decision interface;
+- require Ineractive-owned evaluation before any published external benchmark influences production routing policy.
+
+**Exit:** external capabilities and reusable product intelligence can extend Ineractive without bypassing core policy/evidence or generated-product ownership.
 
 ## P14 — Mobile and cross-surface compiler targets
 
@@ -617,12 +1065,21 @@ Adapt Morize/HarnessMind patterns for:
 
 ### P15-S05 Release/security hardening
 - signing;
-- SBOM/provenance;
+- organization-wide provenance policy;
+- advanced SBOM/attestations;
 - dependency policy;
 - disaster recovery;
 - penetration/security qualification.
 
-**Exit:** hosted operation has evidence for tenant isolation, recovery, cost control, and user ownership.
+### P15-S06 Enterprise identity/governance
+- enterprise SSO/SAML where justified;
+- SCIM/user lifecycle;
+- organization policy;
+- audit export;
+- retention/residency controls;
+- admin approval policy.
+
+**Exit:** hosted operation has evidence for tenant isolation, recovery, cost control, user ownership, and enterprise governance.
 
 ## 2. Cross-phase invariants
 
@@ -641,6 +1098,12 @@ Every phase preserves:
 - producer/verifier separation for acceptance-critical proof;
 - generated-product runtime independence from Ineractive;
 - explicit partial-failure/recovery semantics for side effects;
+- bounded cost/spend/parallelism through policy;
+- durable project context is not transcript memory;
+- skills never grant capabilities;
+- external content/tool instructions are untrusted until policy admits them;
+- production promotion binds application/backend compatibility and proof;
+- generated products expose portable operational/release identity;
 - no unnecessary user interrogation.
 
 ## 3. First benchmark product
@@ -663,6 +1126,18 @@ Use a deliberately demanding but bounded CRM benchmark as the first golden produ
 - Arabic/English variant later in design phase.
 
 This exercises the architecture without requiring payments or high-risk external integrations.
+
+Additional required benchmark families before broad launch:
+
+- **B17 — Idea + spreadsheet → user-owned GitHub + Supabase → production product → post-launch change**;
+- Arabic/English RTL product;
+- one external API/webhook/email integration;
+- production release + schema compatibility/rollback drill;
+- generated-app observability/health failure;
+- design/code divergence reconciliation;
+- brownfield app with existing backend;
+- AI-enabled product after P13;
+- harness replay/regression benchmark.
 
 ## 4. What must remain deferred
 

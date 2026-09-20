@@ -1,6 +1,6 @@
 # Ineractive Source Ledger
 
-**Research snapshot:** 2026-09-19  
+**Research snapshot:** 2026-09-20  
 **Founder authority:** the founder states permission to use, copy, and adapt the named sources and relevant sources in the connected GitHub account.  
 **Rule:** permission permits consideration; exact import revision, component mapping, dependency closure, security review, notices, and Ineractive-owned qualification remain required.
 
@@ -9,6 +9,10 @@
 - COPY_SELECTIVE — copy a bounded implementation after exact provenance review.
 - ADAPT — preserve mechanism/behavior behind Ineractive-owned contracts.
 - DEPEND — use as a replaceable dependency after qualification.
+- DEPEND_SELECTIVE — qualified dependency used only when the active FrontendQualityProfile/product requirement justifies it.
+- PRESERVE — retain a compatible existing/imported architecture rather than migrating for novelty.
+- OPTIONAL QUALIFIED SOURCE — source candidate considered only through the normal admission/provenance/security/quality gate.
+- OPTIONAL EXTERNAL REGISTRY — discovery provider only; no candidate becomes trusted source before RegistryAdmissionGate.
 - REFERENCE — architecture/product/design reference.
 - PROCESS_REFERENCE — engineering/review/planning discipline.
 - BENCHMARK — evaluation/reference only.
@@ -50,6 +54,21 @@ Never concatenate donor applications into the product architecture.
 | Penpot | open design-system/canvas reference |
 | pbakaus/impeccable | design guidance, live visual iteration, deterministic AI-design detectors |
 | Pentagram work/methodology | identity strategy: one central idea expressed across brand/product/motion; reference only, never copy a client identity |
+| Anthropic Claude Design | design-system ingestion, multimodal design creation, direct/annotated refinement, design-to-build handoff | REFERENCE |
+| Figma Make / Figma MCP / Code Connect / Skills / Make kits | native design/code round trip, design-system truth, annotations, Skills, real-code editing | REFERENCE / INTEGRATE |
+| shadcn/ui | source-owned component distribution/registry format and AI-readable component supply | ADAPT / DEPEND_SELECTIVE |
+| Base UI | unstyled accessible primitive base; current shadcn new-project default candidate | DEPEND_SELECTIVE |
+| React Aria | accessible/internationalized primitive alternative | DEPEND_SELECTIVE |
+| Radix Primitives | mature accessible primitive base; preserve compatible existing projects | DEPEND_SELECTIVE / PRESERVE |
+| Storybook | component state workbench, interaction/a11y testing, MCP introspection | DEPEND_SELECTIVE |
+| Magic UI | animated/marketing source components | OPTIONAL QUALIFIED SOURCE |
+| Motion Primitives | source-owned motion components | OPTIONAL QUALIFIED SOURCE |
+| tweakcn | shadcn theme/token exploration and possible import patterns | REFERENCE |
+| 21st | external component discovery/registry/MCP catalog | OPTIONAL EXTERNAL REGISTRY |
+| Agentation | structured visual annotation → selector/context feedback for coding agents | REFERENCE only unless separately license-qualified |
+| stagewise | browser/DOM/console/debugger + agent co-working and visual change loop | REFERENCE; AGPL/code reuse requires explicit provenance/license decision |
+| Domscribe | bidirectional DOM/source mapping and MCP context | REFERENCE / ADAPT after provenance review |
+| Design Mode | browser visual manipulation and MCP handoff patterns | REFERENCE |
 
 ## 4. Agent/runtime/sandbox pool
 
@@ -61,6 +80,9 @@ Never concatenate donor applications into the product architecture.
 - OpenHands — coding-agent runtime and workspace patterns.
 - Cline / Roo Code / Continue / Aider / Goose / SWE-agent — coding-agent context/tool/execution references.
 - Agent Client Protocol, A2A, MCP, Agent Skills — interoperability references.
+- FoundationAgents/OpenManus — inspectable general-agent, ToolCallAgent, planning, MCP, browser, sandbox, and data-analysis mechanisms; selective adaptation only after provenance review.
+- Manus — Projects, Project Skills, approved self-updating context, Branch, Wide Research, scheduled tasks, sandbox/computer/browser trust patterns, and context-engineering reference.
+- Anthropic Claude agent/harness publications — planner/generator/evaluator separation, build contracts, checkpoints, hooks, context continuation, and intent-aware safety layers.
 
 ## 5. Backend/business app pool
 
@@ -71,6 +93,18 @@ Never concatenate donor applications into the product architecture.
 - NocoBase, Baserow, NocoDB, Saltcorn, Corteza, Windmill, Directus — data/workflow/admin patterns.
 
 These sources inform backend UX and operational features; Supabase remains the first compiler target.
+
+## 5A. Current competitive baseline references
+
+These are BENCHMARK / REFERENCE sources rather than automatic code donors.
+
+- Replit Agent 4 — infinite design canvas, parallel isolated tasks, shared collaboration, full-stack build, multi-artifact direction, and plan-while-building workflow.
+- Bolt — integrated database/auth/functions/storage/secrets/analytics/domains and external Supabase/deployment/payment integration baseline.
+- v0 / Vercel — prompt-to-live product flow including database, email notifications, domains, GitHub, and payment/database integrations.
+- Lovable — prompt-to-product workflow plus built-in dependency/secret/database/RLS/code security scanning and external security-integration direction.
+- Stunning — current full-stack business-system benchmark: real database/accounts/admin, spreadsheet-to-working-table import, GitHub source ownership, domains/hosting, mobile packaging, integrations, and live-business-data/agent direction; BENCHMARK/REFERENCE only.
+
+Use these references to define market baseline and benchmark pressure. Do not let competitor feature breadth override Ineractive's evidence-first dependency order.
 
 ## 6. Internal TheHalfMoon source pool
 
@@ -101,6 +135,53 @@ Directly relevant:
 Surveyed connected repositories with no automatic adoption: Fanatir, Hikma, Coddev, ProtocolWISE, Trcel, Paina, Balott, kodac-phase-b-gate, and other connected repositories. Their existence is not implementation authority.
 
 Private source material must not be published wholesale into this public repository without an explicit bounded transfer decision.
+
+## 6A. Frontend quality/tooling references
+
+- Vercel Web Interface Guidelines — versioned interface quality rule-pack reference.
+- Vercel React Best Practices / agent-skills — React/Next performance and implementation rule-pack reference.
+- React Doctor — deterministic React correctness/performance/security/accessibility/maintainability scan candidate.
+- React Scan — optional runtime render-performance visualization/profiling reference.
+- Next.js DevTools MCP — framework diagnostics/introspection adapter candidate.
+- Playwright — browser/E2E/visual evidence.
+- axe-core / @axe-core/playwright — automated accessibility findings; never sufficient alone for a compliance claim.
+- Vitest — unit/component test baseline.
+- TanStack Table — on-demand headless complex-table adapter candidate.
+- TanStack Query — on-demand client/server cache/mutation adapter; not a default dependency for App Router products.
+- Motion — on-demand complex motion/gesture engine; CSS/View Transitions first for simple effects.
+- Zod — runtime boundary schema candidate.
+- next-intl — Next.js i18n adapter candidate; locale semantics remain above the library.
+
+Exact versions and security state are requalified at implementation time.
+
+## 6B. Creative media and decision-routing sources
+
+| Source | Primary value | Planning posture |
+|---|---|---|
+| freestylefly/awesome-gpt-image-2 @ `0dc09c46c8a30b1fdd89c18cc78a894dac2104e3` | Prompt-as-Code schemas, industrial visual templates, reusable style Skill/data patterns, visual-case/evaluation UX | ADAPT / COPY_SELECTIVE / BENCHMARK; third-party gallery items still require item-level provenance/rights review |
+| robbietilton/Compositor @ `a19db9011282399785dc18efcfded904627bdcc2` | layers/masks/transforms/selections/content-aware fill/retouching/adjustments for bounded product-asset refinement | ADAPT / COPY_SELECTIVE; do not turn Ineractive into a general Photoshop clone |
+| X: robbietilton/status/2100946395972976843 | product/interaction demonstration associated with Compositor | REFERENCE; GitHub repository is the primary code source |
+| X: higgsfield_ai/status/2101117855622463719 | creative-media routing research lead | REFERENCE pending direct post capture; surrounding same-account evidence supports decision-routing -> media-provider separation, but must not be misattributed to the exact post |
+| X: nereasolenne/status/2101265048824074535 | animated-web/design workflow research lead | REFERENCE only; tutorial/award claims are not acceptance evidence |
+| convaiinnovations/laya (Hub head observed as `1c5edc1` on 2026-09-20) | bounded System-1 typed decisions, calibrated probabilities/confidence, routing/scoring benchmark | OPTIONAL QUALIFIED SOURCE / BENCHMARK / ADAPT; resolve full immutable Hub SHA before import |
+
+Canonical integration direction is documented in `docs/research/CREATIVE_MEDIA_DECISION_ROUTING_2026-09-20.md`.
+
+The architecture must preserve this separation:
+
+```text
+VisualPromptProtocol
+-> MediaGenerationRequest
+-> deterministic eligibility filter
+-> bounded decision routing
+-> qualified MediaProviderAdapter
+-> CreativeAsset candidates
+-> independent evaluation
+-> bounded raster/compositing refinement
+-> provenance-bound Product Graph / DesignSystemRevision asset
+```
+
+A decision model never receives hard permission authority. A media provider never becomes the canonical router. Generated or edited assets never bypass provenance and evidence requirements.
 
 ## 7. Process and review sources
 

@@ -94,11 +94,55 @@ Outbound/in-product communication behavior.
 
 ### Integration
 
-External service/system contract.
+External service/system contract, including trust boundary, secret/config needs, consequence class, retry/idempotency expectations, and data exchange semantics.
+
+### ExternalEffect
+
+A potentially consequential side effect such as webhook delivery, email/SMS send, payment mutation, remote deployment, or irreversible API action. Carries reconciliation/evidence requirements.
 
 ### DataSource
 
 Supabase table/view/function or other source.
+
+### Dataset
+
+A versioned business or application data collection with explicit source, schema/profile, privacy classification, environment, quality state, and lineage.
+
+### DatasetVersion
+
+Immutable revision of a Dataset, including mapping/transformation identity, row/object counts, quality findings, and target bindings.
+
+### DataImport
+
+A planned or executed import from a file, database, API, or other authorized source.
+
+### DataMapping
+
+Mapping from source fields/records to Product Graph entities/fields/relationships.
+
+### DataProfile
+
+Observed statistics and quality characteristics such as missingness, uniqueness, ranges, categories, encodings, and inferred types.
+
+### DataQualityRule
+
+A deterministic requirement for dataset validity, reconciliation, or integrity.
+
+### SeedDataset
+
+Deterministic representative development/test records.
+
+### SyntheticDataset
+
+Generated records constrained by schema/product semantics and privacy policy.
+
+### DataClass
+
+Sensitivity/business classification such as public, internal, personal, sensitive, secret, or regulated. A classification is a product/security semantic and does not by itself imply legal compliance.
+
+### DataPolicy
+
+Retention, export, deletion, residency, consent, redaction, audit, and access-handling requirements for a data class/entity/field.
 
 ### Permission
 
@@ -120,6 +164,22 @@ Accepted durable product/architecture choice.
 
 Brand/design-system semantics.
 
+### DesignSystemRevisionRef
+
+Reference to the versioned Design OS state that governs components, tokens, responsive rules, interaction patterns, and design provenance.
+
+### SkillRef
+
+Reference to a versioned System/Project Skill selected by the harness. A SkillRef does not grant capability authority.
+
+### ExplorationBranch
+
+A product exploration identity that can bind graph, design, context, and source/worktree revisions without replacing canonical state.
+
+### Release
+
+A release/promotion semantic binding source, backend migration compatibility, environment/config identity, proof, and recovery state.
+
 ### DeploymentTarget
 
 Preview/staging/production target configuration identity.
@@ -140,10 +200,30 @@ Feature -> REQUIRES -> Page
 Feature -> REQUIRES -> Requirement
 Requirement -> VERIFIED_BY -> EvidenceRequirement
 Entity -> STORED_IN -> DataSource
+Dataset -> BINDS_TO -> DataSource
+DatasetVersion -> VERSION_OF -> Dataset
+DataImport -> PRODUCES -> DatasetVersion
+DataMapping -> MAPS_TO -> Entity
+DataMapping -> MAPS_TO -> Field
+DataProfile -> DESCRIBES -> DatasetVersion
+DataQualityRule -> VALIDATES -> DatasetVersion
+SeedDataset -> SUPPORTS -> Requirement
+SyntheticDataset -> SUPPORTS -> Requirement
 Permission -> ENFORCED_BY -> RlsPolicy
 Component -> IMPLEMENTS -> ProductConcept
 Page -> USES -> Component
 Integration -> PROVIDES -> Capability
+Integration -> MAY_CAUSE -> ExternalEffect
+Entity -> CLASSIFIED_AS -> DataClass
+Field -> CLASSIFIED_AS -> DataClass
+DataPolicy -> GOVERNS -> Entity
+DataPolicy -> GOVERNS -> Field
+Requirement -> REQUIRES -> DataPolicy
+Component -> BOUND_TO -> DesignSystemRevisionRef
+Feature -> MAY_USE -> SkillRef
+ExplorationBranch -> FORKS -> ProductRevision
+Release -> PROMOTES -> ProductRevision
+Release -> TARGETS -> DeploymentTarget
 Assumption -> AFFECTS -> ProductNode
 Decision -> SUPERSEDES -> Assumption
 ~~~
@@ -228,9 +308,23 @@ Pages/features/actions/design semantics compile into:
 - error/empty/loading states;
 - accessibility requirements.
 
+### Dataset/data compilation
+
+Datasets/imports/mappings/profiles compile into candidate:
+
+- schema/relationship proposals;
+- normalization decisions;
+- import/transform plans;
+- seed/synthetic fixtures;
+- data-quality checks;
+- lineage/provenance records;
+- environment bindings.
+
+Ambiguous coercions remain visible assumptions or blockers rather than silent conversions.
+
 ### Supabase compilation
 
-Entities/relationships/permissions/workflows compile into:
+Entities/relationships/permissions/workflows/data policies compile into:
 
 - tables;
 - types;
@@ -239,6 +333,7 @@ Entities/relationships/permissions/workflows compile into:
 - auth/member models;
 - storage rules;
 - functions/events;
+- retention/export/deletion/audit flows where required;
 - tests.
 
 ### Verification compilation
@@ -301,7 +396,18 @@ Deterministic validation should catch examples such as:
 - Requirement has no planned verification;
 - Entity marked tenant-owned without tenant key/policy;
 - destructive Action lacks consequence classification;
-- Integration requires secret but no secret reference exists.
+- Integration requires secret but no secret reference exists;
+- sensitive/secret data has no handling policy;
+- deletion/export requirement has no implementation/verification path;
+- external effect has no consequence/reconciliation policy;
+- release promotes application/backend versions with incompatible schema expectations;
+- SkillRef requires capabilities outside the active policy;
+- design/source binding is DIVERGED but a change attempts silent overwrite;
+- DatasetVersion has no source/provenance;
+- imported row counts cannot be reconciled;
+- DataMapping silently coerces ambiguous values;
+- sensitive Dataset is copied into a lower-trust environment without an explicit policy;
+- production data is reused as test/seed data without explicit authority.
 
 ## 13. Storage representation decision
 

@@ -38,10 +38,19 @@ A complete export contains all applicable artifacts:
 - storage and RLS policy definitions;
 - environment-variable schema without secret values;
 - deployment configuration;
-- asset inventory;
+- ReleaseManifest or equivalent release metadata when publishing is used;
+- portable operations/health/logging configuration where applicable;
+- product analytics/event schema when enabled;
+- data lifecycle/export/delete/audit implementation artifacts when required;
+- AI-provider configuration schema for explicit AI features without secret values;
+- asset/font inventory and provenance metadata where known;
+- accepted generated/edited creative assets as normal portable product assets, with provider/model/edit lineage retained in evidence metadata rather than required at runtime;
 - test configuration;
 - documented runtime requirements;
 - third-party notices required by the generated artifact;
+- ProductCompletenessManifest or portable equivalent when qualified through Ineractive;
+- OwnershipManifest or portable ownership/resource inventory without secret values;
+- release/recovery runbook when production publishing is used;
 - Git history when the user requests/owns the repository.
 
 ## 4. Ineractive metadata
@@ -104,7 +113,59 @@ For Supabase-backed products:
 - managed projects have an explicit transfer/export path;
 - generated-app credentials never depend on the Ineractive control-plane browser session.
 
-## 8. Deployment ownership
+## 8. Release and operations ownership
+
+A production release is more than a code deployment.
+
+When publishing through Ineractive, release state should bind:
+
+- exact source head;
+- generated build artifact identity;
+- Product Graph/design revision;
+- backend migration set and compatibility expectations;
+- environment/config revision;
+- proof bundle;
+- recovery plan;
+- last-known-good identity.
+
+Generated products should expose portable operational basics where applicable:
+
+- health/readiness;
+- structured logs;
+- deploy/source version identity;
+- error handling/reporting adapter;
+- backend function/job logs;
+- optional OpenTelemetry-compatible instrumentation;
+- optional product analytics.
+
+These facilities must remain replaceable/exportable and must not require the Ineractive control plane for normal runtime.
+
+## 9. Data lifecycle ownership
+
+When the Product Graph declares data-retention/export/deletion/audit/residency behavior, the generated product must carry the implementation/configuration needed to honor that behavior and the tests/evidence needed to verify it.
+
+A data-classification mechanism is not a claim of compliance with any law or regulation.
+
+## 10. Ownership and provider detach
+
+Runtime-critical external resources must have an explicit owner and management story.
+
+The generated product/export should make it possible to identify:
+
+- Git repository;
+- backend project;
+- deployment project;
+- domain/DNS;
+- required external providers;
+- environment mapping;
+- billing/ownership responsibility;
+- required secret classes without secret values.
+
+Disconnecting Ineractive from a user-owned provider must not delete the resource or break ordinary runtime unless the runtime itself depended on a separately declared credential that the user revoked.
+
+Provider deletion is always distinct from Ineractive detach.
+
+## 11. Deployment ownership
 
 The user can choose:
 
@@ -114,7 +175,7 @@ The user can choose:
 
 Ineractive-specific deployment convenience cannot become the only supported runtime path.
 
-## 9. Import/re-entry
+## 12. Import/re-entry
 
 An exported product may later be re-imported.
 
@@ -131,7 +192,7 @@ Ineractive should reconstruct or reconcile:
 
 Loss of auxiliary metadata can reduce reconstruction precision, but must not invalidate the product itself.
 
-## 10. Portability verification
+## 13. Portability verification
 
 Before claiming export/self-host support for a compiler target, run a clean-room portability test:
 
@@ -142,6 +203,8 @@ Before claiming export/self-host support for a compiler target, run a clean-room
 5. reconstruct local backend from repository artifacts;
 6. build and run;
 7. execute critical browser journeys;
-8. confirm no undeclared Ineractive runtime dependency.
+8. confirm health/release identity remains usable without Ineractive-specific services where applicable;
+9. revoke Ineractive management access to provider resources and confirm ordinary product runtime remains valid where expected;
+10. confirm no undeclared Ineractive runtime dependency.
 
 Portability failure blocks the claim.
