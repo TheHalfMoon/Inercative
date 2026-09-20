@@ -1,0 +1,94 @@
+name: P00 OCR exact-candidate evidence final
+
+on:
+  push:
+    branches:
+      - evidence/p00-s05-t02-ocr-72f58ace
+    paths:
+      - .github/workflows/p00-ocr-exact-candidate-final.yml
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    env:
+      OCR_TAG: v1.12.7
+      OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+      TARGET_BASE: bdfd53c348d98fb2cacda70ec02fab5729aedd59
+      TARGET_HEAD: 72f58ace0a37a426d36a7aeb6446dd08d1794351
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_HEAD }}
+          fetch-depth: 0
+      - name: Confirm exact candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_HEAD}"
+          merge_base="$(git merge-base "${TARGET_BASE}" "${TARGET_HEAD}")"
+          test "$merge_base" = "${TARGET_BASE}"
+          echo "base=${TARGET_BASE}"
+          echo "head=${TARGET_HEAD}"
+          echo "merge_base=$merge_base"
+      - name: Install checksum-verified Alibaba OCR
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/alibaba/open-code-review/releases/download/${OCR_TAG}/opencodereview-linux-amd64" -o /tmp/ocr
+          echo "${OCR_SHA256}  /tmp/ocr" | sha256sum -c -
+          chmod +x /tmp/ocr
+          /tmp/ocr --version
+      - name: Deterministic exact-diff file accounting
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/ocr delegate preview --from "${TARGET_BASE}" --to "${TARGET_HEAD}" --format json | tee /tmp/ocr-preview.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path("/tmp/ocr-preview.json").read_text(encoding="utf-8"))
+          print("schema_version=",data.get("schema_version"))
+          print("merge_base=",data.get("merge_base"))
+          print("total_files=",data.get("total_files"))
+          print("reviewable_count=",data.get("reviewable_count"))
+          print("excluded_count=",data.get("excluded_count"))
+          print("reviewable_files=",json.dumps(data.get("reviewable_files",[]),sort_keys=True))
+          print("excluded_files=",json.dumps(data.get("excluded_files",[]),sort_keys=True))
+          paths=[]
+          for item in data.get("reviewable_files",[]):
+              if isinstance(item,str):
+                  paths.append(item)
+              elif isinstance(item,dict):
+                  path=item.get("path") or item.get("file") or item.get("filename")
+                  if isinstance(path,str):
+                      paths.append(path)
+          Path("/tmp/reviewable-paths.txt").write_text("".join(p+"\n" for p in paths),encoding="utf-8")
+          PY
+      - name: Deterministic rule resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            echo "=== OCR RULE: $path ==="
+            /tmp/ocr delegate rule "$path"
+          done < /tmp/reviewable-paths.txt
+      - name: Prove semantic blocker without exposing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in OCR_LLM_URL OCR_LLM_TOKEN OCR_LLM_MODEL ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN ANTHROPIC_MODEL; do
+            if [ -n "${!name:-}" ]; then echo "$name=SET"; else echo "$name=UNSET"; fi
+          done
+          set +e
+          /tmp/ocr review --from "${TARGET_BASE}" --to "${TARGET_HEAD}" --format json --output /tmp/ocr-findings.json >/tmp/ocr-semantic.stdout 2>/tmp/ocr-semantic.stderr
+          code=$?
+          set -e
+          echo "semantic_exit_code=$code"
+          sed -n '1,80p' /tmp/ocr-semantic.stderr
+          test "$code" -ne 0
+          grep -Eq "no valid LLM endpoint configured|resolve LLM endpoint" /tmp/ocr-semantic.stderr
