@@ -1,0 +1,63 @@
+name: P01 S03 exact-head shell qualification
+
+on:
+  push:
+    branches:
+      - evidence/p01-s03-workspace-shell-cbad26a6
+    paths:
+      - .github/workflows/p01-s03-exact-head-qualification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_SHA: cbad26a619ef83dbe9201a83c631934dc767f391
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: cbad26a619ef83dbe9201a83c631934dc767f391
+          fetch-depth: 0
+
+      - name: Assert exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          echo "qualified_head=$TARGET_SHA"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Frozen install
+        run: pnpm install --frozen-lockfile
+
+      - name: Control-plane typecheck
+        run: pnpm --filter @ineractive/control-plane run typecheck
+
+      - name: Focused shell tests
+        run: pnpm exec vitest run packages/control-plane/src/shell-state.test.ts
+
+      - name: Production standalone build
+        run: pnpm --filter @ineractive/control-plane run build
+
+      - name: Standalone HTTP smoke
+        run: pnpm --filter @ineractive/control-plane run smoke
+
+      - name: Report
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "INERACTIVE_P01_S03_EXACT_HEAD_QUALIFIED=$TARGET_SHA"
