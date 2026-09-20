@@ -63,7 +63,8 @@ their current delivery state:
 | SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | DONE (PR #15) | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
 | SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | DONE (PR #17) | `docs/evidence/P01_S02_T01_PROTOCOL_IDENTITY_REVISION_2026-09-20.md` |
 | SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | DONE (PR #18) | `docs/evidence/P01_S02_T02_RUN_EVENT_EVIDENCE_FINDING_2026-09-20.md` |
-| SG-000012 | IN-P01-S03-T01 | Project/workspace shell | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S03_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000012 | IN-P01-S03-T01 | Project/workspace shell | DONE (PR #19) | `docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md` |
+| SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S04_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -130,13 +131,18 @@ SG-000011 / IN-P01-S02-T02 is canonically complete through PR #18. Final candida
 `0f024611e80fee64f9f1e19ea2cb3ac8c2a0ea53` was merged as
 `9ec10a179ee93e0e4279d806ecb48922e66f06ec`; fresh-main CI #122 passed.
 
+SG-000012 / IN-P01-S03-T01 is canonically complete through PR #19. Final candidate
+`cbad26a619ef83dbe9201a83c631934dc767f391` passed exact-head CI #124 on Ubuntu
+and Windows plus separate exact-head standalone qualification run `35530781684`, and
+was merged as `db3e93ec6a2d8b3544791b5fd0aa5e134faeb2dd`.
+
 Current eligible frontier:
 
-1. **SG-000012 / IN-P01-S03-T01 — Build project/workspace shell.**
+1. **SG-000013 / IN-P01-S04-T01 — Build first accessible tokenized UI system.**
    Real SpecGrain shaping is complete; bounded implementation is active on the candidate
    branch.
-2. IN-P01-S04-T01 and IN-P01-S05-T01 remain blocked until SG-000012 is canonically
-   completed.
+2. IN-P01-S05-T01 is dependency-eligible after SG-000012 but remains behind active
+   SG-000013 in canonical P01 roadmap order.
 
 ## Hard constraints
 
