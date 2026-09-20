@@ -39,7 +39,13 @@ SpecGrain rolling-wave refinement remains required.
 | Data import safety | profile → preview → stage → validate → apply → reconcile; chunk/resume | COVERED |
 | Data privacy/lifecycle | class, retention, export, deletion, audit, residency, consent/redaction semantics | COVERED |
 | Web frontend | Next.js/React/TS/Tailwind V1 compiler, incremental edits | COVERED |
-| Accessibility | compiler requirement + browser/quality pack | COVERED |
+| Frontend architecture profile | FrontendQualityProfile + server/client/dependency policies | COVERED |
+| Component supply | ComponentResolver + source-owned qualified registry + reuse-before-synthesis | COVERED |
+| Primitive-base coherence | one primary base; Base UI default candidate / React Aria alternate / Radix preservation | COVERED |
+| Component admission | provenance/security/a11y/RTL/reduced-motion/performance RegistryAdmissionGate | COVERED |
+| Agent component/runtime introspection | Storybook MCP + Next.js DevTools MCP behind Tool Catalog policy | COVERED |
+| Frontend quality evidence | rule packs + React scan + component/browser/a11y/visual/perf FrontendEvidenceBundle | COVERED |
+| Accessibility | compiler requirement + component/browser/quality pack | COVERED |
 | i18n/Arabic/RTL | locale/timezone/formatting/RTL compiler + fixtures | COVERED |
 | Public-web quality | SEO where applicable, assets/fonts, performance budgets | COVERED |
 | Design system | DesignSystemRevision, Design Context Compiler | COVERED |
@@ -305,9 +311,9 @@ A-to-Z is therefore testable rather than only aspirational.
 
 # 10. Dependency graph integrity
 
-At the final hardening pass:
+At the final frontend/tooling hardening pass:
 
-- stable task handles: **157**;
+- stable task handles: **169**;
 - duplicate task IDs: **0**;
 - missing dependency references: **0**;
 - dependencies pointing to the same/later task position: **0**.
@@ -315,6 +321,23 @@ At the final hardening pass:
 These are planning-structure checks, not implementation PASS claims.
 
 ---
+
+# 10A. Frontend tooling gap closure
+
+The plan now distinguishes a coherent frontend system from a bag of libraries.
+
+Rules include:
+
+- reuse local/project/qualified source components before synthesis;
+- one primary primitive base per project;
+- no automatic migration of healthy imported apps to the newest preferred base;
+- external component catalogs are untrusted discovery sources until admission;
+- rule packs create findings but cannot grant PASS;
+- automated accessibility findings do not equal full accessibility compliance;
+- framework/server data fetching precedes adding client cache libraries;
+- complex table/motion/form/i18n tooling is on demand;
+- no paid component/visual-testing service is required for core proof;
+- current tool/framework versions are a dated research snapshot and are requalified before implementation.
 
 # 11. Deliberate boundaries
 
@@ -354,7 +377,7 @@ CURRENT_EXECUTION_FRONTIER
 = P00_IN_PROGRESS
 
 CANDIDATE_TASK_HANDLES
-= 157
+= 169
 
 CANDIDATE_DAG_STRUCTURALLY_VALID
 = YES
