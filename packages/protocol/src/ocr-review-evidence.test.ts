@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  type OcrReviewEvidence,
-  validateOcrReviewEvidence,
-} from "./ocr-review-evidence.ts";
+import { type OcrReviewEvidence, validateOcrReviewEvidence } from "./ocr-review-evidence.ts";
 
 const BASE = "1111111111111111111111111111111111111111";
 const HEAD = "2222222222222222222222222222222222222222";

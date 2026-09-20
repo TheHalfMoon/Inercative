@@ -190,13 +190,7 @@
         "path": { "type": "string", "minLength": 1 },
         "material": { "type": "boolean" },
         "disposition": {
-          "enum": [
-            "FIXED",
-            "ACCEPTED_RISK",
-            "FALSE_POSITIVE",
-            "DEFERRED_BLOCKING",
-            "UNRESOLVED"
-          ]
+          "enum": ["FIXED", "ACCEPTED_RISK", "FALSE_POSITIVE", "DEFERRED_BLOCKING", "UNRESOLVED"]
         },
         "rationale": { "type": "string", "minLength": 1 },
         "evidenceReference": { "type": "string", "minLength": 1 }

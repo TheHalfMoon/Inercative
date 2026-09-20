@@ -191,17 +191,18 @@ function requiredField(
   issues: OcrEvidenceIssue[],
 ): unknown {
   if (!(key in value)) {
-    addIssue(issues, "MISSING_FIELD", `${path}.${key}`, `${path} is missing required field ${key}.`);
+    addIssue(
+      issues,
+      "MISSING_FIELD",
+      `${path}.${key}`,
+      `${path} is missing required field ${key}.`,
+    );
     return undefined;
   }
   return value[key];
 }
 
-function nonEmptyString(
-  value: unknown,
-  path: string,
-  issues: OcrEvidenceIssue[],
-): string | null {
+function nonEmptyString(value: unknown, path: string, issues: OcrEvidenceIssue[]): string | null {
   if (typeof value !== "string" || value.trim().length === 0) {
     addIssue(issues, "INVALID_STRING", path, `${path} must be a non-empty string.`);
     return null;
@@ -240,11 +241,7 @@ function enumValue<const T extends readonly string[]>(
   return value;
 }
 
-function booleanValue(
-  value: unknown,
-  path: string,
-  issues: OcrEvidenceIssue[],
-): boolean | null {
+function booleanValue(value: unknown, path: string, issues: OcrEvidenceIssue[]): boolean | null {
   if (typeof value !== "boolean") {
     addIssue(issues, "INVALID_BOOLEAN", path, `${path} must be boolean.`);
     return null;
@@ -301,10 +298,7 @@ function parseTarget(
   return base !== null && head !== null && mergeBase !== null ? { base, head, mergeBase } : null;
 }
 
-function parseTool(
-  value: unknown,
-  issues: OcrEvidenceIssue[],
-): OcrReviewEvidence["tool"] | null {
+function parseTool(value: unknown, issues: OcrEvidenceIssue[]): OcrReviewEvidence["tool"] | null {
   const record = requireObject(value, "$.tool", issues);
   if (record === null) return null;
   rejectUnknownFields(
@@ -350,7 +344,12 @@ function parseChangedFiles(
   issues: OcrEvidenceIssue[],
 ): readonly OcrChangedFile[] | null {
   if (!Array.isArray(value)) {
-    addIssue(issues, "INVALID_ARRAY", "$.fileAccounting.changedFiles", "changedFiles must be an array.");
+    addIssue(
+      issues,
+      "INVALID_ARRAY",
+      "$.fileAccounting.changedFiles",
+      "changedFiles must be an array.",
+    );
     return null;
   }
 
@@ -361,7 +360,11 @@ function parseChangedFiles(
     const record = requireObject(item, path, issues);
     if (record === null) continue;
     rejectUnknownFields(record, ["path", "changeType"], path, issues);
-    const filePath = nonEmptyString(requiredField(record, "path", path, issues), `${path}.path`, issues);
+    const filePath = nonEmptyString(
+      requiredField(record, "path", path, issues),
+      `${path}.path`,
+      issues,
+    );
     const changeType = enumValue(
       requiredField(record, "changeType", path, issues),
       OCR_CHANGE_TYPES,
@@ -370,7 +373,12 @@ function parseChangedFiles(
     );
     if (filePath !== null) {
       if (seen.has(filePath)) {
-        addIssue(issues, "DUPLICATE_PATH", `${path}.path`, "changedFiles contains a duplicate path.");
+        addIssue(
+          issues,
+          "DUPLICATE_PATH",
+          `${path}.path`,
+          "changedFiles contains a duplicate path.",
+        );
       } else {
         seen.add(filePath);
       }
@@ -387,7 +395,12 @@ function parseExcludedFiles(
   issues: OcrEvidenceIssue[],
 ): readonly OcrExcludedFile[] | null {
   if (!Array.isArray(value)) {
-    addIssue(issues, "INVALID_ARRAY", "$.fileAccounting.excludedFiles", "excludedFiles must be an array.");
+    addIssue(
+      issues,
+      "INVALID_ARRAY",
+      "$.fileAccounting.excludedFiles",
+      "excludedFiles must be an array.",
+    );
     return null;
   }
 
@@ -398,7 +411,11 @@ function parseExcludedFiles(
     const record = requireObject(item, path, issues);
     if (record === null) continue;
     rejectUnknownFields(record, ["path", "excludeReason", "material"], path, issues);
-    const filePath = nonEmptyString(requiredField(record, "path", path, issues), `${path}.path`, issues);
+    const filePath = nonEmptyString(
+      requiredField(record, "path", path, issues),
+      `${path}.path`,
+      issues,
+    );
     const excludeReason = nonEmptyString(
       requiredField(record, "excludeReason", path, issues),
       `${path}.excludeReason`,
@@ -411,7 +428,12 @@ function parseExcludedFiles(
     );
     if (filePath !== null) {
       if (seen.has(filePath)) {
-        addIssue(issues, "DUPLICATE_PATH", `${path}.path`, "excludedFiles contains a duplicate path.");
+        addIssue(
+          issues,
+          "DUPLICATE_PATH",
+          `${path}.path`,
+          "excludedFiles contains a duplicate path.",
+        );
       } else {
         seen.add(filePath);
       }
@@ -428,7 +450,12 @@ function parseSeparateReviews(
   issues: OcrEvidenceIssue[],
 ): readonly OcrSeparateReview[] | null {
   if (!Array.isArray(value)) {
-    addIssue(issues, "INVALID_ARRAY", "$.fileAccounting.separateReviews", "separateReviews must be an array.");
+    addIssue(
+      issues,
+      "INVALID_ARRAY",
+      "$.fileAccounting.separateReviews",
+      "separateReviews must be an array.",
+    );
     return null;
   }
 
@@ -439,8 +466,16 @@ function parseSeparateReviews(
     const record = requireObject(item, path, issues);
     if (record === null) continue;
     rejectUnknownFields(record, ["path", "method", "evidenceReference"], path, issues);
-    const filePath = nonEmptyString(requiredField(record, "path", path, issues), `${path}.path`, issues);
-    const method = nonEmptyString(requiredField(record, "method", path, issues), `${path}.method`, issues);
+    const filePath = nonEmptyString(
+      requiredField(record, "path", path, issues),
+      `${path}.path`,
+      issues,
+    );
+    const method = nonEmptyString(
+      requiredField(record, "method", path, issues),
+      `${path}.method`,
+      issues,
+    );
     const evidenceReference = nonEmptyString(
       requiredField(record, "evidenceReference", path, issues),
       `${path}.evidenceReference`,
@@ -448,7 +483,12 @@ function parseSeparateReviews(
     );
     if (filePath !== null) {
       if (seen.has(filePath)) {
-        addIssue(issues, "DUPLICATE_PATH", `${path}.path`, "separateReviews contains a duplicate path.");
+        addIssue(
+          issues,
+          "DUPLICATE_PATH",
+          `${path}.path`,
+          "separateReviews contains a duplicate path.",
+        );
       } else {
         seen.add(filePath);
       }
@@ -473,7 +513,10 @@ function parseFileAccounting(
     issues,
   );
 
-  const changedFiles = parseChangedFiles(requiredField(record, "changedFiles", "$.fileAccounting", issues), issues);
+  const changedFiles = parseChangedFiles(
+    requiredField(record, "changedFiles", "$.fileAccounting", issues),
+    issues,
+  );
   const reviewableFiles = stringArray(
     requiredField(record, "reviewableFiles", "$.fileAccounting", issues),
     "$.fileAccounting.reviewableFiles",
@@ -515,7 +558,11 @@ function parseRuleResolution(
     const record = requireObject(item, path, issues);
     if (record === null) continue;
     rejectUnknownFields(record, ["path", "ruleSetIdentity", "evidenceReference"], path, issues);
-    const filePath = nonEmptyString(requiredField(record, "path", path, issues), `${path}.path`, issues);
+    const filePath = nonEmptyString(
+      requiredField(record, "path", path, issues),
+      `${path}.path`,
+      issues,
+    );
     const ruleSetIdentity = nonEmptyString(
       requiredField(record, "ruleSetIdentity", path, issues),
       `${path}.ruleSetIdentity`,
@@ -528,7 +575,12 @@ function parseRuleResolution(
     );
     if (filePath !== null) {
       if (seen.has(filePath)) {
-        addIssue(issues, "DUPLICATE_PATH", `${path}.path`, "ruleResolution contains a duplicate path.");
+        addIssue(
+          issues,
+          "DUPLICATE_PATH",
+          `${path}.path`,
+          "ruleResolution contains a duplicate path.",
+        );
       } else {
         seen.add(filePath);
       }
@@ -540,12 +592,14 @@ function parseRuleResolution(
   return result;
 }
 
-function parseFindings(
-  value: unknown,
-  issues: OcrEvidenceIssue[],
-): readonly OcrFinding[] | null {
+function parseFindings(value: unknown, issues: OcrEvidenceIssue[]): readonly OcrFinding[] | null {
   if (!Array.isArray(value)) {
-    addIssue(issues, "INVALID_ARRAY", "$.semanticReview.findings", "$.semanticReview.findings must be an array.");
+    addIssue(
+      issues,
+      "INVALID_ARRAY",
+      "$.semanticReview.findings",
+      "$.semanticReview.findings must be an array.",
+    );
     return null;
   }
 
@@ -565,8 +619,16 @@ function parseFindings(
       `${path}.findingId`,
       issues,
     );
-    const filePath = nonEmptyString(requiredField(record, "path", path, issues), `${path}.path`, issues);
-    const material = booleanValue(requiredField(record, "material", path, issues), `${path}.material`, issues);
+    const filePath = nonEmptyString(
+      requiredField(record, "path", path, issues),
+      `${path}.path`,
+      issues,
+    );
+    const material = booleanValue(
+      requiredField(record, "material", path, issues),
+      `${path}.material`,
+      issues,
+    );
     const disposition = enumValue(
       requiredField(record, "disposition", path, issues),
       OCR_FINDING_DISPOSITIONS,
@@ -591,16 +653,20 @@ function parseFindings(
       rationale !== null &&
       evidenceReference !== null
     ) {
-      result.push({ findingId, path: filePath, material, disposition, rationale, evidenceReference });
+      result.push({
+        findingId,
+        path: filePath,
+        material,
+        disposition,
+        rationale,
+        evidenceReference,
+      });
     }
   }
   return result;
 }
 
-function parseSemanticOutput(
-  value: unknown,
-  issues: OcrEvidenceIssue[],
-): OcrSemanticOutput | null {
+function parseSemanticOutput(value: unknown, issues: OcrEvidenceIssue[]): OcrSemanticOutput | null {
   const record = requireObject(value, "$.semanticReview.output", issues);
   if (record === null) return null;
   rejectUnknownFields(record, ["format", "reference", "sha256"], "$.semanticReview.output", issues);
@@ -631,7 +697,12 @@ function parseSemanticBlocker(
 ): OcrSemanticBlocker | null {
   const record = requireObject(value, "$.semanticReview.blocker", issues);
   if (record === null) return null;
-  rejectUnknownFields(record, ["code", "reason", "evidenceReference"], "$.semanticReview.blocker", issues);
+  rejectUnknownFields(
+    record,
+    ["code", "reason", "evidenceReference"],
+    "$.semanticReview.blocker",
+    issues,
+  );
   const code = nonEmptyString(
     requiredField(record, "code", "$.semanticReview.blocker", issues),
     "$.semanticReview.blocker.code",
@@ -652,13 +723,15 @@ function parseSemanticBlocker(
     : null;
 }
 
-function parseSemanticReview(
-  value: unknown,
-  issues: OcrEvidenceIssue[],
-): OcrSemanticReview | null {
+function parseSemanticReview(value: unknown, issues: OcrEvidenceIssue[]): OcrSemanticReview | null {
   const record = requireObject(value, "$.semanticReview", issues);
   if (record === null) return null;
-  rejectUnknownFields(record, ["state", "blocker", "output", "findings"], "$.semanticReview", issues);
+  rejectUnknownFields(
+    record,
+    ["state", "blocker", "output", "findings"],
+    "$.semanticReview",
+    issues,
+  );
 
   const state = enumValue(
     requiredField(record, "state", "$.semanticReview", issues),
@@ -684,7 +757,9 @@ function parseSemanticReview(
       );
     }
     const output = parseSemanticOutput(outputValue, issues);
-    return blockerValue === null && output !== null ? { state, blocker: null, output, findings } : null;
+    return blockerValue === null && output !== null
+      ? { state, blocker: null, output, findings }
+      : null;
   }
 
   if (outputValue !== null) {
@@ -756,7 +831,10 @@ function parseReconciliation(
     issues,
   );
 
-  return fromHead !== null && toHead !== null && diffUnchanged !== null && evidenceReference !== null
+  return fromHead !== null &&
+    toHead !== null &&
+    diffUnchanged !== null &&
+    evidenceReference !== null
     ? { fromHead, toHead, diffUnchanged, evidenceReference }
     : null;
 }
@@ -769,7 +847,9 @@ function validateCoverage(
   const changed = new Set(evidence.fileAccounting.changedFiles.map((file) => file.path));
   const reviewable = new Set(evidence.fileAccounting.reviewableFiles);
   const excluded = new Map(evidence.fileAccounting.excludedFiles.map((file) => [file.path, file]));
-  const separate = new Map(evidence.fileAccounting.separateReviews.map((item) => [item.path, item]));
+  const separate = new Map(
+    evidence.fileAccounting.separateReviews.map((item) => [item.path, item]),
+  );
   const rules = new Map(evidence.ruleResolution.map((item) => [item.path, item]));
 
   for (const path of reviewable) {
