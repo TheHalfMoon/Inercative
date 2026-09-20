@@ -1,0 +1,64 @@
+# P00-S04-T02 — Donor Provenance Import Record Evidence
+
+**Task:** IN-P00-S04-T02  
+**SpecGrain:** SG-000005  
+**Date:** 2026-09-20  
+**Baseline:** `54709f3e4cfd4e85ffce697846b1d8f487d0ae26`
+
+## Implementation
+
+Added dependency-free package `@ineractive/provenance` with:
+
+- JSON Schema draft 2020-12 machine-readable import-record schema;
+- typed TypeScript record contract;
+- deterministic validator over `unknown`;
+- explicit unknown-field rejection;
+- strict required-field validation;
+- immutable revision enforcement via 40- or 64-hex digest/SHA;
+- negative fixtures for missing fields, short/unpinned revisions, empty paths, duplicate paths, missing required notice reference, unsupported use mode, and empty evidence.
+
+## Acceptance mapping
+
+The schema captures:
+
+- source repository;
+- immutable revision;
+- source paths;
+- destination;
+- use mode;
+- authority/permission reference;
+- license/notice state;
+- dependency closure;
+- modification summary;
+- security impact;
+- verification evidence;
+- review evidence.
+
+Invalid or incomplete records fail deterministic validation.
+
+## Scope boundary
+
+No donor code is imported.
+
+Notice inventory generation/admission policy remains IN-P00-S04-T03.
+
+## Required verification
+
+Exact-head repository CI must pass formatting, lint, typecheck, and Vitest including the provenance negative controls before merge.
+
+
+## CI repair history
+
+- candidate `c3a3602a23e411c7ef0c689a9c185046c6b3acbd`: frozen install failed because the new workspace importer was absent;
+- candidate `d4085d695bc6fbc2108a96990ed372580ad0c436`: frozen install still failed because the importer was added to the first document of the repository's multi-document lockfile, not the workspace dependency document;
+- this repair moves the importer to the correct second lockfile document and keeps both failures as evidence rather than re-running stale heads.
+
+
+## Schema/validator parity
+
+Before acceptance, the JSON Schema and TypeScript validator were reconciled so both express:
+
+- immutable 40- or 64-hex revision identity;
+- non-empty notice reference when NOTICE is required;
+- unique verification/review evidence entries;
+- strict required/unknown-field behavior.
