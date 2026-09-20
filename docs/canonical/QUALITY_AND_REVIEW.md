@@ -212,16 +212,31 @@ Track:
 - unexercised material paths;
 - unresolved instrumentation limits.
 
-## 12. Design proof
+## 12. Frontend and design proof
 
-A design gate combines:
+A frontend/design gate can combine:
 
-- deterministic Impeccable-derived detectors;
-- accessibility tooling;
+- FrontendQualityProfile revision;
+- component provenance and primitive-base identity;
+- deterministic Impeccable findings;
+- pinned Vercel Web Interface Guidelines findings;
+- pinned Vercel React Best Practices findings;
+- deterministic React quality findings through a qualified React Doctor adapter;
+- component states/interactions through Storybook/Vitest or a qualified equivalent when configured;
+- automated axe findings;
+- explicit keyboard/focus browser journeys;
 - responsive overflow/layout checks;
 - rendered screenshot inspection;
-- visual regression where a baseline exists;
-- semantic/UX critique for high-value surfaces.
+- Playwright visual comparison where a controlled baseline exists;
+- navigation/performance observations;
+- semantic/UX critique for high-value surfaces;
+- unresolved RegistryAdmissionGate findings for external component candidates.
+
+These normalize into an exact-source FrontendEvidenceBundle.
+
+No design score, React score, detector count, screenshot, or single external rule pack grants PASS.
+
+Automated accessibility scanning is partial evidence and must not be presented as complete standards compliance.
 
 Taste findings can be REVIEW rather than hard FAIL unless they violate explicit design requirements.
 
@@ -272,6 +287,10 @@ CI should eventually include:
 - supply-chain/secret/asset integrity checks;
 - harness replay/regression fixtures;
 - production-web quality fixtures;
+- FrontendQualityProfile/compiler fixtures;
+- component-registry/admission fixtures;
+- deterministic React-quality fixtures;
+- component-state/accessibility/browser/visual frontend evidence fixtures;
 - Diffcipline gate;
 - OCR review workflow on PRs when credentials/execution are configured.
 
@@ -345,6 +364,24 @@ Replay a recorded-observation task after a harness/context/skill/router change a
 
 After P13 qualification, build an exported AI-enabled product with provider-neutral generated-app integration, secret isolation, usage limits, and eval fixtures.
 
+### B17 — Idea to owned production product
+
+Start from a product brief plus business data and prove the complete GitHub/Supabase/deployment/recovery/post-launch lifecycle with no manual developer coding in the golden path.
+
+### B18 — Frontend component supply and quality
+
+Build and change a component-rich Next.js product while proving:
+
+- local/project/qualified-registry reuse happens before synthesis;
+- no duplicate primitive system is introduced;
+- one primary primitive base remains coherent;
+- external component admission is provenance/security/a11y/compatibility checked;
+- server/client boundaries remain bounded;
+- Arabic/RTL and responsive states survive;
+- component states and critical browser journeys pass;
+- visual/design quality evidence is exact-source bound;
+- optional frontend dependencies are justified rather than injected by default.
+
 ## 18. Metrics
 
 Track:
@@ -357,6 +394,11 @@ Track:
 - RLS/security failures caught before publish;
 - browser journey success;
 - design/a11y findings;
+- duplicate component/primitive introduction rate;
+- registry reuse vs synthesis rate;
+- unnecessary client-boundary expansion rate;
+- frontend optional-dependency justification rate;
+- FrontendEvidenceBundle completeness/freshness;
 - flaky evidence rate;
 - time/cost to proven vertical slice;
 - budget adherence;
