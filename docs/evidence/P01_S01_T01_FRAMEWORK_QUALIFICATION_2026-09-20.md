@@ -45,3 +45,12 @@ Earlier attempts are preserved rather than re-run to green:
 - run `35524783752`: exact consolidated fixture qualification and evidence integration succeeded end to end.
 
 Only run `35524783752` is the successful qualification execution record. Final repository acceptance still requires exact-head Ubuntu and Windows CI.
+
+
+## Repository CI repair history
+
+- run `35524931952` on candidate `33566d3103e72d4424acab49f56ccad98e0881bb`:
+  frozen install and format passed; Ubuntu lint failed because the isolated qualification
+  fixture's `.mjs` files were not attached to a TypeScript project-service configuration.
+  No lint rule is bypassed. A fixture-local `tsconfig.json` now explicitly includes the
+  qualification JavaScript/JSX/MJS files so typed ESLint can inspect them.

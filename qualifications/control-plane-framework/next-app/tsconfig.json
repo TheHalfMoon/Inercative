@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "preserve"
+  },
+  "include": [
+    "app/**/*.js",
+    "app/**/*.jsx",
+    "next.config.mjs",
+    "smoke.mjs"
+  ]
+}
