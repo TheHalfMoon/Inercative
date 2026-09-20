@@ -1,8 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const CONTROL_PLANE_SCOPE = "CONTROL_PLANE" as const;
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 
 export interface ControlPlaneSupabaseConfig {
@@ -101,7 +100,9 @@ export function readControlPlaneSupabaseConfig(
     environment.INERACTIVE_GENERATED_APP_SUPABASE_URL !== undefined ||
     environment.INERACTIVE_GENERATED_APP_SUPABASE_KEY !== undefined
   ) {
-    throw new Error("Generated-application Supabase configuration cannot initialize the control-plane store.");
+    throw new Error(
+      "Generated-application Supabase configuration cannot initialize the control-plane store.",
+    );
   }
 
   return {
@@ -120,7 +121,9 @@ function validateActor(actor: VerifiedControlPlaneActor): void {
   }
 }
 
-function normalizeProjectInput(input: CreateControlPlaneProjectInput): CreateControlPlaneProjectInput {
+function normalizeProjectInput(
+  input: CreateControlPlaneProjectInput,
+): CreateControlPlaneProjectInput {
   const name = input.name.trim();
   const slug = input.slug.trim().toLowerCase();
 
@@ -199,9 +202,7 @@ export class SupabaseControlPlaneStore {
     return data === null ? null : mapProject(data as unknown as ProjectRow);
   }
 
-  public async createProject(
-    input: CreateControlPlaneProjectInput,
-  ): Promise<ControlPlaneProject> {
+  public async createProject(input: CreateControlPlaneProjectInput): Promise<ControlPlaneProject> {
     const normalized = normalizeProjectInput(input);
     const { data, error } = await this.client
       .from("ineractive_projects")

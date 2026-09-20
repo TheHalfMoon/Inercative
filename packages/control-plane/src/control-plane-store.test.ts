@@ -121,7 +121,9 @@ describe("control-plane Supabase migration contract", () => {
   it("denies anon and grants authenticated roles explicitly", () => {
     const sql = migrationSql();
 
-    expect(sql).toContain("revoke all on table public.ineractive_projects from anon, authenticated");
+    expect(sql).toContain(
+      "revoke all on table public.ineractive_projects from anon, authenticated",
+    );
     expect(sql).toContain(
       "grant select, insert, update, delete on table public.ineractive_projects to authenticated",
     );
