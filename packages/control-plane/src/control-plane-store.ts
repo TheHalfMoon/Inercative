@@ -54,6 +54,28 @@ function requireNonEmpty(value: string | undefined, name: string): string {
   return value;
 }
 
+function legacyJwtRole(value: string): string | null {
+  const parts = value.split(".");
+  if (parts.length !== 3 || parts[1] === undefined) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8")) as {
+      readonly role?: unknown;
+    };
+    return typeof payload.role === "string" ? payload.role : null;
+  } catch {
+    return null;
+  }
+}
+
+function assertNonPrivilegedPublishableKey(value: string): void {
+  if (value.startsWith("sb_secret_") || legacyJwtRole(value) === "service_role") {
+    throw new Error("Privileged Supabase secret/service-role keys are forbidden for this store.");
+  }
+}
+
 export function readControlPlaneSupabaseConfig(
   environment: ControlPlaneEnvironment,
 ): ControlPlaneSupabaseConfig {
@@ -65,6 +87,7 @@ export function readControlPlaneSupabaseConfig(
     environment.INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY,
     "INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY",
   );
+  assertNonPrivilegedPublishableKey(publishableKey);
 
   if (
     environment.NEXT_PUBLIC_INERACTIVE_CONTROL_PLANE_SUPABASE_SECRET_KEY !== undefined ||

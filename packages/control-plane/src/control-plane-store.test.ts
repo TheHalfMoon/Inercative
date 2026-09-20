@@ -53,6 +53,27 @@ describe("control-plane Supabase configuration", () => {
     ).toThrow(/forbidden/u);
   });
 
+  it("rejects new-format Supabase secret keys even in the publishable-key slot", () => {
+    expect(() =>
+      readControlPlaneSupabaseConfig({
+        INERACTIVE_CONTROL_PLANE_SUPABASE_URL: CONFIG.url,
+        INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY: "sb_secret_privileged",
+      }),
+    ).toThrow(/forbidden/u);
+  });
+
+  it("rejects legacy service-role JWTs even in the publishable-key slot", () => {
+    const payload = Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url");
+    const legacyServiceRoleJwt = `header.${payload}.signature`;
+
+    expect(() =>
+      readControlPlaneSupabaseConfig({
+        INERACTIVE_CONTROL_PLANE_SUPABASE_URL: CONFIG.url,
+        INERACTIVE_CONTROL_PLANE_SUPABASE_PUBLISHABLE_KEY: legacyServiceRoleJwt,
+      }),
+    ).toThrow(/forbidden/u);
+  });
+
   it("rejects generated-application Supabase configuration at the trust boundary", () => {
     expect(() =>
       readControlPlaneSupabaseConfig({
