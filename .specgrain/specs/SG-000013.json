@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "The shell has a documented source-owned token contract and no raw recurring brand colors/spacings are required for ordinary shell states.",
+    "Interactive native controls expose labels, keyboard focus visibility, disabled/invalid-capable styling conventions, and at least 44px primary touch targets.",
+    "The shell reflows without a fixed minimum desktop width at representative wide, tablet, and narrow viewport CSS breakpoints.",
+    "Reduced-motion preference disables non-essential transitions and no motion is required to understand state.",
+    "The first brand language is visibly distinct but remains legible in dark and light color schemes.",
+    "Focused UI contract tests, production standalone build/smoke, and exact-head Ubuntu/Windows repository CI pass."
+  ],
+  "change_surface": [
+    "packages/control-plane/**",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 12000,
+    "estimated_tokens": 7000
+  },
+  "dependencies": [
+    "SG-000012"
+  ],
+  "evidence": {
+    "required": [
+      "Focused token/accessibility/responsive-source contract tests.",
+      "Production standalone build and HTTP smoke after UI-system changes.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000013",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Use CSS custom properties and native semantic controls before qualifying any external primitive/component dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Do not represent automated/static checks as complete accessibility certification.",
+          "Do not hide the session-only non-persistence boundary at any responsive size."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Ineractive control-plane shell uses a coherent first-party token system, typography hierarchy, accessible native-first primitives, responsive layout, and first recognizable brand language without introducing an unnecessary component dependency stack.",
+  "parent_id": null,
+  "rationale": "Canonical P01-S04-T01 frontier after SG-000012 workspace shell completion.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000013 token/primitives/responsive/brand changes and evidence; no data or external side effect is introduced."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define source-owned semantic design tokens for color, typography, spacing, radius, border, focus, elevation, and layout.",
+    "Apply a deliberate first Ineractive brand language to the existing control-plane shell without copying a third-party identity.",
+    "Add native-first accessible Button, TextField, Badge, and visually-hidden/focus treatment conventions only where they reduce repeated shell markup.",
+    "Make the workspace shell responsive across desktop, tablet, and narrow mobile widths without hiding core session-only truth or activity.",
+    "Add visible focus states, minimum touch-target policy, reduced-motion behavior, semantic labels/status, and high-contrast-safe token relationships.",
+    "Add deterministic token/UI contract tests and re-run production standalone build/smoke."
+  ],
+  "scope_out": [
+    "No Base UI, React Aria, Radix, shadcn registry, Tailwind, Storybook, animation library, or external component dependency until its dedicated qualification/admission task.",
+    "No Supabase/auth/persistence; that remains IN-P01-S05-T01.",
+    "No visual editor, generated-product design compiler, registry, or P08 Design OS implementation.",
+    "No claim of complete WCAG conformance from static checks alone."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S04-T01 Build first accessible tokenized UI system"
+}
