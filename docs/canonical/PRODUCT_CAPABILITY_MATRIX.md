@@ -48,6 +48,10 @@ The matrix distinguishes:
 | Personas | V1 CORE | Product context |
 | Roles/permissions | V1 CORE | Authorization model |
 | Entities/relationships | V1 CORE | Backend compiler input |
+| Dataset/Data Workspace | V1 CORE | Import/profile/map/version business data |
+| Spreadsheet/CSV/JSON import | V1 CORE | Dataset pipeline, not raw table dump |
+| Dataset quality/lineage | V1 CORE | Counts, constraints, transforms, provenance |
+| Seed/synthetic data | V1 CORE | Deterministic dev/test fixtures |
 | Pages/routes | V1 CORE | UI compiler input |
 | Actions/workflows | V1 CORE | Behavior compiler input |
 | Requirements | V1 CORE | Verification source |
@@ -116,7 +120,9 @@ The matrix distinguishes:
 | Queues | BETA | |
 | Vector/search | BETA | Only when product needs it |
 | Remote project connect | V1 CORE | User-owned Supabase |
-| Remote project create | BETA | Via scoped management flow |
+| Remote project create | BETA | Via scoped OAuth/Management API flow in user-owned org |
+| Connected existing project reconciliation | V1 CORE | Source↔remote drift before mutation |
+| Dataset import to Supabase | V1 CORE | Profile/map/verify before final binding |
 | Drift detection | V1 CORE | Required before remote mutation |
 | Migration risk classification | V1 CORE | Additive/transformative/restrictive/destructive |
 | Expand/contract planning | V1 CORE | For risky production changes |
@@ -229,6 +235,9 @@ The matrix distinguishes:
 | Local project ownership | V1 CORE | |
 | Source export | V1 CORE | |
 | Git repository ownership | V1 CORE | |
+| GitHub App least-privilege connection | BETA | User chooses account/org/repos |
+| Create/connect repository | BETA | User-owned destination |
+| GitHub↔Supabase project identity binding | BETA | End-to-end ownership workflow |
 | Supabase migration/config ownership | V1 CORE | |
 | Docker/self-host export | BETA | P11 |
 | First managed preview deploy | BETA | P11 |
@@ -239,6 +248,8 @@ The matrix distinguishes:
 | ReleaseManifest | BETA | Source + backend + config + proof + recovery |
 | Last-known-good promotion | BETA | Candidate cannot silently replace proven release |
 | Generated-app operations baseline | BETA | Health/log/error/release identity |
+| Connected Ownership Orchestrator | BETA | GitHub + Supabase + deployment identity flow |
+| A-to-Z factory benchmark | BETA | Idea/data → owned production product → post-launch change |
 | Production recovery drill | BETA | App/schema compatibility + backup expectations |
 | Feature flags/staged rollout | LATER | Useful after release model is proven |
 | Multi-cloud arbitrary IaC | LATER | Avoid shallow breadth |
