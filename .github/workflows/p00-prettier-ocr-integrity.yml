@@ -1,0 +1,50 @@
+name: P00 one-shot Prettier OCR integrity fix
+
+on:
+  push:
+    branches:
+      - p00/s05-t02-ocr-evidence-contract
+    paths:
+      - .github/workflows/p00-prettier-ocr-integrity.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format integrity patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write             packages/protocol/src/ocr-review-evidence.ts             packages/protocol/src/ocr-review-evidence.test.ts             docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md
+          pnpm exec prettier --check             packages/protocol/src/ocr-review-evidence.ts             packages/protocol/src/ocr-review-evidence.test.ts             docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md
+          git diff --check
+      - name: Commit format repair and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/p00-prettier-ocr-integrity.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/protocol/src/ocr-review-evidence.ts             packages/protocol/src/ocr-review-evidence.test.ts             docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md
+          if git diff --cached --quiet; then
+            echo "No format changes required."
+          else
+            git commit -m "style(p00): format OCR integrity patch"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
