@@ -110,6 +110,8 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P08-S11-T01 | P08 | Integrate pinned/versioned Impeccable, Vercel Web Interface Guidelines, and Vercel React Best Practices rule packs | IN-P08-S02-T01, IN-P03-S07-T01, IN-P05-S07-T01 |
 | IN-P08-S11-T02 | P08 | Qualify Storybook component workbench/MCP and reusable component-state catalog path | IN-P05-S07-T03, IN-P04-S06-T04 |
 | IN-P08-S11-T03 | P08 | Implement component/browser design-quality loop using Storybook/Vitest/axe, Playwright visual/accessibility evidence, and independent design critique | IN-P08-S11-T01, IN-P08-S11-T02, IN-P08-S03-T01, IN-P04-S05-T01 |
+| IN-P08-S12-T01 | P08 | Implement VisualPromptProtocol, MediaGenerationRequest, MediaProviderAdapter integration, CreativeAsset lineage, and independent generated-asset evaluation flow | IN-P03-S04-T01, IN-P03-S08-T01, IN-P08-S07-T01, IN-P08-S10-T01 |
+| IN-P08-S12-T02 | P08 | Implement bounded raster/compositing refinement for product-bound creative assets without expanding into a general-purpose image editor | IN-P08-S05-T01, IN-P08-S10-T01, IN-P08-S12-T01 |
 | IN-P09-S01-T01 | P09 | Implement safe existing-repository discovery/import | IN-P04-S04-T01, IN-P04-S05-T01, IN-P05-S04-T01 |
 | IN-P09-S02-T01 | P09 | Implement screenshot/image reconstruction flow | IN-P08-S03-T01, IN-P08-S05-T01 |
 | IN-P09-S03-T01 | P09 | Implement URL/reference capture and reconstruction | IN-P04-S05-T01, IN-P08-S03-T01 |
@@ -169,6 +171,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P13-S05-T02 | P13 | Implement AI-feature eval, policy, secret-isolation, usage/rate-limit fixture pack | IN-P13-S05-T01, IN-P10-S01-T02, IN-P03-S08-T01 |
 | IN-P13-S06-T01 | P13 | Define and prove high-risk external-integration qualification harness | IN-P06-S09-T02, IN-P10-S05-T01 |
 | IN-P13-S07-T01 | P13 | Implement Product Kit contract combining graph fragments, components, tokens, Skills, backend patterns, and verification | IN-P13-S03-T01, IN-P03-S07-T01, IN-P08-S07-T01 |
+| IN-P13-S08-T01 | P13 | Qualify multiple creative-media provider adapters and bounded decision routing by modality/operation/quality/cost/latency/privacy/policy | IN-P03-S04-T01, IN-P03-S08-T01, IN-P08-S12-T01, IN-P08-S12-T02, IN-P10-S01-T02, IN-P13-S05-T01 |
 | IN-P14-S01-T01 | P14 | Harden PWA compiler behavior | IN-P11-S03-T01 |
 | IN-P14-S02-T01 | P14 | Prototype/qualify Expo mobile target | IN-P02-S05-T01, IN-P06-S06-T01, IN-P14-S01-T01 |
 | IN-P14-S03-T01 | P14 | Define cross-target portability/evidence contract | IN-P14-S02-T01 |
