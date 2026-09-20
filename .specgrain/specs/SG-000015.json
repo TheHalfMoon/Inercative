@@ -1,0 +1,76 @@
+{
+  "acceptance": [
+    "At least two executable persistence/interface alternatives operate on the same representative graph fixture.",
+    "Round-trip preserves the same semantic graph state for both alternatives.",
+    "Equivalent node/edge/slice queries return equivalent deterministic results.",
+    "Document serialization is stable under insertion-order permutations.",
+    "Relational normalization preserves explicit node/edge/revision identity without hidden graph-database semantics.",
+    "A deterministic comparison report records all canonical selection criteria and unresolved tradeoffs without claiming final selection.",
+    "Focused tests plus exact-head Ubuntu and Windows repository CI pass."
+  ],
+  "change_surface": [
+    "packages/product-graph-lab/**",
+    "docs/canonical/PRODUCT_GRAPH.md",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 11000,
+    "estimated_tokens": 6000
+  },
+  "dependencies": [
+    "SG-000013",
+    "SG-000014"
+  ],
+  "evidence": {
+    "required": [
+      "Focused tests proving round-trip, deterministic ordering, equivalent queries, and fixture parity across both alternatives.",
+      "Deterministic comparison report across canonical Product Graph selection criteria.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000015",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Use one private prototype package with two internal adapters and no external runtime dependency; defer public Product Graph contracts to IN-P02-S01-T02."
+      },
+      "safety": {
+        "requirements": [
+          "Do not make the prototype package a public product/runtime contract.",
+          "Do not select a graph database merely because the semantic model is a graph."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Two bounded Product Graph persistence/interface prototypes are executable and compared with deterministic evidence across canonical selection criteria without prematurely selecting the P02 v1 representation.",
+  "parent_id": null,
+  "rationale": "P01 is canonically complete; P02 begins by earning the Product Graph persistence decision through evidence.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000015 prototype package and evidence; no production storage, public v1 graph contract, or remote side effect is permitted."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Prototype a canonical structured-document representation with deterministic normalization and derived indexes.",
+    "Prototype a normalized relational representation with explicit node/edge/revision rows and equivalent query semantics.",
+    "Exercise identical representative graph fixtures and slice/query operations through a shared prototype interface.",
+    "Measure deterministic serialization/diff behavior, inspectability, migration/versioning friction, query ergonomics, testability, and bounded performance.",
+    "Record evidence and tradeoffs for IN-P02-S01-T02 without selecting a production representation in this Grain."
+  ],
+  "scope_out": [
+    "No final Product Graph v1 public contract.",
+    "No graph database selection or external persistence service.",
+    "No user-intent parsing, domain model completion, or graph UI.",
+    "No production migration or remote database side effect."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S01-T01 Prototype Product Graph persistence and interface alternatives"
+}
