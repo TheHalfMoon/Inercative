@@ -60,3 +60,23 @@ Only run `35524783752` is the successful qualification execution record. Final r
   frozen install passed; format failed only because the newly added fixture-local
   `tsconfig.json` had not yet been normalized by the repository Prettier rules. The
   file is now formatted without changing its typed-lint semantics.
+
+
+## Exact-head repository acceptance
+
+Candidate:
+
+`352bf32233c42d1d7e91c5f1616b57d34a1ac0ad`
+
+GitHub Actions CI #106 / run `35525051741`:
+
+- Ubuntu frozen install: PASS;
+- Ubuntu format/lint/typecheck/tests: PASS;
+- Windows frozen install: PASS;
+- Windows format/lint/typecheck/tests: PASS;
+- exact candidate head recorded: PASS.
+
+This proves the repository acceptance condition for the pre-reconciliation candidate.
+The acceptance-status reconciliation changes the head and therefore requires one final
+fresh exact-head CI before guarded merge. No framework fixture behavior changes in that
+reconciliation commit.

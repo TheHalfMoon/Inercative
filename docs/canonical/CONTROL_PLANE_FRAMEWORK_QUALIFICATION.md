@@ -126,8 +126,15 @@ Reference:
 
 ## Qualification decision
 
-Proceed with a bounded **Next.js 16.3.5 + React 19.3.0** control-plane qualification fixture.
+**Next.js App Router 16.3.5 + React 19.3.0 / React DOM 19.3.0** is accepted as the
+Ineractive control-plane framework baseline for the bounded P01 control plane.
 
-This is a qualification decision, not blanket framework approval for every generated application and not authorization to build the P01-S03 project/workspace shell.
+Executed qualification run `35524783752` produced a clean production build, generated
+standalone Node server, and real Node 24 HTTP response with the expected marker.
 
-The decision remains contingent on the fixture producing a clean production build and a real Node 24 self-host HTTP response with the expected marker.
+Repository CI #106 (`35525051741`) passed on exact candidate
+`352bf32233c42d1d7e91c5f1616b57d34a1ac0ad` on Ubuntu and Windows.
+
+This decision is not blanket framework approval for every generated application and does
+not authorize the P01-S03 project/workspace shell. The acceptance-reconciliation head must
+still pass exact-head repository CI before guarded merge.

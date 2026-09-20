@@ -1,6 +1,6 @@
 # ADR-0002 — Ineractive Control-Plane Framework Baseline
 
-**Status:** Qualified candidate — exact-head repository CI pending  
+**Status:** Accepted for guarded canonical merge — final reconciliation-head CI required  
 **Date:** 2026-09-20  
 **Task:** IN-P01-S01-T01  
 **SpecGrain:** SG-000009
@@ -113,7 +113,16 @@ Costs:
 
 ## Acceptance
 
-Qualification run `35524783752` has proven the first four conditions below. This ADR becomes **Accepted** only when the final repository candidate also passes exact-head Ubuntu + Windows CI.
+Qualification run `35524783752` proved the bounded framework fixture end to end.
+
+Repository CI #106 (`35525051741`) then passed on exact candidate
+`352bf32233c42d1d7e91c5f1616b57d34a1ac0ad` on Ubuntu and Windows, including frozen
+install, format, lint, typecheck, and tests.
+
+The framework decision is therefore accepted for guarded canonical merge. Because this
+acceptance-status reconciliation changes the Git head, this reconciliation head must itself
+pass exact-head Ubuntu + Windows repository CI before merge; no later status-only commit is
+required.
 
 The exact pinned fixture:
 
@@ -121,4 +130,4 @@ The exact pinned fixture:
 - produces a production build on Node 24;
 - starts the generated standalone Node server;
 - returns `INERACTIVE_CONTROL_PLANE_FRAMEWORK_QUALIFIED` over HTTP;
-- and the final repository candidate passes exact-head Ubuntu + Windows CI.
+- and the guarded merge head must pass exact-head Ubuntu + Windows CI.
