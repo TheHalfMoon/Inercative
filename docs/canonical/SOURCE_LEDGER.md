@@ -52,6 +52,15 @@ Never concatenate donor applications into the product architecture.
 | Pentagram work/methodology | identity strategy: one central idea expressed across brand/product/motion; reference only, never copy a client identity |
 | Anthropic Claude Design | design-system ingestion, multimodal design creation, direct/annotated refinement, design-to-build handoff | REFERENCE |
 | Figma Make / Figma MCP / Code Connect / Skills / Make kits | native design/code round trip, design-system truth, annotations, Skills, real-code editing | REFERENCE / INTEGRATE |
+| shadcn/ui | source-owned component distribution/registry format and AI-readable component supply | ADAPT / DEPEND_SELECTIVE |
+| Base UI | unstyled accessible primitive base; current shadcn new-project default candidate | DEPEND_SELECTIVE |
+| React Aria | accessible/internationalized primitive alternative | DEPEND_SELECTIVE |
+| Radix Primitives | mature accessible primitive base; preserve compatible existing projects | DEPEND_SELECTIVE / PRESERVE |
+| Storybook | component state workbench, interaction/a11y testing, MCP introspection | DEPEND_SELECTIVE |
+| Magic UI | animated/marketing source components | OPTIONAL QUALIFIED SOURCE |
+| Motion Primitives | source-owned motion components | OPTIONAL QUALIFIED SOURCE |
+| tweakcn | shadcn theme/token exploration and possible import patterns | REFERENCE |
+| 21st | external component discovery/registry/MCP catalog | OPTIONAL EXTERNAL REGISTRY |
 
 ## 4. Agent/runtime/sandbox pool
 
@@ -118,6 +127,24 @@ Directly relevant:
 Surveyed connected repositories with no automatic adoption: Fanatir, Hikma, Coddev, ProtocolWISE, Trcel, Paina, Balott, kodac-phase-b-gate, and other connected repositories. Their existence is not implementation authority.
 
 Private source material must not be published wholesale into this public repository without an explicit bounded transfer decision.
+
+## 6A. Frontend quality/tooling references
+
+- Vercel Web Interface Guidelines — versioned interface quality rule-pack reference.
+- Vercel React Best Practices / agent-skills — React/Next performance and implementation rule-pack reference.
+- React Doctor — deterministic React correctness/performance/security/accessibility/maintainability scan candidate.
+- React Scan — optional runtime render-performance visualization/profiling reference.
+- Next.js DevTools MCP — framework diagnostics/introspection adapter candidate.
+- Playwright — browser/E2E/visual evidence.
+- axe-core / @axe-core/playwright — automated accessibility findings; never sufficient alone for a compliance claim.
+- Vitest — unit/component test baseline.
+- TanStack Table — on-demand headless complex-table adapter candidate.
+- TanStack Query — on-demand client/server cache/mutation adapter; not a default dependency for App Router products.
+- Motion — on-demand complex motion/gesture engine; CSS/View Transitions first for simple effects.
+- Zod — runtime boundary schema candidate.
+- next-intl — Next.js i18n adapter candidate; locale semantics remain above the library.
+
+Exact versions and security state are requalified at implementation time.
 
 ## 7. Process and review sources
 
