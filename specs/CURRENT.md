@@ -61,7 +61,8 @@ their current delivery state:
 | SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | DONE (PR #12) | `docs/evidence/P00_S04_T03_PROVENANCE_ADMISSION_2026-09-20.md` |
 | SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | DONE (PR #13) | `docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md` |
 | SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | DONE (PR #15) | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
-| SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S02_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | DONE (PR #17) | `docs/evidence/P01_S02_T01_PROTOCOL_IDENTITY_REVISION_2026-09-20.md` |
+| SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S02_T02_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -120,12 +121,16 @@ passed on reconciliation head `8a1eb6446f847db4f926ee88689cd71d75d8ecbe` on Ubun
 and Windows; fresh-main CI #108 passed on merge commit
 `cf0fa70c8f065033ad0bb4087c76b5d57dd3b6ce`.
 
+SG-000010 / IN-P01-S02-T01 is canonically complete through PR #17. Final head
+`544b4c090978124dcee89d329c69611277537c57` passed exact-head CI #116; fresh-main
+CI #117 passed on merge commit `1a43dd45ba5dff43e6beee2b111b0dedcd210f9b`.
+
 Current eligible frontier:
 
-1. **SG-000010 / IN-P01-S02-T01 — Implement protocol identity/revision primitives.**
+1. **SG-000011 / IN-P01-S02-T02 — Implement run/event/evidence/finding schemas.**
    Real SpecGrain shaping is complete; bounded implementation is active on the candidate
    branch.
-2. IN-P01-S02-T02 remains blocked until SG-000010 is canonically completed.
+2. IN-P01-S03-T01 remains blocked until SG-000011 is canonically completed.
 
 ## Hard constraints
 
