@@ -155,6 +155,64 @@ describe("validateOcrReviewEvidence", () => {
     expect(issueCodes(evidence)).toContain("MATERIAL_FINDING_BLOCKS_COMPLETION");
   });
 
+  it("rejects semantic findings that target a non-reviewable file", () => {
+    const evidence = mutableEvidence();
+    evidence.semanticReview = {
+      state: "RUN",
+      blocker: null,
+      output: {
+        format: "JSON",
+        reference: "artifact:ocr-findings.json",
+        sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      findings: [
+        {
+          findingId: "OCR-2",
+          path: "docs/governance.md",
+          material: false,
+          disposition: "FALSE_POSITIVE",
+          rationale: "outside OCR reviewable surface",
+          evidenceReference: "artifact:ocr-findings.json#OCR-2",
+        },
+      ],
+    };
+
+    expect(issueCodes(evidence)).toContain("FINDING_PATH_INVALID");
+  });
+
+  it("rejects duplicate semantic finding ids", () => {
+    const evidence = mutableEvidence();
+    evidence.semanticReview = {
+      state: "RUN",
+      blocker: null,
+      output: {
+        format: "JSON",
+        reference: "artifact:ocr-findings.json",
+        sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      findings: [
+        {
+          findingId: "OCR-3",
+          path: "src/reviewable.ts",
+          material: false,
+          disposition: "FALSE_POSITIVE",
+          rationale: "first occurrence",
+          evidenceReference: "artifact:ocr-findings.json#OCR-3-a",
+        },
+        {
+          findingId: "OCR-3",
+          path: "src/reviewable.ts",
+          material: false,
+          disposition: "FALSE_POSITIVE",
+          rationale: "duplicate occurrence",
+          evidenceReference: "artifact:ocr-findings.json#OCR-3-b",
+        },
+      ],
+    };
+
+    expect(issueCodes(evidence)).toContain("DUPLICATE_FINDING_ID");
+  });
+
   it("rejects stale evidence without deterministic reconciliation", () => {
     expect(issueCodes(VALID_BLOCKED_EVIDENCE, NEXT_HEAD)).toContain("STALE_HEAD");
   });
@@ -171,6 +229,20 @@ describe("validateOcrReviewEvidence", () => {
     };
 
     expect(validateOcrReviewEvidence(evidence, NEXT_HEAD).ok).toBe(true);
+  });
+
+  it("rejects reconciliation whose source does not equal the reviewed head", () => {
+    const evidence: OcrReviewEvidence = {
+      ...VALID_BLOCKED_EVIDENCE,
+      reconciliation: {
+        fromHead: NEXT_HEAD,
+        toHead: HEAD,
+        diffUnchanged: true,
+        evidenceReference: "diffcipline:invalid-reconciliation",
+      },
+    };
+
+    expect(issueCodes(evidence)).toContain("RECONCILIATION_INVALID");
   });
 
   it("rejects a generic bot name as designated OCR evidence", () => {

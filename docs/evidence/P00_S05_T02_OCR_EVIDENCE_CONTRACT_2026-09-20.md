@@ -3,7 +3,7 @@
 **Task:** IN-P00-S05-T02  
 **SpecGrain:** SG-000008  
 **Date:** 2026-09-20  
-**Baseline:** `917d730c2cdb841b198e896ff9af0c74e48d393c`
+**Canonical baseline:** `bdfd53c348d98fb2cacda70ec02fab5729aedd59`
 
 ## Candidate outcome
 
@@ -23,6 +23,7 @@ The contract requires:
 - structured semantic output identity and findings only when RUN;
 - explicit blocker evidence and zero findings when BLOCKED/NOT_RUN;
 - material finding disposition;
+- finding paths restricted to OCR-reviewable files and unique finding identities;
 - stale-head invalidation unless deterministic unchanged-diff reconciliation exists.
 
 ## Public API boundary

@@ -122,6 +122,8 @@ export type OcrEvidenceIssueCode =
   | "SEMANTIC_OUTPUT_INVALID"
   | "SEMANTIC_FINDINGS_FOR_NON_RUN"
   | "MATERIAL_FINDING_BLOCKS_COMPLETION"
+  | "FINDING_PATH_INVALID"
+  | "DUPLICATE_FINDING_ID"
   | "STALE_HEAD"
   | "RECONCILIATION_INVALID";
 
@@ -929,7 +931,28 @@ function validateCoverage(
   }
 
   if (evidence.semanticReview.state === "RUN") {
+    const findingIds = new Set<string>();
     for (const finding of evidence.semanticReview.findings) {
+      if (findingIds.has(finding.findingId)) {
+        addIssue(
+          issues,
+          "DUPLICATE_FINDING_ID",
+          "$.semanticReview.findings",
+          `Semantic finding id ${finding.findingId} is duplicated.`,
+        );
+      } else {
+        findingIds.add(finding.findingId);
+      }
+
+      if (!reviewable.has(finding.path)) {
+        addIssue(
+          issues,
+          "FINDING_PATH_INVALID",
+          "$.semanticReview.findings",
+          `Semantic finding ${finding.findingId} targets non-reviewable path ${finding.path}.`,
+        );
+      }
+
       if (
         finding.material &&
         (finding.disposition === "UNRESOLVED" || finding.disposition === "DEFERRED_BLOCKING")
@@ -959,12 +982,16 @@ function validateCoverage(
         "OCR evidence head differs from the candidate head without valid deterministic reconciliation.",
       );
     }
-  } else if (evidence.reconciliation !== null && evidence.reconciliation.toHead !== candidateHead) {
+  } else if (
+    evidence.reconciliation !== null &&
+    (evidence.reconciliation.fromHead !== evidence.target.head ||
+      evidence.reconciliation.toHead !== candidateHead)
+  ) {
     addIssue(
       issues,
       "RECONCILIATION_INVALID",
-      "$.reconciliation.toHead",
-      "Reconciliation target must equal the candidate head.",
+      "$.reconciliation",
+      "Reconciliation must bind the reviewed head to the candidate head.",
     );
   }
 }
