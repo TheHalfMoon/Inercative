@@ -33,3 +33,17 @@ No later P01 protocol domain is introduced.
 - exact-head Ubuntu and Windows CI.
 
 No PASS is claimed until the final candidate head executes those gates.
+
+
+## CI repair history
+
+- exact-head CI #113 / run `35527356399` on candidate
+  `9650b71ba7a397504703a6aaa044b2c36029074f` passed frozen install on Ubuntu
+  and Windows, then failed only at `format:check` for the newly reconciled
+  JSON Schema and schema/runtime parity test;
+- one-shot format run `35527460053` used the repository-pinned Prettier 3.9.8,
+  formatted those two exact files, verified them with `prettier --check`, and
+  removed its temporary workflow from the branch;
+- the failed head remains preserved as evidence and is not re-run to green;
+- acceptance requires fresh exact-head Ubuntu and Windows CI after this
+  evidence-only reconciliation commit.
