@@ -60,7 +60,8 @@ their current delivery state:
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 | SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | DONE (PR #12) | `docs/evidence/P00_S04_T03_PROVENANCE_ADMISSION_2026-09-20.md` |
 | SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | DONE (PR #13) | `docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md` |
-| SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | READY FOR GUARDED MERGE / RECONCILIATION-HEAD CI REQUIRED | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
+| SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | DONE (PR #15) | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
+| SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S02_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -114,15 +115,17 @@ Completed P00 delivery:
 - SG-000007 — provenance admission validation and notice inventory;
 - SG-000008 — OCR evidence/file-accounting contract with exact-head deterministic OCR proof.
 
+SG-000009 / IN-P01-S01-T01 is canonically complete through PR #15. Exact-head CI #107
+passed on reconciliation head `8a1eb6446f847db4f926ee88689cd71d75d8ecbe` on Ubuntu
+and Windows; fresh-main CI #108 passed on merge commit
+`cf0fa70c8f065033ad0bb4087c76b5d57dd3b6ce`.
+
 Current eligible frontier:
 
-1. **SG-000009 / IN-P01-S01-T01 — Qualify control-plane framework.** Real SpecGrain
-   shaping and runtime qualification are complete. CI #106 passed on exact candidate
-   `352bf32233c42d1d7e91c5f1616b57d34a1ac0ad` on Ubuntu and Windows. ADR-0002 is
-   accepted for guarded merge. This acceptance-reconciliation head must itself pass
-   exact-head Ubuntu + Windows CI before merge.
-2. IN-P01-S02-T01 remains blocked until SG-000009 is canonically merged and fresh-main
-   evidence is reconciled.
+1. **SG-000010 / IN-P01-S02-T01 — Implement protocol identity/revision primitives.**
+   Real SpecGrain shaping is complete; bounded implementation is active on the candidate
+   branch.
+2. IN-P01-S02-T02 remains blocked until SG-000010 is canonically completed.
 
 ## Hard constraints
 
