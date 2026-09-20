@@ -590,6 +590,16 @@ Qualify a component workbench and agent-introspection path:
 
 Combine rule-pack findings with real rendered/browser evidence rather than treating any rule set as aesthetic authority.
 
+### P08-S12 Creative-media generation and bounded asset refinement
+- compile `VisualPromptProtocol` from Product Graph, brand/design truth, copy constraints, reference assets, and rights/policy constraints;
+- emit provider-neutral `MediaGenerationRequest` records for generate/edit/variation/extend/remove/composite operations;
+- route only among deterministically eligible media providers/models using bounded decision intelligence for quality/cost/latency fit;
+- record generated/edited `CreativeAsset` lineage, provider/model/configuration evidence, source references, and Product Graph/DesignSystemRevision bindings;
+- evaluate candidates against product/design requirements before acceptance;
+- provide bounded raster/compositing refinement for product-bound assets: crop/resize/transform, masks/alpha, layers/blending, background removal, erase/fill, tonal/color adjustments, limited retouching, and export;
+- preserve reduced-motion/performance/accessibility rules for motion/animated outputs;
+- do not expand into a general-purpose Photoshop/After Effects replacement.
+
 **Exit:** B01 and B08 reach design/a11y/responsive quality gates, visual edits remain clean source diffs, design/code round-trip state is explicit rather than silently overwritten, and reusable component states are independently inspectable/testable.
 
 ## P09 — Import and multimodal starting points
@@ -952,6 +962,14 @@ Combine reusable:
 - verification rules.
 
 Kits accelerate normal source/graph generation; they are not opaque templates.
+
+### P13-S08 Creative-media provider ecosystem
+- qualify multiple real image/video/media adapters behind `MediaProviderAdapter`;
+- qualify bounded routing by modality, operation, quality floor, cost, latency, privacy, policy, and current provider health;
+- keep provider identity out of callers and public product claims unless explicitly required;
+- preserve fallback lineage and requalification when a fallback materially changes capability;
+- benchmark specialized decision adapters, including Laya-class System-1 models, behind the provider-neutral bounded-decision interface;
+- require Ineractive-owned evaluation before any published external benchmark influences production routing policy.
 
 **Exit:** external capabilities and reusable product intelligence can extend Ineractive without bypassing core policy/evidence or generated-product ownership.
 
