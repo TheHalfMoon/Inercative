@@ -1,0 +1,96 @@
+name: Qualify P01 S05 control-plane store
+
+on:
+  push:
+    branches:
+      - qualify/p01-s05-t01-8290cd1d
+    paths:
+      - .github/workflows/qualify-p01-s05-store.yml
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: 8290cd1dc969733aca5b457f65e2956c42d22f49
+      SUPABASE_VERSION: "2.117.0"
+      SUPABASE_SHA256: "69c05f85b9e47ee706d30f1a6ca8a526b4e337bfd12c7ef1ef522d24e7280d24"
+      SUPABASE_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout workflow branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout exact candidate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Frozen install
+        run: pnpm install --frozen-lockfile
+
+      - name: Production build
+        run: pnpm --filter @ineractive/control-plane build
+
+      - name: Production smoke
+        run: pnpm --filter @ineractive/control-plane smoke
+
+      - name: Install verified Supabase CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /tmp/supabase.tar.gz             "https://github.com/supabase/cli/releases/download/v${SUPABASE_VERSION}/supabase_${SUPABASE_VERSION}_linux_amd64.tar.gz"
+          echo "${SUPABASE_SHA256}  /tmp/supabase.tar.gz" | sha256sum -c -
+          mkdir -p /tmp/supabase-cli
+          tar -xzf /tmp/supabase.tar.gz -C /tmp/supabase-cli
+          /tmp/supabase-cli/supabase --version
+          /tmp/supabase-cli/supabase start --help > /tmp/start-help.txt
+          /tmp/supabase-cli/supabase db reset --help > /tmp/reset-help.txt
+          /tmp/supabase-cli/supabase db lint --help > /tmp/lint-help.txt
+
+      - name: Start local Supabase and reconstruct from migrations
+        shell: bash
+        working-directory: packages/control-plane
+        run: |
+          set -euo pipefail
+          cleanup() {
+            /tmp/supabase-cli/supabase stop --no-backup >/tmp/supabase-stop.log 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          if ! /tmp/supabase-cli/supabase start >/tmp/supabase-start.log 2>&1; then
+            cat /tmp/supabase-start.log
+            exit 1
+          fi
+
+          reset_args=()
+          if grep -q -- "--local" /tmp/reset-help.txt; then
+            reset_args+=(--local)
+          fi
+          /tmp/supabase-cli/supabase db reset "${reset_args[@]}"
+
+          lint_args=(--fail-on error)
+          if grep -q -- "--local" /tmp/lint-help.txt; then
+            lint_args+=(--local)
+          fi
+          /tmp/supabase-cli/supabase db lint "${lint_args[@]}"
+
+          /tmp/supabase-cli/supabase migration list --local
