@@ -39,6 +39,25 @@ Stores Ineractive product accounts and operational metadata such as:
 
 It does **not** become the canonical database for generated customer application data.
 
+### 2.1 P01 minimum control-plane store
+
+The first persisted control-plane slice is intentionally narrow:
+
+- authenticated user profile identity;
+- Ineractive projects;
+- project memberships;
+- user-scoped server repository access.
+
+It uses a dedicated control-plane Supabase URL/publishable-key configuration and verifies
+the user access token with Supabase Auth before repository construction. It does not accept
+generated-app Supabase configuration or service-role/secret credentials.
+
+The local control-plane Supabase config keeps automatic new-table Data API exposure
+disabled. Grants and RLS policies are explicit and owner/membership predicates provide
+object authorization; authenticated role alone is insufficient.
+
+Remote project provisioning and production migration remain later platform-lifecycle work.
+
 ### Generated-product data plane
 
 Each generated application has its own backend identity and lifecycle:
