@@ -43,3 +43,10 @@ provisioned. This candidate records that state; it does not convert it into PASS
 - exact-head Ubuntu and Windows frozen install, format, lint, typecheck, and tests;
 - no unresolved material review finding;
 - no credential or secret committed.
+
+
+## CI repair history
+
+- candidate `911027b23b01501ff2faf6ab34f9e577d7415214`: frozen install passed; Ubuntu failed only at `format:check` for the three new OCR evidence contract files;
+- one-shot formatter run `35522144380` used repository-pinned Prettier 3.9.8, verified the exact three files, committed a format-only repair, and removed its temporary workflow from the branch;
+- the formatter-generated head is not accepted by itself; acceptance requires fresh exact-head Ubuntu and Windows CI after this connector-authored evidence update.
