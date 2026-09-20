@@ -76,3 +76,17 @@ No lockfile, production database, graph database, or remote storage is introduce
 - focused Vitest prototype suite passes;
 - committed comparison report matches executable report generation;
 - exact-head Ubuntu and Windows repository CI passes.
+
+
+## Qualification history
+
+The focused qualification history is preserved rather than collapsed into the final green run:
+
+- run `35533877070`, head `7e624364475c8574feecef32a7134e96c425eb20`: report generation, formatting, and TypeScript passed; ESLint failed with three findings (unsafe recursive JSON argument, one unused import, one unbound TypeScript method);
+- run `35534040515`, head `4cef10c05ee6b33536d02ecacb529f8dbd960b82`: two findings were repaired; ESLint still identified the recursive array branch as an unsafe `any` path;
+- run `35534088839`, head `46fc7637ac69343a50a349a749fe05ec6610ddf0`: object canonicalization was hardened; the array-narrowing path remained the sole ESLint finding;
+- run `35534156493`, implementation head `6c581fdf32297bc918619d261677af826555069a`: frozen install, deterministic report generation, Prettier, private-lab TypeScript, ESLint, focused tests, and diff check all passed;
+- focused tests: **2 files / 10 tests passed**;
+- the successful one-shot then committed generated/formatted outputs and removed its temporary workflow, producing head `754d424d8539159d58c50e0920a94ec0daeec1ae`.
+
+This evidence-only reconciliation commit does not change Product Graph prototype code or the generated comparison report. Fresh exact-head repository CI remains required before merge.
