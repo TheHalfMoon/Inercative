@@ -47,6 +47,9 @@ A complete export contains all applicable artifacts:
 - test configuration;
 - documented runtime requirements;
 - third-party notices required by the generated artifact;
+- ProductCompletenessManifest or portable equivalent when qualified through Ineractive;
+- OwnershipManifest or portable ownership/resource inventory without secret values;
+- release/recovery runbook when production publishing is used;
 - Git history when the user requests/owns the repository.
 
 ## 4. Ineractive metadata
@@ -142,7 +145,26 @@ When the Product Graph declares data-retention/export/deletion/audit/residency b
 
 A data-classification mechanism is not a claim of compliance with any law or regulation.
 
-## 10. Deployment ownership
+## 10. Ownership and provider detach
+
+Runtime-critical external resources must have an explicit owner and management story.
+
+The generated product/export should make it possible to identify:
+
+- Git repository;
+- backend project;
+- deployment project;
+- domain/DNS;
+- required external providers;
+- environment mapping;
+- billing/ownership responsibility;
+- required secret classes without secret values.
+
+Disconnecting Ineractive from a user-owned provider must not delete the resource or break ordinary runtime unless the runtime itself depended on a separately declared credential that the user revoked.
+
+Provider deletion is always distinct from Ineractive detach.
+
+## 11. Deployment ownership
 
 The user can choose:
 
@@ -152,7 +174,7 @@ The user can choose:
 
 Ineractive-specific deployment convenience cannot become the only supported runtime path.
 
-## 11. Import/re-entry
+## 12. Import/re-entry
 
 An exported product may later be re-imported.
 
@@ -169,7 +191,7 @@ Ineractive should reconstruct or reconcile:
 
 Loss of auxiliary metadata can reduce reconstruction precision, but must not invalidate the product itself.
 
-## 12. Portability verification
+## 13. Portability verification
 
 Before claiming export/self-host support for a compiler target, run a clean-room portability test:
 
@@ -181,6 +203,7 @@ Before claiming export/self-host support for a compiler target, run a clean-room
 6. build and run;
 7. execute critical browser journeys;
 8. confirm health/release identity remains usable without Ineractive-specific services where applicable;
-9. confirm no undeclared Ineractive runtime dependency.
+9. revoke Ineractive management access to provider resources and confirm ordinary product runtime remains valid where expected;
+10. confirm no undeclared Ineractive runtime dependency.
 
 Portability failure blocks the claim.
