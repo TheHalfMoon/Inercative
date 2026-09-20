@@ -1,0 +1,115 @@
+name: P01 one-shot SpecGrain control-plane store
+
+on:
+  push:
+    branches:
+      - p01/s05-t01-control-plane-store
+    paths:
+      - .github/workflows/p01-specgrain-control-plane-store.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: 880b78e99a14d1f04eedb2e81482ce6804ab88cd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+      - name: Draft SG-000014
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft .             --title "IN-P01-S05-T01 Establish minimum Supabase-backed control-plane user/project store"             --outcome "Ineractive control-plane users, projects, and memberships persist through a bounded Supabase repository layer while generated-application data planes remain separate trust domains."             --rationale "Next canonical P01 roadmap unit after SG-000013 accessible UI completion."             --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000014"
+      - name: Shape SG-000014
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000014 .             --scope-in "Define the minimum control-plane persistence model for authenticated users, projects, and project memberships."             --scope-in "Add a server-only Supabase repository adapter with explicit control-plane configuration and no service-role exposure to browser code."             --scope-in "Define control-plane schema/RLS artifacts with explicit Data API grants and owner/member isolation."             --scope-in "Add deterministic tests that prove generated-product Supabase project/config/secret identity is not accepted by the control-plane store boundary."             --scope-in "Record current Supabase changelog/documentation assumptions used by the implementation."             --scope-out "No remote Supabase project provisioning, linking, billing, production mutation, or secret creation."             --scope-out "No generated-application backend compiler, migrations, RLS, storage, or product data."             --scope-out "No full login/session UI; authentication UX remains separate from this persistence slice."             --acceptance "The control-plane schema models user profiles, projects, and memberships with explicit ownership/member constraints."             --acceptance "Every exposed control-plane table has RLS enabled and explicit authenticated grants/policies; TO authenticated alone is never the authorization predicate."             --acceptance "The repository adapter requires a verified authenticated user identity and a dedicated control-plane Supabase configuration."             --acceptance "Service-role or generated-product credentials cannot enter browser-facing configuration or the control-plane repository contract."             --acceptance "Project list/create/read paths are tenant-isolated by user ownership or membership."             --acceptance "No remote Supabase side effect is required for exact-head CI; deterministic contract tests pass on Ubuntu and Windows."             --dependency SG-000009             --dependency SG-000011             --dependency SG-000012             --risk-level high             --recovery "Revert SG-000014 schema/repository/config/test artifacts and dependency pin; no remote project or database side effect is authorized."             --context-budget 12000             --context-estimate 7000             --change-surface "packages/control-plane/**"             --change-surface "docs/canonical/SUPABASE_PLATFORM.md"             --change-surface "docs/evidence/**"             --change-surface "specs/CURRENT.md"             --change-surface "pnpm-lock.yaml"             --evidence "Focused store/config/RLS contract tests including cross-tenant and generated-data-plane separation negatives."             --evidence "Exact dependency pin and frozen-lockfile verification."             --evidence "Exact-head Ubuntu and Windows repository CI."             --minimality-choice new-code             --minimality-rationale "Extend the existing control-plane package and use one pinned Supabase JS client instead of creating a separate backend package or remote project."             --safety-status requirements-defined             --safety-requirement "Control-plane and generated-product Supabase trust domains must remain distinct."             --safety-requirement "Never expose service-role/secret keys in browser configuration or NEXT_PUBLIC variables."             --safety-requirement "Authorization must be owner/membership based; authenticated role alone is insufficient."             --json | tee /tmp/shape.json
+      - name: Refine and promote SG-000014
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000014 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check-refining.json
+          specgrain grain SG-000014 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check-grain.json
+          specgrain next . --json | tee /tmp/next.json
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          def load(name):
+              return json.loads(Path("/tmp/" + name).read_text(encoding="utf-8"))
+          draft=load("draft.json")
+          shape=load("shape.json")
+          refine=load("refine.json")
+          grain=load("grain.json")
+          check=load("check-grain.json")
+          nxt=load("next.json")
+          candidate=next(item for item in nxt["candidates"] if item["node_id"]=="SG-000014")
+          lines=[
+              "# P01-S05-T01 — SpecGrain Shaping Evidence",
+              "",
+              "Task: IN-P01-S05-T01",
+              "SpecGrain: SG-000014",
+              "Date: 2026-09-20",
+              "Canonical baseline: " + os.environ["BASELINE_SHA"],
+              "SpecGrain source: TheHalfMoon/SpecGrain@" + os.environ["SPECGRAIN_SHA"],
+              "GitHub Actions run: " + os.environ["GITHUB_RUN_ID"],
+              "",
+              "- draft state: " + draft["state"],
+              "- shaped revision: " + shape["revision_digest"],
+              "- refine state: " + refine["state"],
+              "- grain state: " + grain["state"],
+              "- final revision: " + grain["revision_digest"],
+              "- project check valid: " + str(check["valid"]).lower(),
+              "- next waiting_on: " + ",".join(candidate["waiting_on"]),
+              "",
+              "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.",
+              "Repository delivery truth records SG-000009, SG-000011, and SG-000012 DONE through merged PRs and exact/fresh-main CI.",
+              "No READY/VERIFIED/CONTROLLED/WorkPacket state is fabricated to bridge the current CLI lifecycle gap.",
+              "",
+          ]
+          Path("docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md").write_text("\n".join(lines),encoding="utf-8")
+          PY
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          allowed={
+            ".specgrain/specs/SG-000014.json",
+            "docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md",
+          }
+          output=subprocess.check_output(["git","status","--porcelain=v1"],text=True)
+          changed={line[3:] for line in output.splitlines() if line}
+          if changed != allowed:
+              raise SystemExit("unexpected changed paths=" + repr(sorted(changed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000014.json docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md
+          git commit -m "chore(p01): shape control-plane store grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
