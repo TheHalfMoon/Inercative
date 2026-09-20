@@ -5,10 +5,5 @@
     "checkJs": true,
     "jsx": "preserve"
   },
-  "include": [
-    "app/**/*.js",
-    "app/**/*.jsx",
-    "next.config.mjs",
-    "smoke.mjs"
-  ]
+  "include": ["app/**/*.js", "app/**/*.jsx", "next.config.mjs", "smoke.mjs"]
 }

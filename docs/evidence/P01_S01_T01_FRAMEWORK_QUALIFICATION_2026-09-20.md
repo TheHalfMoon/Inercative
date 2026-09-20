@@ -54,3 +54,9 @@ Only run `35524783752` is the successful qualification execution record. Final r
   fixture's `.mjs` files were not attached to a TypeScript project-service configuration.
   No lint rule is bypassed. A fixture-local `tsconfig.json` now explicitly includes the
   qualification JavaScript/JSX/MJS files so typed ESLint can inspect them.
+
+
+- run `35524998872` on candidate `855970750b560059f1349acc1f66f26a5aedbf87`:
+  frozen install passed; format failed only because the newly added fixture-local
+  `tsconfig.json` had not yet been normalized by the repository Prettier rules. The
+  file is now formatted without changing its typed-lint semantics.
