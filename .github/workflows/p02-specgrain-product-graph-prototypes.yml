@@ -1,0 +1,144 @@
+name: P02 one-shot SpecGrain Product Graph prototypes
+
+on:
+  push:
+    branches:
+      - p02/s01-t01-product-graph-prototypes
+    paths:
+      - .github/workflows/p02-specgrain-product-graph-prototypes.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: ec1a8209c8f6164b41b55e77e5d41db5856b14e9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install exact SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft SG-000015
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft .             --title "IN-P02-S01-T01 Prototype Product Graph persistence and interface alternatives"             --outcome "Two bounded Product Graph persistence/interface prototypes are executable and compared with deterministic evidence across canonical selection criteria without prematurely selecting the P02 v1 representation."             --rationale "P01 is canonically complete; P02 begins by earning the Product Graph persistence decision through evidence."             --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000015"
+
+      - name: Shape SG-000015
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000015 .             --scope-in "Prototype a canonical structured-document representation with deterministic normalization and derived indexes."             --scope-in "Prototype a normalized relational representation with explicit node/edge/revision rows and equivalent query semantics."             --scope-in "Exercise identical representative graph fixtures and slice/query operations through a shared prototype interface."             --scope-in "Measure deterministic serialization/diff behavior, inspectability, migration/versioning friction, query ergonomics, testability, and bounded performance."             --scope-in "Record evidence and tradeoffs for IN-P02-S01-T02 without selecting a production representation in this Grain."             --scope-out "No final Product Graph v1 public contract."             --scope-out "No graph database selection or external persistence service."             --scope-out "No user-intent parsing, domain model completion, or graph UI."             --scope-out "No production migration or remote database side effect."             --acceptance "At least two executable persistence/interface alternatives operate on the same representative graph fixture."             --acceptance "Round-trip preserves the same semantic graph state for both alternatives."             --acceptance "Equivalent node/edge/slice queries return equivalent deterministic results."             --acceptance "Document serialization is stable under insertion-order permutations."             --acceptance "Relational normalization preserves explicit node/edge/revision identity without hidden graph-database semantics."             --acceptance "A deterministic comparison report records all canonical selection criteria and unresolved tradeoffs without claiming final selection."             --acceptance "Focused tests plus exact-head Ubuntu and Windows repository CI pass."             --dependency SG-000013             --dependency SG-000014             --risk-level medium             --recovery "Revert SG-000015 prototype package and evidence; no production storage, public v1 graph contract, or remote side effect is permitted."             --context-budget 11000             --context-estimate 6000             --change-surface "packages/product-graph-lab/**"             --change-surface "docs/canonical/PRODUCT_GRAPH.md"             --change-surface "docs/evidence/**"             --change-surface "specs/CURRENT.md"             --evidence "Focused tests proving round-trip, deterministic ordering, equivalent queries, and fixture parity across both alternatives."             --evidence "Deterministic comparison report across canonical Product Graph selection criteria."             --evidence "Exact-head Ubuntu and Windows repository CI."             --minimality-choice new-code             --minimality-rationale "Use one private prototype package with two internal adapters and no external runtime dependency; defer public Product Graph contracts to IN-P02-S01-T02."             --safety-status requirements-defined             --safety-requirement "Do not make the prototype package a public product/runtime contract."             --safety-requirement "Do not select a graph database merely because the semantic model is a graph."             --json | tee /tmp/shape.json
+
+      - name: Refine and promote
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000015 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check-refining.json
+          specgrain grain SG-000015 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check-grain.json
+          specgrain next . --json | tee /tmp/next.json
+
+      - name: Assert known lifecycle boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          data=json.load(open("/tmp/next.json",encoding="utf-8"))
+          candidate=next(item for item in data["candidates"] if item["node_id"]=="SG-000015")
+          expected={"SG-000013","SG-000014"}
+          if set(candidate["waiting_on"]) != expected:
+              raise SystemExit("unexpected waiting_on=" + repr(candidate["waiting_on"]))
+          print("known-boundary: repository delivery truth satisfies P01 dependencies; CLI completion transitions remain unmodeled")
+          PY
+
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          def load(name):
+              return json.loads(Path("/tmp/"+name).read_text(encoding="utf-8"))
+          draft=load("draft.json")
+          shape=load("shape.json")
+          refine=load("refine.json")
+          grain=load("grain.json")
+          check=load("check-grain.json")
+          nxt=load("next.json")
+          candidate=next(item for item in nxt["candidates"] if item["node_id"]=="SG-000015")
+          lines=[
+              "# P02-S01-T01 — SpecGrain Shaping Evidence",
+              "",
+              "Task: IN-P02-S01-T01",
+              "SpecGrain: SG-000015",
+              "Date: 2026-09-20",
+              "Canonical baseline: " + os.environ["BASELINE_SHA"],
+              "SpecGrain source: TheHalfMoon/SpecGrain@" + os.environ["SPECGRAIN_SHA"],
+              "GitHub Actions run: " + os.environ["GITHUB_RUN_ID"],
+              "",
+              "## Tool execution",
+              "",
+              "- draft state: " + draft["state"],
+              "- shaped revision: " + shape["revision_digest"],
+              "- refine state: " + refine["state"],
+              "- grain state: " + grain["state"],
+              "- final revision: " + grain["revision_digest"],
+              "- project check valid: " + str(check["valid"]).lower(),
+              "- next waiting_on: " + ",".join(candidate["waiting_on"]),
+              "",
+              "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.",
+              "",
+              "## Repository-delivery dependency truth",
+              "",
+              "- SG-000013 is DONE through PR #20 with fresh-main CI #127.",
+              "- SG-000014 is DONE through PR #21 with exact-head CI #137, build/smoke run 35533378382, and fresh-main CI #138.",
+              "- SpecGrain next still waits on those Grains because current CLI completion transitions are not modeled.",
+              "",
+              "No READY/VERIFIED/CONTROLLED/WorkPacket state is fabricated.",
+              "",
+          ]
+          Path("docs/evidence/P02_S01_T01_SPECGRAIN_SHAPING_2026-09-20.md").write_text("\n".join(lines),encoding="utf-8")
+          PY
+
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          allowed={
+            ".specgrain/specs/SG-000015.json",
+            "docs/evidence/P02_S01_T01_SPECGRAIN_SHAPING_2026-09-20.md",
+          }
+          output=subprocess.check_output(["git","status","--porcelain=v1"],text=True)
+          changed={line[3:] for line in output.splitlines() if line}
+          if changed != allowed:
+              raise SystemExit("unexpected changed paths=" + repr(sorted(changed)) + "; expected=" + repr(sorted(allowed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000015.json docs/evidence/P02_S01_T01_SPECGRAIN_SHAPING_2026-09-20.md
+          git commit -m "chore(p02): shape Product Graph prototype grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
