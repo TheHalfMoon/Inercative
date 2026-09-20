@@ -52,7 +52,13 @@ Frozen planning direction:
 - Connected Ownership Orchestrator for user-owned GitHub/Supabase/deployment;
 - ProductCompletenessManifest;
 - ReleaseManifest + generated-product operations/recovery;
-- A-to-exit portability/reconnect qualification.
+- A-to-exit portability/reconnect qualification;
+- FrontendQualityProfile;
+- source-owned ComponentRegistryAdapter / ComponentResolver / Ineractive Qualified Registry;
+- one-primary-primitive-base policy;
+- versioned Impeccable/interface/React rule packs;
+- Storybook/Next.js MCP introspection adapters under Tool Catalog policy;
+- deterministic React quality scanning and exact-source FrontendEvidenceBundle.
 
 ## 3. Intentionally deferred implementation decisions
 
@@ -104,6 +110,12 @@ GitHub/Supabase/deployment/domain integrations are no longer modeled as independ
 ### Product completeness
 
 A ProductCompletenessManifest prevents the system from declaring the product done while applicable data/backend/security/release/operations/documentation/ownership categories are unresolved.
+
+### Frontend quality and component supply
+
+The plan no longer treats "Next.js + component library" as sufficient frontend architecture. It now has FrontendQualityProfile, source-owned component resolution, a qualified registry/admission path, one primary primitive base, rule-pack provenance, component-state/browser/a11y evidence, deterministic React scanning, and on-demand dependency policies.
+
+This closes the gap between generating pages and maintaining a coherent production frontend system.
 
 ## 5. Risk review
 
@@ -178,9 +190,9 @@ P01 may not begin until:
 
 ## 7. Candidate graph validation
 
-The candidate task index contains **157 stable task handles**.
+The candidate task index contains **169 stable task handles**.
 
-Structural validation after the A-to-Z hardening pass:
+Structural validation after the A-to-Z + frontend/tooling hardening pass:
 
 - duplicate task IDs: 0;
 - missing dependency references: 0;
