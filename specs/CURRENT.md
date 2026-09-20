@@ -1,7 +1,7 @@
 # Ineractive Current Frontier
 
 **Date:** 2026-09-20  
-**Status:** P00_IN_PROGRESS  
+**Status:** P00_COMPLETE / P01_READY  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 
@@ -59,7 +59,7 @@ their current delivery state:
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | DONE (PR #10) | `docs/evidence/P00_S04_T02_PROVENANCE_SCHEMA_2026-09-20.md` |
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 | SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | DONE (PR #12) | `docs/evidence/P00_S04_T03_PROVENANCE_ADMISSION_2026-09-20.md` |
-| SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P00_S05_T02_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | DONE (PR #13) | `docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -69,50 +69,55 @@ advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and i
 SG-000007 / IN-P00-S04-T03 is canonically complete through PR #12; exact-head CI #91
 and fresh-main CI #92 passed on Ubuntu and Windows.
 
-IN-P00-S05-T02 has been shaped by the real SpecGrain CLI into SG-000008. The tool-produced
-state is `GRAIN`; `specgrain check` is valid. Current SpecGrain `next` reports
-SG-000008 waiting on SG-000006 because dependency satisfaction is modeled only through
-VERIFIED/CONTROLLED states and the current CLI does not expose those completion
-transitions. Repository delivery truth records SG-000006 DONE through PR #5 and its
-deterministic OCR evidence; no READY/VERIFIED/CONTROLLED/WorkPacket state is fabricated.
+SG-000008 / IN-P00-S05-T02 is canonically complete through PR #13. Exact-head CI #100
+passed on Ubuntu and Windows. Evidence-only Alibaba OCR run `35522598679` bound the
+final head `72f58ace0a37a426d36a7aeb6446dd08d1794351` to deterministic preview/file
+accounting and rule resolution: 9 changed files, 3 OCR-reviewable, 6 deterministically
+excluded and separately reviewed. Semantic OCR remained fail-closed **NOT RUN / BLOCKED**
+because no scoped LLM endpoint/token was configured.
 
-**External blocker still active:**
+Fresh-main CI #101 passed on merge commit
+`629a2842e179ec6f26ec33d1c93537a9b915d5b0`.
 
-- Alibaba OCR semantic review (SG-000006 follow-up) needs a scoped LLM endpoint/token
-  provisioned.
+P00 exit criteria are therefore satisfied under the canonical rule that semantic OCR may
+remain truthfully blocked when the external blocker is explicitly recorded and no
+substitute review is presented as OCR PASS.
 
 ## Not run (truthfully)
 
 The following are **NOT RUN** and are not claimed as PASS:
 
-- Alibaba Open Code Review **semantic LLM review**: NOT RUN. The deterministic OCR
-  file-accounting/rule-resolution layer executed under SG-000006; semantic review remains
-  blocked on a scoped LLM endpoint/token and IN-P00-S05-T02 evidence completion.
+- Alibaba Open Code Review **semantic LLM review**: NOT RUN / BLOCKED. Exact-head
+  deterministic file-accounting/rule-resolution evidence exists for SG-000008, and the
+  scoped endpoint/token blocker is explicitly recorded. This blocker does not become PASS.
 - Diffcipline GitHub Action in CI: NOT RUN (policy + local CLI proof are done; the CI
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current
   CLI exposes no VERIFIED/CONTROLLED transition; see frontier note above).
-- SpecGrain READY/VERIFIED/CONTROLLED transition and WorkPacket for SG-000008: NOT RUN /
-  unavailable under the current CLI lifecycle surface. The tool-produced GRAIN state and
-  repository delivery evidence are recorded without fabricating later lifecycle states.
+- SpecGrain VERIFIED/CONTROLLED lifecycle transition for completed P00 Grains: not modeled
+  by the current CLI surface. Repository delivery truth and exact evidence remain canonical;
+  no later lifecycle state is fabricated.
 
 Generic bot statuses (CodeRabbit "review skipped", cubic "skipping") are not
 qualification evidence.
 
 ## First execution order
 
-Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof),
-SG-000004 (Apache-2.0 license + third-party notice policy), SG-000005 (donor
-provenance/import record schema), SG-000006 (P00-S05 OCR procedure; deterministic layer
-executed, semantic layer blocked on a recorded credential blocker), and SG-000007
-(provenance admission/notice inventory through PR #12).
+Completed P00 delivery:
 
-Current eligible P00 frontier:
+- SG-000001 — SpecGrain initialization;
+- SG-000002 + SG-000003 — Diffcipline policy and exact-diff proof;
+- SG-000004 — Apache-2.0 license and third-party notice policy;
+- SG-000005 — donor provenance/import record schema;
+- SG-000006 — Alibaba OCR deterministic procedure with truthful semantic blocker;
+- SG-000007 — provenance admission validation and notice inventory;
+- SG-000008 — OCR evidence/file-accounting contract with exact-head deterministic OCR proof.
 
-1. SG-000008 / IN-P00-S05-T02 — OCR review evidence/file-accounting contract. Real
-   SpecGrain shaping is complete; bounded implementation is active on the candidate branch.
-2. P01 remains blocked until SG-000008 is canonically completed and P00 exit evidence is
-   reconciled.
+Current eligible frontier:
+
+1. **IN-P01-S01-T01 — Qualify control-plane framework.**
+2. P01 implementation remains unauthorized until that task is shaped into a new Grain and
+   its bounded evidence requirements are established.
 
 ## Hard constraints
 
