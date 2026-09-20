@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ineractive.dev/schemas/run-event-evidence-finding.v1.json",
+  "title": "Ineractive Run Event Evidence Finding Records",
+  "oneOf": [
+    { "$ref": "#/$defs/run" },
+    { "$ref": "#/$defs/event" },
+    { "$ref": "#/$defs/evidence" },
+    { "$ref": "#/$defs/finding" }
+  ],
+  "$defs": {
+    "logicalIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:[a-z][a-z0-9-]{0,31}:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "runIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "eventIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:event:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "evidenceIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:evidence:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "findingIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:finding:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "exactRevision": {
+      "oneOf": [
+        { "type": "string", "pattern": "^git:(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
+        { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      ]
+    },
+    "revisionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "revision"],
+      "properties": {
+        "identity": { "$ref": "#/$defs/logicalIdentity" },
+        "revision": { "$ref": "#/$defs/exactRevision" }
+      }
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "runState": {
+      "enum": ["PLANNED", "RUNNING", "COMPLETED", "FAILED", "CANCELLED", "BLOCKED"]
+    },
+    "evidenceObservationStatus": {
+      "enum": ["OBSERVED", "BLOCKED", "NOT_RUN", "INCONCLUSIVE"]
+    },
+    "freshness": { "enum": ["CURRENT", "STALE", "SUPERSEDED"] },
+    "findingSeverity": { "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "findingStatus": { "enum": ["OPEN", "BLOCKING", "RESOLVED"] },
+    "findingDisposition": {
+      "enum": ["UNRESOLVED", "FIXED", "ACCEPTED_RISK", "FALSE_POSITIVE", "DEFERRED_BLOCKING"]
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "id", "target", "state", "parentRunId"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "id": { "$ref": "#/$defs/runIdentity" },
+        "target": { "$ref": "#/$defs/revisionBinding" },
+        "state": { "$ref": "#/$defs/runState" },
+        "parentRunId": {
+          "oneOf": [{ "$ref": "#/$defs/runIdentity" }, { "type": "null" }]
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "id",
+        "runId",
+        "sequence",
+        "kind",
+        "source",
+        "target",
+        "references"
+      ],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "id": { "$ref": "#/$defs/eventIdentity" },
+        "runId": { "$ref": "#/$defs/runIdentity" },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "kind": { "$ref": "#/$defs/token" },
+        "source": { "$ref": "#/$defs/logicalIdentity" },
+        "target": {
+          "oneOf": [{ "$ref": "#/$defs/revisionBinding" }, { "type": "null" }]
+        },
+        "references": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "id",
+        "runId",
+        "producer",
+        "target",
+        "kind",
+        "observationStatus",
+        "freshness",
+        "artifactReferences",
+        "reason",
+        "supersededBy"
+      ],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "id": { "$ref": "#/$defs/evidenceIdentity" },
+        "runId": { "$ref": "#/$defs/runIdentity" },
+        "producer": { "$ref": "#/$defs/logicalIdentity" },
+        "target": { "$ref": "#/$defs/revisionBinding" },
+        "kind": { "$ref": "#/$defs/token" },
+        "observationStatus": { "$ref": "#/$defs/evidenceObservationStatus" },
+        "freshness": { "$ref": "#/$defs/freshness" },
+        "artifactReferences": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "reason": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "supersededBy": {
+          "oneOf": [{ "$ref": "#/$defs/evidenceIdentity" }, { "type": "null" }]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "observationStatus": { "const": "OBSERVED" } },
+            "required": ["observationStatus"]
+          },
+          "then": {
+            "properties": {
+              "artifactReferences": { "minItems": 1 },
+              "reason": { "type": "null" }
+            }
+          },
+          "else": {
+            "properties": { "reason": { "$ref": "#/$defs/nonEmptyString" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "freshness": { "const": "SUPERSEDED" } },
+            "required": ["freshness"]
+          },
+          "then": {
+            "properties": { "supersededBy": { "$ref": "#/$defs/evidenceIdentity" } }
+          },
+          "else": {
+            "properties": { "supersededBy": { "type": "null" } }
+          }
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "id",
+        "runId",
+        "source",
+        "target",
+        "category",
+        "severity",
+        "confidence",
+        "locationReference",
+        "evidenceIds",
+        "requirementReferences",
+        "policyReferences",
+        "status",
+        "disposition",
+        "freshness",
+        "supersededBy"
+      ],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "id": { "$ref": "#/$defs/findingIdentity" },
+        "runId": { "$ref": "#/$defs/runIdentity" },
+        "source": { "$ref": "#/$defs/logicalIdentity" },
+        "target": { "$ref": "#/$defs/revisionBinding" },
+        "category": { "$ref": "#/$defs/token" },
+        "severity": { "$ref": "#/$defs/findingSeverity" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "locationReference": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/evidenceIdentity" }
+        },
+        "requirementReferences": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "policyReferences": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "status": { "$ref": "#/$defs/findingStatus" },
+        "disposition": { "$ref": "#/$defs/findingDisposition" },
+        "freshness": { "$ref": "#/$defs/freshness" },
+        "supersededBy": {
+          "oneOf": [{ "$ref": "#/$defs/findingIdentity" }, { "type": "null" }]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "OPEN" } },
+            "required": ["status"]
+          },
+          "then": { "properties": { "disposition": { "const": "UNRESOLVED" } } },
+          "else": {
+            "if": {
+              "properties": { "status": { "const": "BLOCKING" } },
+              "required": ["status"]
+            },
+            "then": {
+              "properties": {
+                "disposition": { "enum": ["UNRESOLVED", "DEFERRED_BLOCKING"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "disposition": { "enum": ["FIXED", "ACCEPTED_RISK", "FALSE_POSITIVE"] }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "freshness": { "const": "SUPERSEDED" } },
+            "required": ["freshness"]
+          },
+          "then": {
+            "properties": { "supersededBy": { "$ref": "#/$defs/findingIdentity" } }
+          },
+          "else": {
+            "properties": { "supersededBy": { "type": "null" } }
+          }
+        }
+      ]
+    }
+  }
+}

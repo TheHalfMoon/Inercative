@@ -142,11 +142,18 @@ describe("@ineractive/protocol package boundary", () => {
     expect(manifest.devDependencies).toBeUndefined();
   });
 
-  it("does not expose later protocol domains prematurely", async () => {
+  it("exports only the runtime helpers earned through SG-000011", async () => {
     const protocolModule = await import("./index.ts");
 
     expect(Object.keys(protocolModule).sort()).toEqual(
       [
+        "EVIDENCE_OBSERVATION_STATUSES",
+        "FINDING_DISPOSITIONS",
+        "FINDING_SEVERITIES",
+        "FINDING_STATUSES",
+        "FRESHNESS_STATES",
+        "PROTOCOL_RECORD_SCHEMA_VERSION",
+        "RUN_STATES",
         "bindRevision",
         "formatGitRevision",
         "formatLogicalIdentity",
@@ -154,6 +161,10 @@ describe("@ineractive/protocol package boundary", () => {
         "parseExactRevision",
         "parseLogicalIdentity",
         "parseLogicalIdentityForKind",
+        "validateEventRecord",
+        "validateEvidenceRecord",
+        "validateFindingRecord",
+        "validateRunRecord",
       ].sort(),
     );
   });
