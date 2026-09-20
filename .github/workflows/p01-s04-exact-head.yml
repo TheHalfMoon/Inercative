@@ -1,0 +1,47 @@
+name: P01 S04 exact-head UI qualification
+
+on:
+  push:
+    branches:
+      - evidence/p01-s04-ui-c811372b
+    paths:
+      - .github/workflows/p01-s04-exact-head.yml
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_SHA: c811372bd9661010b8c88cae5264b3bbe8da12f8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c811372bd9661010b8c88cae5264b3bbe8da12f8
+          fetch-depth: 0
+      - name: Assert exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Frozen install
+        run: pnpm install --frozen-lockfile
+      - name: Focused UI contracts
+        run: pnpm exec vitest run packages/control-plane/src/ui-system.test.ts packages/control-plane/src/shell-state.test.ts
+      - name: Control-plane typecheck
+        run: pnpm --filter @ineractive/control-plane run typecheck
+      - name: Production standalone build
+        run: pnpm --filter @ineractive/control-plane run build
+      - name: Standalone HTTP smoke
+        run: pnpm --filter @ineractive/control-plane run smoke
+      - name: Report
+        run: echo "INERACTIVE_P01_S04_EXACT_HEAD_QUALIFIED=$TARGET_SHA"
