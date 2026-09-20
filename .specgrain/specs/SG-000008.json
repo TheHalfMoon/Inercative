@@ -1,0 +1,74 @@
+{
+  "acceptance": [
+    "The contract binds exact base, head, merge-base, OCR version, and configuration identity.",
+    "Every changed file appears exactly once in deterministic reviewable or excluded accounting, with exclusions carrying a reason.",
+    "Material excluded or unsupported files require explicit separate-review accounting rather than disappearing from coverage.",
+    "Semantic state distinguishes executed review from NOT RUN/BLOCKED and requires blocker evidence when not executed.",
+    "Every material semantic finding has a fixed, accepted-risk, false-positive, deferred-blocking, or unresolved disposition with rationale.",
+    "A changed material head invalidates stale semantic evidence unless an explicit deterministic reconciliation proves the reviewed diff is unchanged.",
+    "Negative fixtures reject duplicate/missing file accounting, stale head identity, missing blocker evidence, and unresolved material findings."
+  ],
+  "change_surface": [
+    "docs/engineering/**",
+    "docs/evidence/**",
+    "packages/protocol/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 9000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000006"
+  ],
+  "evidence": {
+    "required": [
+      "Contract schema/validator tests including negative file-accounting and blocker fixtures.",
+      "Exact-head Ubuntu and Windows repository CI.",
+      "Recorded Alibaba OCR semantic blocker remains NOT RUN unless a scoped endpoint is genuinely provisioned."
+    ]
+  },
+  "id": "SG-000008",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "Extend the existing Ineractive protocol package and canonical OCR procedure rather than introduce a parallel review subsystem."
+      },
+      "safety": {
+        "requirements": [
+          "Never convert NOT RUN, BLOCKED, generic-bot status, or agent self-report into semantic OCR PASS.",
+          "Never expose OCR LLM tokens or endpoint secrets in committed evidence."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Every OCR-attached change has deterministic exact-revision review evidence that accounts for every changed file, semantic execution or blocker state, rule resolution, findings, and dispositions without granting acceptance authority to OCR.",
+  "parent_id": null,
+  "rationale": "Canonical rolling-wave P00-S05-T02 frontier after SG-000006 deterministic OCR procedure completion.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000008 and OCR evidence-contract artifacts; no external review endpoint, secret, or product runtime side effect is introduced."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a deterministic machine-readable OCR review evidence contract bound to exact base, head, and merge-base revisions.",
+    "Require complete changed-file accounting across reviewable, excluded, and separately reviewed material.",
+    "Record OCR version/config provenance and deterministic applicable-rule resolution.",
+    "Record semantic review execution plus structured findings, or an explicit truthful blocker when semantic review did not run.",
+    "Require disposition of every material finding and exact-head invalidation/reconciliation when the candidate changes."
+  ],
+  "scope_out": [
+    "No LLM endpoint/token provisioning.",
+    "No fabricated semantic OCR result.",
+    "No substitution of CodeRabbit, cubic, Qodo, or another generic bot for designated OCR evidence."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S05-T02 Define OCR review evidence and file-accounting contract"
+}
