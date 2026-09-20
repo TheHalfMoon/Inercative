@@ -134,7 +134,21 @@ Build:
 - Workflows;
 - Assumptions.
 
-**Exit:** representative product intents become inspectable graph revisions and bounded unresolved decisions.
+### P02-S07 Dataset semantics
+Define product-level semantics for:
+- Dataset;
+- DatasetVersion;
+- DataImport;
+- DataMapping;
+- DataProfile;
+- DataQualityRule;
+- SeedDataset;
+- SyntheticDataset;
+- later VectorCorpus/EvalDataset references.
+
+Dataset semantics carry provenance, privacy class, transformation lineage, environment, and verification requirements.
+
+**Exit:** representative product intents and supplied business data become inspectable graph/data revisions with bounded unresolved decisions.
 
 ## P03 — Harness kernel and intelligence routing
 
@@ -378,7 +392,36 @@ Initial V1 subset:
 
 SMS/WhatsApp/payments remain separately qualified high-risk adapters.
 
-**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, passes negative security tests, and can execute one qualified external integration/notification path safely.
+### P06-S10 Data Workspace and Dataset Compiler
+Support authorized business-data starting points:
+- CSV;
+- XLSX/spreadsheets;
+- JSON;
+- existing Supabase tables;
+- Postgres/SQL sources where qualified;
+- API samples;
+- manually described records.
+
+Pipeline:
+- inspect/profile;
+- infer types/relationships;
+- classify sensitive data;
+- identify duplicates/missingness/outliers;
+- propose normalization/mapping;
+- preview before mutation;
+- import/transform;
+- verify row counts/constraints/relationships;
+- version Dataset lineage;
+- bind imported data to Product Graph/DataSource.
+
+### P06-S11 Seed and synthetic data
+- deterministic representative development/test data;
+- role/workflow/edge-case coverage;
+- no production-data cloning by default;
+- reusable seed fixtures committed with generated source;
+- later AI corpus/eval dataset preparation only after P13 qualification.
+
+**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, can ingest and verify a real business spreadsheet/data source, can generate safe representative seed data, and can execute one qualified external integration/notification path safely.
 
 ## P07 — Full product build and repair loop
 
@@ -599,7 +642,16 @@ Build from one product prompt:
 - performance regression budgets;
 - realistic-data browser journeys.
 
-**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings and the harness has repeatable regression evidence.
+### P10-S09 Dataset quality and lineage assurance
+- schema/type verification;
+- row/object count reconciliation;
+- duplicate/missingness/domain checks;
+- referential-integrity verification;
+- transformation lineage;
+- sensitive-data handling assertions;
+- deterministic seed/synthetic-data reproducibility.
+
+**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings; imported/generated datasets have explicit lineage and quality evidence; and the harness has repeatable regression evidence.
 
 ## P11 — Git, preview, publish, and deployment
 
@@ -669,7 +721,40 @@ Maintain last-known-good identity. Promotion requires joint app/backend compatib
 - environment drift;
 - last-known-good recovery drill.
 
-**Exit:** a user can build locally, inspect proof, push source, connect their Supabase, and promote a working product they own with explicit release identity, operational signals, and recovery semantics.
+### P11-S09 Connected Ownership Orchestrator
+Provide one coherent user-owned infrastructure flow:
+
+#### GitHub
+- install/authorize least-privilege GitHub App;
+- connect existing repository or create one when authorized;
+- initialize/push normal source, migrations, config, fixtures, and docs;
+- branches/PR/checks remain normal GitHub truth.
+
+#### Supabase
+- connect existing user-owned project through qualified OAuth/integration flow;
+- or create a project in an authorized user organization when supported and permitted;
+- configure/link using supported Management API/CLI surfaces;
+- preserve repository-owned migrations/configuration;
+- reconcile drift before mutation.
+
+#### Combined
+- bind project/repository/backend identities;
+- never require users to copy long-lived PATs/secrets through chat;
+- manual fallback only where provider API, plan, or organization policy requires it;
+- revocation/deauthorization is observable and safe.
+
+### P11-S10 A-to-Z Product Factory benchmark
+Prove **B17 — Idea to owned production product**:
+- begin from a product brief plus business spreadsheet;
+- derive Product Graph and DatasetVersion;
+- build bilingual web product;
+- compile/test Supabase backend;
+- connect/create user-owned GitHub and Supabase through qualified authorization;
+- preview, qualify, promote, observe, recover;
+- perform one post-launch feature change;
+- no manual developer coding in the golden path.
+
+**Exit:** a user can move from idea/data to a tested, GitHub-owned, Supabase-connected, deployed and observable product through one coherent Ineractive workflow, with explicit external-account approval steps but no hidden developer handoff.
 
 ## P12 — Collaboration and durable project intelligence
 
@@ -890,6 +975,7 @@ This exercises the architecture without requiring payments or high-risk external
 
 Additional required benchmark families before broad launch:
 
+- **B17 — Idea + spreadsheet → user-owned GitHub + Supabase → production product → post-launch change**;
 - Arabic/English RTL product;
 - one external API/webhook/email integration;
 - production release + schema compatibility/rollback drill;
