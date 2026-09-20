@@ -1,0 +1,78 @@
+{
+  "acceptance": [
+    "Candidate comparison is dated and binds official source/release identities, licenses, Node/React compatibility, and material operational tradeoffs.",
+    "The ADR selects one framework based on React 19 support, Node 24 compatibility, server/client boundaries, data/routing model, self-host portability, observability/tooling, security support, and repository alignment.",
+    "The selected exact framework version and React version produce a clean production build in a bounded qualification fixture.",
+    "The built candidate self-hosts on Node 24 and an HTTP request returns a deterministic expected marker.",
+    "No P01-S03 product shell or application feature is introduced.",
+    "Exact-head Ubuntu and Windows repository CI pass."
+  ],
+  "change_surface": [
+    "docs/adr/**",
+    "docs/evidence/**",
+    "docs/canonical/**",
+    "qualifications/control-plane-framework/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 11000,
+    "estimated_tokens": 6000
+  },
+  "dependencies": [
+    "SG-000001",
+    "SG-000003",
+    "SG-000007",
+    "SG-000008"
+  ],
+  "evidence": {
+    "required": [
+      "Official-source framework comparison with exact observed versions/revisions.",
+      "Selected-candidate production build and self-host HTTP smoke on Node 24.",
+      "ADR with explicit decision criteria, tradeoffs, and rejected alternatives.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000009",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Use a disposable qualification fixture instead of introducing the real control-plane application before its dependency-ordered shell task."
+      },
+      "safety": {
+        "requirements": [
+          "Qualification fixture must not contain secrets, production endpoints, billing calls, or remote provisioning.",
+          "A framework marketing claim or prior planning preference is not acceptance evidence."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Select and prove the production React framework baseline for the Ineractive control plane using current official-source evidence and a reproducible build/self-host smoke, without prematurely building the product shell.",
+  "parent_id": null,
+  "rationale": "First P01 task after canonical P00 exit; downstream protocol and workspace work depends on a qualified framework baseline.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000009, the qualification ADR/fixture/evidence, and selected-framework metadata; no external production side effect is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Compare current production-grade React control-plane framework candidates using official-source version and capability evidence.",
+    "Evaluate Next.js App Router, React Router framework mode, and TanStack Start against Ineractive control-plane requirements.",
+    "Select one control-plane framework and record an ADR with explicit tradeoffs and rejected alternatives.",
+    "Create a bounded qualification fixture for the selected exact framework/React versions.",
+    "Execute deterministic build and self-host HTTP smoke evidence on the repository Node baseline."
+  ],
+  "scope_out": [
+    "Do not build the real project/workspace shell; that remains IN-P01-S03-T01.",
+    "Do not change the generated-app compiler target merely because the control plane selects a framework.",
+    "Do not add Vercel-only or provider-only deployment assumptions."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S01-T01 Qualify control-plane framework"
+}
