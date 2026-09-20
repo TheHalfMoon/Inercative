@@ -11,25 +11,13 @@ export const SESSION_ONLY_NOTICE =
 export const CHANGE_INTENT_BOUNDARY =
   "Recording an intent does not run a model, change source files, save data, or deploy anything.";
 
-const SHELL_SOURCE_ID = formatLogicalIdentity(
-  "shell",
-  "00000000-0000-4000-8000-000000000001",
-);
+const SHELL_SOURCE_ID = formatLogicalIdentity("shell", "00000000-0000-4000-8000-000000000001");
 
-const SEED_PROJECT_ID = formatLogicalIdentity(
-  "project",
-  "00000000-0000-4000-8000-000000000101",
-);
+const SEED_PROJECT_ID = formatLogicalIdentity("project", "00000000-0000-4000-8000-000000000101");
 
-const SEED_RUN_ID = formatLogicalIdentity(
-  "run",
-  "00000000-0000-4000-8000-000000000201",
-);
+const SEED_RUN_ID = formatLogicalIdentity("run", "00000000-0000-4000-8000-000000000201");
 
-const SEED_EVENT_ID = formatLogicalIdentity(
-  "event",
-  "00000000-0000-4000-8000-000000000301",
-);
+const SEED_EVENT_ID = formatLogicalIdentity("event", "00000000-0000-4000-8000-000000000301");
 
 export interface SessionProject {
   readonly id: LogicalIdentity<"project">;
@@ -71,10 +59,7 @@ function assertValidEvent(event: EventRecord): EventRecord {
   return validation.value;
 }
 
-function nextSequence(
-  events: readonly EventRecord[],
-  runId: LogicalIdentity<"run">,
-): number {
+function nextSequence(events: readonly EventRecord[], runId: LogicalIdentity<"run">): number {
   let maximum = -1;
   for (const event of events) {
     if (event.runId === runId && event.sequence > maximum) {
@@ -154,13 +139,10 @@ export function createSessionProject(
     ...nextState,
     events: [
       ...nextState.events,
-      shellEvent(
-        nextState,
-        project.runId,
-        ids.eventUuid,
-        "project.created",
-        ["session-only", "project:" + project.id],
-      ),
+      shellEvent(nextState, project.runId, ids.eventUuid, "project.created", [
+        "session-only",
+        "project:" + project.id,
+      ]),
     ],
   };
 }
@@ -184,13 +166,10 @@ export function openSessionProject(
     ...nextState,
     events: [
       ...nextState.events,
-      shellEvent(
-        nextState,
-        project.runId,
-        eventUuid,
-        "project.opened",
-        ["session-only", "project:" + project.id],
-      ),
+      shellEvent(nextState, project.runId, eventUuid, "project.opened", [
+        "session-only",
+        "project:" + project.id,
+      ]),
     ],
   };
 }
@@ -208,9 +187,7 @@ export function recordChangeIntent(
     throw new TypeError("Change intent must not exceed 500 characters.");
   }
 
-  const project = state.projects.find(
-    (candidate) => candidate.id === state.activeProjectId,
-  );
+  const project = state.projects.find((candidate) => candidate.id === state.activeProjectId);
   if (project === undefined) {
     throw new TypeError("A project must be open before recording change intent.");
   }
@@ -219,28 +196,20 @@ export function recordChangeIntent(
     ...state,
     events: [
       ...state.events,
-      shellEvent(
-        state,
-        project.runId,
-        eventUuid,
-        "change-intent.recorded",
-        ["intent:" + intent, "session-only", "no-execution"],
-      ),
+      shellEvent(state, project.runId, eventUuid, "change-intent.recorded", [
+        "intent:" + intent,
+        "session-only",
+        "no-execution",
+      ]),
     ],
   };
 }
 
-export function activeSessionProject(
-  state: WorkspaceShellState,
-): SessionProject | null {
-  return (
-    state.projects.find((project) => project.id === state.activeProjectId) ?? null
-  );
+export function activeSessionProject(state: WorkspaceShellState): SessionProject | null {
+  return state.projects.find((project) => project.id === state.activeProjectId) ?? null;
 }
 
-export function activityForActiveProject(
-  state: WorkspaceShellState,
-): readonly EventRecord[] {
+export function activityForActiveProject(state: WorkspaceShellState): readonly EventRecord[] {
   const active = activeSessionProject(state);
   if (active === null) {
     return [];

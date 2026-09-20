@@ -1,0 +1,3 @@
+module.exports=[97377,a=>{"use strict";var b=a.i(17689);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsx)("body",{children:a})})},"metadata",0,{title:"Ineractive Workspace",description:"Ineractive session-only control-plane workspace shell"}])},75979,function(a){a.n(a.i(97377))}];
+
+//# sourceMappingURL=packages_control-plane_app_layout_jsx_0tlr-fc._.js.map

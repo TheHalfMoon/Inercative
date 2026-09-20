@@ -56,3 +56,22 @@ No PASS is claimed before those checks execute.
 
 The failed heads are preserved and are not re-run to green. React type packages are
 added explicitly at 19.3.0 and acceptance requires a fresh qualification run.
+
+## Executed qualification
+
+GitHub Actions run: `35530591053`
+
+- baseline: `9ec10a179ee93e0e4279d806ecb48922e66f06ec`
+- Node: `v24.20.0`
+- pnpm: `12.4.2`
+- Next.js: `Next.js v16.3.5`
+- refreshed root workspace lockfile: EXECUTED
+- frozen install from refreshed lockfile: PASS
+- focused shell-state tests: PASS
+- control-plane typecheck: PASS
+- production standalone build: PASS
+- real standalone HTTP smoke: PASS
+- observed marker: `INERACTIVE_WORKSPACE_SHELL_READY`
+
+This qualification is branch evidence. Final acceptance still requires exact-head Ubuntu
+and Windows repository CI after the one-shot workflow is removed.

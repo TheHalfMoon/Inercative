@@ -45,9 +45,7 @@ export default function WorkspaceShellPage() {
 
   function handleOpenProject(projectId) {
     try {
-      setState((current) =>
-        openSessionProject(current, projectId, crypto.randomUUID()),
-      );
+      setState((current) => openSessionProject(current, projectId, crypto.randomUUID()));
       setMessage(SESSION_ONLY_NOTICE);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not open project.");
@@ -57,9 +55,7 @@ export default function WorkspaceShellPage() {
   function handleIntent(event) {
     event.preventDefault();
     try {
-      setState((current) =>
-        recordChangeIntent(current, intent, crypto.randomUUID()),
-      );
+      setState((current) => recordChangeIntent(current, intent, crypto.randomUUID()));
       setIntent("");
       setMessage("Intent recorded locally. No model or build was started.");
     } catch (error) {
@@ -121,8 +117,8 @@ export default function WorkspaceShellPage() {
             <p className="eyebrow">Preview</p>
             <h3 id="preview-title">Product preview placeholder</h3>
             <p>
-              Generated-app preview arrives in later dependency-ordered work. This surface
-              does not simulate generation.
+              Generated-app preview arrives in later dependency-ordered work. This surface does not
+              simulate generation.
             </p>
             <code>{WORKSPACE_SHELL_MARKER}</code>
           </div>

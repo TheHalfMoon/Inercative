@@ -85,10 +85,7 @@ describe("workspace shell state", () => {
 
   it("rejects opening a project that is not in the session", async () => {
     const { formatLogicalIdentity } = await import("@ineractive/protocol");
-    const missingId = formatLogicalIdentity(
-      "project",
-      "20000000-0000-4000-8000-000000000001",
-    );
+    const missingId = formatLogicalIdentity("project", "20000000-0000-4000-8000-000000000001");
 
     expect(() =>
       openSessionProject(createInitialWorkspaceShellState(), missingId, OPEN_EVENT_UUID),
