@@ -1,0 +1,121 @@
+name: P01 SpecGrain one-shot identity/revision shape
+
+on:
+  push:
+    branches:
+      - p01/s02-t01-protocol-identity-revisions
+    paths:
+      - .github/workflows/p01-specgrain-identity-revisions.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: cf0fa70c8f065033ad0bb4087c76b5d57dd3b6ce
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+      - name: Draft SG-000010
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft .             --title "IN-P01-S02-T01 Implement protocol identity and revision primitives"             --outcome "The public protocol exposes dependency-free, provider-neutral, canonical identity and immutable revision primitives that round-trip deterministically without introducing run/event/finding schemas."             --rationale "First public protocol API after canonical SG-000009 framework qualification."             --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000010"
+      - name: Shape SG-000010
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000010 .             --scope-in "Define a canonical opaque logical identity format with explicit kind and UUID payload."             --scope-in "Define immutable revision references for exact Git object identities and SHA-256 content digests."             --scope-in "Provide dependency-free parse/format/validation helpers and typed public protocol exports."             --scope-in "Provide a typed identity-plus-revision binding primitive for exact-state references."             --scope-in "Replace the P00 empty-export placeholder test with public protocol identity/revision contract tests while preserving the zero-runtime-dependency invariant."             --scope-out "No Run, Event, Evidence, Finding, ModelTask, DecisionTask, CapabilityRequest, or CapabilityGrant schemas."             --scope-out "No persistence, database, authorization, ownership, timestamps, ordering, or provider-specific semantics."             --scope-out "No ID generation dependency or hidden randomness requirement; this Grain validates and canonicalizes supplied identities."             --acceptance "Logical identities round-trip in one canonical lowercase textual format and reject malformed kind/UUID inputs."             --acceptance "Identity kind remains explicit and opaque; consumers cannot infer ownership, authorization, or mutable state from the identifier."             --acceptance "Git revisions accept only full immutable 40- or 64-hex object IDs and reject branch names, tags, and short hashes."             --acceptance "SHA-256 revisions accept only canonical 64-hex digests."             --acceptance "Identity/revision bindings preserve logical identity separately from immutable exact revision."             --acceptance "Public protocol exports remain provider-neutral and package runtime dependencies remain empty."             --acceptance "Focused tests plus exact-head Ubuntu and Windows repository CI pass."             --dependency SG-000009             --risk-level medium             --recovery "Revert SG-000010 public identity/revision exports, tests, docs, and evidence; no external side effect or persisted data migration is authorized."             --context-budget 9000             --context-estimate 4500             --change-surface "packages/protocol/**"             --change-surface "docs/canonical/**"             --change-surface "docs/evidence/**"             --change-surface "specs/CURRENT.md"             --evidence "Focused protocol tests for canonical identity/revision round-trip and malformed negative fixtures."             --evidence "Manifest evidence proving zero runtime dependencies."             --evidence "Exact-head Ubuntu and Windows repository CI."             --minimality-choice new-code             --minimality-rationale "Implement only the dependency-ordered public identity/revision primitives in the existing @ineractive/protocol package."             --safety-status requirements-defined             --safety-requirement "Identity values never encode authorization, ownership, secret material, or mutable state."             --safety-requirement "Revision values are immutable exact references; mutable branch/tag labels are rejected."             --json | tee /tmp/shape.json
+      - name: Refine and promote SG-000010
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000010 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check-refining.json
+          specgrain grain SG-000010 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check-grain.json
+          specgrain next . --json | tee /tmp/next.json
+      - name: Assert known lifecycle boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          data=json.load(open("/tmp/next.json",encoding="utf-8"))
+          candidate=next(item for item in data["candidates"] if item["node_id"]=="SG-000010")
+          if candidate["waiting_on"] != ["SG-000009"]:
+              raise SystemExit("unexpected waiting_on=" + repr(candidate["waiting_on"]))
+          print("known-boundary: SG-000010 waits on SG-000009 because CLI completion transitions are not modeled")
+          PY
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          def load(name): return json.loads(Path("/tmp/"+name).read_text(encoding="utf-8"))
+          draft=load("draft.json"); shape=load("shape.json"); refine=load("refine.json")
+          grain=load("grain.json"); check=load("check-grain.json"); nxt=load("next.json")
+          candidate=next(item for item in nxt["candidates"] if item["node_id"]=="SG-000010")
+          lines=[
+            "# P01-S02-T01 — SpecGrain Shaping Evidence","",
+            "Task: IN-P01-S02-T01",
+            "SpecGrain: SG-000010",
+            "Date: 2026-09-20",
+            "Canonical baseline: "+os.environ["BASELINE_SHA"],
+            "SpecGrain source: TheHalfMoon/SpecGrain@"+os.environ["SPECGRAIN_SHA"],
+            "GitHub Actions run: "+os.environ["GITHUB_RUN_ID"],"",
+            "## Tool execution","",
+            "- draft state: "+draft["state"],
+            "- shaped revision: "+shape["revision_digest"],
+            "- refine state: "+refine["state"],
+            "- grain state: "+grain["state"],
+            "- final revision: "+grain["revision_digest"],
+            "- project check valid: "+str(check["valid"]).lower(),
+            "- next waiting_on: "+",".join(candidate["waiting_on"]),"",
+            "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.","",
+            "## Lifecycle boundary","",
+            "Repository delivery truth records SG-000009 DONE through PR #15 and exact/fresh-main CI.",
+            "SpecGrain next still waits on SG-000009 because the current CLI does not expose completion transitions.",
+            "No READY, VERIFIED, CONTROLLED, or WorkPacket state is fabricated.",""
+          ]
+          Path("docs/evidence/P01_S02_T01_SPECGRAIN_SHAPING_2026-09-20.md").write_text("\n".join(lines),encoding="utf-8")
+          PY
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          allowed={
+            ".specgrain/specs/SG-000010.json",
+            "docs/evidence/P01_S02_T01_SPECGRAIN_SHAPING_2026-09-20.md",
+          }
+          output=subprocess.check_output(["git","status","--porcelain=v1"],text=True)
+          changed={line[3:] for line in output.splitlines() if line}
+          if changed != allowed:
+              raise SystemExit("unexpected changed paths="+repr(sorted(changed))+" expected="+repr(sorted(allowed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000010.json docs/evidence/P01_S02_T01_SPECGRAIN_SHAPING_2026-09-20.md
+          git commit -m "chore(p01): shape protocol identity revision grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
