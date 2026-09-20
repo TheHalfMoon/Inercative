@@ -334,7 +334,25 @@ Default V1 target:
 - accessible loading/error/empty states under realistic data;
 - no claim that every product requires SEO.
 
-**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, and can meet production-grade locale/RTL/public-web contracts where applicable.
+### P05-S07 Frontend Quality and Component Supply
+Define and implement:
+- FrontendQualityProfile;
+- qualified current Next.js/React/Tailwind compiler baseline;
+- server-first/client-boundary policy;
+- one primary primitive-base identity per project;
+- Base UI candidate default for new products;
+- React Aria qualified alternate;
+- preserve compatible Radix architecture in imported/existing products;
+- provider-neutral ComponentRegistryAdapter;
+- ComponentResolver: local source → project Product Kit/registry → Ineractive Qualified Registry → explicitly authorized external registry → synthesis;
+- Ineractive Qualified Registry baseline;
+- RegistryAdmissionGate;
+- on-demand dependency policy for query/table/forms/i18n/motion/workbench tooling;
+- Next.js DevTools MCP diagnostic adapter through Tool Catalog/capability policy.
+
+Do not turn the generated stack into a dependency zoo. Reuse qualified source components before synthesis.
+
+**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, use a coherent primitive/component supply model, avoid accidental client-boundary/dependency bloat, and can meet production-grade locale/RTL/public-web contracts where applicable.
 
 ## P06 — Supabase compiler V1
 
@@ -557,7 +575,22 @@ Build from one product prompt:
 - source-to-asset inventory;
 - no claim of rights merely because an asset was discovered/generated.
 
-**Exit:** B01 and B08 reach design/a11y/responsive quality gates, visual edits remain clean source diffs, and design/code round-trip state is explicit rather than silently overwritten.
+### P08-S11 Frontend Design Quality OS
+Integrate versioned, provenance-bound design/frontend rule packs:
+- Impeccable;
+- Vercel Web Interface Guidelines;
+- Vercel React Best Practices.
+
+Qualify a component workbench and agent-introspection path:
+- Storybook for Ineractive's own design system;
+- Storybook stories/state catalogs for complex generated component systems where justified;
+- Storybook MCP as a qualified component discovery/test adapter;
+- component-level interaction/accessibility tests;
+- no paid visual-testing service required for baseline proof.
+
+Combine rule-pack findings with real rendered/browser evidence rather than treating any rule set as aesthetic authority.
+
+**Exit:** B01 and B08 reach design/a11y/responsive quality gates, visual edits remain clean source diffs, design/code round-trip state is explicit rather than silently overwritten, and reusable component states are independently inspectable/testable.
 
 ## P09 — Import and multimodal starting points
 
@@ -666,7 +699,16 @@ Build from one product prompt:
 - sensitive-data handling assertions;
 - deterministic seed/synthetic-data reproducibility.
 
-**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings; imported/generated datasets have explicit lineage and quality evidence; and the harness has repeatable regression evidence.
+### P10-S10 Frontend quality qualification
+- integrate React Doctor changed-scope deterministic scanning into normalized Finding/Evidence;
+- fully qualify RegistryAdmissionGate for external components/blocks;
+- verify provenance/license/dependency closure/supply-chain state;
+- verify server/client boundary, accessibility, focus/keyboard behavior, responsive states, RTL, reduced motion, runtime/bundle cost, and primitive/token compatibility;
+- combine component tests, Storybook/Vitest where configured, axe findings, Playwright browser journeys/visual evidence, Next.js diagnostics, performance observations, and independent design critique;
+- emit FrontendEvidenceBundle tied to exact source and FrontendQualityProfile revisions;
+- no aggregate design/React score can grant PASS.
+
+**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings; imported/generated datasets have explicit lineage and quality evidence; frontend component supply and implementation quality have independent exact-source evidence; and the harness has repeatable regression evidence.
 
 ## P11 — Git, preview, publish, and deployment
 
