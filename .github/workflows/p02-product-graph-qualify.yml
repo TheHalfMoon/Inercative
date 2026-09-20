@@ -1,0 +1,65 @@
+name: P02 one-shot Product Graph qualification
+
+on:
+  push:
+    branches:
+      - p02/s01-t01-product-graph-prototypes
+    paths:
+      - .github/workflows/p02-product-graph-qualify.yml
+
+permissions:
+  contents: write
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
+        with:
+          version: 12.4.2
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate deterministic comparison report
+        run: node --experimental-strip-types packages/product-graph-lab/scripts/write-report.ts
+
+      - name: Format bounded change surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write             packages/product-graph-lab             docs/canonical/PRODUCT_GRAPH.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPES_2026-09-20.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPE_COMPARISON_2026-09-20.json             specs/CURRENT.md
+          pnpm exec prettier --check             packages/product-graph-lab             docs/canonical/PRODUCT_GRAPH.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPES_2026-09-20.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPE_COMPARISON_2026-09-20.json             specs/CURRENT.md
+
+      - name: Typecheck private lab
+        run: pnpm exec tsc --noEmit -p packages/product-graph-lab/tsconfig.json
+
+      - name: Lint private lab
+        run: pnpm exec eslint packages/product-graph-lab
+
+      - name: Focused prototype tests
+        run: pnpm exec vitest run packages/product-graph-lab/src/comparison.test.ts packages/product-graph-lab/src/typecheck.test.ts
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Commit qualification outputs and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/p02-product-graph-qualify.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/product-graph-lab             docs/canonical/PRODUCT_GRAPH.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPES_2026-09-20.md             docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPE_COMPARISON_2026-09-20.json             specs/CURRENT.md
+          git commit -m "test(p02): qualify Product Graph prototypes"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
