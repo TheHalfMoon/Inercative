@@ -22,7 +22,9 @@ Separate at least these domains:
 7. production deployment target;
 8. external integrations;
 9. model/provider endpoints;
-10. review/evidence systems.
+10. review/evidence systems;
+11. external connector/MCP servers;
+12. authenticated-user browser/local-computer surfaces when enabled.
 
 A credential valid in one domain is not ambient authority in another.
 
@@ -148,9 +150,9 @@ Importing a repository must not automatically execute:
 
 Discovery happens before execution. Changed/effective command surfaces receive heightened review.
 
-## 9. Browser and prompt-injection boundary
+## 9. Browser, connector, and prompt-injection boundary
 
-Browser content is untrusted data.
+Browser content, MCP/server instructions, connector output, downloaded content, and external tool output are untrusted data.
 
 A page can suggest actions but cannot grant new capability.
 
@@ -163,7 +165,27 @@ The harness must preserve provenance for proposals caused by:
 - console output;
 - external model/tool output.
 
-A request to access a credential, file outside scope, production database, purchase, publish, or change permissions is re-evaluated by policy regardless of browser instructions.
+An untrusted-content probe can attach provenance/risk signals before observations enter model context.
+
+A request to access a credential, file outside scope, production database, purchase, publish, or change permissions is re-evaluated by deterministic policy regardless of browser/tool instructions.
+
+For risk-bearing executable actions, an independent intent-aware guard may compare the action against user-authorized intent after deterministic capability checks. Denial does not grant the generator a bypass path; it returns a bounded reason and safer alternatives where possible.
+
+### Browser/runtime trust classes
+
+Do not treat every browser/computer runtime as equivalent.
+
+Conceptual classes include:
+
+- BuildSandbox;
+- PreviewBrowser;
+- TestBrowser;
+- ResearchBrowser;
+- AuthenticatedUserBrowser;
+- PersistentCloudComputer;
+- ScopedLocalComputer.
+
+Higher-trust/user-authenticated surfaces require narrower grants, stronger evidence, and explicit policy.
 
 ## 10. Filesystem safety
 
@@ -190,7 +212,9 @@ Dependency installation records:
 - integrity/provenance where available;
 - lifecycle-script behavior;
 - license/notice impact;
-- vulnerability observations.
+- vulnerability observations;
+- imported/generated asset and font provenance where known;
+- build artifact/source identity when producing a releasable artifact.
 
 Generated apps must commit lockfiles.
 
@@ -232,6 +256,8 @@ Operations can have non-code consequences:
 
 Each action declares a side-effect and spend class.
 
+The Budget Governor enforces ceilings across model/tool/browser/sandbox/network/backend operations, retries, wall-clock time, and parallelism.
+
 The user may set bounded recurring policy, but silent unbounded spend is forbidden.
 
 ## 15. Data privacy
@@ -245,6 +271,8 @@ Classify project data at minimum:
 - regulated/sensitive.
 
 Provider/model routing respects the data class.
+
+Generated-product semantics can additionally carry retention, export, deletion, audit, residency, consent, and redaction requirements. These mechanisms do not constitute a regulatory-compliance claim by themselves.
 
 Logs/evidence should store the minimum useful data, with redaction and retention controls.
 
