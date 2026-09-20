@@ -128,13 +128,20 @@ Planning/spec/security/governance Markdown cannot disappear merely because a cod
 
 Review evidence records:
 
-- base;
-- head;
-- OCR version/config;
-- ruleset identity;
-- reviewed/excluded files;
-- findings;
-- unresolved state.
+- base/head/merge-base identity;
+- OCR release, verified binary digest, and configuration identity;
+- complete changed-file accounting;
+- deterministic reviewable/excluded classification and exclusion reasons;
+- separate-review evidence for material unsupported/excluded files;
+- per-reviewable-file rule-resolution identity;
+- semantic state (RUN / BLOCKED / NOT_RUN);
+- structured findings and dispositions when semantic review ran;
+- explicit blocker evidence when it did not;
+- stale-head reconciliation when the candidate changes.
+
+The bounded P00 machine-readable contract lives in
+`packages/protocol/schema/ocr-review-evidence.schema.json`; its private validator is
+not a public P01 protocol API.
 
 ## 8. Finding model
 

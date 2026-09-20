@@ -58,24 +58,23 @@ their current delivery state:
 | SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | DONE (PR #9) | `docs/evidence/P00_S04_T01_LICENSE_NOTICE_POLICY_2026-09-20.md` |
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | DONE (PR #10) | `docs/evidence/P00_S04_T02_PROVENANCE_SCHEMA_2026-09-20.md` |
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
-| SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P00_S04_T03_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | DONE (PR #12) | `docs/evidence/P00_S04_T03_PROVENANCE_ADMISSION_2026-09-20.md` |
+| SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P00_S05_T02_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
 advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and in
 `docs/evidence/`, not by fabricating SpecGrain lifecycle state.
 
-IN-P00-S04-T03 has been shaped by the real SpecGrain CLI into SG-000007 on the bounded
-implementation branch. The tool-produced state is `GRAIN`; `specgrain check` is valid.
+SG-000007 / IN-P00-S04-T03 is canonically complete through PR #12; exact-head CI #91
+and fresh-main CI #92 passed on Ubuntu and Windows.
 
-Current SpecGrain `next` still reports SG-000007 waiting on SG-000005 because dependency
-satisfaction is modeled only through VERIFIED/CONTROLLED states and the current CLI does
-not expose those completion transitions. Repository delivery truth records SG-000005 DONE
-through PR #10 and exact/fresh-main CI; no READY/VERIFIED/CONTROLLED/WorkPacket state is
-fabricated to bridge this known lifecycle gap.
-
-IN-P00-S05-T02 remains dependency-eligible after SG-000006 but unshaped under rolling-wave
-ordering while SG-000007 is the active implementation Grain.
+IN-P00-S05-T02 has been shaped by the real SpecGrain CLI into SG-000008. The tool-produced
+state is `GRAIN`; `specgrain check` is valid. Current SpecGrain `next` reports
+SG-000008 waiting on SG-000006 because dependency satisfaction is modeled only through
+VERIFIED/CONTROLLED states and the current CLI does not expose those completion
+transitions. Repository delivery truth records SG-000006 DONE through PR #5 and its
+deterministic OCR evidence; no READY/VERIFIED/CONTROLLED/WorkPacket state is fabricated.
 
 **External blocker still active:**
 
@@ -93,7 +92,7 @@ The following are **NOT RUN** and are not claimed as PASS:
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current
   CLI exposes no VERIFIED/CONTROLLED transition; see frontier note above).
-- SpecGrain READY/VERIFIED/CONTROLLED transition and WorkPacket for SG-000007: NOT RUN /
+- SpecGrain READY/VERIFIED/CONTROLLED transition and WorkPacket for SG-000008: NOT RUN /
   unavailable under the current CLI lifecycle surface. The tool-produced GRAIN state and
   repository delivery evidence are recorded without fabricating later lifecycle states.
 
@@ -104,15 +103,16 @@ qualification evidence.
 
 Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof),
 SG-000004 (Apache-2.0 license + third-party notice policy), SG-000005 (donor
-provenance/import record schema), and SG-000006 (P00-S05 OCR procedure; deterministic
-layer executed, semantic layer blocked on a recorded credential blocker).
+provenance/import record schema), SG-000006 (P00-S05 OCR procedure; deterministic layer
+executed, semantic layer blocked on a recorded credential blocker), and SG-000007
+(provenance admission/notice inventory through PR #12).
 
 Current eligible P00 frontier:
 
-1. SG-000007 / IN-P00-S04-T03 — provenance validation/notice inventory. Real SpecGrain
-   shaping is complete; bounded implementation is active on the candidate branch.
-2. IN-P00-S05-T02 — OCR review evidence/file-accounting contract. Dependency satisfied
-   by SG-000006; remains behind active SG-000007 in rolling-wave order.
+1. SG-000008 / IN-P00-S05-T02 — OCR review evidence/file-accounting contract. Real
+   SpecGrain shaping is complete; bounded implementation is active on the candidate branch.
+2. P01 remains blocked until SG-000008 is canonically completed and P00 exit evidence is
+   reconciled.
 
 ## Hard constraints
 
