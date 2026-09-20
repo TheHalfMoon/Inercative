@@ -78,6 +78,12 @@ The matrix distinguishes:
 | Responsive application shell | V1 CORE | |
 | Pages/routes/layouts | V1 CORE | |
 | Reusable components | V1 CORE | |
+| FrontendQualityProfile | V1 CORE | Compiler-owned frontend architecture/quality contract |
+| One primary primitive base | V1 CORE | Avoid mixed focus/keyboard/portal semantics |
+| Component reuse before synthesis | V1 CORE | Local/project/qualified registry first |
+| Source-owned component registry | V1 CORE | Replaceable ComponentRegistryAdapter |
+| Ineractive Qualified Registry | BETA | Curated source accelerators; no runtime lock-in |
+| RegistryAdmissionGate | BETA | Provenance/security/a11y/compatibility before admission |
 | Forms/validation | V1 CORE | |
 | Loading/error/empty states | V1 CORE | |
 | Server/client boundary | V1 CORE | Explicit |
@@ -91,6 +97,11 @@ The matrix distinguishes:
 | Arabic/RTL | BETA | Required benchmark before broad launch |
 | SEO/public metadata | BETA | Only for relevant public products |
 | Performance budgets | BETA | Evidence-based |
+| Server-first/client-boundary policy | V1 CORE | Minimize unnecessary client JavaScript |
+| Next.js runtime diagnostic adapter | BETA | DevTools MCP under Tool Catalog/capability policy |
+| Component workbench | BETA | Storybook where persistent component-state value exists |
+| Agent component introspection | BETA | Storybook MCP or qualified equivalent |
+| On-demand frontend dependencies | V1 CORE | Query/table/forms/i18n/motion only when justified |
 | Health/release identity | BETA | Generated-app operations baseline |
 | Structured logs/error adapter | BETA | Portable; no Ineractive runtime dependency |
 | Product analytics/event schema | BETA | Opt-in/configurable |
@@ -189,6 +200,7 @@ The matrix distinguishes:
 | Tokenized design system | V1 CORE | |
 | Typography/layout hierarchy | V1 CORE | |
 | Design anti-pattern detectors | V1 CORE | Impeccable-derived |
+| Versioned design/frontend rule packs | V1 CORE | Impeccable + interface/React rule packs; findings not authority |
 | Responsive viewport checks | V1 CORE | |
 | Accessibility checks | V1 CORE | |
 | Screenshot critique loop | BETA | P08 |
@@ -204,6 +216,8 @@ The matrix distinguishes:
 | Annotation Intent / locality | BETA | Instance/component/token/page/product |
 | Asset/font provenance | V1 CORE | Rights metadata where known; no automatic clearance claim |
 | Independent Design Evaluator | BETA | Real rendered product |
+| Component-state catalog/testing | BETA | Stories/interaction/a11y for reusable states |
+| Qualified external UI discovery | BETA | Optional registries only through admission gate |
 | Full freeform design-tool replacement | OUT | Ineractive edits products, not every design artifact category |
 
 ## 9. Verification and assurance
@@ -225,6 +239,8 @@ The matrix distinguishes:
 | Changed-code exercise evidence | BETA | |
 | Visual regression | BETA | |
 | Performance regression | BETA | |
+| Deterministic React quality scan | BETA | React Doctor candidate; score is not PASS |
+| FrontendEvidenceBundle | BETA | Exact-source component/design/a11y/browser/perf evidence |
 | Evaluation Lab benchmark/replay | BETA | Required before broad quality claims |
 | Harness quality/cost/latency regression | BETA | Multi-dimensional, not one score |
 | Supply-chain/source/artifact integrity | V1 CORE | Dependency/secret/provenance baseline before production |
