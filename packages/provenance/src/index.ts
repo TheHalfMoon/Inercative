@@ -169,7 +169,7 @@ function enumValue<const T extends readonly string[]>(
     issue(issues, "INVALID_ENUM", path, `${path} must be one of: ${allowed.join(", ")}.`);
     return null;
   }
-  return value as T[number];
+  return value;
 }
 
 function uniqueStringArray(
