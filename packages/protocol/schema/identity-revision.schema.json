@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ineractive.dev/schemas/identity-revision.v1.json",
+  "title": "Ineractive Identity Revision Binding",
+  "$ref": "#/$defs/revisionBinding",
+  "$defs": {
+    "logicalIdentity": {
+      "type": "string",
+      "pattern": "^ineractive:[a-z][a-z0-9-]{0,31}:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^git:(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "sha256Revision": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "exactRevision": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/gitRevision"
+        },
+        {
+          "$ref": "#/$defs/sha256Revision"
+        }
+      ]
+    },
+    "revisionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "revision"],
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/logicalIdentity"
+        },
+        "revision": {
+          "$ref": "#/$defs/exactRevision"
+        }
+      }
+    }
+  }
+}
