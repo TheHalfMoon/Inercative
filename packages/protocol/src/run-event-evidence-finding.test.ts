@@ -26,15 +26,9 @@ const RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-1234567890a
 const PARENT_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-1234567890ac");
 const EVENT_ID = formatLogicalIdentity("event", "018f9f3a-7b2a-7f11-8a4c-1234567890ad");
 const EVIDENCE_ID = formatLogicalIdentity("evidence", "018f9f3a-7b2a-7f11-8a4c-1234567890ae");
-const NEXT_EVIDENCE_ID = formatLogicalIdentity(
-  "evidence",
-  "018f9f3a-7b2a-7f11-8a4c-1234567890af",
-);
+const NEXT_EVIDENCE_ID = formatLogicalIdentity("evidence", "018f9f3a-7b2a-7f11-8a4c-1234567890af");
 const FINDING_ID = formatLogicalIdentity("finding", "018f9f3a-7b2a-7f11-8a4c-1234567890b0");
-const NEXT_FINDING_ID = formatLogicalIdentity(
-  "finding",
-  "018f9f3a-7b2a-7f11-8a4c-1234567890b1",
-);
+const NEXT_FINDING_ID = formatLogicalIdentity("finding", "018f9f3a-7b2a-7f11-8a4c-1234567890b1");
 const PROJECT_ID = formatLogicalIdentity("project", "550e8400-e29b-41d4-a716-446655440000");
 const PRODUCER_ID = formatLogicalIdentity("verifier", "550e8400-e29b-41d4-a716-446655440001");
 const TARGET = bindRevision(
@@ -110,9 +104,7 @@ describe("RunRecord", () => {
   });
 
   it("rejects the wrong logical identity kind", () => {
-    expect(issueCodes(validateRunRecord({ ...RUN, id: PROJECT_ID }))).toContain(
-      "INVALID_IDENTITY",
-    );
+    expect(issueCodes(validateRunRecord({ ...RUN, id: PROJECT_ID }))).toContain("INVALID_IDENTITY");
   });
 
   it("rejects self-parenting", () => {
@@ -156,9 +148,9 @@ describe("EvidenceRecord", () => {
   });
 
   it("requires an artifact/reference when evidence was observed", () => {
-    expect(
-      issueCodes(validateEvidenceRecord({ ...EVIDENCE, artifactReferences: [] })),
-    ).toContain("SEMANTIC_CONFLICT");
+    expect(issueCodes(validateEvidenceRecord({ ...EVIDENCE, artifactReferences: [] }))).toContain(
+      "SEMANTIC_CONFLICT",
+    );
   });
 
   it("requires a reason when evidence did not run", () => {
@@ -221,9 +213,9 @@ describe("FindingRecord", () => {
       disposition: "DEFERRED_BLOCKING",
     };
     expect(validateFindingRecord(blocking).ok).toBe(true);
-    expect(
-      issueCodes(validateFindingRecord({ ...blocking, disposition: "FIXED" })),
-    ).toContain("SEMANTIC_CONFLICT");
+    expect(issueCodes(validateFindingRecord({ ...blocking, disposition: "FIXED" }))).toContain(
+      "SEMANTIC_CONFLICT",
+    );
   });
 
   it("rejects unresolved disposition on a resolved finding", () => {
@@ -282,9 +274,7 @@ describe("machine-readable record schema parity", () => {
     };
 
     expect(schema.$defs.runState.enum).toEqual([...RUN_STATES]);
-    expect(schema.$defs.evidenceObservationStatus.enum).toEqual([
-      ...EVIDENCE_OBSERVATION_STATUSES,
-    ]);
+    expect(schema.$defs.evidenceObservationStatus.enum).toEqual([...EVIDENCE_OBSERVATION_STATUSES]);
     expect(schema.$defs.freshness.enum).toEqual([...FRESHNESS_STATES]);
     expect(schema.$defs.findingSeverity.enum).toEqual([...FINDING_SEVERITIES]);
     expect(schema.$defs.findingStatus.enum).toEqual([...FINDING_STATUSES]);

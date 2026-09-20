@@ -161,7 +161,12 @@ function rejectUnknown(
 ): void {
   for (const key of Object.keys(value)) {
     if (!allowed.includes(key)) {
-      issue(issues, "UNKNOWN_FIELD", path + "." + key, path + " contains unknown field " + key + ".");
+      issue(
+        issues,
+        "UNKNOWN_FIELD",
+        path + "." + key,
+        path + " contains unknown field " + key + ".",
+      );
     }
   }
 }
@@ -173,17 +178,18 @@ function required(
   issues: ProtocolRecordIssue[],
 ): unknown {
   if (!(key in value)) {
-    issue(issues, "MISSING_FIELD", path + "." + key, path + " is missing required field " + key + ".");
+    issue(
+      issues,
+      "MISSING_FIELD",
+      path + "." + key,
+      path + " is missing required field " + key + ".",
+    );
     return undefined;
   }
   return value[key];
 }
 
-function text(
-  value: unknown,
-  path: string,
-  issues: ProtocolRecordIssue[],
-): string | null {
+function text(value: unknown, path: string, issues: ProtocolRecordIssue[]): string | null {
   if (typeof value !== "string" || value.trim().length === 0) {
     issue(issues, "INVALID_STRING", path, path + " must be a non-empty string.");
     return null;
@@ -191,16 +197,9 @@ function text(
   return value;
 }
 
-function token(
-  value: unknown,
-  path: string,
-  issues: ProtocolRecordIssue[],
-): string | null {
+function token(value: unknown, path: string, issues: ProtocolRecordIssue[]): string | null {
   const parsed = text(value, path, issues);
-  if (
-    parsed !== null &&
-    (parsed.length > MAX_TOKEN_LENGTH || !TOKEN_PATTERN.test(parsed))
-  ) {
+  if (parsed !== null && (parsed.length > MAX_TOKEN_LENGTH || !TOKEN_PATTERN.test(parsed))) {
     issue(
       issues,
       "INVALID_STRING",
@@ -307,7 +306,11 @@ function revisionBinding(
   const record = objectValue(value, path, issues);
   if (record === null) return null;
   rejectUnknown(record, ["identity", "revision"], path, issues);
-  const identity = anyIdentity(required(record, "identity", path, issues), path + ".identity", issues);
+  const identity = anyIdentity(
+    required(record, "identity", path, issues),
+    path + ".identity",
+    issues,
+  );
   const revision = exactRevision(
     required(record, "revision", path, issues),
     path + ".revision",
@@ -328,11 +331,7 @@ function nonNegativeInteger(
   return value;
 }
 
-function confidence(
-  value: unknown,
-  path: string,
-  issues: ProtocolRecordIssue[],
-): number | null {
+function confidence(value: unknown, path: string, issues: ProtocolRecordIssue[]): number | null {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) {
     issue(issues, "INVALID_NUMBER", path, path + " must be a finite number between 0 and 1.");
     return null;
@@ -417,11 +416,7 @@ function identityArray<Kind extends string>(
   return result;
 }
 
-function nullableText(
-  value: unknown,
-  path: string,
-  issues: ProtocolRecordIssue[],
-): string | null {
+function nullableText(value: unknown, path: string, issues: ProtocolRecordIssue[]): string | null {
   return value === null ? null : text(value, path, issues);
 }
 
@@ -470,7 +465,11 @@ export function validateRunRecord(input: unknown): ProtocolRecordValidationResul
   if (record === null) return { ok: false, issues };
   rejectUnknown(record, ["schemaVersion", "id", "target", "state", "parentRunId"], "$", issues);
 
-  const version = schemaVersion(required(record, "schemaVersion", "$", issues), "$.schemaVersion", issues);
+  const version = schemaVersion(
+    required(record, "schemaVersion", "$", issues),
+    "$.schemaVersion",
+    issues,
+  );
   const id = identityForKind(required(record, "id", "$", issues), "run", "$.id", issues);
   const target = revisionBinding(required(record, "target", "$", issues), "$.target", issues);
   const state = enumeration(required(record, "state", "$", issues), RUN_STATES, "$.state", issues);
@@ -491,9 +490,7 @@ export function validateRunRecord(input: unknown): ProtocolRecordValidationResul
   return { ok: true, value: { schemaVersion: version, id, target, state, parentRunId } };
 }
 
-export function validateEventRecord(
-  input: unknown,
-): ProtocolRecordValidationResult<EventRecord> {
+export function validateEventRecord(input: unknown): ProtocolRecordValidationResult<EventRecord> {
   const issues: ProtocolRecordIssue[] = [];
   const record = objectValue(input, "$", issues);
   if (record === null) return { ok: false, issues };
@@ -504,15 +501,27 @@ export function validateEventRecord(
     issues,
   );
 
-  const version = schemaVersion(required(record, "schemaVersion", "$", issues), "$.schemaVersion", issues);
+  const version = schemaVersion(
+    required(record, "schemaVersion", "$", issues),
+    "$.schemaVersion",
+    issues,
+  );
   const id = identityForKind(required(record, "id", "$", issues), "event", "$.id", issues);
   const runId = identityForKind(required(record, "runId", "$", issues), "run", "$.runId", issues);
-  const sequence = nonNegativeInteger(required(record, "sequence", "$", issues), "$.sequence", issues);
+  const sequence = nonNegativeInteger(
+    required(record, "sequence", "$", issues),
+    "$.sequence",
+    issues,
+  );
   const kind = token(required(record, "kind", "$", issues), "$.kind", issues);
   const source = anyIdentity(required(record, "source", "$", issues), "$.source", issues);
   const targetValue = required(record, "target", "$", issues);
   const target = targetValue === null ? null : revisionBinding(targetValue, "$.target", issues);
-  const references = uniqueStrings(required(record, "references", "$", issues), "$.references", issues);
+  const references = uniqueStrings(
+    required(record, "references", "$", issues),
+    "$.references",
+    issues,
+  );
 
   if (
     issues.length > 0 ||
@@ -557,7 +566,11 @@ export function validateEvidenceRecord(
     issues,
   );
 
-  const version = schemaVersion(required(record, "schemaVersion", "$", issues), "$.schemaVersion", issues);
+  const version = schemaVersion(
+    required(record, "schemaVersion", "$", issues),
+    "$.schemaVersion",
+    issues,
+  );
   const id = identityForKind(required(record, "id", "$", issues), "evidence", "$.id", issues);
   const runId = identityForKind(required(record, "runId", "$", issues), "run", "$.runId", issues);
   const producer = anyIdentity(required(record, "producer", "$", issues), "$.producer", issues);
@@ -676,7 +689,11 @@ export function validateFindingRecord(
     issues,
   );
 
-  const version = schemaVersion(required(record, "schemaVersion", "$", issues), "$.schemaVersion", issues);
+  const version = schemaVersion(
+    required(record, "schemaVersion", "$", issues),
+    "$.schemaVersion",
+    issues,
+  );
   const id = identityForKind(required(record, "id", "$", issues), "finding", "$.id", issues);
   const runId = identityForKind(required(record, "runId", "$", issues), "run", "$.runId", issues);
   const source = anyIdentity(required(record, "source", "$", issues), "$.source", issues);
@@ -688,7 +705,11 @@ export function validateFindingRecord(
     "$.severity",
     issues,
   );
-  const parsedConfidence = confidence(required(record, "confidence", "$", issues), "$.confidence", issues);
+  const parsedConfidence = confidence(
+    required(record, "confidence", "$", issues),
+    "$.confidence",
+    issues,
+  );
   const locationReference = nullableText(
     required(record, "locationReference", "$", issues),
     "$.locationReference",

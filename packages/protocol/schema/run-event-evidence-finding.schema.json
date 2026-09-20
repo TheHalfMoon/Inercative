@@ -80,7 +80,16 @@
     "event": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schemaVersion", "id", "runId", "sequence", "kind", "source", "target", "references"],
+      "required": [
+        "schemaVersion",
+        "id",
+        "runId",
+        "sequence",
+        "kind",
+        "source",
+        "target",
+        "references"
+      ],
       "properties": {
         "schemaVersion": { "const": 1 },
         "id": { "$ref": "#/$defs/eventIdentity" },
