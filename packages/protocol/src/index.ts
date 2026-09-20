@@ -1,13 +1,28 @@
 /**
- * `@ineractive/protocol` — placeholder package boundary.
+ * `@ineractive/protocol` — provider-neutral public protocol primitives.
  *
- * P00 deliberately ships no protocol contracts. Provider-neutral identity and
- * revision primitives, run/event/evidence/finding schemas, ModelTask,
- * DecisionTask, and CapabilityRequest/Grant contracts are dependency-ordered
- * work owned by IN-P01-S02-T01 and IN-P01-S02-T02.
- *
- * Until that Grain exists this module must keep an empty runtime export surface:
- * inventing contracts here would create unreviewed public API that later Grains
- * would have to remove or preserve by accident.
+ * SG-000010 earns only stable opaque identities and immutable revision references.
+ * Run/Event/Evidence/Finding schemas and the remaining protocol contracts stay
+ * dependency-ordered work for later P01/P03/P04 Grains.
  */
-export {};
+
+export {
+  PROTOCOL_ID_NAMESPACES,
+  createIdentityRevisionRef,
+  createProtocolId,
+  isProtocolId,
+  isRevisionRef,
+  parseIdentityRevisionRef,
+  parseProtocolId,
+  parseRevisionRef,
+  serializeIdentityRevisionRef,
+  serializeProtocolId,
+  serializeRevisionRef,
+} from "./identity-revision.ts";
+
+export type {
+  IdentityRevisionRef,
+  ProtocolId,
+  ProtocolIdNamespace,
+  RevisionRef,
+} from "./identity-revision.ts";
