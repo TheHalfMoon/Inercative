@@ -1,0 +1,54 @@
+{
+  "acceptance": [
+    "diffcipline CLI pinned/installed; .diffcipline.toml committed with R0-R3 profiles mapped to pnpm check gates; diffcipline check --base origin/main parses policy without usage error"
+  ],
+  "change_surface": [
+    ".diffcipline.toml",
+    "docs/engineering/**",
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 2500
+  },
+  "dependencies": [],
+  "evidence": {
+    "required": [
+      "diffcipline --version; diffcipline check policy-parse output; committed .diffcipline.toml"
+    ]
+  },
+  "id": "SG-000002",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "installed-dependency",
+        "rationale": "Use the pinned founder-owned Diffcipline CLI rather than a substitute proof tool"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Diffcipline policy is initialized and pinned; R0-R3 profiles mapped to repo commands",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S03-T01; roadmap dep IN-P00-S01-T02 merged via PR #2",
+  "risk": {
+    "level": "low",
+    "recovery": "Remove .diffcipline.toml and uninstall the CLI; policy is declarative"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Diffcipline .diffcipline.toml policy; verification command mapping to repo gates; policy provenance"
+  ],
+  "scope_out": [
+    "Product code; executing a proof change (that is S03-T02); OCR; license; provenance"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S03-T01 Initialize Diffcipline risk/proof policy"
+}

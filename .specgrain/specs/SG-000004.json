@@ -1,0 +1,55 @@
+{
+  "acceptance": [
+    "LICENSE exists at repo root; package.json license matches; policy states Ineractive license does not erase third-party obligations; if license is a genuine founder decision, one concise question is raised"
+  ],
+  "change_surface": [
+    "LICENSE",
+    "package.json",
+    "docs/canonical/**",
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 5000,
+    "estimated_tokens": 2000
+  },
+  "dependencies": [],
+  "evidence": {
+    "required": [
+      "git diff of LICENSE/package.json; policy doc; founder decision record if applicable"
+    ]
+  },
+  "id": "SG-000004",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "License text and policy are authored artifacts; no dependency can provide them"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "LICENSE committed; package metadata license set; third-party notice policy recorded",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S04-T01; requires founder decision FD on license if undecided",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert LICENSE/package.json/policy edits; no runtime surface"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "LICENSE file; package.json license metadata; docs/canonical third-party notice policy"
+  ],
+  "scope_out": [
+    "Donor code import; provenance schema (S04-T02); product code"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S04-T01 Select and commit Ineractive-owned code license and third-party notice policy"
+}

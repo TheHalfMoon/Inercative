@@ -1,0 +1,54 @@
+{
+  "acceptance": [
+    "specgrain check passes; specgrain next lists dependency-eligible Grains; one WorkPacket exports with packet_digest; specs/CURRENT.md reflects live frontier"
+  ],
+  "change_surface": [
+    ".specgrain/**",
+    "specs/CURRENT.md",
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 2500
+  },
+  "dependencies": [],
+  "evidence": {
+    "required": [
+      "specgrain check/next/packet JSON output; specs/CURRENT.md diff"
+    ]
+  },
+  "id": "SG-000001",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "installed-dependency",
+        "rationale": "Use the pinned founder-owned SpecGrain CLI rather than hand-authoring hidden state; do not invent a replacement"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "SpecGrain is initialized in-repo; frontier Grains exist; one WorkPacket exports; specs/CURRENT.md reconciled to live truth",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S02-T01; roadmap deps IN-P00-S01-T01/T02 merged via PR #2 (commit 3aa382e3b2acf517bac5a4a0bd08c6bb78738620)",
+  "risk": {
+    "level": "low",
+    "recovery": "Delete .specgrain and re-run specgrain init; revert specs/CURRENT.md edit"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    ".specgrain/ state; specs/CURRENT.md reconciliation; one WorkPacket export"
+  ],
+  "scope_out": [
+    "All product code; Diffcipline; OCR; license; provenance; donor imports"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S02-T01 Initialize SpecGrain from canonical roadmap"
+}

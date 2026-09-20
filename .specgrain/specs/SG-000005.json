@@ -1,0 +1,56 @@
+{
+  "acceptance": [
+    "Schema captures required fields; an invalid/incomplete record fails validation; validator is deterministic and covered by tests"
+  ],
+  "change_surface": [
+    "packages/provenance/**",
+    "docs/canonical/**",
+    "docs/evidence/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 8000,
+    "estimated_tokens": 3500
+  },
+  "dependencies": [
+    "SG-000004"
+  ],
+  "evidence": {
+    "required": [
+      "vitest results for schema validation including negative fixtures; committed schema"
+    ]
+  },
+  "id": "SG-000005",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Ineractive-owned schema/validator; no donor code imported"
+      },
+      "safety": {
+        "requirements": [],
+        "status": "none-identified"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Machine-readable import-record schema capturing required provenance fields",
+  "parent_id": null,
+  "rationale": "Canonical frontier P00-S04-T02",
+  "risk": {
+    "level": "medium",
+    "recovery": "Remove schema/validator package; no external side effects"
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Machine-readable donor provenance/import record schema and validator"
+  ],
+  "scope_out": [
+    "Actual donor imports; notice inventory automation (S04-T03); product code"
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S04-T02 Implement donor provenance/import record schema"
+}
