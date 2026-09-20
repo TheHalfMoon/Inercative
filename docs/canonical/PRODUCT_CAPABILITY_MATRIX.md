@@ -36,6 +36,9 @@ The matrix distinguishes:
 | Terminal/log access | V1 CORE | Developer mode |
 | Undo/checkpoints | V1 CORE | Backed by Git/run state |
 | Branch/PR workflows | BETA | P11 |
+| Anchored UI annotations | BETA | P08 |
+| Exploration branches / compare directions | BETA | Product/design/context/source branching |
+| Plan/task visibility while building | BETA | SpecGrain-backed, not a second planning authority |
 
 ## 3. Product semantics
 
@@ -52,6 +55,11 @@ The matrix distinguishes:
 | Metrics | BETA | Product analytics semantics |
 | Notifications | V1 CORE | Basic product behavior |
 | Integration definitions | V1 CORE | Typed external boundaries |
+| Data classification/policy | V1 CORE | Retention/export/delete/audit semantics when needed |
+| External-effect semantics | V1 CORE | Consequence/idempotency/reconciliation |
+| Design-system revision reference | BETA | Design OS binding |
+| Skill references | BETA | Workflow semantics, not capability grants |
+| Release/promotion semantics | BETA | App/backend compatibility |
 | Deployment targets | BETA | P11 |
 | Multi-target web/mobile semantics | LATER | P14 |
 
@@ -73,6 +81,12 @@ The matrix distinguishes:
 | Accessibility baseline | V1 CORE | Build requirement |
 | Internationalization framework | BETA | |
 | Arabic/RTL | BETA | Required benchmark before broad launch |
+| SEO/public metadata | BETA | Only for relevant public products |
+| Performance budgets | BETA | Evidence-based |
+| Health/release identity | BETA | Generated-app operations baseline |
+| Structured logs/error adapter | BETA | Portable; no Ineractive runtime dependency |
+| Product analytics/event schema | BETA | Opt-in/configurable |
+| AI product primitives | BETA | Provider-neutral generated-app feature pack |
 | PWA/installability | LATER | P14 |
 | Native iOS/Android | LATER | Expo/React Native compiler target |
 
@@ -93,6 +107,11 @@ The matrix distinguishes:
 | Realtime | V1 CORE | Bounded subset |
 | Edge Functions | V1 CORE | Trusted server-side behavior |
 | Webhooks | V1 CORE | With signature/idempotency |
+| Generic REST integration | V1 CORE | Typed server-side boundary |
+| Transactional email | V1 CORE | Qualified adapter, external-effect receipt |
+| In-app notifications | V1 CORE | |
+| Data export/delete flows | BETA | Compile when product semantics require |
+| Audit events | BETA | Product-level audit, not generic telemetry |
 | Cron/background jobs | BETA | |
 | Queues | BETA | |
 | Vector/search | BETA | Only when product needs it |
@@ -121,6 +140,12 @@ The matrix distinguishes:
 | Resume/checkpoint | V1 CORE | |
 | External-effect receipts | V1 CORE | |
 | Ambiguous-state reconciliation | V1 CORE | |
+| Artifact Store | V1 CORE | Externalize bulky logs/screenshots/traces/research |
+| Stable Tool Catalog / capability mask | V1 CORE | Tool identity stable; eligibility policy-driven |
+| Untrusted-content probe | V1 CORE | Web/MCP/tool content remains untrusted |
+| Intent-aware high-risk action guard | V1 CORE | Independent of generator persuasion |
+| Lifecycle Hook Bus | BETA | Typed/capability-scoped |
+| Distinct browser trust classes | BETA | Preview/test/research/authenticated-user |
 | Remote computer control | LATER | Not required for product compiler V1 |
 
 ## 7. Harness intelligence
@@ -133,11 +158,18 @@ The matrix distinguishes:
 | Routing by task/capability/privacy/budget | V1 CORE | |
 | Fallback lineage | V1 CORE | No silent equivalence |
 | Context Compiler | V1 CORE | |
-| Project memory | BETA | P12 |
+| Project Context substrate | V1 CORE | Durable governed context; collaboration UX later |
+| System/Project Skills substrate | V1 CORE | Selective loading; no capability grants |
+| Context Continuation Policy | V1 CORE | Continue/compact/reset/branch/delegate |
+| Budget Governor | V1 CORE | Cost/tool/time/parallelism ceilings |
+| Harness replay contract | V1 CORE | Live + recorded-observation replay |
 | Work compiler | V1 CORE | Product Graph diff -> bounded work |
+| Build Contract | V1 CORE | Requirements-derived producer/verifier contract |
+| Failure Ledger | V1 CORE | Structured persistent failures/repairs |
 | Repair loop | V1 CORE | Finite and evidence-driven |
-| Parallel independent work units | BETA | No artificial agent swarm |
-| MCP / Skills / OpenAPI tool ecosystem | BETA | P13 |
+| Wide Work / parallel independent units | BETA | Evidence per unit; no write conflict |
+| Project Learning Loop | BETA | Proposed durable updates, approval/versioning |
+| MCP / Skills / OpenAPI ecosystem | BETA | P13 broad/community ecosystem |
 | Plugin SDK | LATER | P13 after core stability |
 
 ## 8. Design system and visual quality
@@ -154,6 +186,14 @@ The matrix distinguishes:
 | Visual source editing | BETA | P08 |
 | Brand artifacts | BETA | PRODUCT/BRAND/DESIGN |
 | Design variants | BETA | |
+| Design Context Compiler | BETA | Normalize code/design/brand context |
+| DesignSystemRevision | BETA | Versioned design truth |
+| Semantic component bindings | BETA | Product ↔ source ↔ runtime ↔ design |
+| Code/design drift detection | BETA | CLEAN/CODE_AHEAD/DESIGN_AHEAD/DIVERGED/UNBOUND |
+| Native design-provider round trip | BETA | Figma first qualified adapter |
+| Annotation Intent / locality | BETA | Instance/component/token/page/product |
+| Asset/font provenance | V1 CORE | Rights metadata where known; no automatic clearance claim |
+| Independent Design Evaluator | BETA | Real rendered product |
 | Full freeform design-tool replacement | OUT | Ineractive edits products, not every design artifact category |
 
 ## 9. Verification and assurance
@@ -175,6 +215,10 @@ The matrix distinguishes:
 | Changed-code exercise evidence | BETA | |
 | Visual regression | BETA | |
 | Performance regression | BETA | |
+| Evaluation Lab benchmark/replay | BETA | Required before broad quality claims |
+| Harness quality/cost/latency regression | BETA | Multi-dimensional, not one score |
+| Supply-chain/source/artifact integrity | V1 CORE | Dependency/secret/provenance baseline before production |
+| SBOM | BETA | Before production claim where supported |
 | Mutation/fuzz/property testing | BETA | Risk-driven |
 | Formal/model checking | LATER | Only where justified |
 
@@ -192,6 +236,11 @@ The matrix distinguishes:
 | Clean-room portability proof | BETA | Required before portability claim |
 | Custom domains | BETA | |
 | Environment secrets | BETA | Brokered |
+| ReleaseManifest | BETA | Source + backend + config + proof + recovery |
+| Last-known-good promotion | BETA | Candidate cannot silently replace proven release |
+| Generated-app operations baseline | BETA | Health/log/error/release identity |
+| Production recovery drill | BETA | App/schema compatibility + backup expectations |
+| Feature flags/staged rollout | LATER | Useful after release model is proven |
 | Multi-cloud arbitrary IaC | LATER | Avoid shallow breadth |
 | Ineractive-only runtime dependency | OUT | Violates portability contract |
 
@@ -206,6 +255,9 @@ The matrix distinguishes:
 | Activity history | BETA | |
 | Comments/mentions | BETA | |
 | Shared preview | BETA | |
+| Team project-learning approvals | BETA | Durable context changes are reviewable |
+| Team Skills library | BETA | Governed/project-scoped |
+| Exploration branch compare/merge | BETA | Graph/design/source/evidence |
 | Real-time multi-cursor visual editing | LATER | Not required for product value |
 | Generic Jira replacement | OUT | Keep work view lightweight |
 
@@ -218,13 +270,16 @@ The matrix distinguishes:
 - multi-tenant CRM/internal tool;
 - file/storage application;
 - realtime collaboration-like flow;
-- external API/webhook integration;
+- external API/webhook/email integration;
 - complex stateful workflow;
 - Arabic/RTL application;
-- brownfield feature change.
+- release/schema compatibility and recovery drill;
+- generated-app health/observability failure;
+- brownfield feature change with existing backend reconstruction.
 
 ### Later specialization
 
+- AI-enabled product after the AI primitive pack is qualified;
 - commerce;
 - payments;
 - regulated clinical/financial workflows;
