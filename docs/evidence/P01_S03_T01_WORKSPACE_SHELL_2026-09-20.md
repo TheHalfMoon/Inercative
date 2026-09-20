@@ -85,3 +85,17 @@ from the candidate history before PR acceptance, and
 `packages/control-plane/.gitignore` now excludes `.next/`.
 
 No build artifact is part of the intended source diff.
+
+
+## Repository CI repair history
+
+- PR CI #123 / run `35530695984` on candidate
+  `bde699d4bad208b73e53bd36d66451f883e30f67` passed frozen install and format on
+  Ubuntu, then failed at lint only because the smoke harness consumed Node stream
+  `data` values through an `any`-typed callback. The shell state tests and prior
+  standalone qualification remain recorded separately.
+- The repair sets child stdout/stderr encoding to UTF-8 and narrows callback payloads to
+  strings before accumulation. No shell behavior, HTTP target, marker, or runtime
+  capability changes.
+- Because the smoke harness changed, standalone build/smoke is re-executed on the repaired
+  head before acceptance.

@@ -26,11 +26,17 @@ const child = spawn(process.execPath, [serverPath], {
 });
 
 let output = "";
+child.stdout.setEncoding("utf8");
+child.stderr.setEncoding("utf8");
 child.stdout.on("data", (chunk) => {
-  output += chunk.toString();
+  if (typeof chunk === "string") {
+    output += chunk;
+  }
 });
 child.stderr.on("data", (chunk) => {
-  output += chunk.toString();
+  if (typeof chunk === "string") {
+    output += chunk;
+  }
 });
 
 async function waitForMarker() {
