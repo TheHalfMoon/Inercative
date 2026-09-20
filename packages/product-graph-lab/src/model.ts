@@ -38,9 +38,15 @@ export function canonicalizeJson(value: JsonValue): JsonValue {
   if (value !== null && typeof value === "object") {
     const record = value as Readonly<Record<string, JsonValue>>;
     return Object.fromEntries(
-      Object.entries(record)
-        .sort(([left], [right]) => compareText(left, right))
-        .map(([key, item]) => [key, canonicalizeJson(item)]),
+      Object.keys(record)
+        .sort(compareText)
+        .map((key) => {
+          const item = record[key];
+          if (item === undefined) {
+            throw new TypeError(`Canonical JSON key ${key} resolved to undefined.`);
+          }
+          return [key, canonicalizeJson(item)];
+        }),
     );
   }
   return value;
