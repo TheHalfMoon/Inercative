@@ -47,7 +47,18 @@ A structurally valid record can still contain a dependency-closure state of `PAR
 
 That is intentional: structural validation proves that uncertainty is represented, not that the source is safe to import.
 
-S04-T03 owns admission-oriented validation and notice-inventory enforcement. No donor product code is imported by this task.
+SG-000007 / IN-P00-S04-T03 adds a separate deterministic admission gate:
+
+- every record must first pass structural validation;
+- dependency closure must be `COMPLETE`;
+- destination paths may not collide across admitted records;
+- NOTICE-required material must retain a non-empty notice reference;
+- a canonical notice inventory is generated from the admitted set;
+- the committed inventory must exactly match the deterministic generated inventory.
+
+An empty committed inventory is valid only when the admitted donor-record set is empty.
+
+No donor product code is imported by SG-000007.
 
 ## 5. Rights boundary
 

@@ -58,24 +58,27 @@ their current delivery state:
 | SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | DONE (PR #9) | `docs/evidence/P00_S04_T01_LICENSE_NOTICE_POLICY_2026-09-20.md` |
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | DONE (PR #10) | `docs/evidence/P00_S04_T02_PROVENANCE_SCHEMA_2026-09-20.md` |
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
+| SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P00_S04_T03_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
 advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and in
 `docs/evidence/`, not by fabricating SpecGrain lifecycle state.
 
-IN-P00-S04-T03 is now dependency-eligible after canonical completion of SG-000005.
-It is **not yet shaped into a SpecGrain Grain**. The connected local execution runtime
-that previously ran the SpecGrain CLI is currently unavailable because its monthly
-tool-call quota is exhausted; no hand-authored SG-000007 is fabricated as a substitute.
+IN-P00-S04-T03 has been shaped by the real SpecGrain CLI into SG-000007 on the bounded
+implementation branch. The tool-produced state is `GRAIN`; `specgrain check` is valid.
 
-IN-P00-S05-T02 is also dependency-eligible after SG-000006 but remains unshaped under
-rolling-wave ordering while S04-T03 is the first eligible implementation unit.
+Current SpecGrain `next` still reports SG-000007 waiting on SG-000005 because dependency
+satisfaction is modeled only through VERIFIED/CONTROLLED states and the current CLI does
+not expose those completion transitions. Repository delivery truth records SG-000005 DONE
+through PR #10 and exact/fresh-main CI; no READY/VERIFIED/CONTROLLED/WorkPacket state is
+fabricated to bridge this known lifecycle gap.
 
-**External blockers (active):**
+IN-P00-S05-T02 remains dependency-eligible after SG-000006 but unshaped under rolling-wave
+ordering while SG-000007 is the active implementation Grain.
 
-- SpecGrain CLI execution for the next rolling-wave Grain is unavailable in the current
-  connected runtime session; shaping remains NOT RUN rather than being simulated.
+**External blocker still active:**
+
 - Alibaba OCR semantic review (SG-000006 follow-up) needs a scoped LLM endpoint/token
   provisioned.
 
@@ -90,9 +93,9 @@ The following are **NOT RUN** and are not claimed as PASS:
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current
   CLI exposes no VERIFIED/CONTROLLED transition; see frontier note above).
-- SpecGrain shaping for IN-P00-S04-T03: NOT RUN in this session because the connected
-  runtime that previously executed the CLI has exhausted its monthly tool-call quota.
-  No manually invented Grain state is claimed.
+- SpecGrain READY/VERIFIED/CONTROLLED transition and WorkPacket for SG-000007: NOT RUN /
+  unavailable under the current CLI lifecycle surface. The tool-produced GRAIN state and
+  repository delivery evidence are recorded without fabricating later lifecycle states.
 
 Generic bot statuses (CodeRabbit "review skipped", cubic "skipping") are not
 qualification evidence.
@@ -106,11 +109,10 @@ layer executed, semantic layer blocked on a recorded credential blocker).
 
 Current eligible P00 frontier:
 
-1. IN-P00-S04-T03 — provenance validation/notice inventory. Dependency satisfied by
-   SG-000005; rolling-wave SpecGrain shaping is NOT RUN because the connected CLI
-   execution runtime is temporarily unavailable.
+1. SG-000007 / IN-P00-S04-T03 — provenance validation/notice inventory. Real SpecGrain
+   shaping is complete; bounded implementation is active on the candidate branch.
 2. IN-P00-S05-T02 — OCR review evidence/file-accounting contract. Dependency satisfied
-   by SG-000006; remains behind the first eligible S04-T03 unit in rolling-wave order.
+   by SG-000006; remains behind active SG-000007 in rolling-wave order.
 
 ## Hard constraints
 
