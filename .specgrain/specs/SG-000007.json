@@ -1,0 +1,72 @@
+{
+  "acceptance": [
+    "Invalid or incomplete donor import records fail admission deterministically.",
+    "Blocked dependency closure prevents admission.",
+    "A record that requires NOTICE material cannot pass without a non-empty notice reference.",
+    "Notice inventory output is deterministic, deduplicated, and stable for the same valid records.",
+    "An empty current notice inventory is accepted only when zero donor records are admitted.",
+    "Focused tests and exact-head repository CI pass."
+  ],
+  "change_surface": [
+    "packages/provenance/**",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "third_party/**"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 9000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000005"
+  ],
+  "evidence": {
+    "required": [
+      "Focused Vitest results covering valid admission and negative incomplete/blocked/notice fixtures.",
+      "Deterministic notice-inventory fixture/output and exact changed-file accounting.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000007",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the existing Ineractive-owned provenance package without introducing a new runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Fail closed on unknown, incomplete, conflicting, or blocked rights/provenance state.",
+          "Do not import donor product code during this Grain."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Donor import admission validates canonical provenance records and produces a deterministic notice inventory before donor product code can enter the repository.",
+  "parent_id": null,
+  "rationale": "Canonical rolling-wave P00-S04-T03 frontier after SG-000005 completion.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000007, provenance admission/inventory code, generated inventory, and evidence; no external side effects or donor imports are permitted in this Grain."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add deterministic import-admission validation over canonical donor import records.",
+    "Add deterministic notice inventory generation and checking for admitted records.",
+    "Add negative fixtures for incomplete, blocked, and notice-invalid records.",
+    "Record the bounded source-import checklist and evidence required before donor product-code import."
+  ],
+  "scope_out": [
+    "No donor product-code import.",
+    "No P01 product or runtime implementation.",
+    "No automatic legal compatibility conclusion beyond explicit repository policy checks."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P00-S04-T03 Add provenance validation and notice inventory"
+}
