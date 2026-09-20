@@ -269,6 +269,9 @@ CI should eventually include:
 - browser suite;
 - security/advisor checks;
 - source/provenance checks;
+- supply-chain/secret/asset integrity checks;
+- harness replay/regression fixtures;
+- production-web quality fixtures;
 - Diffcipline gate;
 - OCR review workflow on PRs when credentials/execution are configured.
 
@@ -318,6 +321,30 @@ Import a non-trivial repo and add a feature without unnecessary rewrite.
 
 Start from a deliberately broken build and converge using evidence.
 
+### B11 — Release compatibility and recovery
+
+Promote a candidate whose application and backend schema evolve together, then inject a deployment failure and prove last-known-good recovery without unsafe database rollback.
+
+### B12 — Generated-product operations
+
+Deploy a product with health/release identity/log/error surfaces, inject a production-like failure, and prove that the failure is observable without an Ineractive-only runtime dependency.
+
+### B13 — Design/code divergence
+
+Change bound code and external design state independently, detect DIVERGED state, and reconcile without silent overwrite.
+
+### B14 — Brownfield backend reconstruction
+
+Import a non-trivial source repository plus existing backend/schema/policies and add a feature without unnecessary rewrite or false semantic certainty.
+
+### B15 — Harness replay regression
+
+Replay a recorded-observation task after a harness/context/skill/router change and detect any correctness, security, cost, or unnecessary-question regression.
+
+### B16 — AI-enabled product
+
+After P13 qualification, build an exported AI-enabled product with provider-neutral generated-app integration, secret isolation, usage limits, and eval fixtures.
+
 ## 18. Metrics
 
 Track:
@@ -332,6 +359,16 @@ Track:
 - design/a11y findings;
 - flaky evidence rate;
 - time/cost to proven vertical slice;
+- budget adherence;
+- latency;
+- unnecessary-question rate;
+- required context retained vs optional context waste;
+- skill selection accuracy;
+- tool-selection waste;
+- release/recovery success;
+- supply-chain/provenance failures caught before publish;
 - regressions after accepted change.
+
+The Evaluation Lab must preserve separate correctness, security, design, cost, latency, and usability dimensions. One aggregate score must never hide a material correctness/security failure.
 
 The goal is not to maximize green checks. The goal is trustworthy product delivery.
