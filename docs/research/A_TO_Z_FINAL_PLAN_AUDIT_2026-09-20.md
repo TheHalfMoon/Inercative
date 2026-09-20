@@ -313,7 +313,7 @@ A-to-Z is therefore testable rather than only aspirational.
 
 At the final frontend/tooling hardening pass:
 
-- stable task handles: **169**;
+- stable task handles: **172**;
 - duplicate task IDs: **0**;
 - missing dependency references: **0**;
 - dependencies pointing to the same/later task position: **0**.
@@ -377,7 +377,7 @@ CURRENT_EXECUTION_FRONTIER
 = P00_IN_PROGRESS
 
 CANDIDATE_TASK_HANDLES
-= 169
+= 172
 
 CANDIDATE_DAG_STRUCTURALLY_VALID
 = YES
@@ -393,3 +393,20 @@ P01_PLUS_EXECUTION_AUTHORITY
 ~~~
 
 The next source of truth after canonical acceptance must be implementation evidence, not more speculative planning.
+
+
+## Creative-media addendum — 2026-09-20
+
+Founder-supplied creative-media and decision-routing sources were reconciled after the original audit:
+
+- `freestylefly/awesome-gpt-image-2`;
+- Robbie Tilton / Compositor;
+- the supplied Higgsfield AI X source locator;
+- the supplied Nerea Solenne X source locator;
+- `convaiinnovations/laya`.
+
+The reconciliation identified one bounded planning gap: generated creative assets lacked an explicit end-to-end contract spanning structured visual intent, provider-neutral media generation/editing, bounded provider/model routing, asset provenance/evaluation, and product-bound raster refinement.
+
+That gap is now represented by `VisualPromptProtocol`, `MediaGenerationRequest`, `MediaProviderAdapter`, `CreativeAsset`, P08-S12, P13-S08, and three new stable task handles. The candidate task index therefore contains **172** handles.
+
+This addendum changes planning coverage only. It does not grant P01+ implementation authority or claim any media provider/model/source import has executed.
