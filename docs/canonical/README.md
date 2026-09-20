@@ -33,7 +33,9 @@ Read in this order:
 
 These documents define canonical planning direction after merge, but they do not independently authorize implementation beyond the frontier in `specs/CURRENT.md`.
 
-SpecGrain becomes executable planning authority once its repository state is initialized from the merged canonical foundation. Diffcipline becomes proof authority once its policy/tooling is initialized and executed.
+SpecGrain is initialized on canonical main and governs the live shaped P00 frontier. Diffcipline policy and a local exact-diff proof have executed and are recorded in P00 evidence.
+
+Alibaba OCR's deterministic file-accounting/rule-resolution layer has executed; semantic LLM review remains NOT RUN pending the recorded scoped-endpoint credential blocker.
 
 Live repository/GitHub truth always outranks stale prose.
 
@@ -48,11 +50,10 @@ Do not begin product UI, model adapters, Supabase compilation, or donor imports 
 No document in this planning package claims that:
 
 - a working Ineractive product exists;
-- a model provider has been integrated;
-- Supabase has been provisioned;
-- a sandbox has run;
-- Alibaba Open Code Review has executed;
-- Diffcipline has executed;
-- CI/tests are green.
+- an Ineractive product-generation model provider has been integrated;
+- generated-product Supabase has been provisioned;
+- a product sandbox/browser runtime has run;
+- Alibaba OCR semantic LLM review has executed;
+- P01+ product capabilities are implemented.
 
-Those become evidence-backed claims only after their corresponding implementation tasks run.
+P00 evidence on canonical main does truthfully record SpecGrain initialization, Diffcipline local proof, repository CI/baseline checks, and the deterministic Alibaba OCR procedure. Later claims require their own executed evidence.
