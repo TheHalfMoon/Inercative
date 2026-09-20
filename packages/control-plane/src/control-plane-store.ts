@@ -230,10 +230,7 @@ export async function createVerifiedControlPlaneStore(
 ): Promise<SupabaseControlPlaneStore> {
   requireServerRuntime();
   validateActor(actor);
-  if (
-    config.scope !== CONTROL_PLANE_SCOPE ||
-    config[CONTROL_PLANE_CONFIG_BRAND] !== true
-  ) {
+  if (config.scope !== CONTROL_PLANE_SCOPE || config[CONTROL_PLANE_CONFIG_BRAND] !== true) {
     throw new Error(
       "Control-plane Supabase configuration must be produced by the dedicated server parser.",
     );

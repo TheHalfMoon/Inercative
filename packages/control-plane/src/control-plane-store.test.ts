@@ -37,9 +37,7 @@ function migrationSql(): string {
 
 describe("control-plane Supabase configuration", () => {
   it("reads only dedicated server-side control-plane configuration", () => {
-    expect(
-      readControlPlaneSupabaseConfig(CONFIG_ENV),
-    ).toEqual(CONFIG);
+    expect(readControlPlaneSupabaseConfig(CONFIG_ENV)).toEqual(CONFIG);
   });
 
   it("rejects service-role credentials", () => {
