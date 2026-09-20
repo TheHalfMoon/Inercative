@@ -77,12 +77,12 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P06-S09-T02 | P06 | Implement integration idempotency/reconciliation/external-effect receipt fixtures | IN-P06-S09-T01 |
 | IN-P06-S10-T01 | P06 | Implement Data Workspace import/profile/mapping/quality/lineage pipeline for CSV/XLSX/JSON and qualified sources | IN-P02-S07-T01, IN-P06-S01-T01, IN-P06-S02-T01, IN-P06-S08-T01 |
 | IN-P06-S10-T02 | P06 | Implement verified dataset-to-Supabase import/transformation/reconciliation pipeline | IN-P06-S10-T01, IN-P06-S04-T01 |
-| IN-P06-S10-T03 | P06 | Implement staged/chunked dataset import with durable batch resume, count reconciliation, and masked-nonproduction policy | IN-P06-S10-T02, IN-P03-S09-T01, IN-P07-S02-T02 |
+| IN-P06-S10-T03 | P06 | Implement staged/chunked dataset import with durable batch resume, count reconciliation, and masked-nonproduction policy | IN-P06-S10-T02, IN-P03-S09-T01, IN-P04-S01-T01 |
 | IN-P06-S11-T01 | P06 | Implement deterministic seed/synthetic dataset generation with role/state/edge-case coverage | IN-P02-S07-T01, IN-P06-S02-T01 |
 | IN-P07-S01-T01 | P07 | Implement Product Graph delta -> bounded WorkPlan | IN-P02-S05-T01, IN-P03-S06-T01 |
 | IN-P07-S01-T02 | P07 | Implement requirements-derived Build Contract compiler | IN-P07-S01-T01, IN-P02-S02-T02 |
 | IN-P07-S01-T03 | P07 | Implement independent evaluator challenge/acceptance handshake for high-risk or novel work | IN-P07-S01-T02, IN-P04-S05-T01 |
-| IN-P07-S01-T04 | P07 | Compile and maintain ProductCompletenessManifest from Product Graph, product type, blockers, and proof state | IN-P02-S08-T01, IN-P07-S01-T02, IN-P10-S01-T01 |
+| IN-P07-S01-T04 | P07 | Compile and maintain ProductCompletenessManifest from Product Graph, product type, blockers, and evidence-status inputs | IN-P02-S08-T01, IN-P07-S01-T02, IN-P01-S02-T02 |
 | IN-P07-S02-T01 | P07 | Implement build orchestrator and write ownership | IN-P07-S01-T01, IN-P04-S04-T01, IN-P04-S05-T01 |
 | IN-P07-S02-T02 | P07 | Implement durable checkpoints, external-effect receipts, and ambiguity reconciliation | IN-P07-S02-T01 |
 | IN-P07-S02-T03 | P07 | Implement Wide Work/context-branch orchestration with isolated write ownership and synthesis | IN-P07-S02-T02, IN-P03-S06-T01, IN-P03-S08-T01, IN-P04-S04-T01 |
