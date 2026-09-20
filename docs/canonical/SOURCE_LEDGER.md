@@ -154,6 +154,35 @@ Private source material must not be published wholesale into this public reposit
 
 Exact versions and security state are requalified at implementation time.
 
+## 6B. Creative media and decision-routing sources
+
+| Source | Primary value | Planning posture |
+|---|---|---|
+| freestylefly/awesome-gpt-image-2 @ `0dc09c46c8a30b1fdd89c18cc78a894dac2104e3` | Prompt-as-Code schemas, industrial visual templates, reusable style Skill/data patterns, visual-case/evaluation UX | ADAPT / COPY_SELECTIVE / BENCHMARK; third-party gallery items still require item-level provenance/rights review |
+| robbietilton/Compositor @ `a19db9011282399785dc18efcfded904627bdcc2` | layers/masks/transforms/selections/content-aware fill/retouching/adjustments for bounded product-asset refinement | ADAPT / COPY_SELECTIVE; do not turn Ineractive into a general Photoshop clone |
+| X: robbietilton/status/2100946395972976843 | product/interaction demonstration associated with Compositor | REFERENCE; GitHub repository is the primary code source |
+| X: higgsfield_ai/status/2101117855622463719 | creative-media routing research lead | REFERENCE pending direct post capture; surrounding same-account evidence supports decision-routing -> media-provider separation, but must not be misattributed to the exact post |
+| X: nereasolenne/status/2101265048824074535 | animated-web/design workflow research lead | REFERENCE only; tutorial/award claims are not acceptance evidence |
+| convaiinnovations/laya (Hub head observed as `1c5edc1` on 2026-09-20) | bounded System-1 typed decisions, calibrated probabilities/confidence, routing/scoring benchmark | OPTIONAL QUALIFIED SOURCE / BENCHMARK / ADAPT; resolve full immutable Hub SHA before import |
+
+Canonical integration direction is documented in `docs/research/CREATIVE_MEDIA_DECISION_ROUTING_2026-09-20.md`.
+
+The architecture must preserve this separation:
+
+```text
+VisualPromptProtocol
+-> MediaGenerationRequest
+-> deterministic eligibility filter
+-> bounded decision routing
+-> qualified MediaProviderAdapter
+-> CreativeAsset candidates
+-> independent evaluation
+-> bounded raster/compositing refinement
+-> provenance-bound Product Graph / DesignSystemRevision asset
+```
+
+A decision model never receives hard permission authority. A media provider never becomes the canonical router. Generated or edited assets never bypass provenance and evidence requirements.
+
 ## 7. Process and review sources
 
 ### mattpocock/skills
