@@ -33,7 +33,8 @@ function compareText(left: string, right: string): number {
 
 export function canonicalizeJson(value: JsonValue): JsonValue {
   if (Array.isArray(value)) {
-    return value.map((item) => canonicalizeJson(item));
+    const items = value as readonly JsonValue[];
+    return items.map((item) => canonicalizeJson(item));
   }
   if (value !== null && typeof value === "object") {
     const record = value as Readonly<Record<string, JsonValue>>;
