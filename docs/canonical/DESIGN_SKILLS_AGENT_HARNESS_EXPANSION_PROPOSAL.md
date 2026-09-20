@@ -999,3 +999,83 @@ With this expansion, Ineractive should converge on:
 The moat is not one model, one canvas, or one tool ecosystem.
 
 It is the system that keeps product meaning, design, source, data, authority, context, skills, evidence, and ownership synchronized.
+
+
+---
+
+# 13. Completeness red-team integration
+
+A subsequent architecture red-team reviewed the expanded plan against current product-builder baselines and production software lifecycle requirements.
+
+The detailed audit is:
+
+`docs/research/PLAN_COMPLETENESS_RED_TEAM_2026-09-20.md`
+
+The candidate canonical plan now explicitly adds:
+
+1. **Evaluation Lab** — fixed benchmarks plus live/recorded replay and multidimensional regression.
+2. **Budget Governor** — model/tool/browser/sandbox/network/backend/time/parallelism ceilings.
+3. **Early Project Context substrate** — durable context before collaboration UX.
+4. **Early System/Project Skills substrate** — selective workflow knowledge before the open ecosystem.
+5. **Untrusted-content + intent-aware action safety** — external observations remain untrusted; high-risk actions are independently aligned to user authority.
+6. **Data lifecycle/privacy semantics** — classification, retention, export, deletion, audit, consent, residency, and redaction semantics without false regulatory claims.
+7. **Integration/Notification compiler** — REST, signed webhooks, transactional email, in-app notifications, idempotency/reconciliation, and external-effect evidence.
+8. **Production web semantics** — i18n, Arabic/RTL, SEO/public metadata where applicable, asset/font handling, and performance budgets.
+9. **Generated-product Operations baseline** — health, structured logs, error/reporting adapters, release identity, optional OpenTelemetry-compatible instrumentation, and portable analytics.
+10. **Release OS** — ReleaseManifest, app/schema compatibility, last-known-good identity, qualification/promotion states, and recovery drills.
+11. **Generated AI-product primitives** — provider-neutral streaming, structured output, embeddings/retrieval, tool calling, policy hooks, usage/rate limits, and eval fixtures.
+12. **Supply-chain/artifact integrity before production** — dependency/source/asset/build provenance and optional SBOM rather than deferring all supply-chain work to hosted-product hardening.
+
+## 13.1 Candidate dependency graph
+
+The proposed task index now contains **135 stable task handles**.
+
+The update preserves all existing task IDs and P00 authority. New work is additive.
+
+Automated structural validation after the expansion must continue to require:
+
+- every dependency refers to an existing task;
+- every dependency appears earlier in dependency order;
+- no P00 task/evidence is rewritten by the planning expansion;
+- later additions remain non-executable until SpecGrain makes them dependency-eligible.
+
+## 13.2 Deep-module rule
+
+The expansion deliberately avoids turning every market feature into a top-level subsystem.
+
+Examples:
+
+- many spend knobs collapse into **Budget Governor**;
+- deploy/migration/recovery state collapses into **ReleaseManifest / Release OS**;
+- model/tool logs and screenshots collapse into **Artifact Store**;
+- durable agent memory collapses into **Project Context**;
+- repeated operating knowledge collapses into **Skills OS**;
+- design tokens/components/bindings collapse into **DesignSystemRevision**;
+- benchmark/eval/regression workflows collapse into **Evaluation Lab**.
+
+This keeps the plan implementable while increasing capability.
+
+## 13.3 Explicit deferrals remain
+
+"Best" does not mean implementing every adjacent category before the core is proven.
+
+The plan still intentionally defers broad implementation of:
+
+- persistent authenticated local-computer automation;
+- general persistent cloud-computer product;
+- unrestricted community/plugin marketplace;
+- native mobile until web quality is proven;
+- arbitrary cloud/IaC generation;
+- unrestricted large agent swarms;
+- broad payment/financial automation without independent qualification;
+- a second backend compiler target.
+
+## 13.4 Candidate readiness statement
+
+After integration of the red-team gaps into the roadmap, Product Graph, capability matrix, harness/runtime/quality contracts, generated-product contract, source ledger, and dependency graph:
+
+**KNOWN_ARCHITECTURE_BLOCKER_FOR_POST_P00_PLAN = NONE IDENTIFIED**
+
+This is a planning statement, not a runtime/product qualification claim.
+
+Future implementation evidence can still reveal incorrect assumptions. Those must be handled through SpecGrain rolling-wave refinement rather than defended because they appeared in a planning document.
