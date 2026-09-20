@@ -1,7 +1,7 @@
 # Ineractive Current Frontier
 
 **Date:** 2026-09-20  
-**Status:** P01_IN_PROGRESS  
+**Status:** P02_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 
@@ -45,7 +45,7 @@ tracks only the live (not-yet-complete) frontier.
 
 ## Current canonical frontier
 
-P00 is canonically complete. The implementation frontier is **P01 — Control plane foundation**.
+P00 and P01 are canonically complete. The implementation frontier is **P02 — Product Graph and intent compiler**.
 
 SpecGrain is initialized (`.specgrain/`, project `ineractive`). Frontier Grains and
 their current delivery state:
@@ -65,7 +65,8 @@ their current delivery state:
 | SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | DONE (PR #18) | `docs/evidence/P01_S02_T02_RUN_EVENT_EVIDENCE_FINDING_2026-09-20.md` |
 | SG-000012 | IN-P01-S03-T01 | Project/workspace shell | DONE (PR #19) | `docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md` |
 | SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | DONE (PR #20) | `docs/evidence/P01_S04_T01_UI_SYSTEM_2026-09-20.md` |
-| SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | DONE (PR #21) | `docs/evidence/P01_S05_T01_CONTROL_PLANE_STORE_2026-09-20.md` |
+| SG-000015 | IN-P02-S01-T01 | Product Graph persistence/interface alternatives | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -140,12 +141,23 @@ was merged as `db3e93ec6a2d8b3544791b5fd0aa5e134faeb2dd`.
 SG-000013 / IN-P01-S04-T01 is canonically complete through PR #20; fresh-main CI #127
 passed on merge commit `880b78e99a14d1f04eedb2e81482ce6804ab88cd`.
 
+SG-000014 / IN-P01-S05-T01 is canonically complete through PR #21. Final candidate
+`2ba8c41325acec567672d7cf879b2456b5fed081` passed exact-head CI #137 on Ubuntu
+and Windows. Build/smoke run `35533378382` passed against
+`bbc54eb28321fc68bf5f08549f89cbc88870bd55`; the only later diff before the final
+candidate was removal of the temporary one-shot workflow. Fresh-main CI #138 passed on
+merge commit `ec1a8209c8f6164b41b55e77e5d41db5856b14e9`.
+
+P01 exit is therefore satisfied: the shell has typed protocol/evidence records,
+accessible tokenized UI, real user/project control-plane persistence, and explicit
+generated-app data-plane separation.
+
 Current eligible frontier:
 
-1. **SG-000014 / IN-P01-S05-T01 — Establish minimum Supabase-backed control-plane
-   user/project store with generated-app data-plane separation.** Real SpecGrain shaping
-   is complete; bounded implementation is active on the candidate branch.
-2. P01 phase exit follows canonical completion and fresh evidence for SG-000014.
+1. **SG-000015 / IN-P02-S01-T01 — Prototype Product Graph persistence/interface
+   alternatives.** Real SpecGrain shaping is complete; bounded implementation is active
+   on the candidate branch.
+2. IN-P02-S01-T02 remains behind SG-000015 and owns the evidence-backed v1 selection.
 
 ## Hard constraints
 

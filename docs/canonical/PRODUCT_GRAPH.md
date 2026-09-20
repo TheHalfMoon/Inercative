@@ -427,6 +427,20 @@ Selection criteria:
 
 Do not select a graph database merely because the model is called a graph.
 
+### P02-S01-T01 prototype status
+
+SG-000015 exercises two private alternatives against the same fixtures and query surface:
+
+1. canonical structured document + derived indexes;
+2. normalized relational revision/node/edge rows + derived query indexes.
+
+The prototype comparison records deterministic serialization, semantic revision parity,
+round-trip/query parity, inspectability/merge/migration tradeoffs, and bounded storage
+measurements on representative and synthetic fixtures.
+
+**No production representation is selected by T01.** The committed comparison evidence
+feeds `IN-P02-S01-T02`, which owns the actual v1 selection and stable public contracts.
+
 ## 14. User interaction
 
 Most users should never need to edit the raw Product Graph.
