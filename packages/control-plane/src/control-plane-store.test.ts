@@ -103,7 +103,7 @@ describe("control-plane Supabase migration contract", () => {
     expect(sql).toContain("create table public.ineractive_profiles");
     expect(sql).toContain("create table public.ineractive_projects");
     expect(sql).toContain("create table public.ineractive_project_memberships");
-    expect(sql).not.toMatch(/generated[_-](app|product)/iu);
+    expect(sql).not.toMatch(/create\s+table\s+[^;]*(generated[_-](app|product)|product_data)/iu);
   });
 
   it("enables RLS on every exposed control-plane table", () => {
