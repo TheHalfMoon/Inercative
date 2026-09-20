@@ -23,7 +23,7 @@ The architecture is **typed-state first**:
 ```text
 +------------------------------------------------------------------+
 |                         User Surfaces                            |
-| Chat/Command | Product Preview | Visual Edit | Code | Data | Git |
+| Chat/Command | Product Preview | Visual Edit | Code | Data | Connections | Git |
 +----------------------------------+-------------------------------+
                                    |
                                    v
@@ -62,7 +62,15 @@ The architecture is **typed-state first**:
 +--------------------------------+  +------------------------------+
                     |                        |
                     +------------+-----------+
+                                 |
                                  v
++------------------------------------------------------------------+
+|                    Platform Lifecycle Layer                      |
+| Connections | Provider Adapters | Resource Bindings | Envs       |
+| Provisioning Saga | Ownership | Drift | External Blockers        |
++----------------------------------+-------------------------------+
+                                   |
+                                   v
 +------------------------------------------------------------------+
 |                    Observation & Assurance                       |
 | Runtime events | Browser | Tests | Security | Design | OCR       |
@@ -139,15 +147,69 @@ No model is permitted to bypass it.
 
 Input:
 
-- backend-relevant Product Graph revision.
+- backend-relevant Product Graph revision;
+- Dataset/DataPolicy semantics.
 
 Output:
 
 - desired backend plan;
 - migration/policy/function/storage/auth config candidates;
+- dataset/import/seed plans;
 - validation plan.
 
 It must be able to compare desired state with observed local/remote state before mutation.
+
+### DataWorkspaceCompiler
+
+Input:
+
+- Dataset/DataImport/DataMapping semantics;
+- authorized source observations;
+- target backend/environment.
+
+Output:
+
+- profile/quality observations;
+- proposed mapping/normalization;
+- staged import/transform plan;
+- DatasetVersion/lineage;
+- verification plan.
+
+It never treats ambiguous coercion as confirmed truth.
+
+### PlatformLifecycle
+
+Input:
+
+- provider connection/resource intent;
+- Product/Environment/Release state;
+- capability/budget policy.
+
+Output:
+
+- ProviderAdapter preflight;
+- Connection and ResourceBinding state;
+- EnvironmentManifest updates;
+- durable ProvisioningSaga;
+- OwnershipManifest;
+- typed external blockers and reconciliation actions.
+
+It does not confuse loss of Ineractive management access with deletion or runtime failure.
+
+### ProductCompleteness
+
+Input:
+
+- Product Graph;
+- product category;
+- environment/release state;
+- proof state.
+
+Output:
+
+- ProductCompletenessManifest covering applicable product/data/backend/frontend/design/security/delivery/operations/ownership categories.
+
+A category is explicitly REQUIRED, NOT_APPLICABLE, BLOCKED, IN_PROGRESS, READY, PROVEN, or STALE; it cannot disappear because a model omitted it.
 
 ### DesignEngine
 
@@ -206,7 +268,14 @@ It should represent at minimum:
 - Assumption;
 - Decision;
 - DesignTokenSet;
-- DeploymentTarget.
+- DeploymentTarget;
+- Dataset / DatasetVersion;
+- DataImport / DataMapping / DataProfile / DataQualityRule;
+- DataClass / DataPolicy;
+- DesignSystemRevisionRef;
+- SkillRef;
+- ExplorationBranch;
+- Release.
 
 Edges express relationships such as:
 
@@ -285,6 +354,14 @@ Every run should emit typed events such as:
 
 ```text
 run.started
+connection.observed
+provider.preflight
+provisioning.started
+provisioning.step
+provisioning.reconciled
+resource.bound
+environment.changed
+external_blocker.created
 context.selected
 decision.requested
 decision.resolved
@@ -304,6 +381,10 @@ repair.proposed
 repair.applied
 review.completed
 proof.completed
+release.qualified
+release.promoted
+ownership.changed
+connection.revoked
 run.completed
 ```
 
