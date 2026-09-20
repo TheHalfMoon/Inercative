@@ -1,0 +1,77 @@
+{
+  "acceptance": [
+    "The control-plane schema models user profiles, projects, and memberships with explicit ownership/member constraints.",
+    "Every exposed control-plane table has RLS enabled and explicit authenticated grants/policies; TO authenticated alone is never the authorization predicate.",
+    "The repository adapter requires a verified authenticated user identity and a dedicated control-plane Supabase configuration.",
+    "Service-role or generated-product credentials cannot enter browser-facing configuration or the control-plane repository contract.",
+    "Project list/create/read paths are tenant-isolated by user ownership or membership.",
+    "No remote Supabase side effect is required for exact-head CI; deterministic contract tests pass on Ubuntu and Windows."
+  ],
+  "change_surface": [
+    "packages/control-plane/**",
+    "docs/canonical/SUPABASE_PLATFORM.md",
+    "docs/evidence/**",
+    "specs/CURRENT.md",
+    "pnpm-lock.yaml"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 12000,
+    "estimated_tokens": 7000
+  },
+  "dependencies": [
+    "SG-000009",
+    "SG-000011",
+    "SG-000012"
+  ],
+  "evidence": {
+    "required": [
+      "Focused store/config/RLS contract tests including cross-tenant and generated-data-plane separation negatives.",
+      "Exact dependency pin and frozen-lockfile verification.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000014",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the existing control-plane package and use one pinned Supabase JS client instead of creating a separate backend package or remote project."
+      },
+      "safety": {
+        "requirements": [
+          "Control-plane and generated-product Supabase trust domains must remain distinct.",
+          "Never expose service-role/secret keys in browser configuration or NEXT_PUBLIC variables.",
+          "Authorization must be owner/membership based; authenticated role alone is insufficient."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Ineractive control-plane users, projects, and memberships persist through a bounded Supabase repository layer while generated-application data planes remain separate trust domains.",
+  "parent_id": null,
+  "rationale": "Next canonical P01 roadmap unit after SG-000013 accessible UI completion.",
+  "risk": {
+    "level": "high",
+    "recovery": "Revert SG-000014 schema/repository/config/test artifacts and dependency pin; no remote project or database side effect is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define the minimum control-plane persistence model for authenticated users, projects, and project memberships.",
+    "Add a server-only Supabase repository adapter with explicit control-plane configuration and no service-role exposure to browser code.",
+    "Define control-plane schema/RLS artifacts with explicit Data API grants and owner/member isolation.",
+    "Add deterministic tests that prove generated-product Supabase project/config/secret identity is not accepted by the control-plane store boundary.",
+    "Record current Supabase changelog/documentation assumptions used by the implementation."
+  ],
+  "scope_out": [
+    "No remote Supabase project provisioning, linking, billing, production mutation, or secret creation.",
+    "No generated-application backend compiler, migrations, RLS, storage, or product data.",
+    "No full login/session UI; authentication UX remains separate from this persistence slice."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S05-T01 Establish minimum Supabase-backed control-plane user/project store"
+}

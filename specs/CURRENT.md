@@ -64,7 +64,8 @@ their current delivery state:
 | SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | DONE (PR #17) | `docs/evidence/P01_S02_T01_PROTOCOL_IDENTITY_REVISION_2026-09-20.md` |
 | SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | DONE (PR #18) | `docs/evidence/P01_S02_T02_RUN_EVENT_EVIDENCE_FINDING_2026-09-20.md` |
 | SG-000012 | IN-P01-S03-T01 | Project/workspace shell | DONE (PR #19) | `docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md` |
-| SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S04_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | DONE (PR #20) | `docs/evidence/P01_S04_T01_UI_SYSTEM_2026-09-20.md` |
+| SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -136,13 +137,15 @@ SG-000012 / IN-P01-S03-T01 is canonically complete through PR #19. Final candida
 and Windows plus separate exact-head standalone qualification run `35530781684`, and
 was merged as `db3e93ec6a2d8b3544791b5fd0aa5e134faeb2dd`.
 
+SG-000013 / IN-P01-S04-T01 is canonically complete through PR #20; fresh-main CI #127
+passed on merge commit `880b78e99a14d1f04eedb2e81482ce6804ab88cd`.
+
 Current eligible frontier:
 
-1. **SG-000013 / IN-P01-S04-T01 — Build first accessible tokenized UI system.**
-   Real SpecGrain shaping is complete; bounded implementation is active on the candidate
-   branch.
-2. IN-P01-S05-T01 is dependency-eligible after SG-000012 but remains behind active
-   SG-000013 in canonical P01 roadmap order.
+1. **SG-000014 / IN-P01-S05-T01 — Establish minimum Supabase-backed control-plane
+   user/project store with generated-app data-plane separation.** Real SpecGrain shaping
+   is complete; bounded implementation is active on the candidate branch.
+2. P01 phase exit follows canonical completion and fresh evidence for SG-000014.
 
 ## Hard constraints
 
