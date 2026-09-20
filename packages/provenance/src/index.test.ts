@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  type DonorImportRecord,
-  validateDonorImportRecord,
-} from "./index.ts";
+import { type DonorImportRecord, validateDonorImportRecord } from "./index.ts";
 
 const VALID_RECORD: DonorImportRecord = {
   schemaVersion: 1,
@@ -79,8 +76,7 @@ describe("validateDonorImportRecord", () => {
   it("accepts a 64-hex immutable digest", () => {
     const record = mutableRecord();
     const source = record.source as Record<string, unknown>;
-    source.revision =
-      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    source.revision = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
     expect(validateDonorImportRecord(record).ok).toBe(true);
   });

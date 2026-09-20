@@ -3,12 +3,7 @@ export const IMPORT_RECORD_SCHEMA_VERSION = 1 as const;
 export const IMPORT_USE_MODES = ["COPY", "ADAPT", "DEPEND"] as const;
 export type ImportUseMode = (typeof IMPORT_USE_MODES)[number];
 
-export const AUTHORITY_KINDS = [
-  "FOUNDER_PERMISSION",
-  "LICENSE",
-  "CONTRACT",
-  "OTHER",
-] as const;
+export const AUTHORITY_KINDS = ["FOUNDER_PERMISSION", "LICENSE", "CONTRACT", "OTHER"] as const;
 export type AuthorityKind = (typeof AUTHORITY_KINDS)[number];
 
 export const DEPENDENCY_CLOSURE_STATES = ["COMPLETE", "PARTIAL", "UNRESOLVED"] as const;
@@ -202,7 +197,12 @@ function uniqueStringArray(
       continue;
     }
     if (seen.has(parsed)) {
-      issue(issues, "DUPLICATE_ARRAY_ITEM", itemPath, `${path} must not contain duplicate entries.`);
+      issue(
+        issues,
+        "DUPLICATE_ARRAY_ITEM",
+        itemPath,
+        `${path} must not contain duplicate entries.`,
+      );
       continue;
     }
     seen.add(parsed);
@@ -225,11 +225,7 @@ function parseSource(
     issues,
   );
   const revisionValue = requiredField(record, "revision", "$.source", issues);
-  const revision = nonEmptyString(
-    revisionValue,
-    "$.source.revision",
-    issues,
-  );
+  const revision = nonEmptyString(revisionValue, "$.source.revision", issues);
   if (revision !== null && !IMMUTABLE_REVISION_PATTERN.test(revision)) {
     issue(
       issues,
@@ -312,8 +308,7 @@ function parseLicensing(
     issues,
   );
   const noticeRequiredValue = requiredField(record, "noticeRequired", "$.licensing", issues);
-  const noticeRequired =
-    typeof noticeRequiredValue === "boolean" ? noticeRequiredValue : null;
+  const noticeRequired = typeof noticeRequiredValue === "boolean" ? noticeRequiredValue : null;
   if (noticeRequired === null) {
     issue(
       issues,
@@ -327,11 +322,7 @@ function parseLicensing(
   let noticeReference: string | null = null;
   let noticeReferenceValid = true;
   if (noticeReferenceValue !== null) {
-    const parsed = nonEmptyString(
-      noticeReferenceValue,
-      "$.licensing.noticeReference",
-      issues,
-    );
+    const parsed = nonEmptyString(noticeReferenceValue, "$.licensing.noticeReference", issues);
     if (parsed === null) {
       noticeReferenceValid = false;
     } else {
@@ -339,10 +330,7 @@ function parseLicensing(
     }
   }
 
-  if (
-    noticeRequired === true &&
-    (noticeReferenceValue === null || noticeReference === null)
-  ) {
+  if (noticeRequired === true && (noticeReferenceValue === null || noticeReference === null)) {
     noticeReferenceValid = false;
     issue(
       issues,
@@ -352,9 +340,7 @@ function parseLicensing(
     );
   }
 
-  return licenseExpression !== null &&
-    noticeRequired !== null &&
-    noticeReferenceValid
+  return licenseExpression !== null && noticeRequired !== null && noticeReferenceValid
     ? { licenseExpression, noticeRequired, noticeReference }
     : null;
 }
@@ -428,10 +414,7 @@ export function validateDonorImportRecord(input: unknown): ImportRecordValidatio
   }
 
   const source = parseSource(requiredField(record, "source", "$", issues), issues);
-  const destination = parseDestination(
-    requiredField(record, "destination", "$", issues),
-    issues,
-  );
+  const destination = parseDestination(requiredField(record, "destination", "$", issues), issues);
   const useMode = enumValue(
     requiredField(record, "useMode", "$", issues),
     IMPORT_USE_MODES,
