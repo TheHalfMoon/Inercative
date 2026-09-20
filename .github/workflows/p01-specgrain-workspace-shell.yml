@@ -1,0 +1,143 @@
+name: P01 SpecGrain one-shot workspace shell
+
+on:
+  push:
+    branches:
+      - p01/s03-workspace-shell
+    paths:
+      - .github/workflows/p01-specgrain-workspace-shell.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: 9ec10a179ee93e0e4279d806ecb48922e66f06ec
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft SG-000012
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft .             --title "IN-P01-S03-T01 Build project workspace shell"             --outcome "The qualified Next.js control plane exposes a truthful session-only project/workspace shell with project list/create/open, workspace layout, activity/events, preview placeholder, and bounded change-intent entry."             --rationale "Canonical P01-S03-T01 frontier after SG-000011 completion."             --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000012"
+
+      - name: Shape SG-000012
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000012 .             --scope-in "Create the real Ineractive control-plane Next.js App Router package using the canonically qualified Next.js 16.3.5 / React 19.3.0 baseline."             --scope-in "Implement project list plus session-only create/open project behavior with an explicit non-persistence boundary."             --scope-in "Implement the primary workspace layout with project navigation, workspace header, central preview placeholder, and activity/event panel."             --scope-in "Implement a command/change-intent entry that records local shell activity without claiming model execution or source mutation."             --scope-in "Reuse the public SG-000010/SG-000011 protocol identities and Event records for shell activity rather than inventing parallel run/event types."             --scope-in "Provide deterministic shell-state tests and a real production Next.js build/smoke path."             --scope-out "No Supabase persistence, auth, user/project membership, or generated-application data plane; those remain IN-P01-S05-T01."             --scope-out "No final tokenized brand/design system; that remains IN-P01-S04-T01."             --scope-out "No Product Graph, model call, code generation, filesystem mutation, runtime capability grant, or deployment."             --scope-out "No Vercel-only runtime requirement."             --acceptance "The shell renders a project list and can create, select, and open a session-only project without implying durable persistence."             --acceptance "The workspace exposes a primary layout, activity/event panel, explicit preview placeholder, and command/change-intent entry."             --acceptance "Shell activity uses canonical protocol EventRecord validation and does not introduce parallel run/event identifiers."             --acceptance "Command entry records intent/activity only and makes no generation, execution, save, or deployment claim."             --acceptance "A production Next.js standalone build succeeds and an HTTP smoke observes the expected shell marker."             --acceptance "Focused shell-state tests plus exact-head Ubuntu/Windows repository CI pass."             --dependency SG-000011             --risk-level medium             --recovery "Revert SG-000012, the control-plane shell package, workspace lockfile changes, docs, and evidence; no persistent backend or external side effect is authorized."             --context-budget 14000             --context-estimate 8000             --change-surface "packages/control-plane/**"             --change-surface "pnpm-lock.yaml"             --change-surface "docs/canonical/**"             --change-surface "docs/evidence/**"             --change-surface "specs/CURRENT.md"             --evidence "Focused shell-state/project/activity tests including non-persistence and no-fake-generation fixtures."             --evidence "Production Next.js standalone build plus real HTTP shell-marker smoke."             --evidence "Exact-head Ubuntu and Windows repository CI."             --minimality-choice new-code             --minimality-rationale "Create one qualified control-plane package and reuse existing protocol contracts; defer persistence and full design-system work to their dependency-ordered Grains."             --safety-status requirements-defined             --safety-requirement "Session-only state must be labeled as non-persistent in the user surface and evidence."             --safety-requirement "The command entry must not simulate model execution, code generation, file writes, deployment, or acceptance."             --safety-requirement "No provider-specific deployment or Vercel-only API may become required."             --json | tee /tmp/shape.json
+
+      - name: Refine and promote SG-000012
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000012 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check-refining.json
+          specgrain grain SG-000012 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check-grain.json
+          specgrain next . --json | tee /tmp/next.json
+
+      - name: Assert known lifecycle boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          data=json.load(open("/tmp/next.json",encoding="utf-8"))
+          candidate=next(item for item in data["candidates"] if item["node_id"]=="SG-000012")
+          if candidate["waiting_on"] != ["SG-000011"]:
+              raise SystemExit("unexpected waiting_on: "+repr(candidate["waiting_on"]))
+          print("known-boundary: SG-000012 waits on SG-000011 because CLI completion transitions are not modeled")
+          PY
+
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          def load(name):
+              return json.loads(Path("/tmp/"+name).read_text(encoding="utf-8"))
+          draft=load("draft.json")
+          shape=load("shape.json")
+          refine=load("refine.json")
+          grain=load("grain.json")
+          check=load("check-grain.json")
+          nxt=load("next.json")
+          candidate=next(item for item in nxt["candidates"] if item["node_id"]=="SG-000012")
+          lines=[
+              "# P01-S03-T01 — SpecGrain Shaping Evidence",
+              "",
+              "Task: IN-P01-S03-T01",
+              "SpecGrain: SG-000012",
+              "Date: 2026-09-20",
+              "Canonical baseline: "+os.environ["BASELINE_SHA"],
+              "SpecGrain source: TheHalfMoon/SpecGrain@"+os.environ["SPECGRAIN_SHA"],
+              "GitHub Actions run: "+os.environ["GITHUB_RUN_ID"],
+              "",
+              "## Tool execution",
+              "",
+              "- draft state: "+draft["state"],
+              "- shaped revision: "+shape["revision_digest"],
+              "- refine state: "+refine["state"],
+              "- grain state: "+grain["state"],
+              "- final revision: "+grain["revision_digest"],
+              "- project check valid: "+str(check["valid"]).lower(),
+              "- next waiting_on: "+",".join(candidate["waiting_on"]),
+              "",
+              "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.",
+              "",
+              "## Canonical dependency truth",
+              "",
+              "SG-000011 / IN-P01-S02-T02 is canonically complete through PR #18.",
+              "Fresh-main CI #122 passed on merge commit 9ec10a179ee93e0e4279d806ecb48922e66f06ec.",
+              "The CLI waiting_on value reflects the known missing VERIFIED/CONTROLLED transition surface; no lifecycle state is fabricated.",
+              "",
+          ]
+          Path("docs/evidence/P01_S03_T01_SPECGRAIN_SHAPING_2026-09-20.md").write_text("\n".join(lines),encoding="utf-8")
+          PY
+
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          allowed={
+            ".specgrain/specs/SG-000012.json",
+            "docs/evidence/P01_S03_T01_SPECGRAIN_SHAPING_2026-09-20.md",
+          }
+          output=subprocess.check_output(["git","status","--porcelain=v1"],text=True)
+          changed={line[3:] for line in output.splitlines() if line}
+          if changed != allowed:
+              raise SystemExit("unexpected changed paths="+repr(sorted(changed))+"; expected="+repr(sorted(allowed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000012.json docs/evidence/P01_S03_T01_SPECGRAIN_SHAPING_2026-09-20.md
+          git commit -m "chore(p01): shape workspace shell grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
