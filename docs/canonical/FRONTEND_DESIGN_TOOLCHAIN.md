@@ -445,6 +445,15 @@ Do not add Motion for trivial hover, fade, or color transitions.
 
 All non-essential motion respects reduced-motion preferences.
 
+Generated image/video/animation assets are a separate concern from UI motion. When product requirements justify generated media:
+
+- compile it through `VisualPromptProtocol` / `MediaGenerationRequest` rather than embedding provider prompts inside components;
+- keep generation/edit providers behind `MediaProviderAdapter`;
+- retain a static/poster or otherwise equivalent reduced-motion fallback when motion is non-essential;
+- enforce loading, dimensions, compression, bandwidth, LCP/INP, autoplay/audio, and mobile-data constraints;
+- bind accepted outputs to `CreativeAsset` provenance and the active `DesignSystemRevision`;
+- treat visually impressive tutorial/demo output as research input, not browser-quality or accessibility proof.
+
 ## 16. Data-fetch policy
 
 Default new Next.js product:
