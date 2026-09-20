@@ -85,6 +85,7 @@ These are BENCHMARK / REFERENCE sources rather than automatic code donors.
 - Bolt — integrated database/auth/functions/storage/secrets/analytics/domains and external Supabase/deployment/payment integration baseline.
 - v0 / Vercel — prompt-to-live product flow including database, email notifications, domains, GitHub, and payment/database integrations.
 - Lovable — prompt-to-product workflow plus built-in dependency/secret/database/RLS/code security scanning and external security-integration direction.
+- Stunning — current full-stack business-system benchmark: real database/accounts/admin, spreadsheet-to-working-table import, GitHub source ownership, domains/hosting, mobile packaging, integrations, and live-business-data/agent direction; BENCHMARK/REFERENCE only.
 
 Use these references to define market baseline and benchmark pressure. Do not let competitor feature breadth override Ineractive's evidence-first dependency order.
 
