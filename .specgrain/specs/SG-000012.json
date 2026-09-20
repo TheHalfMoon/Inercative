@@ -1,0 +1,78 @@
+{
+  "acceptance": [
+    "The app uses exact qualified framework versions and builds as a self-hostable Next.js standalone application.",
+    "A user can view projects, create an ephemeral project, open a project, and return to the project list without fake persistence claims.",
+    "The workspace renders primary navigation/context, work surface, typed activity/event panel, placeholder preview, and command/change-intent entry.",
+    "Activity fixtures validate against the public EventRecord contract rather than ad hoc event shapes.",
+    "The shell explicitly labels preview/generation/persistence capabilities that are not yet implemented instead of simulating success.",
+    "Keyboard/accessibility-oriented component tests and responsive structural tests pass.",
+    "Exact-head Ubuntu and Windows repository CI passes."
+  ],
+  "change_surface": [
+    "apps/control-plane/**",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "package.json",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 14000,
+    "estimated_tokens": 8000
+  },
+  "dependencies": [
+    "SG-000011"
+  ],
+  "evidence": {
+    "required": [
+      "Focused shell interaction and EventRecord integration tests.",
+      "Production Next.js build using qualified exact framework versions.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000012",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Create only the first earned real control-plane application and reuse the qualified framework/protocol contracts; do not introduce a component library or persistence stack yet."
+      },
+      "safety": {
+        "requirements": [
+          "Do not imply project persistence, AI generation, preview execution, or provider connectivity before those capabilities exist.",
+          "Do not introduce secrets, provider credentials, or production side effects."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Ineractive has a real Next.js control-plane shell with ephemeral project list/create/open flow, primary workspace layout, typed activity panel, placeholder preview, and command/change-intent entry without claiming persistence or generation.",
+  "parent_id": null,
+  "rationale": "Canonical P01-S03-T01 frontier after SG-000011 protocol records.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000012 app/workspace/package/lockfile/docs changes; no external provider resource or persisted user data is created."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Create the real control-plane app using qualified Next.js App Router 16.3.5 with React/React DOM 19.3.0 and Node 24.",
+    "Implement an ephemeral project list plus create/open interaction sufficient to exercise the shell before P01-S05 persistence.",
+    "Implement the primary workspace layout with navigation context, central work surface, activity/event panel consuming public EventRecord-shaped fixtures, placeholder preview surface, and command/change-intent entry.",
+    "Provide accessible semantic structure, keyboard-reachable controls, responsive shell behavior, and explicit empty/loading/error-like shell states where applicable.",
+    "Add focused component/contract tests plus production build evidence without provider deployment."
+  ],
+  "scope_out": [
+    "No Supabase/auth/database persistence; P01-S05 owns persisted control-plane identity/project state.",
+    "No full tokenized design system or final Ineractive visual identity; P01-S04 owns that work.",
+    "No AI generation execution, model routing, capability kernel, preview runtime, code editor, or backend compiler.",
+    "No Vercel-only API or provider deployment."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S03-T01 Build project workspace shell"
+}
