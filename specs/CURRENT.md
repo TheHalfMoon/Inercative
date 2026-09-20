@@ -33,44 +33,52 @@ tracks only the live (not-yet-complete) frontier.
 
 The implementation frontier is **P00 — Repository and delivery foundation**.
 
-SpecGrain is initialized (`.specgrain/`, project `ineractive`). Frontier Grains:
+SpecGrain is initialized (`.specgrain/`, project `ineractive`). Frontier Grains and
+their current delivery state:
 
-| SpecGrain ID | Task | Outcome | SpecGrain dependency | Roadmap dependency (satisfied) |
+| SpecGrain ID | Task | Outcome | Delivery state | Evidence |
 |---|---|---|---|---|
-| SG-000001 | IN-P00-S02-T01 | Initialize SpecGrain from canonical roadmap | — | IN-P00-S01-T02 (merged) |
-| SG-000002 | IN-P00-S03-T01 | Initialize Diffcipline risk/proof policy | — | IN-P00-S01-T02 (merged) |
-| SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | SG-000002 | IN-P00-S03-T01 |
-| SG-000004 | IN-P00-S04-T01 | Select and commit Ineractive-owned code license and third-party notice policy | — | IN-P00-S01-T02 (merged) |
-| SG-000005 | IN-P00-S04-T02 | Implement donor provenance/import record schema | SG-000004 | IN-P00-S04-T01 |
-| SG-000006 | IN-P00-S05-T01 | Establish Alibaba OCR local exact-diff review procedure | — | IN-P00-S01-T02 (merged) |
+| SG-000001 | IN-P00-S02-T01 | Initialize SpecGrain from canonical roadmap | DONE (PR #3) | `docs/evidence/P00_S02_T01_SPECGRAIN_INIT_2026-09-20.md` |
+| SG-000002 | IN-P00-S03-T01 | Initialize Diffcipline risk/proof policy | DONE (this branch) | `docs/evidence/P00_S03_T01_DIFFCIPLINE_POLICY_2026-09-20.md` |
+| SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | DONE (this branch) | `docs/evidence/P00_S03_T02_DIFFCIPLINE_PROOF_2026-09-20.md` |
+| SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | ELIGIBLE (founder decision gate) | — |
+| SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | blocked on SG-000004 | — |
+| SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | ELIGIBLE | — |
 
-Dependency-eligible now (SpecGrain `next` wave 1): SG-000001, SG-000002, SG-000004, SG-000006.
-Wave 2 (blocked): SG-000003 (waits on SG-000002), SG-000005 (waits on SG-000004).
+Delivery state is repository truth. The current SpecGrain CLI surface exposes
+`draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
+advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and in
+`docs/evidence/`, not by fabricating SpecGrain lifecycle state.
 
-Note: roadmap tasks IN-P00-S04-T03 (provenance validation/notice inventory) and
-IN-P00-S05-T02 (OCR evidence/file-accounting contract) are not yet shaped into
-SpecGrain Grains; they become eligible after their dependencies complete and will be
-shaped then (rolling-wave). They remain authoritative handles in `specs/tasks.md`.
+Remaining eligible frontier: SG-000004 (license/notice policy — requires the founder
+license decision if still undecided) and SG-000006 (Alibaba OCR local review
+procedure). SG-000005 follows SG-000004; IN-P00-S04-T03 and IN-P00-S05-T02 will be
+shaped into Grains when their dependencies complete (rolling-wave).
 
 ## Not run (truthfully)
 
 The following are **NOT RUN** and are not claimed as PASS:
 
 - Alibaba Open Code Review: NOT RUN. Established by SG-000006 / IN-P00-S05-T02.
-- Diffcipline exact-diff proof: NOT RUN. Established by SG-000002 / SG-000003.
-- SpecGrain state for completed P00-S01: not modeled (see above).
+- Diffcipline GitHub Action in CI: NOT RUN (policy + local CLI proof are done; the CI
+  Action is added only when scoped credentials/config are required).
+- SpecGrain lifecycle completion state for finished Grains: not modeled (the current
+  CLI exposes no VERIFIED/CONTROLLED transition; see frontier note above).
 
 Generic bot statuses (CodeRabbit "review skipped", cubic "skipping") are not
 qualification evidence.
 
 ## First execution order
 
-1. SG-000001 / IN-P00-S02-T01 — SpecGrain initialization (this change).
-2. SG-000002 / IN-P00-S03-T01 — Diffcipline policy initialization.
-3. SG-000004 / IN-P00-S04-T01 — license + third-party notice policy (founder decision if undecided).
-4. SG-000006 / IN-P00-S05-T01 — Alibaba OCR local exact-diff review procedure.
-5. SG-000003 / IN-P00-S03-T02 — harmless exact-diff proof (after SG-000002).
-6. SG-000005 / IN-P00-S04-T02 — provenance/import record schema (after SG-000004).
+Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof).
+
+Remaining eligible P00 frontier:
+
+1. SG-000004 / IN-P00-S04-T01 — license + third-party notice policy (founder decision if undecided).
+2. SG-000006 / IN-P00-S05-T01 — Alibaba OCR local exact-diff review procedure.
+3. SG-000005 / IN-P00-S04-T02 — provenance/import record schema (after SG-000004).
+4. IN-P00-S04-T03 — provenance validation/notice inventory (after SG-000005).
+5. IN-P00-S05-T02 — OCR review evidence/file-accounting contract (after SG-000006).
 
 ## Hard constraints
 
