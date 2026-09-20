@@ -1,0 +1,66 @@
+:root {
+  color-scheme: dark light;
+
+  --font-body:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+
+  --control-min: 2.75rem;
+  --sidebar-width: 16.25rem;
+  --activity-width: 18.75rem;
+
+  --canvas: #090c0f;
+  --surface-1: #10151a;
+  --surface-2: #161d24;
+  --surface-3: #202a34;
+  --text-1: #f6f8fa;
+  --text-2: #aebbc7;
+  --border: #2e3944;
+  --border-strong: #526170;
+  --brand: #d9ff70;
+  --brand-ink: #152000;
+  --focus: #b8e7ff;
+  --warning: #ffd66f;
+  --warning-border: #80631e;
+  --shadow: 0 18px 48px rgb(0 0 0 / 24%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --canvas: #f4f6f3;
+    --surface-1: #ffffff;
+    --surface-2: #edf0eb;
+    --surface-3: #e1e6de;
+    --text-1: #151a18;
+    --text-2: #53605a;
+    --border: #c8d0c7;
+    --border-strong: #7a897d;
+    --brand: #315500;
+    --brand-ink: #f6ffe6;
+    --focus: #005e85;
+    --warning: #684b00;
+    --warning-border: #9b791b;
+    --shadow: 0 18px 48px rgb(28 39 31 / 12%);
+  }
+}

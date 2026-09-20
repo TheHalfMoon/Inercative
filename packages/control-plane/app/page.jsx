@@ -67,9 +67,15 @@ export default function WorkspaceShellPage() {
     <main className="shell" data-shell-marker={WORKSPACE_SHELL_MARKER}>
       <aside className="projects" aria-label="Projects">
         <div>
-          <p className="eyebrow">Ineractive</p>
-          <h1>Projects</h1>
-          <p className="muted">{SESSION_ONLY_NOTICE}</p>
+          <div className="brandLockup" aria-label="Ineractive">
+            <span className="brandGlyph" aria-hidden="true" />
+            <span className="brandWord">Ineractive</span>
+          </div>
+          <p className="eyebrow">Projects</p>
+          <h1>Shape the product</h1>
+          <p className="muted" id="session-boundary">
+            {SESSION_ONLY_NOTICE}
+          </p>
         </div>
 
         <nav aria-label="Session projects">
@@ -79,6 +85,7 @@ export default function WorkspaceShellPage() {
                 <button
                   className={project.id === state.activeProjectId ? "project active" : "project"}
                   type="button"
+                  aria-pressed={project.id === state.activeProjectId}
                   onClick={() => handleOpenProject(project.id)}
                 >
                   <span>{project.name}</span>
@@ -95,6 +102,8 @@ export default function WorkspaceShellPage() {
             id="project-name"
             name="project-name"
             maxLength={80}
+            aria-describedby="session-boundary"
+            autoComplete="off"
             value={projectName}
             onChange={(event) => setProjectName(event.target.value)}
             placeholder="Project name"
@@ -109,7 +118,7 @@ export default function WorkspaceShellPage() {
             <p className="eyebrow">Workspace</p>
             <h2>{activeProject?.name ?? "No project open"}</h2>
           </div>
-          <span className="sessionBadge">Not persisted</span>
+          <span className="statusBadge">Not persisted</span>
         </header>
 
         <section className="preview" aria-labelledby="preview-title">
@@ -131,14 +140,18 @@ export default function WorkspaceShellPage() {
               id="change-intent"
               name="change-intent"
               maxLength={500}
+              aria-describedby="intent-boundary intent-status"
+              autoComplete="off"
               value={intent}
               onChange={(event) => setIntent(event.target.value)}
               placeholder="Describe the next change"
             />
             <button type="submit">Record intent</button>
           </div>
-          <p className="muted">{CHANGE_INTENT_BOUNDARY}</p>
-          <p role="status" aria-live="polite" className="status">
+          <p className="muted" id="intent-boundary">
+            {CHANGE_INTENT_BOUNDARY}
+          </p>
+          <p role="status" aria-live="polite" className="status" id="intent-status">
             {message}
           </p>
         </form>
