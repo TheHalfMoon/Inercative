@@ -215,6 +215,11 @@ The matrix distinguishes:
 | Native design-provider round trip | BETA | Figma first qualified adapter |
 | Annotation Intent / locality | BETA | Instance/component/token/page/product |
 | Asset/font provenance | V1 CORE | Rights metadata where known; no automatic clearance claim |
+| VisualPromptProtocol | BETA | Structured, versioned creative-media intent compiled from product/design truth |
+| Provider-neutral creative-media generation/editing | BETA | MediaGenerationRequest + MediaProviderAdapter; provider remains replaceable |
+| Bounded creative-media routing | BETA | Deterministic eligibility first; decision model ranks only compatible options |
+| CreativeAsset provenance/evaluation | BETA | Generation/edit lineage, rights metadata, Product Graph/design bindings, evidence |
+| Bounded raster/compositing refinement | BETA | Product-asset finishing only; not a general Photoshop replacement |
 | Independent Design Evaluator | BETA | Real rendered product |
 | Component-state catalog/testing | BETA | Stories/interaction/a11y for reusable states |
 | Qualified external UI discovery | BETA | Optional registries only through admission gate |
