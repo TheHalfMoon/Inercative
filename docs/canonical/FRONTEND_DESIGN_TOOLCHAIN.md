@@ -356,7 +356,36 @@ It is not authority to mutate or publish without the normal capability path.
 
 Use version-matched framework documentation and Skills where available.
 
-## 13. Testing and evidence stack
+## 13. Visual feedback and DOM/source intent
+
+Ineractive's own Annotation Intent and semantic binding system should absorb the strongest patterns from current browser-first frontend-agent tools without depending on them at runtime.
+
+Relevant reference patterns include:
+
+- Agentation: point/click/text/area annotations that produce structured selector/context feedback;
+- stagewise: running app + browser/DOM/console/debugger + agent in one work surface;
+- Domscribe: bidirectional DOM-to-source and source-to-rendered-element mapping through stable build/runtime identity;
+- Design Mode: live browser manipulation and MCP handoff of visual changes.
+
+Canonical Ineractive behavior remains:
+
+~~~text
+rendered element / region / text
+→ stable rendered locator
+→ source/component binding
+→ Product Graph / DesignSystem binding
+→ typed AnnotationIntent
+→ bounded semantic/source diff
+→ render and verify
+~~~
+
+The goal is to remove translation loss between "what the user sees" and "what the agent edits".
+
+External annotation/browser tools are references or optional adapters. They do not become required generated-product dependencies.
+
+Licensing/provenance is evaluated before any code reuse; a reference pattern does not imply code-import authority.
+
+## 14. Testing and evidence stack
 
 ### Unit and logic
 
@@ -395,7 +424,7 @@ Use for:
 
 Visual baselines must run in a controlled renderer environment.
 
-## 14. Motion policy
+## 15. Motion policy
 
 Default order:
 
@@ -416,7 +445,7 @@ Do not add Motion for trivial hover, fade, or color transitions.
 
 All non-essential motion respects reduced-motion preferences.
 
-## 15. Data-fetch policy
+## 16. Data-fetch policy
 
 Default new Next.js product:
 
@@ -432,7 +461,7 @@ Use it when its client/server cache or mutation behavior solves an actual requir
 
 Do not install it by default in every App Router project.
 
-## 16. Forms policy
+## 17. Forms policy
 
 Default:
 
@@ -445,7 +474,7 @@ Qualify a client form-state library only when interaction complexity requires it
 
 The semantic Form/Requirement model lives above the library.
 
-## 17. Data table policy
+## 18. Data table policy
 
 For complex product tables, TanStack Table is a strong qualified candidate because it is headless and leaves markup/design ownership with the product.
 
@@ -463,7 +492,7 @@ justify the dependency.
 
 Do not use a data-grid engine for trivial tables.
 
-## 18. i18n / RTL policy
+## 19. i18n / RTL policy
 
 Locale and RTL semantics stay in Product Graph and FrontendQualityProfile.
 
@@ -473,7 +502,7 @@ Generated layout should prefer logical CSS properties.
 
 Arabic/RTL remains a release benchmark, not a late CSS mirror pass.
 
-## 19. Performance and navigation quality
+## 20. Performance and navigation quality
 
 The frontend quality profile should cover:
 
@@ -489,7 +518,7 @@ Current Next.js Instant Navigation capabilities and associated testing should be
 
 React Doctor, React Scan, and browser performance observations can supply complementary evidence.
 
-## 20. External design and component sources
+## 21. External design and component sources
 
 These sources are candidate inputs, not automatic dependencies.
 
@@ -515,7 +544,7 @@ Never required for core Ineractive operation.
 
 External membership/API requirements and variable community quality mean every candidate still passes RegistryAdmissionGate.
 
-## 21. No dependency zoo rule
+## 22. No dependency zoo rule
 
 Generated projects do not receive libraries merely because they are popular.
 
@@ -538,7 +567,7 @@ Storybook        → only when persistent component-workbench value exists
 next-intl        → only after i18n adapter qualification
 ~~~
 
-## 22. Frontend evidence bundle
+## 23. Frontend evidence bundle
 
 A candidate UI change can collect:
 
@@ -564,7 +593,7 @@ unresolved findings
 
 No single detector, score, screenshot, or agent message proves completion.
 
-## 23. Current stack direction
+## 24. Current stack direction
 
 Requalify exact versions at implementation time.
 
@@ -597,7 +626,7 @@ React Doctor
 
 This is a coherent quality system, not a mandatory package list.
 
-## 24. Explicit boundaries
+## 25. Explicit boundaries
 
 Do not:
 
@@ -612,7 +641,7 @@ Do not:
 - make Vercel the only valid Next.js deployment target;
 - migrate working imported applications to the current preferred stack without evidence.
 
-## 25. Planning outcome
+## 26. Planning outcome
 
 The frontend moat should become:
 
