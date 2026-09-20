@@ -28,8 +28,7 @@ export interface IdentityRevisionRef {
   readonly revision: RevisionRef;
 }
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 const PROTOCOL_ID_PATTERN =
   /^ineractive:([a-z][a-z0-9-]{0,31}):([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/u;
 const GIT_REVISION_PATTERN = /^git:[0-9a-f]{40}$/u;

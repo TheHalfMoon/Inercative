@@ -16,8 +16,7 @@ import {
 
 const PROJECT_ID = "ineractive:project:018f0a6f-7b52-7cc1-8f5f-6d76b310a123";
 const GIT_REVISION = "git:0123456789abcdef0123456789abcdef01234567";
-const SHA256_REVISION =
-  "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+const SHA256_REVISION = "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
 describe("protocol identity primitives", () => {
   it("accepts a canonical namespace-qualified opaque identity", () => {
@@ -26,10 +25,7 @@ describe("protocol identity primitives", () => {
   });
 
   it("constructs and serializes a validated identity", () => {
-    const identity = createProtocolId(
-      "project",
-      "018f0a6f-7b52-7cc1-8f5f-6d76b310a123",
-    );
+    const identity = createProtocolId("project", "018f0a6f-7b52-7cc1-8f5f-6d76b310a123");
 
     expect(identity).not.toBeNull();
     if (identity !== null) {
@@ -42,9 +38,7 @@ describe("protocol identity primitives", () => {
     expect(
       parseProtocolId("ineractive:connection:018f0a6f-7b52-7cc1-8f5f-6d76b310a123"),
     ).toBeNull();
-    expect(
-      parseProtocolId("ineractive:project:018F0A6F-7B52-7CC1-8F5F-6D76B310A123"),
-    ).toBeNull();
+    expect(parseProtocolId("ineractive:project:018F0A6F-7B52-7CC1-8F5F-6D76B310A123")).toBeNull();
   });
 
   it("keeps the namespace allowlist explicit", () => {
@@ -73,9 +67,7 @@ describe("immutable revision primitives", () => {
   it("rejects branches, short SHAs, uppercase digests, and whitespace", () => {
     expect(parseRevisionRef("main")).toBeNull();
     expect(parseRevisionRef("git:0123456")).toBeNull();
-    expect(
-      parseRevisionRef("git:0123456789ABCDEF0123456789ABCDEF01234567"),
-    ).toBeNull();
+    expect(parseRevisionRef("git:0123456789ABCDEF0123456789ABCDEF01234567")).toBeNull();
     expect(parseRevisionRef(`${GIT_REVISION} `)).toBeNull();
   });
 
