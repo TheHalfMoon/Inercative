@@ -81,50 +81,60 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node_version="$(node --version)"
-          pnpm_version="$(pnpm --version)"
-          next_version="$(cd "$FIXTURE" && pnpm exec next --version)"
-          react_version="$(cd "$FIXTURE" && node -p "require('react/package.json').version")"
-          react_dom_version="$(cd "$FIXTURE" && node -p "require('react-dom/package.json').version")"
-          tested_head="$(git rev-parse HEAD)"
-          lock_sha="$(sha256sum "$FIXTURE/pnpm-lock.yaml" | awk '{print $1}')"
-          cat > docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md <<EOF
-          # P01-S01-T01 — Control-Plane Framework Qualification Evidence
+          export QUAL_NODE_VERSION="$(node --version)"
+          export QUAL_PNPM_VERSION="$(pnpm --version)"
+          export QUAL_NEXT_VERSION="$(cd "$FIXTURE" && pnpm exec next --version)"
+          export QUAL_REACT_VERSION="$(cd "$FIXTURE" && node -p "require('react/package.json').version")"
+          export QUAL_REACT_DOM_VERSION="$(cd "$FIXTURE" && node -p "require('react-dom/package.json').version")"
+          export QUAL_TESTED_HEAD="$(git rev-parse HEAD)"
+          export QUAL_LOCK_SHA="$(sha256sum "$FIXTURE/pnpm-lock.yaml" | awk '{print $1}')"
+          python - <<'PY'
+          import os
+          from pathlib import Path
 
-          **Task:** IN-P01-S01-T01  
-          **SpecGrain:** SG-000009  
-          **Date:** 2026-09-20  
-          **Qualification run:** ${GITHUB_RUN_ID}  
-          **Tested branch head before evidence commit:** ${tested_head}
-
-          ## Exact runtime and fixture
-
-          - Node: ${node_version}
-          - pnpm: ${pnpm_version}
-          - Next.js: ${next_version}
-          - React: ${react_version}
-          - React DOM: ${react_dom_version}
-          - fixture content digest: ${FIXTURE_DIGEST}
-          - fixture lockfile SHA-256: ${lock_sha}
-
-          ## Executed evidence
-
-          - isolated dependency resolution: PASS
-          - frozen fixture install: PASS
-          - production Next.js build: PASS
-          - generated standalone Node server: PASS
-          - HTTP smoke against standalone server: PASS
-          - expected marker `${MARKER}`: OBSERVED
-
-          ## Scope boundary
-
-          The fixture is qualification-only. It creates no production/provider resource and
-          is not the P01-S03 project/workspace shell.
-
-          The fixture source and lockfile tested in this run are committed by the same
-          one-shot job. Final SG-000009 acceptance still requires exact-head repository CI
-          on Ubuntu and Windows after this temporary workflow is removed.
-          EOF
+          lines = [
+              "# P01-S01-T01 — Control-Plane Framework Qualification Evidence",
+              "",
+              "**Task:** IN-P01-S01-T01  ",
+              "**SpecGrain:** SG-000009  ",
+              "**Date:** 2026-09-20  ",
+              f"**Qualification run:** {os.environ['GITHUB_RUN_ID']}  ",
+              f"**Tested branch head before evidence commit:** {os.environ['QUAL_TESTED_HEAD']}",
+              "",
+              "## Exact runtime and fixture",
+              "",
+              f"- Node: {os.environ['QUAL_NODE_VERSION']}",
+              f"- pnpm: {os.environ['QUAL_PNPM_VERSION']}",
+              f"- Next.js: {os.environ['QUAL_NEXT_VERSION']}",
+              f"- React: {os.environ['QUAL_REACT_VERSION']}",
+              f"- React DOM: {os.environ['QUAL_REACT_DOM_VERSION']}",
+              f"- fixture content digest: {os.environ['FIXTURE_DIGEST']}",
+              f"- fixture lockfile SHA-256: {os.environ['QUAL_LOCK_SHA']}",
+              "",
+              "## Executed evidence",
+              "",
+              "- isolated dependency resolution: PASS",
+              "- frozen fixture install: PASS",
+              "- production Next.js build: PASS",
+              "- generated standalone Node server: PASS",
+              "- HTTP smoke against standalone server: PASS",
+              f"- expected marker {os.environ['MARKER']}: OBSERVED",
+              "",
+              "## Scope boundary",
+              "",
+              "The fixture is qualification-only. It creates no production/provider resource and",
+              "is not the P01-S03 project/workspace shell.",
+              "",
+              "The fixture source and lockfile tested in this run are committed by the same",
+              "one-shot job. Final SG-000009 acceptance still requires exact-head repository CI",
+              "on Ubuntu and Windows after this temporary workflow is removed.",
+              "",
+          ]
+          Path("docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md").write_text(
+              "\n".join(lines),
+              encoding="utf-8",
+          )
+          PY
           pnpm exec prettier --write docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md
 
       - name: Clean ephemeral build artifacts
