@@ -9,6 +9,10 @@
 - COPY_SELECTIVE — copy a bounded implementation after exact provenance review.
 - ADAPT — preserve mechanism/behavior behind Ineractive-owned contracts.
 - DEPEND — use as a replaceable dependency after qualification.
+- DEPEND_SELECTIVE — qualified dependency used only when the active FrontendQualityProfile/product requirement justifies it.
+- PRESERVE — retain a compatible existing/imported architecture rather than migrating for novelty.
+- OPTIONAL QUALIFIED SOURCE — source candidate considered only through the normal admission/provenance/security/quality gate.
+- OPTIONAL EXTERNAL REGISTRY — discovery provider only; no candidate becomes trusted source before RegistryAdmissionGate.
 - REFERENCE — architecture/product/design reference.
 - PROCESS_REFERENCE — engineering/review/planning discipline.
 - BENCHMARK — evaluation/reference only.
