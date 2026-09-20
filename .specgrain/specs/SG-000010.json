@@ -1,0 +1,74 @@
+{
+  "acceptance": [
+    "Logical identities round-trip in one canonical lowercase textual format and reject malformed kind/UUID inputs.",
+    "Identity kind remains explicit and opaque; consumers cannot infer ownership, authorization, or mutable state from the identifier.",
+    "Git revisions accept only full immutable 40- or 64-hex object IDs and reject branch names, tags, and short hashes.",
+    "SHA-256 revisions accept only canonical 64-hex digests.",
+    "Identity/revision bindings preserve logical identity separately from immutable exact revision.",
+    "Public protocol exports remain provider-neutral and package runtime dependencies remain empty.",
+    "Focused tests plus exact-head Ubuntu and Windows repository CI pass."
+  ],
+  "change_surface": [
+    "packages/protocol/**",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 9000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000009"
+  ],
+  "evidence": {
+    "required": [
+      "Focused protocol tests for canonical identity/revision round-trip and malformed negative fixtures.",
+      "Manifest evidence proving zero runtime dependencies.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000010",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Implement only the dependency-ordered public identity/revision primitives in the existing @ineractive/protocol package."
+      },
+      "safety": {
+        "requirements": [
+          "Identity values never encode authorization, ownership, secret material, or mutable state.",
+          "Revision values are immutable exact references; mutable branch/tag labels are rejected."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The public protocol exposes dependency-free, provider-neutral, canonical identity and immutable revision primitives that round-trip deterministically without introducing run/event/finding schemas.",
+  "parent_id": null,
+  "rationale": "First public protocol API after canonical SG-000009 framework qualification.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000010 public identity/revision exports, tests, docs, and evidence; no external side effect or persisted data migration is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a canonical opaque logical identity format with explicit kind and UUID payload.",
+    "Define immutable revision references for exact Git object identities and SHA-256 content digests.",
+    "Provide dependency-free parse/format/validation helpers and typed public protocol exports.",
+    "Provide a typed identity-plus-revision binding primitive for exact-state references.",
+    "Replace the P00 empty-export placeholder test with public protocol identity/revision contract tests while preserving the zero-runtime-dependency invariant."
+  ],
+  "scope_out": [
+    "No Run, Event, Evidence, Finding, ModelTask, DecisionTask, CapabilityRequest, or CapabilityGrant schemas.",
+    "No persistence, database, authorization, ownership, timestamps, ordering, or provider-specific semantics.",
+    "No ID generation dependency or hidden randomness requirement; this Grain validates and canonicalizes supplied identities."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S02-T01 Implement protocol identity and revision primitives"
+}
