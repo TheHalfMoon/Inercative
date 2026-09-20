@@ -43,3 +43,16 @@ recording change intent does not execute a model, mutate source, save data, or d
 - exact-head Ubuntu and Windows repository CI.
 
 No PASS is claimed before those checks execute.
+
+
+## Qualification attempt history
+
+- run `35530495242`: workflow YAML was invalid because an evidence heredoc escaped the
+  YAML block; no job was created and no product qualification executed.
+- run `35530524106`: lockfile refresh, frozen install, formatting, five focused shell
+  state tests, and control-plane typecheck passed. The production Next.js build compiled
+  successfully, then failed at Next's TypeScript integration because `@types/react`
+  was not installed. No standalone HTTP smoke ran on that candidate.
+
+The failed heads are preserved and are not re-run to green. React type packages are
+added explicitly at 19.3.0 and acceptance requires a fresh qualification run.

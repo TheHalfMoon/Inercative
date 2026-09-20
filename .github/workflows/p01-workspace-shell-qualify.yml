@@ -1,4 +1,5 @@
 name: P01 one-shot workspace shell qualification
+# repair: React 19.3 type packages required by Next.js TypeScript build
 
 on:
   push:
