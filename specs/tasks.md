@@ -62,6 +62,12 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P05-S04-T01 | P05 | Implement incremental bounded source edits | IN-P05-S02-T01, IN-P05-S03-T01 |
 | IN-P05-S05-T01 | P05 | Implement locale/i18n/timezone/RTL compiler semantics and Arabic-English fixtures | IN-P05-S02-T01, IN-P05-S03-T01 |
 | IN-P05-S06-T01 | P05 | Implement production-web metadata, asset-loading, and route performance-budget contracts | IN-P05-S02-T01, IN-P05-S03-T01, IN-P04-S05-T01 |
+| IN-P05-S07-T01 | P05 | Implement FrontendQualityProfile and qualify the current patched Next.js/React/Tailwind compiler baseline | IN-P05-S01-T01 |
+| IN-P05-S07-T02 | P05 | Implement primitive-base identity/policy and ComponentRegistryAdapter with Base UI default candidate, React Aria alternate, and Radix preservation | IN-P05-S07-T01, IN-P00-S04-T03 |
+| IN-P05-S07-T03 | P05 | Implement ComponentResolver across local source/project kit/Ineractive registry/authorized external registries/synthesis with duplicate prevention and provenance | IN-P05-S07-T02, IN-P03-S07-T01 |
+| IN-P05-S07-T04 | P05 | Establish Ineractive Qualified Registry baseline and initial RegistryAdmissionGate | IN-P05-S07-T03, IN-P00-S04-T03, IN-P04-S03-T01 |
+| IN-P05-S07-T05 | P05 | Implement on-demand dependency policies for forms/query/table/i18n/motion/component-workbench tooling | IN-P05-S07-T01, IN-P05-S07-T02 |
+| IN-P05-S07-T06 | P05 | Qualify Next.js DevTools MCP diagnostics through Tool Catalog/trust/capability policy | IN-P05-S07-T01, IN-P04-S06-T04 |
 | IN-P06-S01-T01 | P06 | Integrate isolated local Supabase CLI stack | IN-P04-S02-T02, IN-P04-S03-T01 |
 | IN-P06-S02-T01 | P06 | Implement schema/migration/type compiler | IN-P02-S02-T01, IN-P06-S01-T01 |
 | IN-P06-S02-T02 | P06 | Implement migration risk classification, expand/contract, and recovery planning | IN-P06-S02-T01 |
@@ -101,6 +107,9 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P08-S09-T01 | P08 | Implement Annotation Intent/locality and direct-manipulation semantic diffs | IN-P08-S05-T01, IN-P08-S08-T01 |
 | IN-P08-S09-T02 | P08 | Implement design exploration branches and independent Design Evaluator | IN-P08-S03-T01, IN-P08-S09-T01, IN-P07-S02-T03 |
 | IN-P08-S10-T01 | P08 | Implement asset/font provenance and inventory contract | IN-P00-S04-T03, IN-P08-S01-T01 |
+| IN-P08-S11-T01 | P08 | Integrate pinned/versioned Impeccable, Vercel Web Interface Guidelines, and Vercel React Best Practices rule packs | IN-P08-S02-T01, IN-P03-S07-T01, IN-P05-S07-T01 |
+| IN-P08-S11-T02 | P08 | Qualify Storybook component workbench/MCP and reusable component-state catalog path | IN-P05-S07-T03, IN-P04-S06-T04 |
+| IN-P08-S11-T03 | P08 | Implement component/browser design-quality loop using Storybook/Vitest/axe, Playwright visual/accessibility evidence, and independent design critique | IN-P08-S11-T01, IN-P08-S11-T02, IN-P08-S03-T01, IN-P04-S05-T01 |
 | IN-P09-S01-T01 | P09 | Implement safe existing-repository discovery/import | IN-P04-S04-T01, IN-P04-S05-T01, IN-P05-S04-T01 |
 | IN-P09-S02-T01 | P09 | Implement screenshot/image reconstruction flow | IN-P08-S03-T01, IN-P08-S05-T01 |
 | IN-P09-S03-T01 | P09 | Implement URL/reference capture and reconstruction | IN-P04-S05-T01, IN-P08-S03-T01 |
@@ -119,6 +128,9 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P10-S07-T01 | P10 | Implement generated-app supply-chain/source/asset/build-artifact integrity pack and optional SBOM | IN-P00-S04-T03, IN-P05-S01-T01, IN-P08-S10-T01 |
 | IN-P10-S08-T01 | P10 | Implement i18n/RTL/SEO/accessibility/performance production-web quality pack | IN-P05-S05-T01, IN-P05-S06-T01, IN-P04-S05-T01 |
 | IN-P10-S09-T01 | P10 | Implement dataset quality/lineage/count/referential-integrity/privacy and deterministic-seed assurance pack | IN-P06-S10-T03, IN-P06-S11-T01, IN-P10-S01-T02 |
+| IN-P10-S10-T01 | P10 | Integrate React Doctor changed-scope deterministic scanning into normalized frontend findings/evidence | IN-P05-S07-T01, IN-P10-S01-T01 |
+| IN-P10-S10-T02 | P10 | Fully qualify RegistryAdmissionGate for external component provenance/security/a11y/server-client/RTL/reduced-motion/performance compatibility | IN-P05-S07-T04, IN-P08-S11-T03, IN-P10-S07-T01, IN-P10-S08-T01 |
+| IN-P10-S10-T03 | P10 | Implement exact-source FrontendEvidenceBundle across rule packs, component tests, browser/accessibility/visual/performance diagnostics, and independent critique | IN-P10-S10-T01, IN-P10-S10-T02, IN-P10-S01-T02 |
 | IN-P11-S00-T01 | P11 | Implement ProviderAdapter, Connection, ResourceBinding, EnvironmentManifest, OwnershipManifest, and ProvisioningSaga contracts | IN-P02-S08-T01, IN-P03-S01-T01, IN-P04-S01-T01, IN-P04-S03-T01 |
 | IN-P11-S00-T02 | P11 | Implement provider capability/preflight and typed ExternalBlocker model with permissions/plan/billing/quota/region/policy checks | IN-P11-S00-T01, IN-P03-S08-T01 |
 | IN-P11-S00-T03 | P11 | Implement provider reconciliation/state-sync, async provisioning, revocation, reconnect, detach-vs-delete, and idempotent create semantics | IN-P11-S00-T02, IN-P07-S02-T02 |
