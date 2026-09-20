@@ -19,8 +19,12 @@ const CANONICAL_INDEX_URL = new URL("../../../specs/tasks.md", import.meta.url);
  */
 const EXPECTED_P00_TASK_COUNT = 11;
 
-/** Reported by docs/evidence/PLANNING_FOUNDATION_REVIEW_2026-09-19.md. */
-const REPORTED_TASK_HANDLE_COUNT = 93;
+/**
+ * Expected number of stable program-task handles in the candidate canonical index.
+ * Deliberate roadmap changes must update this pin so CI catches accidental task loss
+ * or unreviewed task-surface expansion.
+ */
+const EXPECTED_PROGRAM_TASK_COUNT = 157;
 
 /**
  * The dependency frontier that gates P01, exactly as declared in the canonical index.
@@ -94,10 +98,10 @@ describe("canonical program task index", () => {
     expect(validateProgramTaskIndex(index)).toEqual([]);
   });
 
-  it(`declares ${REPORTED_TASK_HANDLE_COUNT.toString()} task handles`, async () => {
+  it(`declares ${EXPECTED_PROGRAM_TASK_COUNT.toString()} task handles`, async () => {
     const index = await loadCanonicalIndex();
 
-    expect(index.tasks).toHaveLength(REPORTED_TASK_HANDLE_COUNT);
+    expect(index.tasks).toHaveLength(EXPECTED_PROGRAM_TASK_COUNT);
   });
 
   it(`declares ${EXPECTED_P00_TASK_COUNT.toString()} P00 task handles`, async () => {
