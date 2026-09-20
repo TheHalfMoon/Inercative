@@ -44,6 +44,7 @@ A complete export contains all applicable artifacts:
 - data lifecycle/export/delete/audit implementation artifacts when required;
 - AI-provider configuration schema for explicit AI features without secret values;
 - asset/font inventory and provenance metadata where known;
+- accepted generated/edited creative assets as normal portable product assets, with provider/model/edit lineage retained in evidence metadata rather than required at runtime;
 - test configuration;
 - documented runtime requirements;
 - third-party notices required by the generated artifact;
