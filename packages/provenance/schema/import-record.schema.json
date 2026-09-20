@@ -24,7 +24,11 @@
     "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["repository", "revision", "paths"],
+      "required": [
+        "repository",
+        "revision",
+        "paths"
+      ],
       "properties": {
         "repository": {
           "type": "string",
@@ -48,7 +52,9 @@
     "destination": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["paths"],
+      "required": [
+        "paths"
+      ],
       "properties": {
         "paths": {
           "type": "array",
@@ -62,15 +68,27 @@
       }
     },
     "useMode": {
-      "enum": ["COPY", "ADAPT", "DEPEND"]
+      "enum": [
+        "COPY",
+        "ADAPT",
+        "DEPEND"
+      ]
     },
     "authority": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "reference"],
+      "required": [
+        "kind",
+        "reference"
+      ],
       "properties": {
         "kind": {
-          "enum": ["FOUNDER_PERMISSION", "LICENSE", "CONTRACT", "OTHER"]
+          "enum": [
+            "FOUNDER_PERMISSION",
+            "LICENSE",
+            "CONTRACT",
+            "OTHER"
+          ]
         },
         "reference": {
           "type": "string",
@@ -81,7 +99,11 @@
     "licensing": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["licenseExpression", "noticeRequired", "noticeReference"],
+      "required": [
+        "licenseExpression",
+        "noticeRequired",
+        "noticeReference"
+      ],
       "properties": {
         "licenseExpression": {
           "type": "string",
@@ -91,17 +113,54 @@
           "type": "boolean"
         },
         "noticeReference": {
-          "type": ["string", "null"]
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "noticeRequired": {
+                "const": true
+              }
+            },
+            "required": [
+              "noticeRequired"
+            ]
+          },
+          "then": {
+            "properties": {
+              "noticeReference": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
     },
     "dependencyClosure": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "references"],
+      "required": [
+        "status",
+        "references"
+      ],
       "properties": {
         "status": {
-          "enum": ["COMPLETE", "PARTIAL", "UNRESOLVED"]
+          "enum": [
+            "COMPLETE",
+            "PARTIAL",
+            "UNRESOLVED"
+          ]
         },
         "references": {
           "type": "array",
@@ -120,10 +179,19 @@
     "securityImpact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["level", "summary"],
+      "required": [
+        "level",
+        "summary"
+      ],
       "properties": {
         "level": {
-          "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+          "enum": [
+            "NONE",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
         },
         "summary": {
           "type": "string",
@@ -137,7 +205,8 @@
       "items": {
         "type": "string",
         "minLength": 1
-      }
+      },
+      "uniqueItems": true
     },
     "reviewEvidence": {
       "type": "array",
@@ -145,7 +214,8 @@
       "items": {
         "type": "string",
         "minLength": 1
-      }
+      },
+      "uniqueItems": true
     }
   }
 }

@@ -52,3 +52,13 @@ Exact-head repository CI must pass formatting, lint, typecheck, and Vitest inclu
 - candidate `c3a3602a23e411c7ef0c689a9c185046c6b3acbd`: frozen install failed because the new workspace importer was absent;
 - candidate `d4085d695bc6fbc2108a96990ed372580ad0c436`: frozen install still failed because the importer was added to the first document of the repository's multi-document lockfile, not the workspace dependency document;
 - this repair moves the importer to the correct second lockfile document and keeps both failures as evidence rather than re-running stale heads.
+
+
+## Schema/validator parity
+
+Before acceptance, the JSON Schema and TypeScript validator were reconciled so both express:
+
+- immutable 40- or 64-hex revision identity;
+- non-empty notice reference when NOTICE is required;
+- unique verification/review evidence entries;
+- strict required/unknown-field behavior.

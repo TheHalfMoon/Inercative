@@ -129,4 +129,11 @@ describe("validateDonorImportRecord", () => {
 
     expect(issueCodes(record)).toContain("INVALID_ARRAY");
   });
+
+  it("rejects duplicate review evidence", () => {
+    const record = mutableRecord();
+    record.reviewEvidence = ["ocr: exact-head finding set", "ocr: exact-head finding set"];
+
+    expect(issueCodes(record)).toContain("DUPLICATE_ARRAY_ITEM");
+  });
 });
