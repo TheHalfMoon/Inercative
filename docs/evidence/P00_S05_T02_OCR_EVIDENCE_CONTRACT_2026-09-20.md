@@ -1,0 +1,64 @@
+# P00-S05-T02 — OCR Evidence Contract Candidate
+
+**Task:** IN-P00-S05-T02  
+**SpecGrain:** SG-000008  
+**Date:** 2026-09-20  
+**Canonical baseline:** `bdfd53c348d98fb2cacda70ec02fab5729aedd59`
+
+## Candidate outcome
+
+The candidate defines a strict, machine-readable Alibaba OCR evidence contract without
+granting OCR acceptance authority or pretending the semantic layer ran.
+
+The contract requires:
+
+- exact base/head/merge-base identity;
+- OCR release, verified binary digest, and config identity;
+- complete changed-file accounting;
+- every changed file exactly once in reviewable or excluded classification;
+- explicit exclusion reasons;
+- separate-review evidence for material excluded files;
+- deterministic rule-resolution evidence for each reviewable file;
+- semantic RUN / BLOCKED / NOT_RUN state;
+- structured semantic output identity and findings only when RUN;
+- explicit blocker evidence and zero findings when BLOCKED/NOT_RUN;
+- material finding disposition;
+- finding paths restricted to OCR-reviewable files and unique finding identities;
+- stale-head invalidation unless deterministic unchanged-diff reconciliation exists.
+
+## Public API boundary
+
+The implementation lives under `packages/protocol/**` because SG-000008 explicitly
+authorizes that surface, but `packages/protocol/src/index.ts` remains unchanged with an
+empty public export surface. P01 retains ownership of public protocol contracts.
+
+## Standing blocker
+
+Alibaba OCR semantic LLM review remains **NOT RUN** because no scoped endpoint/token is
+provisioned. This candidate records that state; it does not convert it into PASS.
+
+## Required proof before merge
+
+- focused validator tests;
+- deterministic OCR preview/rule-resolution accounting on the exact candidate;
+- exact-head Ubuntu and Windows frozen install, format, lint, typecheck, and tests;
+- no unresolved material review finding;
+- no credential or secret committed.
+
+
+## CI repair history
+
+- candidate `911027b23b01501ff2faf6ab34f9e577d7415214`: frozen install passed; Ubuntu failed only at `format:check` for the three new OCR evidence contract files;
+- one-shot formatter run `35522144380` used repository-pinned Prettier 3.9.8, verified the exact three files, committed a format-only repair, and removed its temporary workflow from the branch;
+- the formatter-generated head is not accepted by itself; acceptance requires fresh exact-head Ubuntu and Windows CI after this connector-authored evidence update.
+
+
+## Integrity-review repair history
+
+- exact head `7ae4d4ada87e34b769da59be92496c8ce73f16ff` passed CI #96 on Ubuntu and Windows;
+- OCR evidence run `35522309799` reviewed that exact head with checksum-verified Alibaba OCR v1.12.7: 9 changed files, 3 OCR-reviewable, 6 deterministically excluded; rule resolution executed for all 3 reviewable files; semantic review remained blocked with all scoped OCR/Anthropic endpoint variables unset;
+- manual separate review of the excluded governance/docs/test surfaces identified a provenance defect in this evidence file's baseline and two validator-integrity gaps: semantic findings were not constrained to OCR-reviewable paths, and an exact-head reconciliation could carry a mismatched `fromHead`;
+- candidate `305950a21ba782cccc706750e44501f3fdd6edc7` corrected the canonical baseline and added fail-closed finding-path, unique-finding-id, and reconciliation-source validation plus negative fixtures;
+- one-shot formatter run `35522452719` used repository-pinned Prettier 3.9.8 and produced format-only head `22c92b57d562e7d7ab9ec05d57d934f6430bf762`, removing its temporary workflow in the same commit;
+- CI #99 on the bot-authored formatter head was `action_required` with no acceptance jobs, so it is not acceptance evidence;
+- acceptance requires fresh exact-head Ubuntu and Windows CI and fresh OCR exact-candidate evidence after this connector-authored commit.

@@ -83,17 +83,33 @@ Secrets must remain brokered and scoped: when an OCR LLM endpoint is provisioned
 token is supplied via a scoped environment/secret, never committed, never logged, and
 never exposed to a browser bundle.
 
-## 5. Evidence contract (feeds IN-P00-S05-T02)
+## 5. Evidence contract (IN-P00-S05-T02 / SG-000008)
+
+The machine-readable contract is defined by:
+
+- `packages/protocol/schema/ocr-review-evidence.schema.json`;
+- private P00 validator `packages/protocol/src/ocr-review-evidence.ts`.
+
+The package root remains intentionally empty during P00; this OCR-specific contract is
+not exported as public protocol API before P01.
 
 Every OCR-attached change must record:
 
 - exact `base`, `head`, and `merge_base`;
-- `reviewable_files[]` and `excluded_files[]` with `exclude_reason`;
-- applicable rule resolution;
-- OCR version/config provenance;
-- semantic findings (JSON/SARIF) when the semantic layer ran, or an explicit recorded
-  blocker when it did not;
-- disposition of every material finding (fixed / dispositioned / blocking).
+- the complete changed-file set;
+- deterministic `reviewable_files[]` and `excluded_files[]` with `exclude_reason`;
+- separate-review evidence for every material excluded/unsupported file;
+- applicable rule resolution for every reviewable file;
+- OCR release, verified binary digest, and configuration identity;
+- semantic state `RUN`, `BLOCKED`, or `NOT_RUN`;
+- JSON/SARIF output identity plus findings when semantic review actually ran;
+- an explicit blocker/reason and zero semantic findings when it did not;
+- disposition and rationale for every material semantic finding.
 
-If the candidate head changes materially after review, the review is re-run or
-explicitly reconciled against the new exact head.
+A material `UNRESOLVED` or `DEFERRED_BLOCKING` finding blocks completion.
+
+If the candidate head changes after review, the evidence becomes stale unless the
+review is re-run or an explicit deterministic reconciliation binds the old reviewed
+head to the new candidate and proves the reviewed diff unchanged.
+
+OCR remains a reviewer, not acceptance authority.
