@@ -12,8 +12,9 @@
 
 Canonical planning (PR #1), the P00-S01 repository bootstrap baseline (PR #2),
 SpecGrain initialization (PR #3), Diffcipline policy/exact-diff proof (PR #4),
-the Alibaba OCR deterministic local procedure (PR #5), and the A-to-Z planning
-hardening/final coverage audit (PR #6) are merged.
+the Alibaba OCR deterministic local procedure (PR #5), the A-to-Z planning
+hardening/final coverage audit (PR #6), the Apache-2.0 license/notice policy
+(PR #9), and the donor provenance/import record schema (PR #10) are merged.
 
 PR #6 canonically expanded the future P01-P15 plan to 176 stable task handles and
 closed the final identified planning gaps, but it did **not** change current P00
@@ -54,8 +55,8 @@ their current delivery state:
 | SG-000001 | IN-P00-S02-T01 | Initialize SpecGrain from canonical roadmap | DONE (PR #3) | `docs/evidence/P00_S02_T01_SPECGRAIN_INIT_2026-09-20.md` |
 | SG-000002 | IN-P00-S03-T01 | Initialize Diffcipline risk/proof policy | DONE (PR #4) | `docs/evidence/P00_S03_T01_DIFFCIPLINE_POLICY_2026-09-20.md` |
 | SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | DONE (PR #4) | `docs/evidence/P00_S03_T02_DIFFCIPLINE_PROOF_2026-09-20.md` |
-| SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | ELIGIBLE (founder decision gate) | — |
-| SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | blocked on SG-000004 | — |
+| SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | DONE (PR #9) | `docs/evidence/P00_S04_T01_LICENSE_NOTICE_POLICY_2026-09-20.md` |
+| SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | DONE (PR #10) | `docs/evidence/P00_S04_T02_PROVENANCE_SCHEMA_2026-09-20.md` |
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
@@ -63,14 +64,20 @@ Delivery state is repository truth. The current SpecGrain CLI surface exposes
 advance a Grain to `VERIFIED`/`CONTROLLED`, so completion is recorded here and in
 `docs/evidence/`, not by fabricating SpecGrain lifecycle state.
 
-Remaining eligible frontier: SG-000004 (license/notice policy — requires the founder
-license decision if still undecided). SG-000005 follows SG-000004; IN-P00-S04-T03 and
-IN-P00-S05-T02 will be shaped into Grains when their dependencies complete
-(rolling-wave).
+IN-P00-S04-T03 is now dependency-eligible after canonical completion of SG-000005.
+It is **not yet shaped into a SpecGrain Grain**. The connected local execution runtime
+that previously ran the SpecGrain CLI is currently unavailable because its monthly
+tool-call quota is exhausted; no hand-authored SG-000007 is fabricated as a substitute.
 
-**Founder-decision blocker (active):** SG-000004 needs the Ineractive-owned source
-license chosen. Alibaba OCR semantic review (SG-000006 follow-up) needs a scoped LLM
-endpoint/token provisioned.
+IN-P00-S05-T02 is also dependency-eligible after SG-000006 but remains unshaped under
+rolling-wave ordering while S04-T03 is the first eligible implementation unit.
+
+**External blockers (active):**
+
+- SpecGrain CLI execution for the next rolling-wave Grain is unavailable in the current
+  connected runtime session; shaping remains NOT RUN rather than being simulated.
+- Alibaba OCR semantic review (SG-000006 follow-up) needs a scoped LLM endpoint/token
+  provisioned.
 
 ## Not run (truthfully)
 
@@ -83,6 +90,9 @@ The following are **NOT RUN** and are not claimed as PASS:
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current
   CLI exposes no VERIFIED/CONTROLLED transition; see frontier note above).
+- SpecGrain shaping for IN-P00-S04-T03: NOT RUN in this session because the connected
+  runtime that previously executed the CLI has exhausted its monthly tool-call quota.
+  No manually invented Grain state is claimed.
 
 Generic bot statuses (CodeRabbit "review skipped", cubic "skipping") are not
 qualification evidence.
@@ -90,15 +100,17 @@ qualification evidence.
 ## First execution order
 
 Completed: SG-000001 (P00-S02), SG-000002 + SG-000003 (P00-S03 policy + exact-diff proof),
-SG-000006 (P00-S05 OCR procedure; deterministic layer executed, semantic layer blocked
-on a recorded credential blocker).
+SG-000004 (Apache-2.0 license + third-party notice policy), SG-000005 (donor
+provenance/import record schema), and SG-000006 (P00-S05 OCR procedure; deterministic
+layer executed, semantic layer blocked on a recorded credential blocker).
 
-Remaining eligible P00 frontier:
+Current eligible P00 frontier:
 
-1. SG-000004 / IN-P00-S04-T01 — license + third-party notice policy (founder decision — see blocker above).
-2. SG-000005 / IN-P00-S04-T02 — provenance/import record schema (after SG-000004).
-3. IN-P00-S04-T03 — provenance validation/notice inventory (after SG-000005).
-4. IN-P00-S05-T02 — OCR review evidence/file-accounting contract (after SG-000006).
+1. IN-P00-S04-T03 — provenance validation/notice inventory. Dependency satisfied by
+   SG-000005; rolling-wave SpecGrain shaping is NOT RUN because the connected CLI
+   execution runtime is temporarily unavailable.
+2. IN-P00-S05-T02 — OCR review evidence/file-accounting contract. Dependency satisfied
+   by SG-000006; remains behind the first eligible S04-T03 unit in rolling-wave order.
 
 ## Hard constraints
 
