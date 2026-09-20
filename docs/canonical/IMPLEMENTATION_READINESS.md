@@ -190,7 +190,7 @@ P01 may not begin until:
 
 ## 7. Candidate graph validation
 
-The candidate task index contains **169 stable task handles**.
+The candidate task index contains **172 stable task handles**.
 
 Structural validation after the A-to-Z + frontend/tooling hardening pass:
 
