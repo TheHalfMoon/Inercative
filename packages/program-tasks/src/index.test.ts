@@ -24,7 +24,7 @@ const EXPECTED_P00_TASK_COUNT = 11;
  * Deliberate roadmap changes must update this pin so CI catches accidental task loss
  * or unreviewed task-surface expansion.
  */
-const EXPECTED_PROGRAM_TASK_COUNT = 157;
+const EXPECTED_PROGRAM_TASK_COUNT = 169;
 
 /**
  * The dependency frontier that gates P01, exactly as declared in the canonical index.
