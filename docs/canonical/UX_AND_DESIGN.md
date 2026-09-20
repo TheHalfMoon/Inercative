@@ -69,10 +69,15 @@ Supported starting context:
 
 - text;
 - screenshot/image;
+- spreadsheet/CSV/JSON business data;
 - Figma/design reference when integrated;
 - URL/reference site;
 - Git repository;
-- existing project import.
+- existing Supabase/backend connection;
+- existing running project;
+- combinations of the above.
+
+The first-run experience should infer the user's actual starting point instead of forcing every project through a blank-template flow.
 
 After intent submission:
 
@@ -96,7 +101,7 @@ Desktop layout direction:
 |                     |                                            |
 | activity summary    |                                            |
 +---------------------+--------------------------------------------+
-| Code | Data | Auth | Design | Tests | Logs | Git | Deploy       |
+| Code | Data | Auth | Design | Proof | Connections | Ship        |
 +------------------------------------------------------------------+
 ~~~
 
@@ -118,7 +123,23 @@ Code, terminal, diffs, runtime logs, Git, network/console.
 
 ### Data
 
-Schema, rows, relationships, RLS, auth, storage, functions, migrations.
+Datasets/imports, schema, rows, relationships, quality/lineage, RLS, auth, storage, functions, migrations.
+
+### Connections
+
+A simple product-level view over external ownership:
+
+- GitHub;
+- Supabase;
+- deployment;
+- domains;
+- email/other integrations.
+
+Show Connected / Needs action / Blocked / Degraded rather than raw OAuth/provider internals by default.
+
+### Ship
+
+Preview, release qualification, external blockers, domain/environment state, production promotion, health, recovery, and last-known-good release.
 
 ### Proof
 
@@ -160,7 +181,33 @@ The user can change one and see affected areas before applying.
 
 This replaces many pre-build questions.
 
-## 9. Build activity
+## 9. External blockers and setup actions
+
+Do not hide provider-owned setup steps.
+
+When an external action is required, show one explicit blocker with:
+
+- what is blocked;
+- why;
+- who must act;
+- whether the rest of the build can continue;
+- one safe action.
+
+Example:
+
+~~~text
+Production backend
+Owner approval required
+
+Your Acme Supabase organization requires an owner to approve project creation.
+The app can continue building locally.
+
+[Request approval]  [Connect an existing project]
+~~~
+
+Avoid dumping provider OAuth scopes, API jargon, or implementation detail unless the user expands technical details.
+
+## 10. Build activity
 
 Do not expose private chain-of-thought.
 
@@ -184,7 +231,7 @@ Expandable details can show:
 - cost/budget where enabled;
 - evidence.
 
-## 10. Visual editor requirements
+## 11. Visual editor requirements
 
 Selection of a rendered element should identify:
 
@@ -211,7 +258,7 @@ Required edits:
 - image/assets;
 - variants.
 
-## 11. Design quality loop
+## 12. Design quality loop
 
 For a changed surface:
 
@@ -241,7 +288,7 @@ Avoid common generated-design failure patterns unless explicitly chosen:
 - desktop-only composition;
 - fake metrics or fake testimonials.
 
-## 12. Brand and design artifacts per project
+## 13. Brand and design artifacts per project
 
 Each generated project should converge on normal, inspectable artifacts:
 
@@ -254,7 +301,7 @@ Each generated project should converge on normal, inspectable artifacts:
 
 Do not overgenerate documentation for tiny projects; these can begin compact and deepen as the product grows.
 
-## 13. Accessibility
+## 14. Accessibility
 
 Accessibility is a build requirement, not a polish mode.
 
@@ -273,7 +320,7 @@ Baseline:
 
 Generated apps should have automated checks plus browser interaction tests for critical flows.
 
-## 14. Internationalization
+## 15. Internationalization
 
 The compiler should understand whether the product requires:
 
@@ -286,7 +333,7 @@ The compiler should understand whether the product requires:
 
 Arabic/RTL cannot be treated as a final CSS flip.
 
-## 15. Design evaluation
+## 16. Design evaluation
 
 Measure design-system behavior rather than subjective beauty alone:
 
@@ -301,3 +348,26 @@ Measure design-system behavior rather than subjective beauty alone:
 - time from intent to acceptable surface.
 
 Human preference remains final for taste. The system should make quality defaults strong without pretending aesthetics are mathematically solved.
+
+## 17. Product completeness UX
+
+Users should be able to understand whether the product is actually ready without reading the full task graph.
+
+A compact readiness surface derives from the ProductCompletenessManifest:
+
+~~~text
+Product          Proven
+Data             Proven
+Backend          Proven
+Security         Proven
+GitHub           Connected
+Supabase         Connected
+Preview          Ready
+Production       Blocked — domain verification
+Recovery         Ready
+Ownership        Proven
+~~~
+
+Every category is explicitly REQUIRED, NOT_APPLICABLE, BLOCKED, IN_PROGRESS, READY, PROVEN, or STALE.
+
+The UI must never mark the whole product Done because the preview looks good while an applicable backend/security/ownership/recovery category is unresolved.
