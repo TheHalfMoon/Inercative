@@ -148,7 +148,22 @@ Define product-level semantics for:
 
 Dataset semantics carry provenance, privacy class, transformation lineage, environment, and verification requirements.
 
-**Exit:** representative product intents and supplied business data become inspectable graph/data revisions with bounded unresolved decisions.
+### P02-S08 Product completeness semantics
+Define a ProductCompletenessManifest with explicit categories for:
+- product semantics;
+- data/datasets;
+- frontend/design;
+- backend/auth/storage/integrations;
+- i18n/accessibility/security;
+- source/Git;
+- environments/deployment/domain;
+- operations/release/recovery;
+- documentation;
+- ownership/portability.
+
+Each category is REQUIRED / NOT_APPLICABLE(reason) / BLOCKED(blocker) / IN_PROGRESS / READY / PROVEN / STALE.
+
+**Exit:** representative product intents and supplied business data become inspectable graph/data revisions with bounded unresolved decisions, and no applicable product-completeness category can disappear through model omission.
 
 ## P03 — Harness kernel and intelligence routing
 
@@ -657,6 +672,20 @@ Build from one product prompt:
 
 **Goal:** let users own and ship the result.
 
+### P11-S00 Platform lifecycle substrate
+Implement the provider-neutral platform layer before provider-specific happy paths:
+- ProviderAdapter contract;
+- Connection lifecycle;
+- ResourceBinding;
+- EnvironmentManifest;
+- OwnershipManifest;
+- durable ProvisioningSaga;
+- provider capability discovery/preflight;
+- ExternalBlocker manifest;
+- reconciliation/idempotency rules;
+- detach vs delete semantics;
+- provider state sync/revocation handling.
+
 ### P11-S01 GitHub integration
 - create/connect repository;
 - branch/commit/push;
@@ -679,7 +708,12 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 
 ### P11-S04 Domains/environment/secrets
 - environment-specific settings;
+- versioned SecretRef/SecretBinding lifecycle;
+- secret validation/rotation/revocation;
 - custom domains;
+- DNS required-record plan;
+- propagation/verification/certificate states;
+- manual DNS fallback where automation is unavailable;
 - deploy smoke tests;
 - rollback/recovery model.
 
@@ -722,7 +756,13 @@ Maintain last-known-good identity. Promotion requires joint app/backend compatib
 - last-known-good recovery drill.
 
 ### P11-S09 Connected Ownership Orchestrator
-Provide one coherent user-owned infrastructure flow:
+Provide one coherent user-owned infrastructure flow.
+
+Before mutation, every provider runs preflight for permissions, ownership, plan/feature availability, billing, quota, region/residency, naming conflicts, and relevant organization/repository policy.
+
+Provider limitations become typed ExternalBlockers rather than generic failures.
+
+#### GitHub
 
 #### GitHub
 - install/authorize least-privilege GitHub App;
@@ -738,10 +778,13 @@ Provide one coherent user-owned infrastructure flow:
 - reconcile drift before mutation.
 
 #### Combined
-- bind project/repository/backend identities;
+- bind project/repository/backend/deployment/environment identities;
+- maintain OwnershipManifest;
 - never require users to copy long-lived PATs/secrets through chat;
 - manual fallback only where provider API, plan, or organization policy requires it;
-- revocation/deauthorization is observable and safe.
+- revocation/deauthorization is observable and safe;
+- reconnect starts with discovery/reconciliation instead of creating duplicates;
+- detach never implies delete.
 
 ### P11-S10 A-to-Z Product Factory benchmark
 Prove **B17 — Idea to owned production product**:
@@ -752,9 +795,22 @@ Prove **B17 — Idea to owned production product**:
 - connect/create user-owned GitHub and Supabase through qualified authorization;
 - preview, qualify, promote, observe, recover;
 - perform one post-launch feature change;
+- satisfy the ProductCompletenessManifest;
+- generate minimal run/ownership/recovery documentation from real configuration;
 - no manual developer coding in the golden path.
 
-**Exit:** a user can move from idea/data to a tested, GitHub-owned, Supabase-connected, deployed and observable product through one coherent Ineractive workflow, with explicit external-account approval steps but no hidden developer handoff.
+### P11-S11 A-to-exit / reconnect benchmark
+Prove provider independence:
+- connect user-owned GitHub/Supabase/deployment resources;
+- build and ship through Ineractive;
+- export all required source/config/runbook state;
+- revoke Ineractive provider management access;
+- verify expected product runtime remains operational;
+- verify direct provider ownership remains intact;
+- reconnect and reconcile the same resources without duplication;
+- prove detach is not delete.
+
+**Exit:** a user can move from idea/data to a tested, GitHub-owned, Supabase-connected, deployed and observable product through one coherent Ineractive workflow, then leave/reconnect without losing ownership or creating duplicate infrastructure.
 
 ## P12 — Collaboration and durable project intelligence
 
