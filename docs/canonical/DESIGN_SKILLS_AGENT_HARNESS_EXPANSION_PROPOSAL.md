@@ -1028,7 +1028,7 @@ The candidate canonical plan now explicitly adds:
 
 ## 13.1 Candidate dependency graph
 
-The proposed task index now contains **135 stable task handles**.
+The proposed task index now contains **157 stable task handles**.
 
 The update preserves all existing task IDs and P00 authority. New work is additive.
 
@@ -1070,7 +1070,29 @@ The plan still intentionally defers broad implementation of:
 - broad payment/financial automation without independent qualification;
 - a second backend compiler target.
 
-## 13.4 Candidate readiness statement
+## 13.4 A-to-Z lifecycle hardening
+
+The subsequent end-to-end hardening adds:
+
+- first-class Dataset/Data Workspace and deterministic seed/synthetic data;
+- ProductCompletenessManifest;
+- provider-neutral Platform Lifecycle layer;
+- ProviderAdapter, Connection, ResourceBinding, EnvironmentManifest, OwnershipManifest, ProvisioningSaga, and ExternalBlocker contracts;
+- staged/chunked/resumable data import and masked-nonproduction policy;
+- least-privilege GitHub installation/authorization lifecycle;
+- user-owned Supabase connect/create/reconcile lifecycle;
+- provider preflight for permission/plan/billing/quota/region/policy blockers;
+- secret rotation/revocation and DNS/certificate lifecycle;
+- Connected Ownership Orchestrator;
+- B17 idea+spreadsheet→owned-production→post-launch-change benchmark;
+- A-to-exit revoke/reconnect benchmark.
+
+The associated canonical contracts are:
+
+- `docs/canonical/END_TO_END_PRODUCT_FACTORY.md`
+- `docs/canonical/PLATFORM_LIFECYCLE_AND_OWNERSHIP.md`
+
+## 13.5 Candidate readiness statement
 
 After integration of the red-team gaps into the roadmap, Product Graph, capability matrix, harness/runtime/quality contracts, generated-product contract, source ledger, and dependency graph:
 
