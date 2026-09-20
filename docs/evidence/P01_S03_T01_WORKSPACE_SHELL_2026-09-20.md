@@ -3,7 +3,7 @@
 **Task:** IN-P01-S03-T01  
 **SpecGrain:** SG-000012  
 **Date:** 2026-09-20  
-**Canonical baseline:** `6dd721f355511d7ffaf7cf2619b07ec8c5f6290d`
+**Canonical baseline:** `9ec10a179ee93e0e4279d806ecb48922e66f06ec`
 
 ## Candidate scope
 
@@ -75,3 +75,13 @@ GitHub Actions run: `35530591053`
 
 This qualification is branch evidence. Final acceptance still requires exact-head Ubuntu
 and Windows repository CI after the one-shot workflow is removed.
+
+
+## Build-artifact hygiene
+
+The successful one-shot qualification initially staged the package directory recursively,
+which accidentally included `.next` build output. Those generated artifacts are removed
+from the candidate history before PR acceptance, and
+`packages/control-plane/.gitignore` now excludes `.next/`.
+
+No build artifact is part of the intended source diff.
