@@ -1,0 +1,108 @@
+name: P01 SpecGrain one-shot accessible UI system
+
+on:
+  push:
+    branches:
+      - p01/s04-accessible-ui-system
+    paths:
+      - .github/workflows/p01-specgrain-ui-system.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: db3e93ec6a2d8b3544791b5fd0aa5e134faeb2dd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+      - name: Draft SG-000013
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft .             --title "IN-P01-S04-T01 Build first accessible tokenized UI system"             --outcome "The Ineractive control-plane shell uses a coherent first-party token system, typography hierarchy, accessible native-first primitives, responsive layout, and first recognizable brand language without introducing an unnecessary component dependency stack."             --rationale "Canonical P01-S04-T01 frontier after SG-000012 workspace shell completion."             --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000013"
+      - name: Shape SG-000013
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000013 .             --scope-in "Define source-owned semantic design tokens for color, typography, spacing, radius, border, focus, elevation, and layout."             --scope-in "Apply a deliberate first Ineractive brand language to the existing control-plane shell without copying a third-party identity."             --scope-in "Add native-first accessible Button, TextField, Badge, and visually-hidden/focus treatment conventions only where they reduce repeated shell markup."             --scope-in "Make the workspace shell responsive across desktop, tablet, and narrow mobile widths without hiding core session-only truth or activity."             --scope-in "Add visible focus states, minimum touch-target policy, reduced-motion behavior, semantic labels/status, and high-contrast-safe token relationships."             --scope-in "Add deterministic token/UI contract tests and re-run production standalone build/smoke."             --scope-out "No Base UI, React Aria, Radix, shadcn registry, Tailwind, Storybook, animation library, or external component dependency until its dedicated qualification/admission task."             --scope-out "No Supabase/auth/persistence; that remains IN-P01-S05-T01."             --scope-out "No visual editor, generated-product design compiler, registry, or P08 Design OS implementation."             --scope-out "No claim of complete WCAG conformance from static checks alone."             --acceptance "The shell has a documented source-owned token contract and no raw recurring brand colors/spacings are required for ordinary shell states."             --acceptance "Interactive native controls expose labels, keyboard focus visibility, disabled/invalid-capable styling conventions, and at least 44px primary touch targets."             --acceptance "The shell reflows without a fixed minimum desktop width at representative wide, tablet, and narrow viewport CSS breakpoints."             --acceptance "Reduced-motion preference disables non-essential transitions and no motion is required to understand state."             --acceptance "The first brand language is visibly distinct but remains legible in dark and light color schemes."             --acceptance "Focused UI contract tests, production standalone build/smoke, and exact-head Ubuntu/Windows repository CI pass."             --dependency SG-000012             --risk-level medium             --recovery "Revert SG-000013 token/primitives/responsive/brand changes and evidence; no data or external side effect is introduced."             --context-budget 12000             --context-estimate 7000             --change-surface "packages/control-plane/**"             --change-surface "docs/canonical/**"             --change-surface "docs/evidence/**"             --change-surface "specs/CURRENT.md"             --evidence "Focused token/accessibility/responsive-source contract tests."             --evidence "Production standalone build and HTTP smoke after UI-system changes."             --evidence "Exact-head Ubuntu and Windows repository CI."             --minimality-choice new-code             --minimality-rationale "Use CSS custom properties and native semantic controls before qualifying any external primitive/component dependency."             --safety-status requirements-defined             --safety-requirement "Do not represent automated/static checks as complete accessibility certification."             --safety-requirement "Do not hide the session-only non-persistence boundary at any responsive size."             --json | tee /tmp/shape.json
+      - name: Refine and promote
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000013 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check1.json
+          specgrain grain SG-000013 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check2.json
+          specgrain next . --json | tee /tmp/next.json
+      - name: Assert lifecycle boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          data=json.load(open("/tmp/next.json",encoding="utf-8"))
+          candidate=next(x for x in data["candidates"] if x["node_id"]=="SG-000013")
+          if candidate["waiting_on"] != ["SG-000012"]:
+              raise SystemExit("unexpected waiting_on="+repr(candidate["waiting_on"]))
+          PY
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          def load(n): return json.loads(Path("/tmp/"+n).read_text())
+          shape=load("shape.json"); grain=load("grain.json"); check=load("check2.json"); nxt=load("next.json")
+          candidate=next(x for x in nxt["candidates"] if x["node_id"]=="SG-000013")
+          lines=[
+            "# P01-S04-T01 — SpecGrain Shaping Evidence","",
+            "Task: IN-P01-S04-T01","SpecGrain: SG-000013","Date: 2026-09-20",
+            "Canonical baseline: "+os.environ["BASELINE_SHA"],
+            "SpecGrain source: TheHalfMoon/SpecGrain@"+os.environ["SPECGRAIN_SHA"],
+            "GitHub Actions run: "+os.environ["GITHUB_RUN_ID"],"",
+            "## Tool execution","",
+            "- shaped revision: "+shape["revision_digest"],
+            "- grain state: "+grain["state"],
+            "- final revision: "+grain["revision_digest"],
+            "- project check valid: "+str(check["valid"]).lower(),
+            "- next waiting_on: "+",".join(candidate["waiting_on"]),"",
+            "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.",
+            "Repository delivery truth records SG-000012 complete through PR #19; the waiting_on value reflects the known CLI lifecycle transition gap.",""
+          ]
+          Path("docs/evidence/P01_S04_T01_SPECGRAIN_SHAPING_2026-09-20.md").write_text("\n".join(lines),encoding="utf-8")
+          PY
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          expected={".specgrain/specs/SG-000013.json","docs/evidence/P01_S04_T01_SPECGRAIN_SHAPING_2026-09-20.md"}
+          out=subprocess.check_output(["git","status","--porcelain=v1"],text=True)
+          changed={line[3:] for line in out.splitlines() if line}
+          if changed != expected: raise SystemExit("changed="+repr(sorted(changed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000013.json docs/evidence/P01_S04_T01_SPECGRAIN_SHAPING_2026-09-20.md
+          git commit -m "chore(p01): shape accessible UI system grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
