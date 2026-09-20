@@ -1,0 +1,46 @@
+name: P01 one-shot Prettier control-plane store
+
+on:
+  push:
+    branches:
+      - p01/s05-t01-control-plane-store
+    paths:
+      - .github/workflows/p01-prettier-control-plane-store.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format exact files
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write             packages/control-plane/src/control-plane-store.test.ts             packages/control-plane/src/control-plane-store.ts
+          pnpm exec prettier --check             packages/control-plane/src/control-plane-store.test.ts             packages/control-plane/src/control-plane-store.ts
+          git diff --check
+      - name: Commit format-only repair and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/p01-prettier-control-plane-store.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/control-plane/src/control-plane-store.test.ts             packages/control-plane/src/control-plane-store.ts
+          git commit -m "style(p01): format control-plane store"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
