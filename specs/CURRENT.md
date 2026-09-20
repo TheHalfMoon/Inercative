@@ -1,7 +1,7 @@
 # Ineractive Current Frontier
 
 **Date:** 2026-09-20  
-**Status:** P00_COMPLETE / P01_READY  
+**Status:** P01_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 
@@ -45,7 +45,7 @@ tracks only the live (not-yet-complete) frontier.
 
 ## Current canonical frontier
 
-The implementation frontier is **P00 — Repository and delivery foundation**.
+P00 is canonically complete. The implementation frontier is **P01 — Control plane foundation**.
 
 SpecGrain is initialized (`.specgrain/`, project `ineractive`). Frontier Grains and
 their current delivery state:
@@ -60,6 +60,7 @@ their current delivery state:
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 | SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | DONE (PR #12) | `docs/evidence/P00_S04_T03_PROVENANCE_ADMISSION_2026-09-20.md` |
 | SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | DONE (PR #13) | `docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md` |
+| SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | READY FOR GUARDED MERGE / RECONCILIATION-HEAD CI REQUIRED | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -115,9 +116,13 @@ Completed P00 delivery:
 
 Current eligible frontier:
 
-1. **IN-P01-S01-T01 — Qualify control-plane framework.**
-2. P01 implementation remains unauthorized until that task is shaped into a new Grain and
-   its bounded evidence requirements are established.
+1. **SG-000009 / IN-P01-S01-T01 — Qualify control-plane framework.** Real SpecGrain
+   shaping and runtime qualification are complete. CI #106 passed on exact candidate
+   `352bf32233c42d1d7e91c5f1616b57d34a1ac0ad` on Ubuntu and Windows. ADR-0002 is
+   accepted for guarded merge. This acceptance-reconciliation head must itself pass
+   exact-head Ubuntu + Windows CI before merge.
+2. IN-P01-S02-T01 remains blocked until SG-000009 is canonically merged and fresh-main
+   evidence is reconciled.
 
 ## Hard constraints
 

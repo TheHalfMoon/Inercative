@@ -1,0 +1,82 @@
+# P01-S01-T01 — Control-Plane Framework Qualification Evidence
+
+**Task:** IN-P01-S01-T01
+**SpecGrain:** SG-000009
+**Date:** 2026-09-20
+**Qualification run:** 35524783752
+**Tested branch head before evidence commit:** 51db01f1cb7c32f75de6b47d5041af415c72fd5a
+
+## Exact runtime and fixture
+
+- Node: v24.20.0
+- pnpm: 12.4.2
+- Next.js: Next.js v16.3.5
+- React: 19.3.0
+- React DOM: 19.3.0
+- fixture content digest: 6f59c77b25714112287f0b0a1a5c1a18d8abe72b4a09e275eb713d3a11889efe
+- fixture lockfile SHA-256: a0c818807929afd9e5fcbb3e8cf02dde6ad995b1f3d46f0fd41ee9f487b3f56d
+
+## Executed evidence
+
+- isolated dependency resolution: PASS
+- frozen fixture install: PASS
+- production Next.js build: PASS
+- generated standalone Node server: PASS
+- HTTP smoke against standalone server: PASS
+- expected marker INERACTIVE_CONTROL_PLANE_FRAMEWORK_QUALIFIED: OBSERVED
+
+## Scope boundary
+
+The fixture is qualification-only. It creates no production/provider resource and
+is not the P01-S03 project/workspace shell.
+
+The fixture source and lockfile tested in this run are committed by the same
+one-shot job. Final SG-000009 acceptance still requires exact-head repository CI
+on Ubuntu and Windows after this temporary workflow is removed.
+
+
+## Qualification attempt history
+
+Earlier attempts are preserved rather than re-run to green:
+
+- run `35524354849`: Next.js 16.3.5 build and HTTP smoke succeeded on a duplicate fixture, but evidence integration failed; that duplicate path was removed.
+- run `35524555076`: consolidated fixture build succeeded; standalone smoke exposed a monorepo tracing-root assumption and failed.
+- run `35524668994`: after explicit tracing-root repair, build + standalone HTTP smoke + evidence generation succeeded; final commit validation failed only on Markdown trailing whitespace.
+- run `35524783752`: exact consolidated fixture qualification and evidence integration succeeded end to end.
+
+Only run `35524783752` is the successful qualification execution record. Final repository acceptance still requires exact-head Ubuntu and Windows CI.
+
+
+## Repository CI repair history
+
+- run `35524931952` on candidate `33566d3103e72d4424acab49f56ccad98e0881bb`:
+  frozen install and format passed; Ubuntu lint failed because the isolated qualification
+  fixture's `.mjs` files were not attached to a TypeScript project-service configuration.
+  No lint rule is bypassed. A fixture-local `tsconfig.json` now explicitly includes the
+  qualification JavaScript/JSX/MJS files so typed ESLint can inspect them.
+
+
+- run `35524998872` on candidate `855970750b560059f1349acc1f66f26a5aedbf87`:
+  frozen install passed; format failed only because the newly added fixture-local
+  `tsconfig.json` had not yet been normalized by the repository Prettier rules. The
+  file is now formatted without changing its typed-lint semantics.
+
+
+## Exact-head repository acceptance
+
+Candidate:
+
+`352bf32233c42d1d7e91c5f1616b57d34a1ac0ad`
+
+GitHub Actions CI #106 / run `35525051741`:
+
+- Ubuntu frozen install: PASS;
+- Ubuntu format/lint/typecheck/tests: PASS;
+- Windows frozen install: PASS;
+- Windows format/lint/typecheck/tests: PASS;
+- exact candidate head recorded: PASS.
+
+This proves the repository acceptance condition for the pre-reconciliation candidate.
+The acceptance-status reconciliation changes the head and therefore requires one final
+fresh exact-head CI before guarded merge. No framework fixture behavior changes in that
+reconciliation commit.
