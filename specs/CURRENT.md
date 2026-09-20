@@ -62,7 +62,8 @@ their current delivery state:
 | SG-000008 | IN-P00-S05-T02 | OCR review evidence/file-accounting contract | DONE (PR #13) | `docs/evidence/P00_S05_T02_OCR_EVIDENCE_CONTRACT_2026-09-20.md` |
 | SG-000009 | IN-P01-S01-T01 | Qualify control-plane framework | DONE (PR #15) | `docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md` |
 | SG-000010 | IN-P01-S02-T01 | Protocol identity/revision primitives | DONE (PR #17) | `docs/evidence/P01_S02_T01_PROTOCOL_IDENTITY_REVISION_2026-09-20.md` |
-| SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S02_T02_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | DONE (PR #18) | `docs/evidence/P01_S02_T02_RUN_EVENT_EVIDENCE_FINDING_2026-09-20.md` |
+| SG-000012 | IN-P01-S03-T01 | Project/workspace shell | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S03_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -125,12 +126,17 @@ SG-000010 / IN-P01-S02-T01 is canonically complete through PR #17. Final head
 `544b4c090978124dcee89d329c69611277537c57` passed exact-head CI #116; fresh-main
 CI #117 passed on merge commit `1a43dd45ba5dff43e6beee2b111b0dedcd210f9b`.
 
+SG-000011 / IN-P01-S02-T02 is canonically complete through PR #18. Final candidate
+`0f024611e80fee64f9f1e19ea2cb3ac8c2a0ea53` was merged as
+`9ec10a179ee93e0e4279d806ecb48922e66f06ec`; fresh-main CI #122 passed.
+
 Current eligible frontier:
 
-1. **SG-000011 / IN-P01-S02-T02 — Implement run/event/evidence/finding schemas.**
+1. **SG-000012 / IN-P01-S03-T01 — Build project/workspace shell.**
    Real SpecGrain shaping is complete; bounded implementation is active on the candidate
    branch.
-2. IN-P01-S03-T01 remains blocked until SG-000011 is canonically completed.
+2. IN-P01-S04-T01 and IN-P01-S05-T01 remain blocked until SG-000012 is canonically
+   completed.
 
 ## Hard constraints
 

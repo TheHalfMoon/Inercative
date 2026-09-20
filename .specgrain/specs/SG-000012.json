@@ -1,0 +1,77 @@
+{
+  "acceptance": [
+    "The shell renders a project list and can create, select, and open a session-only project without implying durable persistence.",
+    "The workspace exposes a primary layout, activity/event panel, explicit preview placeholder, and command/change-intent entry.",
+    "Shell activity uses canonical protocol EventRecord validation and does not introduce parallel run/event identifiers.",
+    "Command entry records intent/activity only and makes no generation, execution, save, or deployment claim.",
+    "A production Next.js standalone build succeeds and an HTTP smoke observes the expected shell marker.",
+    "Focused shell-state tests plus exact-head Ubuntu/Windows repository CI pass."
+  ],
+  "change_surface": [
+    "packages/control-plane/**",
+    "pnpm-lock.yaml",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 14000,
+    "estimated_tokens": 8000
+  },
+  "dependencies": [
+    "SG-000011"
+  ],
+  "evidence": {
+    "required": [
+      "Focused shell-state/project/activity tests including non-persistence and no-fake-generation fixtures.",
+      "Production Next.js standalone build plus real HTTP shell-marker smoke.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000012",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Create one qualified control-plane package and reuse existing protocol contracts; defer persistence and full design-system work to their dependency-ordered Grains."
+      },
+      "safety": {
+        "requirements": [
+          "Session-only state must be labeled as non-persistent in the user surface and evidence.",
+          "The command entry must not simulate model execution, code generation, file writes, deployment, or acceptance.",
+          "No provider-specific deployment or Vercel-only API may become required."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The qualified Next.js control plane exposes a truthful session-only project/workspace shell with project list/create/open, workspace layout, activity/events, preview placeholder, and bounded change-intent entry.",
+  "parent_id": null,
+  "rationale": "Canonical P01-S03-T01 frontier after SG-000011 completion.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000012, the control-plane shell package, workspace lockfile changes, docs, and evidence; no persistent backend or external side effect is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Create the real Ineractive control-plane Next.js App Router package using the canonically qualified Next.js 16.3.5 / React 19.3.0 baseline.",
+    "Implement project list plus session-only create/open project behavior with an explicit non-persistence boundary.",
+    "Implement the primary workspace layout with project navigation, workspace header, central preview placeholder, and activity/event panel.",
+    "Implement a command/change-intent entry that records local shell activity without claiming model execution or source mutation.",
+    "Reuse the public SG-000010/SG-000011 protocol identities and Event records for shell activity rather than inventing parallel run/event types.",
+    "Provide deterministic shell-state tests and a real production Next.js build/smoke path."
+  ],
+  "scope_out": [
+    "No Supabase persistence, auth, user/project membership, or generated-application data plane; those remain IN-P01-S05-T01.",
+    "No final tokenized brand/design system; that remains IN-P01-S04-T01.",
+    "No Product Graph, model call, code generation, filesystem mutation, runtime capability grant, or deployment.",
+    "No Vercel-only runtime requirement."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S03-T01 Build project workspace shell"
+}
