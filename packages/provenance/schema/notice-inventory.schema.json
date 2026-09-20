@@ -57,10 +57,7 @@
           "licenseExpression": { "type": "string", "minLength": 1 },
           "noticeRequired": { "type": "boolean" },
           "noticeReference": {
-            "oneOf": [
-              { "type": "string", "minLength": 1 },
-              { "type": "null" }
-            ]
+            "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
           }
         }
       }

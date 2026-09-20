@@ -141,7 +141,6 @@ describe("validateDonorImportRecord", () => {
   });
 });
 
-
 function secondRecord(): DonorImportRecord {
   return {
     ...structuredClone(VALID_RECORD),

@@ -484,7 +484,6 @@ export function validateDonorImportRecord(input: unknown): ImportRecordValidatio
   };
 }
 
-
 export const NOTICE_INVENTORY_SCHEMA_VERSION = 1 as const;
 
 export interface NoticeInventoryEntry {
@@ -507,10 +506,7 @@ export interface NoticeInventory {
 }
 
 export type ImportAdmissionIssueCode =
-  | "EXPECTED_ARRAY"
-  | "RECORD_INVALID"
-  | "DEPENDENCY_CLOSURE_INCOMPLETE"
-  | "DESTINATION_COLLISION";
+  "EXPECTED_ARRAY" | "RECORD_INVALID" | "DEPENDENCY_CLOSURE_INCOMPLETE" | "DESTINATION_COLLISION";
 
 export interface ImportAdmissionIssue {
   readonly code: ImportAdmissionIssueCode;
@@ -637,8 +633,7 @@ export function validateImportAdmission(input: unknown): ImportAdmissionResult {
     const validation = validateDonorImportRecord(candidate);
     if (!validation.ok) {
       for (const validationIssue of validation.issues) {
-        const suffix =
-          validationIssue.path === "$" ? "" : validationIssue.path.slice(1);
+        const suffix = validationIssue.path === "$" ? "" : validationIssue.path.slice(1);
         admissionIssue(
           issues,
           "RECORD_INVALID",
