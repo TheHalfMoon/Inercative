@@ -1,0 +1,71 @@
+name: P01 one-shot workspace shell preflight
+
+on:
+  push:
+    branches: [p01/s03-t01-workspace-shell]
+    paths: [.github/workflows/p01-workspace-shell-preflight.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Resolve workspace lockfile
+        run: pnpm install --lockfile-only
+      - name: Install from resolved lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Format candidate
+        run: |
+          pnpm exec prettier --write             package.json             pnpm-workspace.yaml             apps/control-plane
+          pnpm exec prettier --check             package.json             pnpm-workspace.yaml             apps/control-plane
+          git diff --check
+      - name: Lint
+        run: pnpm run lint
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Test and production build
+        run: pnpm run test
+      - name: Verify exact framework pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const manifest = require("./apps/control-plane/package.json");
+          const expected = {
+            next: "16.3.5",
+            react: "19.3.0",
+            "react-dom": "19.3.0",
+          };
+          for (const [name, version] of Object.entries(expected)) {
+            if (manifest.dependencies[name] !== version) {
+              throw new Error(name + " must remain pinned to " + version);
+            }
+          }
+          if (manifest.dependencies["@ineractive/protocol"] !== "workspace:*") {
+            throw new Error("@ineractive/protocol must remain a workspace dependency");
+          }
+          NODE
+      - name: Commit prepared candidate and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/p01-workspace-shell-preflight.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json pnpm-workspace.yaml pnpm-lock.yaml apps/control-plane
+          git commit -m "chore(p01): prepare workspace shell candidate"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
