@@ -1028,7 +1028,7 @@ The candidate canonical plan now explicitly adds:
 
 ## 13.1 Candidate dependency graph
 
-The proposed task index now contains **157 stable task handles**.
+The proposed task index now contains **169 stable task handles**.
 
 The update preserves all existing task IDs and P00 authority. New work is additive.
 
@@ -1092,7 +1092,34 @@ The associated canonical contracts are:
 - `docs/canonical/END_TO_END_PRODUCT_FACTORY.md`
 - `docs/canonical/PLATFORM_LIFECYCLE_AND_OWNERSHIP.md`
 
-## 13.5 Candidate readiness statement
+## 13.5 Frontend and design tooling hardening
+
+A subsequent tooling research pass adds a coherent Frontend Quality OS rather than a dependency bundle:
+
+- FrontendQualityProfile;
+- security-supported Next.js/React/Tailwind qualification at implementation time;
+- one primary primitive-base identity;
+- Base UI candidate default for new generated products;
+- React Aria qualified alternate;
+- Radix preservation for compatible existing/imported products;
+- provider-neutral ComponentRegistryAdapter;
+- ComponentResolver with reuse-before-synthesis;
+- Ineractive Qualified Registry;
+- RegistryAdmissionGate;
+- versioned Impeccable, Vercel Web Interface Guidelines, and Vercel React Best Practices rule packs;
+- React Doctor deterministic quality adapter;
+- Storybook component workbench/MCP;
+- Next.js DevTools MCP diagnostic adapter;
+- Playwright/axe/component-state evidence;
+- optional Motion/TanStack Query/TanStack Table/i18n dependencies only when requirements justify them;
+- exact-source FrontendEvidenceBundle.
+
+The detailed contracts/research are:
+
+- docs/canonical/FRONTEND_DESIGN_TOOLCHAIN.md
+- docs/research/DESIGN_NEXTJS_TOOLING_2026-09-20.md
+
+## 13.6 Candidate readiness statement
 
 After integration of the red-team gaps into the roadmap, Product Graph, capability matrix, harness/runtime/quality contracts, generated-product contract, source ledger, and dependency graph:
 
