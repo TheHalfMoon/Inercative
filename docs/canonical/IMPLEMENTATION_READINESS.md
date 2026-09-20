@@ -1,14 +1,14 @@
 # Ineractive Implementation Readiness Audit
 
 **Date:** 2026-09-20  
-**Scope:** current P00 truth + candidate post-P00 planning readiness; not product/runtime qualification  
-**Branch:** `research/design-agent-harness-2026-09-20`
+**Scope:** current P00 truth + canonically accepted post-P00 planning readiness; not product/runtime qualification  
+**Branch:** `main`
 
 ## 1. Decision
 
 P00 is already in progress on canonical `main`.
 
-This branch is a **candidate post-P00 planning expansion** and does not alter the live P00 execution frontier until accepted through canonical governance.
+PR #6 is merged into canonical `main`. The expanded post-P00 plan is now canonical planning direction, while the live execution frontier remains P00.
 
 The expanded plan is structurally ready for later rolling-wave SpecGrain shaping once its dependencies become eligible.
 
@@ -22,7 +22,7 @@ The expanded plan is structurally ready for later rolling-wave SpecGrain shaping
 - the first implementation frontier has acceptance/evidence guidance;
 - no implementation claim is being fabricated.
 
-It does **not** mean P01-P15 are already Grains, that Draft PR #6 is merged, or that the product is built.
+It does **not** mean P01-P15 are already Grains or that the product is built.
 
 ## 2. What is frozen enough to build
 
@@ -179,18 +179,18 @@ Mitigation:
 
 The live execution frontier remains P00 and is governed by canonical `main`, `specs/CURRENT.md`, active SpecGrain state, and real evidence.
 
-This candidate branch must not be used to skip the remaining P00 founder/credential/review gates.
+Canonical PR #6 planning must not be used to skip the remaining P00 founder/credential/review gates.
 
 P01 may not begin until:
 
 - P00 exit evidence satisfies canonical governance;
-- the applicable post-P00 planning changes are canonically accepted;
+- the applicable post-P00 planning changes are canonically accepted (PR #6 satisfies this planning condition);
 - fresh main is reverified;
 - SpecGrain makes the next dependency-eligible unit executable.
 
-## 7. Candidate graph validation
+## 7. Canonical graph validation
 
-The candidate task index contains **176 stable task handles**.
+The canonical task index contains **176 stable task handles**.
 
 Structural validation after the A-to-Z + frontend/tooling + final coverage hardening pass:
 
@@ -214,11 +214,11 @@ See `docs/research/FINAL_PLAN_COVERAGE_AUDIT_2026-09-20.md`.
 
 **CURRENT_EXECUTION_FRONTIER = P00_IN_PROGRESS**
 
-**CANDIDATE_POST_P00_PLAN_STRUCTURALLY_READY = YES**
+**CANONICAL_POST_P00_PLAN_STRUCTURALLY_READY = YES**
 
 **KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_FINAL_COVERAGE_RED_TEAM**
 
-**PR6_MERGED = NO**
+**PR6_MERGED = YES**
 
 **PRODUCT_IMPLEMENTED = NO**
 
