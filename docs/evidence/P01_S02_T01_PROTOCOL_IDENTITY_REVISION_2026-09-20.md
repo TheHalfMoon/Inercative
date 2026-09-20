@@ -12,7 +12,8 @@ The public `@ineractive/protocol` API gains only:
 - canonical opaque logical identity formatting/parsing;
 - immutable full Git revision formatting/parsing;
 - immutable SHA-256 revision formatting/parsing;
-- typed logical-identity + exact-revision binding.
+- typed logical-identity + exact-revision binding;
+- machine-readable JSON Schema with focused runtime/schema parity tests.
 
 No later P01 protocol domain is introduced.
 

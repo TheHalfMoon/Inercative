@@ -94,3 +94,20 @@ Those remain dependency-ordered work.
 `@ineractive/protocol` remains dependency-free at runtime. The public export surface
 contains only the identity/revision helpers earned by SG-000010; the P00-specific OCR
 evidence validator remains private and is not exported from the package root.
+
+
+## 7. Machine-readable schema
+
+The canonical structured binding schema is:
+
+`packages/protocol/schema/identity-revision.schema.json`
+
+It mirrors the runtime contract:
+
+- open, grammar-bounded lowercase identity kinds;
+- canonical RFC UUID text;
+- full 40/64-hex Git object revisions;
+- 64-hex SHA-256 content revisions;
+- strict identity/revision binding objects with no unknown fields.
+
+The schema is tested against the runtime formats without adding a runtime validation dependency.

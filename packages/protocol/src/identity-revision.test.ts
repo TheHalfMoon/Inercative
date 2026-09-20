@@ -158,3 +158,38 @@ describe("@ineractive/protocol package boundary", () => {
     );
   });
 });
+
+
+describe("machine-readable identity/revision schema", () => {
+  it("matches the canonical runtime formats", async () => {
+    const rawSchema = await readFile(
+      new URL("../schema/identity-revision.schema.json", import.meta.url),
+      "utf8",
+    );
+    const schema = JSON.parse(rawSchema) as {
+      $defs: {
+        logicalIdentity: { pattern: string };
+        gitRevision: { pattern: string };
+        sha256Revision: { pattern: string };
+        revisionBinding: {
+          additionalProperties: boolean;
+          required: string[];
+        };
+      };
+    };
+
+    const identityPattern = new RegExp(schema.$defs.logicalIdentity.pattern, "u");
+    const gitPattern = new RegExp(schema.$defs.gitRevision.pattern, "u");
+    const sha256Pattern = new RegExp(schema.$defs.sha256Revision.pattern, "u");
+
+    expect(identityPattern.test(`ineractive:project:${PROJECT_UUID}`)).toBe(true);
+    expect(identityPattern.test(`ineractive:Project:${PROJECT_UUID}`)).toBe(false);
+    expect(gitPattern.test(`git:${GIT_SHA1}`)).toBe(true);
+    expect(gitPattern.test(`git:${GIT_SHA256}`)).toBe(true);
+    expect(gitPattern.test("git:main")).toBe(false);
+    expect(sha256Pattern.test(`sha256:${CONTENT_SHA256}`)).toBe(true);
+    expect(sha256Pattern.test(`sha256:${GIT_SHA1}`)).toBe(false);
+    expect(schema.$defs.revisionBinding.additionalProperties).toBe(false);
+    expect(schema.$defs.revisionBinding.required).toEqual(["identity", "revision"]);
+  });
+});
