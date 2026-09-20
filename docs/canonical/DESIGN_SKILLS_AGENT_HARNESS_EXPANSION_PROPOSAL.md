@@ -1028,7 +1028,7 @@ The candidate canonical plan now explicitly adds:
 
 ## 13.1 Candidate dependency graph
 
-The proposed task index now contains **169 stable task handles**.
+The proposed task index now contains **172 stable task handles**.
 
 The update preserves all existing task IDs and P00 authority. New work is additive.
 
