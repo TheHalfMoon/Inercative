@@ -35,3 +35,11 @@ For an admitted record set, the candidate produces a stable notice inventory con
 - review evidence governed separately by P00-S05.
 
 No CI or review result is claimed until executed on the final candidate head.
+
+
+## CI repair history
+
+- candidate `4690fd94ba4320dd96e4eeb0d8e97706c7cd5f58`: frozen install passed; Ubuntu failed only at `format:check` for the new notice-inventory schema and provenance TypeScript files;
+- one-shot formatter run `35520663580` used repository-pinned Prettier 3.9.8, verified the three exact files, committed the format-only repair, and removed its temporary workflow from the branch;
+- the bot-authored formatter head produced an `action_required` pull-request run with zero jobs, so it is not acceptance evidence;
+- acceptance requires fresh exact-head Ubuntu and Windows CI after this evidence-only connector commit.
