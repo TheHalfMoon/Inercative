@@ -36,25 +36,25 @@ The missing-form concept can inform:
 
 Do not copy Pentagram client identities. Study the method: one strong strategic idea expressed consistently through typography, layout, motion, product UI, and storytelling.
 
-## 3. Impeccable integration
+## 3. Design Quality OS
 
-Impeccable is a primary design-process donor/reference.
+Impeccable is a primary design-process and deterministic-detector reference, but no single external style guide defines Ineractive design quality.
 
-Adapt:
+The Design Quality OS combines:
 
-- durable product truth;
-- design-system documentation;
-- shape-before-build;
-- critique;
-- technical audit;
-- polish;
-- responsive adaptation;
-- typography/layout/color checks;
-- hardening;
-- live variant iteration;
-- deterministic anti-pattern detectors.
+- Impeccable durable product/design context and deterministic anti-pattern detectors;
+- Vercel Web Interface Guidelines as a versioned interface-quality rule pack;
+- Vercel React Best Practices as a versioned React/Next implementation rule pack;
+- source-owned components selected through ComponentResolver;
+- component-state evidence through Storybook or a qualified equivalent where justified;
+- automated accessibility findings plus keyboard/focus browser journeys;
+- real rendered responsive/browser evidence;
+- independent design critique;
+- user preference for taste.
 
-Ineractive should make these part of the build loop rather than requiring the user to manually invoke dozens of design commands.
+Ineractive should make these part of the build loop rather than requiring the user to manually invoke dozens of commands.
+
+Rule packs create findings. They do not grant PASS and cannot override Product Graph, design truth, capability policy, or exact runtime evidence.
 
 ## 4. First-run experience
 
@@ -263,17 +263,24 @@ Required edits:
 For a changed surface:
 
 ~~~text
-render
- -> deterministic design detectors
- -> accessibility checks
+resolve/reuse qualified component source
+ -> render component/page states
+ -> deterministic Impeccable/interface/React rules
+ -> React quality scan where qualified
+ -> component interaction/accessibility tests
  -> responsive viewport matrix
- -> visual critique
- -> interaction/browser journey
+ -> Playwright browser journey
+ -> axe findings
+ -> visual comparison where useful
+ -> navigation/performance observations
+ -> independent design critique
  -> repair
  -> rerender
 ~~~
 
 Use screenshots and DOM facts as evidence.
+
+Before creating a new reusable component, search the current project, project Product Kit/registry, and Ineractive Qualified Registry first. External registry candidates require admission; generation is the last fallback.
 
 Avoid common generated-design failure patterns unless explicitly chosen:
 
