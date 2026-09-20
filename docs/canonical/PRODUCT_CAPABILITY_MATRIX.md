@@ -39,6 +39,9 @@ The matrix distinguishes:
 | Anchored UI annotations | BETA | P08 |
 | Exploration branches / compare directions | BETA | Product/design/context/source branching |
 | Plan/task visibility while building | BETA | SpecGrain-backed, not a second planning authority |
+| Spreadsheet/data starting point | V1 CORE | Product can begin from business data, not only a prompt |
+| Existing Supabase starting point | BETA | Reconcile backend truth before mutation |
+| Connections/Ship readiness surface | BETA | Product-level provider/blocker/completeness UX |
 
 ## 3. Product semantics
 
@@ -64,6 +67,7 @@ The matrix distinguishes:
 | Design-system revision reference | BETA | Design OS binding |
 | Skill references | BETA | Workflow semantics, not capability grants |
 | Release/promotion semantics | BETA | App/backend compatibility |
+| ProductCompletenessManifest | V1 CORE | Required/NA/blocked/ready/proven/stale categories |
 | Deployment targets | BETA | P11 |
 | Multi-target web/mobile semantics | LATER | P14 |
 
@@ -244,12 +248,23 @@ The matrix distinguishes:
 | First managed production deploy | BETA | P11 |
 | Clean-room portability proof | BETA | Required before portability claim |
 | Custom domains | BETA | |
+| ProviderAdapter lifecycle | BETA | Provider-neutral connect/discover/preflight/create/verify/reconcile/detach |
+| Connection/ResourceBinding state | BETA | Authority and external resource identity are explicit |
+| EnvironmentManifest | BETA | Source/backend/deploy/config/secrets/data/region/release mapping |
+| OwnershipManifest | BETA | Owner/billing/export/transfer/detach/delete semantics |
+| ProvisioningSaga | BETA | Multi-provider partial failure/reconciliation |
+| ExternalBlocker manifest | BETA | Approval/plan/billing/quota/region/policy blockers |
 | Environment secrets | BETA | Brokered |
+| Secret rotation/revocation lifecycle | BETA | Versioned SecretRef/Binding, reverify consumers |
+| Domain/DNS/certificate lifecycle | BETA | Async verification + manual fallback |
 | ReleaseManifest | BETA | Source + backend + config + proof + recovery |
 | Last-known-good promotion | BETA | Candidate cannot silently replace proven release |
 | Generated-app operations baseline | BETA | Health/log/error/release identity |
 | Connected Ownership Orchestrator | BETA | GitHub + Supabase + deployment identity flow |
 | A-to-Z factory benchmark | BETA | Idea/data → owned production product → post-launch change |
+| A-to-exit/reconnect benchmark | BETA | Revoke Ineractive access, preserve ownership/runtime, reconcile same resources |
+| Product completeness gate | BETA | No overall Done while an applicable category is unresolved |
+| Provider lifecycle failure fixtures | BETA | Permission/revocation/rate-limit/partial-create/timeout/plan blockers |
 | Production recovery drill | BETA | App/schema compatibility + backup expectations |
 | Feature flags/staged rollout | LATER | Useful after release model is proven |
 | Multi-cloud arbitrary IaC | LATER | Avoid shallow breadth |
