@@ -39,6 +39,8 @@ Intent
 
 There must be no hidden "now hire a developer to finish the backend" handoff.
 
+Provider/resource lifecycle follows [Platform Lifecycle, Ownership, and Provisioning](PLATFORM_LIFECYCLE_AND_OWNERSHIP.md).
+
 ---
 
 # 2. Ownership principle
@@ -378,6 +380,10 @@ while the underlying system uses branches, commits, WorkPackets, and ReleaseMani
 
 # 7. Product generation completeness contract
 
+The requirements below compile into a deterministic **ProductCompletenessManifest**. Every category must be REQUIRED, NOT_APPLICABLE with reason, BLOCKED with blocker, IN_PROGRESS, READY, PROVEN, or STALE.
+
+The whole product cannot be called ready merely because the main preview renders.
+
 A product is not "built" merely because the main route renders.
 
 For applicable product types, Ineractive should determine whether the following are required and compile them:
@@ -648,7 +654,21 @@ Ineractive should exceed that baseline through:
 
 ---
 
-# 14. End-to-end definition
+# 14. Exit, detach, and reconnect
+
+End-to-end includes leaving Ineractive safely.
+
+A qualified provider path must prove:
+
+1. connect user-owned resource;
+2. build/use it through Ineractive;
+3. export required source/config;
+4. revoke Ineractive access;
+5. verify the product remains operational where expected;
+6. verify direct provider ownership remains intact;
+7. reconnect and reconcile the same resource without duplication.
+
+# 15. End-to-end definition
 
 The canonical product-level definition is:
 
