@@ -1,0 +1,137 @@
+name: P01 one-shot framework qualification
+
+on:
+  push:
+    branches:
+      - p01/s01-t01-control-plane-framework
+    paths:
+      - .github/workflows/p01-framework-qualification.yml
+
+permissions:
+  contents: write
+
+jobs:
+  qualify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      FIXTURE: qualifications/control-plane-framework/nextjs
+      MARKER: INERACTIVE_CONTROL_PLANE_FRAMEWORK_OK
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Generate isolated lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$FIXTURE"
+          pnpm install --lockfile-only
+          pnpm install --frozen-lockfile
+          test "$(node --version | cut -d. -f1)" = "v24"
+          test "$(pnpm --version)" = "12.4.2"
+          test "$(pnpm exec next --version)" = "Next.js v16.3.5"
+          test "$(node -p "require('react/package.json').version")" = "19.3.0"
+          test "$(node -p "require('react-dom/package.json').version")" = "19.3.0"
+
+      - name: Production build
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$FIXTURE"
+          pnpm run build | tee /tmp/framework-build.log
+
+      - name: Self-host HTTP smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$FIXTURE"
+          pnpm run start >/tmp/framework-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error http://127.0.0.1:3209/ >/tmp/framework-response.html; then
+              break
+            fi
+            sleep 1
+          done
+          grep -F "$MARKER" /tmp/framework-response.html
+          kill "$server_pid"
+          wait "$server_pid" || true
+          trap - EXIT
+
+      - name: Record qualification evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node_version="$(node --version)"
+          pnpm_version="$(pnpm --version)"
+          next_version="$(cd "$FIXTURE" && pnpm exec next --version)"
+          react_version="$(cd "$FIXTURE" && node -p "require('react/package.json').version")"
+          react_dom_version="$(cd "$FIXTURE" && node -p "require('react-dom/package.json').version")"
+          tested_head="$(git rev-parse HEAD)"
+          lock_sha="$(sha256sum "$FIXTURE/pnpm-lock.yaml" | awk '{print $1}')"
+          mkdir -p docs/evidence
+          cat > docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md <<EOF
+          # P01-S01-T01 — Control-Plane Framework Qualification Evidence
+
+          **Task:** IN-P01-S01-T01  
+          **SpecGrain:** SG-000009  
+          **Date:** 2026-09-20  
+          **Qualification run:** ${GITHUB_RUN_ID}  
+          **Tested source head:** ${tested_head}
+
+          ## Exact runtime
+
+          - Node: ${node_version}
+          - pnpm: ${pnpm_version}
+          - Next.js: ${next_version}
+          - React: ${react_version}
+          - React DOM: ${react_dom_version}
+          - fixture lockfile SHA-256: ${lock_sha}
+
+          ## Executed evidence
+
+          - isolated dependency resolution: PASS
+          - frozen fixture install: PASS
+          - production `next build`: PASS
+          - Node self-host process: PASS
+          - HTTP request to `127.0.0.1:3209`: PASS
+          - expected marker `${MARKER}`: OBSERVED
+
+          ## Boundary
+
+          This fixture is qualification-only. It creates no production resource and is not
+          the P01-S03 project/workspace shell.
+
+          Final SG-000009 acceptance still requires exact-head repository CI on Ubuntu and
+          Windows after the one-shot workflow is removed.
+          EOF
+
+      - name: Clean build artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$FIXTURE/node_modules" "$FIXTURE/.next"
+
+      - name: Commit lockfile/evidence and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/p01-framework-qualification.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FIXTURE/pnpm-lock.yaml" docs/evidence/P01_S01_T01_FRAMEWORK_QUALIFICATION_2026-09-20.md
+          git diff --cached --check
+          git commit -m "test(p01): prove Next.js framework qualification"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
