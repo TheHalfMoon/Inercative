@@ -71,27 +71,38 @@ jobs:
           node_version="$(node --version)"
           pnpm_version="$(pnpm --version)"
           next_version="$(pnpm --filter @ineractive/control-plane exec next --version)"
-          cat >> docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md <<EOF
+          export NODE_VERSION_CAPTURE="$node_version"
+          export PNPM_VERSION_CAPTURE="$pnpm_version"
+          export NEXT_VERSION_CAPTURE="$next_version"
+          python - <<'PY'
+          import os
+          from pathlib import Path
 
-## Executed qualification
-
-GitHub Actions run: `${GITHUB_RUN_ID}`
-
-- baseline: `${BASELINE_SHA}`
-- Node: `${node_version}`
-- pnpm: `${pnpm_version}`
-- Next.js: `${next_version}`
-- refreshed root workspace lockfile: EXECUTED
-- frozen install from refreshed lockfile: PASS
-- focused shell-state tests: PASS
-- control-plane typecheck: PASS
-- production standalone build: PASS
-- real standalone HTTP smoke: PASS
-- observed marker: `INERACTIVE_WORKSPACE_SHELL_READY`
-
-This qualification is branch evidence. Final acceptance still requires exact-head Ubuntu
-and Windows repository CI after the one-shot workflow is removed.
-EOF
+          path = Path("docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md")
+          block = [
+              "",
+              "## Executed qualification",
+              "",
+              "GitHub Actions run: `" + os.environ["GITHUB_RUN_ID"] + "`",
+              "",
+              "- baseline: `" + os.environ["BASELINE_SHA"] + "`",
+              "- Node: `" + os.environ["NODE_VERSION_CAPTURE"] + "`",
+              "- pnpm: `" + os.environ["PNPM_VERSION_CAPTURE"] + "`",
+              "- Next.js: `" + os.environ["NEXT_VERSION_CAPTURE"] + "`",
+              "- refreshed root workspace lockfile: EXECUTED",
+              "- frozen install from refreshed lockfile: PASS",
+              "- focused shell-state tests: PASS",
+              "- control-plane typecheck: PASS",
+              "- production standalone build: PASS",
+              "- real standalone HTTP smoke: PASS",
+              "- observed marker: `INERACTIVE_WORKSPACE_SHELL_READY`",
+              "",
+              "This qualification is branch evidence. Final acceptance still requires exact-head Ubuntu",
+              "and Windows repository CI after the one-shot workflow is removed.",
+              "",
+          ]
+          path.write_text(path.read_text(encoding="utf-8") + "\n".join(block), encoding="utf-8")
+          PY
 
       - name: Assert bounded changed paths
         shell: bash
