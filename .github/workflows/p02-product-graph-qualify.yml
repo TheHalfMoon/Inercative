@@ -1,4 +1,4 @@
-name: P02 one-shot Product Graph qualification
+name: P02 one-shot Product Graph qualification (repair 1)
 
 on:
   push:

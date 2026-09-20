@@ -5,7 +5,8 @@ import { expect, it } from "vitest";
 
 it("typechecks the private Product Graph lab with its own tsconfig", () => {
   const configPath = path.resolve("packages/product-graph-lab/tsconfig.json");
-  const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+  const readFile = (fileName: string): string | undefined => ts.sys.readFile(fileName);
+  const configFile = ts.readConfigFile(configPath, readFile);
 
   expect(configFile.error).toBeUndefined();
 

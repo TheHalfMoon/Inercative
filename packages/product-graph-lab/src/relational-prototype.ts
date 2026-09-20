@@ -9,7 +9,6 @@ import {
   semanticGraphRevision,
   type JsonValue,
   type PrototypeEdge,
-  type PrototypeGraphState,
   type PrototypeNode,
 } from "./model.ts";
 

@@ -36,8 +36,9 @@ export function canonicalizeJson(value: JsonValue): JsonValue {
     return value.map((item) => canonicalizeJson(item));
   }
   if (value !== null && typeof value === "object") {
+    const record = value as Readonly<Record<string, JsonValue>>;
     return Object.fromEntries(
-      Object.entries(value)
+      Object.entries(record)
         .sort(([left], [right]) => compareText(left, right))
         .map(([key, item]) => [key, canonicalizeJson(item)]),
     );
