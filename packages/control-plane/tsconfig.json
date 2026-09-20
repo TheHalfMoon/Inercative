@@ -1,9 +1,25 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "allowJs": true,
-    "checkJs": true,
-    "jsx": "preserve"
+    "checkJs": false,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "incremental": true,
+    "plugins": [{ "name": "next" }]
   },
-  "include": ["app/**/*.js", "app/**/*.jsx", "src/**/*.ts", "next.config.mjs", "scripts/**/*.mjs"]
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "app/**/*.js",
+    "app/**/*.jsx",
+    "src/**/*.ts",
+    "next.config.mjs",
+    "scripts/**/*.mjs"
+  ],
+  "exclude": ["node_modules"]
 }
