@@ -12,13 +12,18 @@
 
 Canonical planning (PR #1), the P00-S01 repository bootstrap baseline (PR #2),
 SpecGrain initialization (PR #3), Diffcipline policy/exact-diff proof (PR #4),
-and the Alibaba OCR deterministic local procedure (PR #5) are merged.
+the Alibaba OCR deterministic local procedure (PR #5), and the A-to-Z planning
+hardening/final coverage audit (PR #6) are merged.
 
-Live canonical `main` at the latest reconciliation for this planning branch:
+PR #6 canonically expanded the future P01-P15 plan to 176 stable task handles and
+closed the final identified planning gaps, but it did **not** change current P00
+execution authority.
 
-`e8014ea1feb9cb9c37a05f2399f23b33465490fa`
+Live canonical `main` at this reconciliation:
 
-(PR #5 merge commit).
+`cca99d7ca92facaa56ddc8a3815b62715b6de905`
+
+(PR #6 merge commit).
 
 Completed with executed evidence:
 
@@ -43,11 +48,11 @@ their current delivery state:
 | SpecGrain ID | Task | Outcome | Delivery state | Evidence |
 |---|---|---|---|---|
 | SG-000001 | IN-P00-S02-T01 | Initialize SpecGrain from canonical roadmap | DONE (PR #3) | `docs/evidence/P00_S02_T01_SPECGRAIN_INIT_2026-09-20.md` |
-| SG-000002 | IN-P00-S03-T01 | Initialize Diffcipline risk/proof policy | DONE (this branch) | `docs/evidence/P00_S03_T01_DIFFCIPLINE_POLICY_2026-09-20.md` |
-| SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | DONE (this branch) | `docs/evidence/P00_S03_T02_DIFFCIPLINE_PROOF_2026-09-20.md` |
+| SG-000002 | IN-P00-S03-T01 | Initialize Diffcipline risk/proof policy | DONE (PR #4) | `docs/evidence/P00_S03_T01_DIFFCIPLINE_POLICY_2026-09-20.md` |
+| SG-000003 | IN-P00-S03-T02 | Prove one harmless exact-diff change end to end | DONE (PR #4) | `docs/evidence/P00_S03_T02_DIFFCIPLINE_PROOF_2026-09-20.md` |
 | SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | ELIGIBLE (founder decision gate) | — |
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | blocked on SG-000004 | — |
-| SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
+| SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
