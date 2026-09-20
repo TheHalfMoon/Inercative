@@ -1,0 +1,73 @@
+{
+  "acceptance": [
+    "Protocol IDs are opaque, namespace-qualified, canonical, and reject whitespace/malformed/unknown namespace input.",
+    "Git revisions require exact 40-hex SHA identity and SHA-256 revisions require exact 64-hex digest identity.",
+    "IdentityRevisionRef cannot be constructed unless both identity and revision validate.",
+    "Round-trip parse/serialize is deterministic and canonical.",
+    "The public protocol package exports only the identity/revision surface earned by this Grain.",
+    "Focused tests plus exact-head Ubuntu and Windows repository CI pass."
+  ],
+  "change_surface": [
+    "packages/protocol/**",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 8500,
+    "estimated_tokens": 4200
+  },
+  "dependencies": [
+    "SG-000009"
+  ],
+  "evidence": {
+    "required": [
+      "Positive and negative unit tests for identity, revision, and exact-state reference parsing.",
+      "Machine-readable schema and public-export accounting.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000010",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "Promote the existing @ineractive/protocol placeholder into the smallest earned public protocol surface without adding dependencies."
+      },
+      "safety": {
+        "requirements": [
+          "Identity strings never grant authority or capability by themselves.",
+          "Revision references must be immutable exact identities; branch names, floating tags, and mutable labels are rejected."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Ineractive has a minimal provider-neutral public protocol foundation for stable opaque identities and immutable revision references, with deterministic runtime validation and machine-readable schemas.",
+  "parent_id": null,
+  "rationale": "First protocol task after canonical SG-000009 framework qualification.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000010 and identity/revision protocol exports/schema/tests; no external or persisted data migration is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define provider-neutral stable opaque protocol identity primitives.",
+    "Define immutable Git SHA and SHA-256 revision reference primitives.",
+    "Define a typed identity-plus-revision reference for exact-state binding.",
+    "Add deterministic parsers/validators and machine-readable JSON Schema.",
+    "Expose only the earned identity/revision public API from @ineractive/protocol."
+  ],
+  "scope_out": [
+    "Do not define Run, Event, Evidence, or Finding schemas; those remain IN-P01-S02-T02.",
+    "Do not define ModelTask, DecisionTask, CapabilityRequest, or CapabilityGrant.",
+    "Do not build the workspace shell or persist protocol objects."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S02-T01 Implement protocol identity and revision primitives"
+}
