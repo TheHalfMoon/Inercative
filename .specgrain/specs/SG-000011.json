@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "Run/Event/Evidence/Finding values round-trip through canonical public contracts and reuse SG-000010 identity/revision primitives rather than introducing parallel IDs.",
+    "Events are explicitly bound to a run and deterministic sequence; malformed or negative ordering fields fail validation.",
+    "Evidence distinguishes observation status and exact target revision; missing evidence cannot be represented as PASS.",
+    "Findings preserve severity/confidence/status/disposition separately and unresolved or blocking status is explicit rather than inferred.",
+    "Freshness is explicit: evidence/findings can be CURRENT, STALE, or SUPERSEDED without silently rewriting historical records.",
+    "JSON Schema and TypeScript validators remain semantically aligned for acceptance-critical constraints.",
+    "Package remains dependency-free and exact-head Ubuntu/Windows CI passes."
+  ],
+  "change_surface": [
+    "packages/protocol/**",
+    "docs/canonical/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 12000,
+    "estimated_tokens": 6500
+  },
+  "dependencies": [
+    "SG-000010"
+  ],
+  "evidence": {
+    "required": [
+      "Focused protocol tests for valid round-trip plus malformed identity/revision/state/freshness/finding negative fixtures.",
+      "JSON Schema/TypeScript validator parity checks and manifest proof of zero runtime dependencies.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000011",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the existing dependency-free @ineractive/protocol package with only the dependency-ordered public records required before the workspace shell."
+      },
+      "safety": {
+        "requirements": [
+          "No Evidence or Finding state may grant acceptance merely because required evidence is absent.",
+          "Provider-specific review payloads remain adapters/private records and do not leak into the public provider-neutral protocol."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The public protocol exposes dependency-free provider-neutral Run, Event, Evidence, and Finding contracts that bind exact identities/revisions, preserve provenance and freshness, and never infer acceptance from omission.",
+  "parent_id": null,
+  "rationale": "Canonical P01-S02-T02 frontier after SG-000010 identity/revision primitives.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000011 public Run/Event/Evidence/Finding exports, schemas, tests, docs, and evidence; no persistence migration or external side effect is authorized."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define public provider-neutral Run identity/state records bound to existing logical identity and exact revision primitives.",
+    "Define append-oriented Event records with explicit event identity, run identity, sequence, kind, source, and immutable target revision where applicable.",
+    "Define Evidence records with producer/source identity, exact target identity/revision, evidence kind, observation status, and artifact/reference provenance.",
+    "Define Finding records with category, severity, confidence, location/reference, evidence links, requirement/policy mapping, status, disposition, and stale/superseded semantics.",
+    "Provide deterministic validators/parsers, JSON Schemas, public exports, and negative fixtures for malformed references, invalid states, stale evidence, and unresolved material findings."
+  ],
+  "scope_out": [
+    "No ModelTask or DecisionTask contracts.",
+    "No CapabilityRequest or CapabilityGrant contracts.",
+    "No persistence, database, authorization, runtime executor, timestamp clock source, provider-specific finding type, or acceptance/PASS oracle.",
+    "Do not export the private P00 OCR-specific evidence validator as part of the public provider-neutral protocol."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P01-S02-T02 Implement run event evidence finding schemas"
+}
