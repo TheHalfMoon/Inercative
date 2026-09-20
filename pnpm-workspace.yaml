@@ -1,5 +1,6 @@
 packages:
   - "packages/*"
+  - "apps/*"
 
 # Deterministic, security-relevant install policy. See docs/adr/ADR-0001-p00-toolchain-baseline.md.
 # Prefer explicit configuration over pnpm defaults so a default change is a reviewable diff.

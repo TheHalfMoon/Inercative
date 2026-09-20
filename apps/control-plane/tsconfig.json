@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "preserve"
+  },
+  "include": [
+    "app/**/*.js",
+    "app/**/*.jsx",
+    "components/**/*.js",
+    "components/**/*.jsx",
+    "lib/**/*.js",
+    "next.config.mjs"
+  ]
+}

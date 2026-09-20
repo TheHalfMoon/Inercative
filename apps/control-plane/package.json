@@ -1,0 +1,23 @@
+{
+  "name": "@ineractive/control-plane",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12.4.2 <13"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ineractive/protocol": "workspace:*",
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

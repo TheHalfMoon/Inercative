@@ -15,7 +15,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.json && pnpm --filter \"./packages/**\" run typecheck",
-    "test": "vitest run",
+    "test": "vitest run && vitest run --config apps/control-plane/vitest.config.mjs && pnpm --filter @ineractive/control-plane run build",
     "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test"
   },
   "devDependencies": {

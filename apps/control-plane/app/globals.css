@@ -1,0 +1,514 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #eef0f3;
+  background: #0b0d10;
+  font-synthesis: none;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, #1e242d 0, transparent 32rem),
+    #0b0d10;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea {
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #d7ff54;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.035em;
+}
+
+.eyebrow {
+  margin-bottom: 0.45rem;
+  color: #a7acb4;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: #a7acb4;
+  line-height: 1.6;
+}
+
+.tiny {
+  font-size: 0.78rem;
+}
+
+.project-index {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 5rem 0;
+}
+
+.hero {
+  max-width: 710px;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  line-height: 0.95;
+}
+
+.panel {
+  border: 1px solid #2c3138;
+  border-radius: 1.25rem;
+  background: rgba(18, 21, 25, 0.92);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+}
+
+.project-index > .panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+}
+
+.section-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.section-heading h2,
+.section-heading h3 {
+  margin-bottom: 0;
+}
+
+.status-chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #4b552c;
+  border-radius: 999px;
+  color: #d7ff54;
+  background: #181d10;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.status-chip.quiet {
+  border-color: #373c43;
+  color: #a7acb4;
+  background: #15181c;
+}
+
+.project-grid,
+.nav-list,
+.activity-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.project-card {
+  width: 100%;
+  min-height: 180px;
+  padding: 1.25rem;
+  border: 1px solid #30353c;
+  border-radius: 1rem;
+  color: inherit;
+  background: #111418;
+  text-align: left;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  border-color: #697342;
+}
+
+.project-card strong,
+.project-card span {
+  display: block;
+}
+
+.project-card strong {
+  margin-bottom: 0.55rem;
+  font-size: 1.15rem;
+}
+
+.project-card span {
+  color: #a7acb4;
+  line-height: 1.5;
+}
+
+.project-card .project-action {
+  margin-top: 1.8rem;
+  color: #d7ff54;
+  font-weight: 700;
+}
+
+.compact-panel h2 {
+  margin-bottom: 1rem;
+}
+
+.inline-form {
+  display: flex;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.inline-form label {
+  display: grid;
+  flex: 1;
+  gap: 0.45rem;
+  color: #c7cbd0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.inline-form input,
+.intent-form textarea {
+  width: 100%;
+  border: 1px solid #353a42;
+  border-radius: 0.8rem;
+  color: #f5f7f8;
+  background: #0d1013;
+}
+
+.inline-form input {
+  min-height: 44px;
+  padding: 0 0.85rem;
+}
+
+.inline-form button,
+.intent-form button,
+.back-button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 0.8rem;
+  font-weight: 800;
+}
+
+.inline-form button,
+.intent-form button {
+  padding: 0 1rem;
+  color: #11130c;
+  background: #d7ff54;
+}
+
+.form-message {
+  min-height: 1.3rem;
+  margin: 0.7rem 0 0;
+  color: #a7acb4;
+  font-size: 0.8rem;
+}
+
+.workspace-shell {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr) 300px;
+  min-height: 100vh;
+}
+
+.workspace-sidebar,
+.activity-panel {
+  padding: 1rem;
+  background: rgba(12, 14, 17, 0.95);
+}
+
+.workspace-sidebar {
+  border-right: 1px solid #282d34;
+}
+
+.activity-panel {
+  border-left: 1px solid #282d34;
+}
+
+.back-button {
+  width: 100%;
+  padding: 0 0.8rem;
+  border: 1px solid #30353c;
+  color: #e6e8eb;
+  background: #15181c;
+  text-align: left;
+}
+
+.workspace-context {
+  padding: 1.8rem 0.25rem 1rem;
+}
+
+.workspace-context h1 {
+  margin-bottom: 0.35rem;
+  font-size: 1.25rem;
+}
+
+.workspace-context > p:last-child {
+  color: #858b94;
+  font-size: 0.78rem;
+}
+
+.nav-list {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.nav-list a {
+  display: block;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.7rem;
+  color: #a7acb4;
+  text-decoration: none;
+}
+
+.nav-list a[aria-current="page"] {
+  color: #f3f5f6;
+  background: #1a1e23;
+}
+
+.capability-note {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 2rem;
+  padding: 0.85rem;
+  border: 1px solid #373c43;
+  border-radius: 0.8rem;
+  color: #8f959d;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.capability-note strong {
+  color: #d9dce0;
+}
+
+.workspace-main {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+.workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.workspace-header h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 1rem;
+}
+
+.work-surface,
+.preview-panel {
+  min-height: 440px;
+  padding: 1.25rem;
+}
+
+.intent-form {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 2rem;
+}
+
+.intent-form label {
+  color: #c7cbd0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.intent-form textarea {
+  resize: vertical;
+  padding: 0.85rem;
+  line-height: 1.5;
+}
+
+.intent-form button {
+  width: fit-content;
+}
+
+.intent-status {
+  min-height: 92px;
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 1px dashed #363c45;
+  border-radius: 0.8rem;
+  color: #969ca5;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.intent-status strong {
+  color: #e6e8eb;
+}
+
+.intent-status p {
+  margin: 0.35rem 0;
+  color: #c6cbd0;
+}
+
+.preview-placeholder {
+  display: grid;
+  min-height: 340px;
+  place-content: center;
+  padding: 2rem;
+  color: #8f959d;
+  text-align: center;
+}
+
+.preview-placeholder > span {
+  margin-bottom: 1rem;
+  color: #d7ff54;
+  font-size: 2.5rem;
+}
+
+.preview-placeholder strong {
+  color: #d9dce0;
+}
+
+.preview-placeholder p {
+  max-width: 34rem;
+  margin: 0.7rem auto 0;
+  line-height: 1.55;
+}
+
+.activity-panel .section-heading {
+  padding: 0.5rem 0 1.2rem;
+}
+
+.activity-panel h2 {
+  margin: 0;
+}
+
+.activity-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.activity-list li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #242930;
+}
+
+.activity-list .sequence {
+  color: #717780;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-list strong,
+.activity-list div > span {
+  display: block;
+}
+
+.activity-list strong {
+  color: #d8dce0;
+  font-size: 0.82rem;
+}
+
+.activity-list div > span {
+  margin-top: 0.25rem;
+  color: #858b94;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 1050px) {
+  .workspace-shell {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .activity-panel {
+    grid-column: 1 / -1;
+    border-top: 1px solid #282d34;
+    border-left: 0;
+  }
+
+  .activity-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .project-grid,
+  .work-grid,
+  .activity-list {
+    grid-template-columns: 1fr;
+  }
+
+  .inline-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .workspace-shell {
+    display: block;
+  }
+
+  .workspace-sidebar,
+  .activity-panel {
+    border: 0;
+    border-bottom: 1px solid #282d34;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
