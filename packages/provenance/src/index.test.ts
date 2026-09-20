@@ -68,12 +68,21 @@ describe("validateDonorImportRecord", () => {
     expect(issueCodes(record)).toContain("MISSING_FIELD");
   });
 
-  it("rejects an unpinned short source revision", () => {
+  it("rejects a branch-like source revision even when it is long", () => {
     const record = mutableRecord();
     const source = record.source as Record<string, unknown>;
-    source.revision = "main";
+    source.revision = "release-candidate-main";
 
     expect(issueCodes(record)).toContain("INVALID_STRING");
+  });
+
+  it("accepts a 64-hex immutable digest", () => {
+    const record = mutableRecord();
+    const source = record.source as Record<string, unknown>;
+    source.revision =
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+
+    expect(validateDonorImportRecord(record).ok).toBe(true);
   });
 
   it("rejects an empty source path set", () => {

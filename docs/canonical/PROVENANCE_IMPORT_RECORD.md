@@ -27,7 +27,7 @@ Both use schema version `1`.
 A record must capture:
 
 - source repository/artifact locator;
-- immutable revision;
+- immutable revision represented by a 40- or 64-hex source digest/SHA;
 - exact source paths;
 - destination paths;
 - use mode: COPY, ADAPT, or DEPEND;

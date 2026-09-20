@@ -144,6 +144,8 @@ function requiredField(
   return value[key];
 }
 
+const IMMUTABLE_REVISION_PATTERN = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/iu;
+
 function nonEmptyString(
   value: unknown,
   path: string,
@@ -222,12 +224,20 @@ function parseSource(
     "$.source.repository",
     issues,
   );
+  const revisionValue = requiredField(record, "revision", "$.source", issues);
   const revision = nonEmptyString(
-    requiredField(record, "revision", "$.source", issues),
+    revisionValue,
     "$.source.revision",
     issues,
-    7,
   );
+  if (revision !== null && !IMMUTABLE_REVISION_PATTERN.test(revision)) {
+    issue(
+      issues,
+      "INVALID_STRING",
+      "$.source.revision",
+      "$.source.revision must be an immutable 40- or 64-hex digest.",
+    );
+  }
   const paths = uniqueStringArray(
     requiredField(record, "paths", "$.source", issues),
     "$.source.paths",
@@ -235,7 +245,10 @@ function parseSource(
     false,
   );
 
-  return repository !== null && revision !== null && paths !== null
+  return repository !== null &&
+    revision !== null &&
+    IMMUTABLE_REVISION_PATTERN.test(revision) &&
+    paths !== null
     ? { repository, revision, paths }
     : null;
 }

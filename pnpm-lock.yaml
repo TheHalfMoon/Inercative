@@ -10,7 +10,6 @@ importers:
         specifier: 12.4.2
         version: 12.4.2
 
-  packages/provenance: {}
 
 packages:
 
@@ -193,6 +192,8 @@ importers:
   packages/program-tasks: {}
 
   packages/protocol: {}
+
+  packages/provenance: {}
 
 packages:
 
