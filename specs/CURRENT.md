@@ -58,6 +58,7 @@ their current delivery state:
 | SG-000004 | IN-P00-S04-T01 | Select/commit Ineractive-owned license + notice policy | DONE (PR #9) | `docs/evidence/P00_S04_T01_LICENSE_NOTICE_POLICY_2026-09-20.md` |
 | SG-000005 | IN-P00-S04-T02 | Donor provenance/import record schema | DONE (PR #10) | `docs/evidence/P00_S04_T02_PROVENANCE_SCHEMA_2026-09-20.md` |
 | SG-000006 | IN-P00-S05-T01 | Alibaba OCR local exact-diff review procedure | DONE (PR #5; deterministic layer; semantic blocked — see evidence) | `docs/evidence/P00_S05_T01_OCR_PROCEDURE_2026-09-20.md` |
+| SG-000007 | IN-P00-S04-T03 | Provenance admission validation + notice inventory | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P00_S04_T03_SPECGRAIN_SHAPING_2026-09-20.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
