@@ -109,8 +109,11 @@ Build:
 - choose representation by evidence;
 - implement stable typed node/edge/revision contracts.
 
-### P02-S02 Domain and requirements model
+### P02-S02 Domain, requirements, and data-governance model
 - personas, roles, entities, pages, actions, workflows, permissions, assumptions, requirements;
+- data classification, retention, export, deletion, audit, consent, and residency constraints;
+- locale/timezone semantics;
+- external-effect/integration consequence semantics;
 - deterministic validators.
 
 ### P02-S03 Change Intent
@@ -171,7 +174,34 @@ Build:
 - memory hook;
 - HarnessMind-style provenance.
 
-**Exit:** one synthetic WorkPacket can route decisions/generation through typed adapters with full run provenance.
+### P03-S06 Project Context substrate
+- governed durable project facts/decisions/assumptions;
+- versioned context revisions;
+- deterministic Execution Header;
+- conflict/freshness rules;
+- collaboration UI remains deferred to P12.
+
+### P03-S07 System / Project Skills substrate
+- versioned SkillManifest;
+- selective skill discovery/loading;
+- provenance;
+- fixture/eval hooks;
+- skills never grant capabilities.
+
+### P03-S08 Budget Governor
+- model/tool/browser/sandbox/network/backend budgets;
+- cost/latency/parallelism policy;
+- bounded retry/repair spend;
+- cheaper-path/degrade/stop/approval outcomes;
+- model cannot expand its own budget.
+
+### P03-S09 Artifact Store and harness replay contract
+- stable large-artifact references for logs/screenshots/DOM/traces/reports/research;
+- deterministic metadata/provenance;
+- live replay vs recorded-observation replay interfaces;
+- no repeated external side effects during deterministic harness regression tests.
+
+**Exit:** one synthetic WorkPacket can route decisions/generation through typed adapters with durable context, selective skills, bounded budgets, artifact provenance, and replayable run evidence.
 
 ## P04 — Runtime, sandbox, tools, browser, Git
 
@@ -215,7 +245,17 @@ Build:
 - deterministic actions;
 - browser journey evidence.
 
-**Exit:** harness can modify a toy app in an isolated workspace, run it, inspect it in a browser, and produce exact evidence without host-ambient authority.
+### P04-S06 Tool trust and action safety
+- stable Tool Catalog identities/namespaces;
+- capability/eligibility masking;
+- MCP/connector trust metadata;
+- untrusted-content/prompt-injection probe for external observations;
+- independent intent-aware guard for risk-bearing executable actions;
+- bounded deny-and-continue behavior;
+- typed Lifecycle Hook Bus;
+- distinguish build/test/research/authenticated-user browser trust classes.
+
+**Exit:** harness can modify a toy app in an isolated workspace, run it, inspect it in a browser, and produce exact evidence without host-ambient authority or treating external content/tools as trusted instructions.
 
 ## P05 — Web product compiler V1
 
@@ -251,7 +291,21 @@ Default V1 target:
 - source binding to Product Graph;
 - bounded diff rather than regeneration.
 
-**Exit:** static and stateful UI benchmark products compile, run, and survive incremental change.
+### P05-S05 Internationalization and RTL
+- locale-aware routing/config;
+- message catalogs and formatting;
+- timezone/date/number behavior;
+- RTL and logical layout behavior;
+- Arabic/English browser fixtures.
+
+### P05-S06 Production web semantics
+- metadata/canonical URL/social preview/sitemap/robots where relevant;
+- image/font loading strategy;
+- route performance budgets;
+- accessible loading/error/empty states under realistic data;
+- no claim that every product requires SEO.
+
+**Exit:** static and stateful UI benchmark products compile, run, survive incremental change, and can meet production-grade locale/RTL/public-web contracts where applicable.
 
 ## P06 — Supabase compiler V1
 
@@ -306,7 +360,25 @@ Default V1 target:
 - local-to-remote migration plan;
 - drift detection.
 
-**Exit:** multi-tenant authenticated CRUD benchmark with RLS and storage reconstructs from source and passes negative security tests.
+### P06-S08 Data lifecycle compiler
+- compile data classification/retention/export/deletion/audit requirements;
+- log/redaction implications;
+- deletion/export browser and backend flows;
+- no automatic regulatory-compliance claim.
+
+### P06-S09 Integration and notification compiler
+Initial V1 subset:
+- generic REST API;
+- signed webhook producer/consumer;
+- transactional email;
+- in-app notifications;
+- typed secret/config references;
+- retry/idempotency/reconciliation;
+- external-effect receipts and failure UI.
+
+SMS/WhatsApp/payments remain separately qualified high-risk adapters.
+
+**Exit:** multi-tenant authenticated CRUD benchmark with RLS/storage/data-lifecycle semantics reconstructs from source, passes negative security tests, and can execute one qualified external integration/notification path safely.
 
 ## P07 — Full product build and repair loop
 
@@ -342,6 +414,15 @@ Default V1 target:
 - broader acceptance;
 - bounded attempts.
 
+### P07-S06 Build Contract, Failure Ledger, and Wide Work
+- compile requirements into explicit Build Contract;
+- independent evaluator may challenge high-risk/novel acceptance criteria before build;
+- structured Failure Ledger retained across repair attempts;
+- Context Continuation Policy can continue/compact/reset-with-handoff/branch/delegate-fresh;
+- Wide Work only for dependency-independent subunits;
+- isolated write ownership and explicit synthesis;
+- per-unit budget/evidence.
+
 ### P07-S05 Golden vertical slice
 Build from one product prompt:
 - auth;
@@ -353,7 +434,7 @@ Build from one product prompt:
 - browser journeys;
 - Git history.
 
-**Exit:** B03 multi-tenant CRM can be produced from intent to proven local product with no manual code edits in the golden path.
+**Exit:** B03 multi-tenant CRM can be produced from intent to proven local product with no manual code edits in the golden path, with a requirements-derived Build Contract and structured failure/repair evidence.
 
 ## P08 — Design engine and visual editing
 
@@ -396,7 +477,29 @@ Build from one product prompt:
 - product/marketing motion and layout system;
 - avoid donor/client identity copying.
 
-**Exit:** B01 and B08 reach design/a11y/responsive quality gates and visual edits remain clean source diffs.
+### P08-S07 Design Context Compiler and DesignSystemRevision
+- ingest source/design-system packages/tokens/brand artifacts/rendered evidence;
+- normalize design principles/component catalog/token graph/interaction/responsive rules;
+- every inferred rule carries confidence/provenance/status.
+
+### P08-S08 Semantic component binding and drift
+- Product Graph component ↔ source symbol ↔ rendered element ↔ design component;
+- CLEAN / CODE_AHEAD / DESIGN_AHEAD / DIVERGED / UNBOUND states;
+- no silent divergence resolution.
+
+### P08-S09 Annotation Intent, direct manipulation, and design exploration
+- anchored annotations compile to typed ChangeIntent/locality;
+- direct manipulation remains real source/semantic diff;
+- design branches can compare alternatives;
+- independent Design Evaluator uses real rendered product.
+
+### P08-S10 Asset/font provenance
+- generated/imported asset provenance;
+- font source/license metadata where known;
+- source-to-asset inventory;
+- no claim of rights merely because an asset was discovered/generated.
+
+**Exit:** B01 and B08 reach design/a11y/responsive quality gates, visual edits remain clean source diffs, and design/code round-trip state is explicit rather than silently overwritten.
 
 ## P09 — Import and multimodal starting points
 
@@ -418,14 +521,22 @@ Build from one product prompt:
 - distinguish inspiration from copying;
 - reconstruct behavior/design intent.
 
-### P09-S04 Design import
+### P09-S04 Design import and provider adapter
+- provider-neutral DesignProvider contract;
 - Figma/design integration where authorized;
-- asset/token/component mapping.
+- native editable design context where supported;
+- asset/token/component mapping;
+- code/design round-trip reconciliation.
 
 ### P09-S05 Brownfield change
 - add feature to imported app without unnecessary rewrite.
 
-**Exit:** B09 passes on a non-trivial existing project.
+### P09-S06 Existing backend reconstruction
+- inspect schema/migrations/auth/policies/storage/functions from an existing project;
+- propose Product Graph/backend bindings with confidence;
+- reconcile remote backend truth instead of assuming source is complete.
+
+**Exit:** B09 passes on a non-trivial existing project with source/runtime/backend reconstruction and bounded feature change.
 
 ## P10 — Assurance, review, and security convergence
 
@@ -465,7 +576,30 @@ Build from one product prompt:
 - sandbox policy;
 - negative fixtures.
 
-**Exit:** golden product produces a machine-readable proof bundle with zero unresolved material review findings.
+### P10-S06 Ineractive Evaluation Lab
+- fixed new-product, change, repair, brownfield, design, security, recovery, routing, and context benchmarks;
+- live and recorded-observation replay;
+- quality/correctness/security/cost/latency/question metrics;
+- no single aggregate score can hide correctness or security failure;
+- harness changes receive regression evidence.
+
+### P10-S07 Supply-chain and artifact integrity
+- lockfile/dependency integrity;
+- vulnerability/license/notice checks;
+- source/import provenance;
+- secret scan;
+- asset/font inventory;
+- build artifact/source binding;
+- optional SBOM before production publish.
+
+### P10-S08 Production-web quality pack
+- i18n/RTL fixtures;
+- accessibility;
+- SEO metadata where applicable;
+- performance regression budgets;
+- realistic-data browser journeys.
+
+**Exit:** golden and benchmark products produce machine-readable proof bundles with zero unresolved material review findings and the harness has repeatable regression evidence.
 
 ## P11 — Git, preview, publish, and deployment
 
@@ -503,7 +637,39 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 - post-deploy verification;
 - drift state.
 
-**Exit:** a user can build locally, inspect proof, push source, connect their Supabase, and publish a working product they own.
+### P11-S06 Release Manifest and promotion
+Bind a production candidate to:
+- source head;
+- Product Graph/design revisions;
+- build artifact;
+- backend migration set;
+- schema/application compatibility;
+- environment config and secret references;
+- proof bundle;
+- recovery plan.
+
+Promotion states include CANDIDATE / PREVIEW / QUALIFIED / PROMOTED / DEGRADED / ROLLED_BACK / SUPERSEDED.
+
+Maintain last-known-good identity. Promotion requires joint app/backend compatibility evidence.
+
+### P11-S07 Generated-product operations baseline
+- health/readiness where applicable;
+- structured logs and deploy/source identity;
+- error boundary/reporting adapter;
+- backend function/job logs;
+- optional OpenTelemetry-compatible instrumentation;
+- optional portable product analytics/events;
+- generated product never requires Ineractive telemetry to run.
+
+### P11-S08 Production recovery qualification
+- backup/restore awareness and documented expectations;
+- failed deploy after migration;
+- app rollback against forward-compatible schema;
+- credential revocation;
+- environment drift;
+- last-known-good recovery drill.
+
+**Exit:** a user can build locally, inspect proof, push source, connect their Supabase, and promote a working product they own with explicit release identity, operational signals, and recovery semantics.
 
 ## P12 — Collaboration and durable project intelligence
 
@@ -521,20 +687,28 @@ Add Vercel/Cloudflare/Netlify adapters based on qualification, not marketing bre
 - shared preview;
 - conflict-aware edits.
 
-### P12-S03 Project memory
-Adapt Morize/HarnessMind patterns for:
+### P12-S03 Project intelligence UX
+Build the collaborative UX over the P03 Project Context substrate:
 - decisions;
 - assumptions;
 - conventions;
 - successful repairs;
 - rejected approaches;
-- scoped preferences.
+- scoped preferences;
+- loaded-context/provenance visibility.
 
 ### P12-S04 Tasks/issues
 - connect Product Graph/SpecGrain work to lightweight project activity;
 - do not build a generic project-management suite.
 
-**Exit:** two users can safely collaborate on a product with shared durable decisions and source ownership.
+### P12-S05 Project Learning, team Skills, and branch comparison
+- evidence-backed learning proposals;
+- approval/version/rollback for durable context updates;
+- project/team Skill proposal and qualification UX;
+- compare ExplorationBranches across graph/design/source/evidence;
+- selective merge with conflict visibility.
+
+**Exit:** two users can safely collaborate on a product with shared durable decisions, governed project learning, reusable team workflows, and source ownership.
 
 ## P13 — Extensibility and ecosystem
 
@@ -561,7 +735,42 @@ Adapt Morize/HarnessMind patterns for:
 - sandbox/permission model;
 - compatibility tests.
 
-**Exit:** external capabilities can extend Ineractive without bypassing core policy/evidence.
+### P13-S05 Generated AI-product primitives
+Provider-neutral generated-app pack:
+- text/chat;
+- streaming;
+- structured output;
+- embeddings/vector retrieval;
+- tool/function calling;
+- moderation/policy hook;
+- prompt/version configuration;
+- usage/rate limits;
+- secret isolation;
+- eval fixtures.
+
+Generated apps own/configure their provider dependencies; they never depend on Ineractive's internal model provider.
+
+### P13-S06 High-risk integration qualification
+Qualify adapters independently for side effects such as:
+- payments;
+- SMS/WhatsApp;
+- financial/irreversible webhooks.
+
+Require idempotency, reconciliation, external-effect receipts, negative tests, and explicit user authority.
+
+### P13-S07 Product Kits
+Combine reusable:
+- component packages;
+- design tokens;
+- brand assets;
+- Product Graph fragments;
+- project Skills;
+- backend patterns;
+- verification rules.
+
+Kits accelerate normal source/graph generation; they are not opaque templates.
+
+**Exit:** external capabilities and reusable product intelligence can extend Ineractive without bypassing core policy/evidence or generated-product ownership.
 
 ## P14 — Mobile and cross-surface compiler targets
 
@@ -617,12 +826,21 @@ Adapt Morize/HarnessMind patterns for:
 
 ### P15-S05 Release/security hardening
 - signing;
-- SBOM/provenance;
+- organization-wide provenance policy;
+- advanced SBOM/attestations;
 - dependency policy;
 - disaster recovery;
 - penetration/security qualification.
 
-**Exit:** hosted operation has evidence for tenant isolation, recovery, cost control, and user ownership.
+### P15-S06 Enterprise identity/governance
+- enterprise SSO/SAML where justified;
+- SCIM/user lifecycle;
+- organization policy;
+- audit export;
+- retention/residency controls;
+- admin approval policy.
+
+**Exit:** hosted operation has evidence for tenant isolation, recovery, cost control, user ownership, and enterprise governance.
 
 ## 2. Cross-phase invariants
 
@@ -641,6 +859,12 @@ Every phase preserves:
 - producer/verifier separation for acceptance-critical proof;
 - generated-product runtime independence from Ineractive;
 - explicit partial-failure/recovery semantics for side effects;
+- bounded cost/spend/parallelism through policy;
+- durable project context is not transcript memory;
+- skills never grant capabilities;
+- external content/tool instructions are untrusted until policy admits them;
+- production promotion binds application/backend compatibility and proof;
+- generated products expose portable operational/release identity;
 - no unnecessary user interrogation.
 
 ## 3. First benchmark product
@@ -663,6 +887,17 @@ Use a deliberately demanding but bounded CRM benchmark as the first golden produ
 - Arabic/English variant later in design phase.
 
 This exercises the architecture without requiring payments or high-risk external integrations.
+
+Additional required benchmark families before broad launch:
+
+- Arabic/English RTL product;
+- one external API/webhook/email integration;
+- production release + schema compatibility/rollback drill;
+- generated-app observability/health failure;
+- design/code divergence reconciliation;
+- brownfield app with existing backend;
+- AI-enabled product after P13;
+- harness replay/regression benchmark.
 
 ## 4. What must remain deferred
 
