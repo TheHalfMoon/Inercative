@@ -1,12 +1,16 @@
 # Ineractive Implementation Readiness Audit
 
-**Date:** 2026-09-19  
-**Scope:** planning readiness, not product/runtime qualification  
-**Branch:** `plan/canonical-foundation`
+**Date:** 2026-09-20  
+**Scope:** current P00 truth + candidate post-P00 planning readiness; not product/runtime qualification  
+**Branch:** `research/design-agent-harness-2026-09-20`
 
 ## 1. Decision
 
-The plan is ready to hand to implementation **at the P00 frontier** after this planning PR is accepted.
+P00 is already in progress on canonical `main`.
+
+This branch is a **candidate post-P00 planning expansion** and does not alter the live P00 execution frontier until accepted through canonical governance.
+
+The expanded plan is structurally ready for later rolling-wave SpecGrain shaping once its dependencies become eligible.
 
 "Ready" means:
 
@@ -18,7 +22,7 @@ The plan is ready to hand to implementation **at the P00 frontier** after this p
 - the first implementation frontier has acceptance/evidence guidance;
 - no implementation claim is being fabricated.
 
-It does **not** mean P01-P15 are already Grains or that the product is built.
+It does **not** mean P01-P15 are already Grains, that Draft PR #6 is merged, or that the product is built.
 
 ## 2. What is frozen enough to build
 
@@ -39,7 +43,16 @@ Frozen planning direction:
 - Alibaba OCR for semantic review;
 - Diffcipline for proof;
 - exact-head acceptance;
-- P00-P15 dependency direction.
+- P00-P15 dependency direction;
+- Design OS / Skills OS / Project Context substrate;
+- Evaluation Lab and Budget Governor;
+- Dataset/Data Workspace semantics;
+- A-to-Z End-to-End Product Factory contract;
+- provider-neutral Platform Lifecycle / ProviderAdapter / Connection / ResourceBinding / EnvironmentManifest / OwnershipManifest / ProvisioningSaga;
+- Connected Ownership Orchestrator for user-owned GitHub/Supabase/deployment;
+- ProductCompletenessManifest;
+- ReleaseManifest + generated-product operations/recovery;
+- A-to-exit portability/reconnect qualification.
 
 ## 3. Intentionally deferred implementation decisions
 
@@ -75,6 +88,22 @@ Generated products must run outside Ineractive from documented source/backend/de
 ### Partial failure
 
 Long-running/external operations now have explicit idempotency, reconciliation, checkpoint, ambiguity, and recovery semantics.
+
+### Harness/context quality
+
+The plan now has durable Project Context, bounded System/Project Skills, Artifact Store, Context Continuation Policy, Stable Tool Catalog, Budget Governor, independent evaluator, and replayable Evaluation Lab.
+
+### End-to-end data/backend delivery
+
+The plan now covers business-data ingestion and lineage, deterministic seed/synthetic data, Supabase compilation, external integrations, generated-app operations, and production recovery.
+
+### Provider lifecycle and ownership
+
+GitHub/Supabase/deployment/domain integrations are no longer modeled as independent happy-path buttons. They share provider preflight, typed authority/resource state, durable provisioning sagas, external blockers, environment/secret lifecycle, ownership manifests, detach-vs-delete, reconnect, and A-to-exit verification.
+
+### Product completeness
+
+A ProductCompletenessManifest prevents the system from declaring the product done while applicable data/backend/security/release/operations/documentation/ownership categories are unresolved.
 
 ## 5. Risk review
 
@@ -134,22 +163,43 @@ Mitigation:
 - Diffcipline proof;
 - benchmark fixtures with known faults.
 
-## 6. Implementation entry condition
+## 6. Current execution condition
 
-P00 may begin only after:
+The live execution frontier remains P00 and is governed by canonical `main`, `specs/CURRENT.md`, active SpecGrain state, and real evidence.
 
-- planning PR is canonically accepted/merged;
-- live main is reverified;
-- no newer founder decision supersedes this plan.
+This candidate branch must not be used to skip the remaining P00 founder/credential/review gates.
 
-P01 may not begin until P00 exit evidence satisfies the merged P00 plan.
+P01 may not begin until:
 
-## 7. Planning readiness verdict
+- P00 exit evidence satisfies canonical governance;
+- the applicable post-P00 planning changes are canonically accepted;
+- fresh main is reverified;
+- SpecGrain makes the next dependency-eligible unit executable.
 
-**PLANNING_READY_FOR_P00 = YES**
+## 7. Candidate graph validation
+
+The candidate task index contains **157 stable task handles**.
+
+Structural validation after the A-to-Z hardening pass:
+
+- duplicate task IDs: 0;
+- missing dependency references: 0;
+- dependencies pointing to same/later task positions: 0.
+
+Existing P00 task IDs and execution authority remain unchanged.
+
+## 8. Planning readiness verdict
+
+**CURRENT_EXECUTION_FRONTIER = P00_IN_PROGRESS**
+
+**CANDIDATE_POST_P00_PLAN_STRUCTURALLY_READY = YES**
+
+**KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_CURRENT_RED_TEAM**
+
+**PR6_MERGED = NO**
 
 **PRODUCT_IMPLEMENTED = NO**
 
 **P01_PLUS_EXECUTION_AUTHORITY = NO**
 
-This is the intended truthful frontier.
+This is a planning/readiness statement. Implementation evidence can still reveal invalid assumptions and must trigger SpecGrain refinement rather than being hidden.
