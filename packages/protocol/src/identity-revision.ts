@@ -1,7 +1,6 @@
 const IDENTITY_PREFIX = "ineractive";
 const IDENTITY_KIND_PATTERN = /^[a-z][a-z0-9-]{0,31}$/u;
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 const GIT_OBJECT_PATTERN = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
 const SHA256_PATTERN = /^[0-9a-f]{64}$/u;
 
