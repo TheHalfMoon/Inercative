@@ -154,7 +154,7 @@ function projectColumns(): string {
   return "id,owner_user_id,name,slug,created_at,updated_at";
 }
 
-export class SupabaseControlPlaneStore {
+class SupabaseControlPlaneStore {
   public constructor(
     private readonly client: SupabaseClient,
     private readonly actor: VerifiedControlPlaneActor,
