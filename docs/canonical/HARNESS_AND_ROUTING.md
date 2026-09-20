@@ -211,6 +211,57 @@ V1 routing may use a simple policy:
 - provider failure -> approved fallback when policy permits;
 - no approved compatible adapter -> block visibly.
 
+### 7.1 Creative-media routing
+
+Creative media uses the same provider-neutral routing philosophy as code/reasoning, with a narrower typed contract.
+
+A `MediaGenerationRequest` carries:
+
+- modality and operation;
+- quality floor;
+- latency preference;
+- cost ceiling;
+- privacy class;
+- prompt/reference complexity;
+- text/typography fidelity needs;
+- edit precision;
+- dimensions/duration;
+- eligible provider/model capabilities;
+- fallback policy.
+
+Routing sequence:
+
+```text
+request
+-> deterministic compatibility/policy filter
+-> bounded decision ranking
+-> qualified MediaProviderAdapter
+-> generation/edit
+-> CreativeAsset lineage
+-> independent visual/product evaluation
+```
+
+The bounded decision model may rank compatible options. It cannot authorize a forbidden provider, exceed a budget, grant a capability, or waive provenance/evidence.
+
+### 7.2 Decision-adapter qualification
+
+The bounded decision interface remains provider-neutral.
+
+Candidate implementations and benchmarks may include specialized System-1 models such as the Apache-2.0 `convaiinnovations/laya` family, provided they pass Ineractive-owned evaluation for the actual target distribution.
+
+Qualification must measure at least:
+
+- task-family accuracy;
+- calibration/error;
+- confidence/selective-risk behavior;
+- latency/throughput;
+- deterministic schema conformance;
+- input-length/cardinality limits;
+- multilingual/domain coverage where required;
+- failure/escalation behavior.
+
+Published benchmark claims are research inputs, not Ineractive qualification evidence. Arithmetic, counting, permission checks, dependency checks, exact dates, and other deterministic invariants remain in code.
+
 ## 8. Fallback semantics
 
 Fallback is not invisible equivalence.
