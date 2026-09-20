@@ -19,11 +19,15 @@ PR #6 canonically expanded the future P01-P15 plan to 176 stable task handles an
 closed the final identified planning gaps, but it did **not** change current P00
 execution authority.
 
-Live canonical `main` at this reconciliation:
+Canonical planning baseline accepted by PR #6:
 
 `cca99d7ca92facaa56ddc8a3815b62715b6de905`
 
 (PR #6 merge commit).
+
+This is a historical planning-baseline identity, not a self-updating claim about the
+current `main` head. Documentation-only reconciliation commits may advance `main`
+without changing P00 authority. Re-fetch live GitHub truth before every execution Grain.
 
 Completed with executed evidence:
 
