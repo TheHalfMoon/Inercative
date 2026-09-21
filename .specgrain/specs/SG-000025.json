@@ -1,0 +1,77 @@
+{
+  "acceptance": [
+    "The stable package exports the localeconfig node kind with declared required and optional attributes and the documented accepted locale-tag subset, without framework, model-provider, or database coupling.",
+    "Deterministic node validation reports DOMAIN_INVALID_LOCALE_TAG for every locale attribute and every supported or right-to-left list entry that is outside the accepted subset, and reports DOMAIN_UNSUPPORTED_LOCALE_REFERENCE when a syntactically valid reference is not among the supported locales.",
+    "A locale configuration whose default, fallback, formatting, and right-to-left locales are all supported, and whose fallback or right-to-left metadata is absent, validates with no issues.",
+    "Issue collection remains total and deterministic across repeated runs, node insertion orders, and JSON object key orders, under the documented phase order and sort key.",
+    "Domain validation does not mutate, reorder, or normalize its input, and well-formed Product Graph v1 canonical revision identity is unchanged by domain validation.",
+    "Focused locale tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000024"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph localeconfig node kind with the documented locale-tag subset and the two deterministic locale error codes, with focused tests.",
+      "Proof that an invalid tag and an unsupported reference both fail closed and that canonical revision identity is unchanged for well-formed documents.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI plus post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000025",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded node kind and one deterministic tag validator plus focused tests, instead of adding a package, promoting the prototype lab, or introducing a runtime dependency or framework adapter."
+      },
+      "safety": {
+        "requirements": [
+          "Locale validation composes on top of the node, edge, relation, and governance layers delivered by SG-000020 through SG-000024 and the Product Graph v1 core contract, and must never weaken or bypass any of them.",
+          "Deterministic validation must not depend on object iteration accidents, wall-clock time, randomness, network access, locale of the host process, or model inference.",
+          "The locale-tag subset must be documented as an Ineractive validation subset, not as a claim of full BCP-47 conformance."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph domain layer declares a deterministic localeconfig node kind carrying a default locale, a supported-locale list, an optional fallback locale, optional right-to-left locale metadata, an optional formatting locale, and an optional user-selection flag, and reports a syntactically invalid locale tag or a locale reference that is not among the supported locales with stable error codes.",
+  "parent_id": null,
+  "rationale": "SG-000024 delivered the privacy slice of IN-P02-S02-T02 and deferred locale and internationalization semantics to this dependent Grain; the canonical frontend toolchain requires locale and RTL semantics to live in the Product Graph rather than in a framework adapter.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000025 localeconfig node kind, the locale-tag subset and its validator, the two stable error codes, the focused tests, the evidence record, and the current-frontier update; the SG-000020 through SG-000024 domain, governance, and privacy layers, the Product Graph v1 contracts, and ADR-0003 remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Declare a deterministic localeconfig node kind with the required default-locale and supported-locale-list attributes and the optional fallback-locale, right-to-left-list, formatting-locale, and user-selection attributes.",
+    "Declare and document the accepted locale-tag subset used by the validator: a two-or-three-letter language subtag, an optional four-letter script subtag, and an optional two-letter-or-three-digit region subtag.",
+    "Add the stable node-phase error code DOMAIN_INVALID_LOCALE_TAG for a locale attribute or list entry that is outside the accepted locale-tag subset.",
+    "Add the stable node-phase error code DOMAIN_UNSUPPORTED_LOCALE_REFERENCE for a locale reference that is syntactically valid but is not among the declared supported locales, covering the default, fallback, formatting, and right-to-left references.",
+    "Add focused deterministic tests covering every accepted locale-tag shape, rejected tag shapes, each unsupported-reference case with its negative cases, deterministic ordering, no input mutation, and unchanged canonical revision identity.",
+    "Advance specs/CURRENT.md to record SG-000024 canonical closure and SG-000025 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No translated-content or non-translatable-identifier semantics, no route-localization or locale-routing semantics, and no page, component, or content field changes; those belong to a later content and UI slice.",
+    "No external-effect, Dataset, design-system, skill, exploration-branch, or release semantics, and no change to the classification, lifecycle, or privacy vocabularies.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger, graph views, compiler, database, Supabase migration, remote side effect, or framework adapter such as a Next.js i18n library.",
+    "No new workspace package, no new runtime dependency, no lockfile change, and no relaxation of existing rejection behavior."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T02D Implement locale and internationalization semantics"
+}
