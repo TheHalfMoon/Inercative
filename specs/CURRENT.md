@@ -73,7 +73,7 @@ their current delivery state:
 | SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | DONE (PR #37) | `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md` |
 | SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | DONE (PR #43) | `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md` |
 | SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
-| SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | DONE (PR #49) | `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -226,8 +226,6 @@ fresh-main run `35632293241` passed on the merge commit. The Diffcipline R2 exac
 returned PASS for 4 files / `+598/-3`, and the carried SG-000019 finding `OCR-004` was repaired
 here. Full record: `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md`.
 
-Current eligible frontier:
-
 SG-000021 / IN-P02-S02-T01B is canonically complete through PR #45 (governance, merged as
 `ce591f8e8fd4d94dbc4416cf228451108ab7b6d3`) and PR #46 (implementation, merged as
 `63c5b0c3f564e27a6ab76cdf8197bc494670c85d`). Exact-head CI run `35634218937` on candidate
@@ -248,15 +246,31 @@ IN-P02-S02-T01 was.** One candidate covering all five semantic surfaces would ex
 repository Diffcipline line bound, so the handle is sliced and each slice is shaped only after the
 preceding slice is merged and closed.
 
-1. **IN-P02-S02-T02A — data classification and lifecycle node semantics** now has implementation
-   authority: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000022** through
-   `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `c21e76d7d73451d53ddecbeffad25872f0c50752`,
-   and `specgrain check` reports 22 specs with 0 readiness-blocked. Shaping record:
-   `docs/evidence/P02_S02_T02A_SPECGRAIN_SHAPING_2026-09-21.md`.
-2. IN-P02-S02-T02B (data-governance relations and cross-node rules), IN-P02-S02-T02C (privacy
-   semantics), IN-P02-S02-T02D (locale semantics), and IN-P02-S02-T02E (external-effect semantics)
-   are next in dependency order and remain unshaped; no implementation authority exists for them
-   until their own SpecGrain shaping completes.
+**IN-P02-S02-T02A — data classification and lifecycle node semantics — is canonically complete.**
+The canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000022** through
+`DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `c21e76d7d73451d53ddecbeffad25872f0c50752`;
+governance merged as `83d0b09400e50e7a1b83245b4441d586f66ade12` (PR #48) and implementation merged as
+`abb95d11c79c88d106a8cd58b6672891807f2d42` (PR #49). Exact-head CI run `35638097195` on candidate
+`6a6a886da0524d61d8f8098678c77a1bb453d0f9` passed on Ubuntu and Windows; fresh-main run
+`35638394618` passed on the merge commit. The Diffcipline R2 exact-candidate proof returned PASS for
+3 files / `+358/-0`, and the OCR evidence record validated against the repository contract with
+`ok: true`. Full record: `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md`.
+
+`@ineractive/product-graph` therefore now covers, in addition to the SG-000020/SG-000021 domain
+node, edge, and relation layer, the closed v1 data-classification vocabulary and the closed v1
+lifecycle vocabularies (retention, deletion, export, audit, residency) with deterministic
+`dataclass` and `datapolicy` node kinds, the stable error code `DOMAIN_INVALID_ENUM_VALUE`, and the
+stable error code `DOMAIN_LIFECYCLE_CONTRADICTION` for bounded retention without an accepted
+deletion path.
+
+Next in dependency order:
+
+1. **IN-P02-S02-T02B — data-governance relations and cross-node rules** (classification and policy
+   edges, source-specific `governs` endpoints, ungoverned sensitive data, conflicting
+   classification, class/policy conflict). Dependency SG-000022 is satisfied; this slice still
+   requires real SpecGrain shaping before implementation authority exists.
+2. IN-P02-S02-T02C (privacy semantics), IN-P02-S02-T02D (locale semantics), and IN-P02-S02-T02E
+   (external-effect semantics) follow T02B in dependency order and remain unshaped.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.

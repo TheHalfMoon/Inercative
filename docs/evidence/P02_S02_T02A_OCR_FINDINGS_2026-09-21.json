@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "DOMAIN_ENUM_FIELDS declares values as readonly string[], so an entry could be added for an attribute that is not declared as a string field; collectNodeIssues skips any non-string value before the vocabulary check, so such an entry would never fire and the constraint would be silently inert. Triaged as non-material rather than repaired: every declared entry today targets a string attribute, and the focused test pins the invariant directly by asserting that each enum field resolves to a declared attribute, that the declared type is string, and that (kind, field) pairs are unique, so a future inert entry fails the suite instead of disappearing.",
+    "start_line": 202,
+    "end_line": 209,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "A datapolicy that declares bounded retention together with an out-of-vocabulary deletion value such as \"purge\" is reported only as DOMAIN_INVALID_ENUM_VALUE, not as DOMAIN_LIFECYCLE_CONTRADICTION, because the lifecycle rule accepts only the explicit no-path cases (absent field or \"none\"). Triaged as non-material: the offending document already fails closed with the stronger schema violation, one offending value deliberately yields one complaint rather than two, and the accepted-deletion-path rule is pinned by a table test that includes the malformed-value case.",
+    "start_line": 392,
+    "end_line": 405,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
