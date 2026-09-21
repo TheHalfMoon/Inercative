@@ -161,11 +161,17 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
     required: { name: "string" },
     optional: {
       audit: "string",
+      collection: "string",
+      consent: "string",
       deletion: "string",
       description: "string",
       export: "string",
+      minimization: "string",
+      purposes: "string-list",
+      redaction: "string",
       residency: "string",
       retention: "string",
+      visibility: "string",
     },
   },
 ];
@@ -236,6 +242,41 @@ export const DOMAIN_POLICY_REQUIRED_CLASS_LEVELS = [
 /** Classification levels whose data must never be continuously exported. */
 export const DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS = ["secret", "regulated"] as const;
 
+/**
+ * Closed v1 privacy vocabularies for the `datapolicy` node kind.
+ *
+ * `docs/canonical/PRODUCT_GRAPH.md` §3 (`DataPolicy`) and
+ * `docs/canonical/RUNTIME_AND_SECURITY.md` §15 name consent, redaction, and the "minimum useful
+ * data" rule; `docs/canonical/SUPABASE_PLATFORM.md` §17.1 requires user-visible preference/consent
+ * state when applicable. The collection-source vocabulary follows the existing Dataset/DataImport
+ * vocabulary for imported data.
+ *
+ * These values describe product behaviour only. They are never a legal or regulatory compliance
+ * claim, and no jurisdiction-specific rule is encoded here.
+ */
+export const DOMAIN_COLLECTION_VALUES = [
+  "user-provided",
+  "system-generated",
+  "imported",
+  "derived",
+] as const;
+export const DOMAIN_VISIBILITY_VALUES = ["internal-only", "user-visible", "public"] as const;
+export const DOMAIN_CONSENT_VALUES = ["not-required", "required", "policy-driven"] as const;
+export const DOMAIN_REDACTION_VALUES = ["none", "sensitive-fields", "all-fields"] as const;
+export const DOMAIN_MINIMIZATION_VALUES = ["unspecified", "required"] as const;
+
+/** Consent declarations that require user-visible state. */
+export const DOMAIN_USER_VISIBLE_CONSENT_VALUES = ["required", "policy-driven"] as const;
+
+/** Visibility declarations that place data in front of the user or the world. */
+export const DOMAIN_USER_VISIBLE_VISIBILITY_VALUES = ["user-visible", "public"] as const;
+
+/** Visibility declarations that expose data beyond the product's user boundary. */
+export const DOMAIN_PUBLIC_VISIBILITY_VALUES = ["public"] as const;
+
+/** Redaction declarations that actually apply a redaction control. */
+export const DOMAIN_REDACTION_CONTROL_VALUES = ["sensitive-fields", "all-fields"] as const;
+
 /** Declares that one node attribute is constrained to a closed vocabulary. */
 export interface DomainEnumFieldSpec {
   readonly kind: DomainNodeKind;
@@ -251,10 +292,15 @@ export interface DomainEnumFieldSpec {
 export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [
   { field: "level", kind: "dataclass", values: DOMAIN_DATA_CLASS_LEVELS },
   { field: "audit", kind: "datapolicy", values: DOMAIN_AUDIT_VALUES },
+  { field: "collection", kind: "datapolicy", values: DOMAIN_COLLECTION_VALUES },
+  { field: "consent", kind: "datapolicy", values: DOMAIN_CONSENT_VALUES },
   { field: "deletion", kind: "datapolicy", values: DOMAIN_DELETION_VALUES },
   { field: "export", kind: "datapolicy", values: DOMAIN_EXPORT_VALUES },
+  { field: "minimization", kind: "datapolicy", values: DOMAIN_MINIMIZATION_VALUES },
+  { field: "redaction", kind: "datapolicy", values: DOMAIN_REDACTION_VALUES },
   { field: "residency", kind: "datapolicy", values: DOMAIN_RESIDENCY_VALUES },
   { field: "retention", kind: "datapolicy", values: DOMAIN_RETENTION_VALUES },
+  { field: "visibility", kind: "datapolicy", values: DOMAIN_VISIBILITY_VALUES },
 ];
 
 export const DOMAIN_ISSUE_CODES = [
@@ -273,6 +319,9 @@ export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_CONFLICTING_CLASSIFICATION",
   "DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY",
   "DOMAIN_CLASS_POLICY_CONFLICT",
+  "DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY",
+  "DOMAIN_MISSING_REDACTION_CONTROL",
+  "DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA",
 ] as const;
 export type DomainIssueCode = (typeof DOMAIN_ISSUE_CODES)[number];
 
@@ -580,6 +629,72 @@ function includesLevel(levels: readonly string[], level: string): boolean {
   return levels.some((entry) => entry === level);
 }
 
+function declaredValue(values: readonly string[], value: unknown): boolean {
+  return typeof value === "string" && values.some((entry) => entry === value);
+}
+
+/**
+ * Policy-local privacy rules. A malformed value is never evaluated here: the node phase already
+ * reports an out-of-vocabulary value, so one offending value still yields one complaint.
+ */
+function collectPrivacyIssues(
+  policy: ProductGraphNodeV1,
+  governedLevels: readonly string[],
+  issues: DomainIssue[],
+): void {
+  const consent = ownField(policy.attributes, "consent");
+  const visibility = ownField(policy.attributes, "visibility");
+  const redaction = ownField(policy.attributes, "redaction");
+  const audit = ownField(policy.attributes, "audit");
+  const minimization = ownField(policy.attributes, "minimization");
+
+  const requiresUserVisibleState = declaredValue(DOMAIN_USER_VISIBLE_CONSENT_VALUES, consent);
+  const declaresUserVisibleData = declaredValue(DOMAIN_USER_VISIBLE_VISIBILITY_VALUES, visibility);
+  if (requiresUserVisibleState && !declaresUserVisibleData) {
+    issues.push({
+      code: "DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY",
+      phase: "governance",
+      target: policy.id,
+      field: "visibility",
+      message: `Data policy ${policy.id} requires consent without declaring user-visible data.`,
+    });
+  }
+
+  const requiresControl = audit === "required" || minimization === "required";
+  const redactionIsDeclared =
+    redaction === undefined || declaredValue(DOMAIN_REDACTION_VALUES, redaction);
+  if (
+    requiresControl &&
+    redactionIsDeclared &&
+    !declaredValue(DOMAIN_REDACTION_CONTROL_VALUES, redaction)
+  ) {
+    issues.push({
+      code: "DOMAIN_MISSING_REDACTION_CONTROL",
+      phase: "governance",
+      target: policy.id,
+      field: "redaction",
+      message: `Data policy ${policy.id} requires audit or minimization without a redaction control.`,
+    });
+  }
+
+  if (declaredValue(DOMAIN_PUBLIC_VISIBILITY_VALUES, visibility)) {
+    const exposed = governedLevels.filter((level) =>
+      includesLevel(DOMAIN_POLICY_REQUIRED_CLASS_LEVELS, level),
+    );
+    if (exposed.length > 0) {
+      issues.push({
+        code: "DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA",
+        phase: "governance",
+        target: policy.id,
+        field: "visibility",
+        message: `Data policy ${policy.id} declares public visibility while governing ${exposed.join(
+          ", ",
+        )} data.`,
+      });
+    }
+  }
+}
+
 /**
  * Cross-node data-governance rules. These compose node semantics (the classification level of a
  * `dataclass`) with relations (`classified_as` and `governs`), so they are reported in the
@@ -645,6 +760,16 @@ function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue
   for (const node of graph.nodes) {
     if (node.kind === "datapolicy") policyById.set(node.id, node);
   }
+
+  const levelsByPolicy = new Map<string, string[]>();
+  for (const [policyId, entityIds] of entitiesByPolicy) {
+    for (const entityId of entityIds) {
+      for (const level of levelsByEntity.get(entityId) ?? []) {
+        pushDistinct(levelsByPolicy, policyId, level);
+      }
+    }
+  }
+
   for (const [policyId, entityIds] of entitiesByPolicy) {
     const policy = policyById.get(policyId);
     if (policy === undefined || ownField(policy.attributes, "export") !== "continuous") continue;
@@ -665,6 +790,10 @@ function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue
         ", ",
       )} data.`,
     });
+  }
+
+  for (const policy of policyById.values()) {
+    collectPrivacyIssues(policy, levelsByPolicy.get(policy.id) ?? [], issues);
   }
 }
 
