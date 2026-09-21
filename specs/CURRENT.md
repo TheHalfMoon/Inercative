@@ -77,7 +77,7 @@ their current delivery state:
 | SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | DONE (PR #52) | `docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md` |
 | SG-000024 | IN-P02-S02-T02C | Privacy semantics | DONE (PR #55) | `docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md` |
 | SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | DONE (PR #58) | `docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md` |
-| SG-000026 | IN-P02-S02-T02E | External-effect and integration consequence semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02E_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000026 | IN-P02-S02-T02E | External-effect and integration consequence semantics | DONE (PR #61) | `docs/evidence/P02_S02_T02E_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -309,16 +309,36 @@ and the `DOMAIN_INVALID_LOCALE_TAG` and `DOMAIN_UNSUPPORTED_LOCALE_REFERENCE` ru
 content, non-translatable identifiers, route localization, and time-zone semantics remain
 unmodelled and are recorded as out of this slice rather than half-modelled.
 
+**IN-P02-S02-T02E — external-effect and integration consequence semantics — is canonically
+complete** as SG-000026 (governance merged as `d9179ca62235327332629baf78f761398f8a81de`, PR #60;
+implementation merged as `a912c94d746ae7d4182bf4b2b1abb5948e557ba7`, PR #61). Exact-head CI run
+`35646796331` on candidate `6bb3a900a1bff630359ed87b00c3f38ddfc52a6c` passed on Ubuntu and Windows;
+fresh-main run `35647058028` passed on the merge commit. The Diffcipline R2 exact-candidate proof
+returned PASS for 3 files / `+581/-9`, and the OCR evidence record validated with `ok: true`. Full
+record: `docs/evidence/P02_S02_T02E_CLOSURE_2026-09-21.md`.
+
+The domain layer now also carries the `externaleffect` node kind with its effect, consequence,
+reconciliation, and confirmation vocabularies, the `causes` relation from workflows and actions, and
+the rules `DOMAIN_MISSING_EFFECT_TARGET`, `DOMAIN_MISSING_RECONCILIATION_POLICY`,
+`DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION`, and `DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT`.
+Validation performs no external effect: it describes and validates semantics only.
+
 Next in dependency order:
 
-1. **IN-P02-S02-T02E — external-effect and integration consequence semantics** now has
-   implementation authority: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000026**
-   through `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline
-   `1b68b17fcf95c6910725da0224782c27753b3540`, and `specgrain check` reports 26 specs with 0
-   readiness-blocked. Shaping record:
-   `docs/evidence/P02_S02_T02E_SPECGRAIN_SHAPING_2026-09-21.md`.
-2. Once T02E is closed, `IN-P02-S02-T02` is complete and the remaining phase work moves to
-   `IN-P02-S03-T01` and the tasks that are blocked behind this handle.
+**IN-P02-S02-T02 is therefore complete.** All five required semantic surfaces — classification,
+lifecycle, privacy, locale, and external effects — are merged, qualified, and canonically closed
+across SG-000022, SG-000023, SG-000024, SG-000025, and SG-000026.
+
+Next in dependency order:
+
+1. **IN-P02-S03-T01 — Change Intent → proposed graph delta** is the next eligible unit; its task row
+   lists `IN-P02-S02-T01` as its dependency, which is satisfied. It still requires real SpecGrain
+   shaping before implementation authority exists.
+2. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 were gated behind `IN-P02-S02-T02`, which is
+   now complete, so they are unblocked in dependency terms; each still requires its own SpecGrain
+   shaping before implementation.
+3. IN-P02-S04-T01 remains blocked behind IN-P02-S03-T01, and IN-P02-S05-T01 behind
+   IN-P02-S04-T01.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.

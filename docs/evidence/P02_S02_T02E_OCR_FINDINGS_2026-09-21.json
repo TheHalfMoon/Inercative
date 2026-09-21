@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "The remote-effect subset that requires an explicit target is a declared product decision rather than a derived one: authentication, payment, deployment, message-send, api-call, and network-request require a target, while data-mutation, file-write, notification, and destructive-action do not. A local or in-product effect kind therefore passes without a target even though it still crosses an internal boundary. Triaged as non-material rather than repaired: the subset is exported, documented, and pinned by a test that exercises every declared effect kind in both directions, so the boundary is explicit rather than accidental.",
+    "start_line": 363,
+    "end_line": 371,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "The classified-data rule follows effect sources through the writes relation, which only workflows carry, so an action that causes an external effect is accepted by the causes relation but is never evaluated for classified data. Triaged as non-material: an action's data access is not modelled in the Product Graph yet, the rule is documented as workflow-based, and the accepted path is pinned by a focused test so the boundary is visible instead of silent.",
+    "start_line": 1065,
+    "end_line": 1080,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
