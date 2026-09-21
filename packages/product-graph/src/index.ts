@@ -13,6 +13,9 @@ export {
 } from "./contracts.ts";
 
 export {
+  DOMAIN_ANY_NODE_KIND,
+  DOMAIN_EDGE_KINDS,
+  DOMAIN_EDGE_KIND_SPECS,
   DOMAIN_FIELD_TYPES,
   DOMAIN_ISSUE_CODES,
   DOMAIN_NODE_KINDS,
@@ -38,6 +41,9 @@ export type {
 } from "./contracts.ts";
 
 export type {
+  DomainEdgeKind,
+  DomainEdgeKindSpec,
+  DomainEndpointKind,
   DomainFieldType,
   DomainIssue,
   DomainIssueCode,

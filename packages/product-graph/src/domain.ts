@@ -2,21 +2,26 @@ import {
   validateProductGraphState,
   type JsonObject,
   type JsonValue,
+  type ProductGraphEdgeV1,
   type ProductGraphNodeV1,
   type ProductGraphStateV1,
 } from "./contracts.ts";
 
 /**
- * Deterministic Product Graph **domain** semantics — v1 node layer (IN-P02-S02-T01A).
+ * Deterministic Product Graph **domain** semantics (IN-P02-S02-T01A node layer, IN-P02-S02-T01B
+ * edge and relation layer).
  *
  * Structural Product Graph v1 validity is owned by `validateProductGraphState`. This module
- * composes on top of that contract and adds product-domain meaning for nodes:
+ * composes on top of that contract and adds product-domain meaning:
  *
  * - a closed v1 vocabulary of domain node kinds;
  * - required and optional attribute fields with declared field types per kind;
+ * - a closed v1 vocabulary of domain edge kinds with explicit endpoint-kind compatibility;
+ * - relation-level rules: self-references, duplicate relations, and authorization conflicts;
  * - total deterministic validation with stable error codes.
  *
- * Issues are reported in phase order `core -> node` and, inside a phase, keyed by
+ * Issues are reported in phase order `core -> node -> edge -> relation` and, inside a phase, keyed
+ * by
  * `(target, field, code)`. The layer never mutates, reorders, or normalizes its input and never
  * consults wall-clock time, randomness, the network, a model, or object-identity iteration order.
  * Unknown kinds, unknown fields, and malformed values fail closed rather than being coerced.
@@ -24,7 +29,7 @@ import {
 
 export const DOMAIN_SCHEMA_VERSION = 1 as const;
 
-export const DOMAIN_VALIDATION_PHASES = ["core", "node"] as const;
+export const DOMAIN_VALIDATION_PHASES = ["core", "node", "edge", "relation"] as const;
 export type DomainValidationPhase = (typeof DOMAIN_VALIDATION_PHASES)[number];
 
 export const DOMAIN_FIELD_TYPES = ["string", "string-list", "number", "boolean"] as const;
@@ -43,10 +48,39 @@ export const DOMAIN_NODE_KINDS = [
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
+export const DOMAIN_EDGE_KINDS = [
+  "may",
+  "cannot",
+  "displays",
+  "triggers",
+  "starts",
+  "reads",
+  "writes",
+  "requires",
+  "governs",
+  "affects",
+] as const;
+export type DomainEdgeKind = (typeof DOMAIN_EDGE_KINDS)[number];
+
+/**
+ * Explicit wildcard endpoint for canonical `ProductNode` targets. Only the `affects` relation uses
+ * it, because an assumption may point at any domain node; pointing at itself is still rejected by
+ * the self-reference rule.
+ */
+export const DOMAIN_ANY_NODE_KIND = "any-domain-node" as const;
+
+export type DomainEndpointKind = DomainNodeKind | typeof DOMAIN_ANY_NODE_KIND;
+
 export interface DomainNodeKindSpec {
   readonly kind: DomainNodeKind;
   readonly required: Readonly<Record<string, DomainFieldType>>;
   readonly optional: Readonly<Record<string, DomainFieldType>>;
+}
+
+export interface DomainEdgeKindSpec {
+  readonly kind: DomainEdgeKind;
+  readonly from: readonly DomainEndpointKind[];
+  readonly to: readonly DomainEndpointKind[];
 }
 
 export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
@@ -89,12 +123,30 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
   { kind: "requirement", required: { statement: "string" }, optional: { verification: "string" } },
 ];
 
+export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
+  { kind: "may", from: ["role"], to: ["action"] },
+  { kind: "cannot", from: ["role"], to: ["action"] },
+  { kind: "displays", from: ["page"], to: ["entity"] },
+  { kind: "triggers", from: ["page"], to: ["action"] },
+  { kind: "starts", from: ["action"], to: ["workflow"] },
+  { kind: "reads", from: ["workflow"], to: ["entity"] },
+  { kind: "writes", from: ["workflow"], to: ["entity"] },
+  { kind: "requires", from: ["requirement"], to: ["entity", "page", "action", "workflow"] },
+  { kind: "governs", from: ["permission"], to: ["action"] },
+  { kind: "affects", from: ["assumption"], to: [DOMAIN_ANY_NODE_KIND] },
+];
+
 export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_CORE_CONTRACT_INVALID",
   "DOMAIN_UNKNOWN_NODE_KIND",
   "DOMAIN_UNKNOWN_FIELD",
   "DOMAIN_MISSING_REQUIRED_FIELD",
   "DOMAIN_INVALID_FIELD_TYPE",
+  "DOMAIN_UNKNOWN_EDGE_KIND",
+  "DOMAIN_ENDPOINT_KIND_MISMATCH",
+  "DOMAIN_SELF_REFERENCE",
+  "DOMAIN_DUPLICATE_RELATION",
+  "DOMAIN_CONFLICTING_AUTHORIZATION",
 ] as const;
 export type DomainIssueCode = (typeof DOMAIN_ISSUE_CODES)[number];
 
@@ -124,6 +176,9 @@ export class DomainValidationError extends Error {
 const NODE_KIND_SPECS: ReadonlyMap<string, DomainNodeKindSpec> = new Map(
   DOMAIN_NODE_KIND_SPECS.map((spec) => [spec.kind, spec]),
 );
+const EDGE_KIND_SPECS: ReadonlyMap<string, DomainEdgeKindSpec> = new Map(
+  DOMAIN_EDGE_KIND_SPECS.map((spec) => [spec.kind, spec]),
+);
 const KEY_SEPARATOR = "\u0000";
 
 function compareText(left: string, right: string): number {
@@ -151,6 +206,18 @@ function fieldTypeMatches(value: JsonValue, type: DomainFieldType): boolean {
   }
   if (type === "number") return typeof value === "number" && Number.isFinite(value);
   return typeof value === "boolean";
+}
+
+function endpointKindAllowed(allowed: readonly DomainEndpointKind[], kind: string): boolean {
+  return allowed.some((entry) => entry === kind || entry === DOMAIN_ANY_NODE_KIND);
+}
+
+function relationKey(edge: ProductGraphEdgeV1): string {
+  return [edge.kind, edge.from, edge.to].join(KEY_SEPARATOR);
+}
+
+function authorizationKey(edge: ProductGraphEdgeV1): string {
+  return [edge.from, edge.to].join(KEY_SEPARATOR);
 }
 
 function issueSortKey(issue: DomainIssue): string {
@@ -222,6 +289,103 @@ interface DomainValidationRun {
   readonly issues: readonly DomainIssue[];
 }
 
+function collectEdgeIssues(
+  edge: ProductGraphEdgeV1,
+  nodeById: ReadonlyMap<string, ProductGraphNodeV1>,
+  issues: DomainIssue[],
+): void {
+  if (edge.from === edge.to) {
+    issues.push({
+      code: "DOMAIN_SELF_REFERENCE",
+      phase: "edge",
+      target: edge.id,
+      field: null,
+      message: `Edge ${edge.id} must not reference the same node at both endpoints.`,
+    });
+  }
+
+  const spec = EDGE_KIND_SPECS.get(edge.kind);
+  if (spec === undefined) {
+    issues.push({
+      code: "DOMAIN_UNKNOWN_EDGE_KIND",
+      phase: "edge",
+      target: edge.id,
+      field: "kind",
+      message: `Edge ${edge.id} has unknown domain kind "${edge.kind}".`,
+    });
+    return;
+  }
+
+  // Core validation already rejects dangling endpoints, so an unresolved endpoint here can only be
+  // an impossible state; it is skipped rather than reported a second time.
+  const from = nodeById.get(edge.from);
+  if (from !== undefined && !endpointKindAllowed(spec.from, from.kind)) {
+    issues.push({
+      code: "DOMAIN_ENDPOINT_KIND_MISMATCH",
+      phase: "edge",
+      target: edge.id,
+      field: "from",
+      message: `Edge ${edge.id} of kind "${spec.kind}" does not accept a "${from.kind}" source.`,
+    });
+  }
+
+  const to = nodeById.get(edge.to);
+  if (to !== undefined && !endpointKindAllowed(spec.to, to.kind)) {
+    issues.push({
+      code: "DOMAIN_ENDPOINT_KIND_MISMATCH",
+      phase: "edge",
+      target: edge.id,
+      field: "to",
+      message: `Edge ${edge.id} of kind "${spec.kind}" does not accept a "${to.kind}" target.`,
+    });
+  }
+}
+
+function collectRelationIssues(graph: ProductGraphStateV1, issues: DomainIssue[]): void {
+  const firstEdgeByRelation = new Map<string, string>();
+  const grantByAuthorization = new Map<string, string>();
+  const denialByAuthorization = new Map<string, string>();
+
+  for (const edge of graph.edges) {
+    const relation = relationKey(edge);
+    const duplicateOf = firstEdgeByRelation.get(relation);
+    if (duplicateOf === undefined) {
+      firstEdgeByRelation.set(relation, edge.id);
+    } else {
+      issues.push({
+        code: "DOMAIN_DUPLICATE_RELATION",
+        phase: "relation",
+        target: edge.id,
+        field: null,
+        message: `Edge ${edge.id} duplicates the "${edge.kind}" relation already declared by ${duplicateOf}.`,
+      });
+    }
+
+    const authorization = authorizationKey(edge);
+    if (edge.kind === "may") grantByAuthorization.set(authorization, edge.id);
+    if (edge.kind === "cannot") denialByAuthorization.set(authorization, edge.id);
+  }
+
+  for (const [authorization, grantId] of grantByAuthorization) {
+    const denialId = denialByAuthorization.get(authorization);
+    if (denialId === undefined) continue;
+    issues.push({
+      code: "DOMAIN_CONFLICTING_AUTHORIZATION",
+      phase: "relation",
+      target: grantId,
+      field: null,
+      message: `Edge ${grantId} grants an action that edge ${denialId} denies for the same role.`,
+    });
+    issues.push({
+      code: "DOMAIN_CONFLICTING_AUTHORIZATION",
+      phase: "relation",
+      target: denialId,
+      field: null,
+      message: `Edge ${denialId} denies an action that edge ${grantId} grants for the same role.`,
+    });
+  }
+}
+
 function runDomainValidation(value: unknown): DomainValidationRun {
   let graph: ProductGraphStateV1;
   try {
@@ -243,6 +407,11 @@ function runDomainValidation(value: unknown): DomainValidationRun {
 
   const issues: DomainIssue[] = [];
   for (const node of graph.nodes) collectNodeIssues(node, issues);
+
+  const nodeById = new Map<string, ProductGraphNodeV1>();
+  for (const node of graph.nodes) nodeById.set(node.id, node);
+  for (const edge of graph.edges) collectEdgeIssues(edge, nodeById, issues);
+  collectRelationIssues(graph, issues);
 
   return {
     state: graph,

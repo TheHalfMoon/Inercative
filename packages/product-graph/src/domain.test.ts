@@ -1,21 +1,27 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DOMAIN_ANY_NODE_KIND,
+  DOMAIN_EDGE_KINDS,
+  DOMAIN_EDGE_KIND_SPECS,
   DOMAIN_FIELD_TYPES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
   DomainValidationError,
   collectProductGraphDomainIssues,
   createProductGraphRevision,
+  openProductGraphRevision,
   parseProductGraphRevision,
   semanticProductGraphRevision,
   serializeProductGraphRevision,
   validateProductGraphDomain,
   validateProductGraphState,
+  type DomainEndpointKind,
   type DomainFieldType,
   type DomainNodeKind,
   type JsonObject,
   type JsonValue,
+  type ProductGraphEdgeV1,
   type ProductGraphNodeV1,
   type ProductGraphStateV1,
 } from "./index.ts";
@@ -267,5 +273,344 @@ describe("Product Graph domain node semantics", () => {
     expect(first).not.toBeInstanceOf(RangeError);
     expect((first as Error).message).toMatch(/maximum canonical JSON depth/);
     expect((second as Error).message).toBe((first as Error).message);
+  });
+});
+
+const edgeGraph: ProductGraphStateV1 = {
+  schemaVersion: 1,
+  graphId: "graph:domain-edges",
+  nodes: [
+    ...probeNodes,
+    { id: "probe:role-auditor", kind: "role", attributes: { name: "Auditor" } },
+  ],
+  edges: [
+    {
+      id: "edge:may",
+      kind: "may",
+      from: "probe:role",
+      to: "probe:action",
+      attributes: {},
+    },
+    {
+      id: "edge:cannot",
+      kind: "cannot",
+      from: "probe:role-auditor",
+      to: "probe:action",
+      attributes: {},
+    },
+    {
+      id: "edge:displays",
+      kind: "displays",
+      from: "probe:page",
+      to: "probe:entity",
+      attributes: {},
+    },
+    {
+      id: "edge:triggers",
+      kind: "triggers",
+      from: "probe:page",
+      to: "probe:action",
+      attributes: {},
+    },
+    {
+      id: "edge:starts",
+      kind: "starts",
+      from: "probe:action",
+      to: "probe:workflow",
+      attributes: {},
+    },
+    {
+      id: "edge:reads",
+      kind: "reads",
+      from: "probe:workflow",
+      to: "probe:entity",
+      attributes: {},
+    },
+    {
+      id: "edge:writes",
+      kind: "writes",
+      from: "probe:workflow",
+      to: "probe:entity",
+      attributes: {},
+    },
+    {
+      id: "edge:requires",
+      kind: "requires",
+      from: "probe:requirement",
+      to: "probe:page",
+      attributes: {},
+    },
+    {
+      id: "edge:governs",
+      kind: "governs",
+      from: "probe:permission",
+      to: "probe:action",
+      attributes: {},
+    },
+    {
+      id: "edge:affects",
+      kind: "affects",
+      from: "probe:assumption",
+      to: "probe:requirement",
+      attributes: {},
+    },
+  ],
+};
+
+function edge(kind: string, from: string, to: string, id = "probe:edge"): ProductGraphEdgeV1 {
+  return { id, kind, from, to, attributes: {} };
+}
+
+function graphWithEdges(
+  nodes: readonly ProductGraphNodeV1[],
+  edges: readonly ProductGraphEdgeV1[],
+): ProductGraphStateV1 {
+  return { schemaVersion: 1, graphId: "graph:probe", nodes, edges };
+}
+
+function edgeCodes(value: unknown): readonly string[] {
+  return collectProductGraphDomainIssues(value).map((issue) => issue.code);
+}
+
+function endpointAccepts(allowed: readonly DomainEndpointKind[], kind: DomainNodeKind): boolean {
+  return allowed.some((entry) => entry === kind || entry === DOMAIN_ANY_NODE_KIND);
+}
+
+describe("Product Graph domain edge and relation semantics", () => {
+  it("accepts the well-formed edge fixture with no issues", () => {
+    expect(collectProductGraphDomainIssues(edgeGraph)).toEqual([]);
+    expect(validateProductGraphDomain(edgeGraph)).toEqual(validateProductGraphState(edgeGraph));
+  });
+
+  it("declares a spec for every edge kind in declared order and exercises every kind", () => {
+    expect(DOMAIN_EDGE_KIND_SPECS.map((spec) => spec.kind)).toEqual([...DOMAIN_EDGE_KINDS]);
+    expect([...new Set(edgeGraph.edges.map((item) => item.kind))].sort()).toEqual(
+      [...DOMAIN_EDGE_KINDS].sort(),
+    );
+  });
+
+  it("declares only known node kinds and at least one endpoint for every edge kind spec", () => {
+    for (const spec of DOMAIN_EDGE_KIND_SPECS) {
+      for (const allowed of [spec.from, spec.to]) {
+        expect(allowed.length).toBeGreaterThan(0);
+        for (const entry of allowed) {
+          expect(entry === DOMAIN_ANY_NODE_KIND || DOMAIN_NODE_KINDS.includes(entry)).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("rejects an incompatible source endpoint for every edge kind", () => {
+    for (const spec of DOMAIN_EDGE_KIND_SPECS) {
+      const badFrom = DOMAIN_NODE_KINDS.find((kind) => !endpointAccepts(spec.from, kind));
+      expect(badFrom).toBeDefined();
+      const goodTo = DOMAIN_NODE_KINDS.find((kind) => endpointAccepts(spec.to, kind));
+      expect(goodTo).toBeDefined();
+      // Keep the endpoints distinct so the only reported issue is the source-kind mismatch.
+      const candidate = edge(
+        spec.kind,
+        `probe:${badFrom ?? "role"}`,
+        badFrom === goodTo ? "probe:entity" : `probe:${goodTo ?? "action"}`,
+      );
+      const issues = collectProductGraphDomainIssues(graphWithEdges(probeNodes, [candidate]));
+      expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+        ["DOMAIN_ENDPOINT_KIND_MISMATCH", "from"],
+      ]);
+    }
+  });
+
+  it("rejects an incompatible target endpoint for every edge kind that constrains it", () => {
+    for (const spec of DOMAIN_EDGE_KIND_SPECS) {
+      const badTo = DOMAIN_NODE_KINDS.find((kind) => !endpointAccepts(spec.to, kind));
+      if (badTo === undefined) continue;
+      const goodFrom = DOMAIN_NODE_KINDS.find((kind) => endpointAccepts(spec.from, kind));
+      expect(goodFrom).toBeDefined();
+      const candidate = edge(spec.kind, `probe:${goodFrom ?? "role"}`, `probe:${badTo}`);
+      const issues = collectProductGraphDomainIssues(graphWithEdges(probeNodes, [candidate]));
+      expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+        ["DOMAIN_ENDPOINT_KIND_MISMATCH", "to"],
+      ]);
+    }
+  });
+
+  it("rejects unknown edge kinds without inventing endpoint rules", () => {
+    const candidate = edge("depends_on", "probe:role", "probe:action");
+    const issues = collectProductGraphDomainIssues(graphWithEdges(probeNodes, [candidate]));
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_UNKNOWN_EDGE_KIND",
+      phase: "edge",
+      target: "probe:edge",
+      field: "kind",
+    });
+  });
+
+  it("rejects self-referencing edges for every edge kind", () => {
+    for (const kind of DOMAIN_EDGE_KINDS) {
+      const candidate = edge(kind, "probe:entity", "probe:entity");
+      const issues = collectProductGraphDomainIssues(graphWithEdges(probeNodes, [candidate]));
+      const selfReference = issues.filter((issue) => issue.code === "DOMAIN_SELF_REFERENCE");
+      expect(selfReference).toHaveLength(1);
+      expect(selfReference[0]).toMatchObject({ phase: "edge", target: "probe:edge", field: null });
+    }
+  });
+
+  it("rejects duplicate relations and conflicting role authorization", () => {
+    const duplicates = collectProductGraphDomainIssues(
+      graphWithEdges(probeNodes, [
+        edge("may", "probe:role", "probe:action", "edge:first"),
+        edge("may", "probe:role", "probe:action", "edge:second"),
+      ]),
+    );
+    expect(duplicates).toHaveLength(1);
+    expect(duplicates[0]).toMatchObject({
+      code: "DOMAIN_DUPLICATE_RELATION",
+      phase: "relation",
+      target: "edge:second",
+      field: null,
+    });
+    expect(duplicates[0]?.message).toContain("edge:first");
+
+    const conflicts = collectProductGraphDomainIssues(
+      graphWithEdges(probeNodes, [
+        edge("may", "probe:role", "probe:action", "edge:grant"),
+        edge("cannot", "probe:role", "probe:action", "edge:deny"),
+      ]),
+    );
+    expect(conflicts.map((issue) => [issue.code, issue.target, issue.phase])).toEqual([
+      ["DOMAIN_CONFLICTING_AUTHORIZATION", "edge:deny", "relation"],
+      ["DOMAIN_CONFLICTING_AUTHORIZATION", "edge:grant", "relation"],
+    ]);
+  });
+
+  it("does not report an authorization conflict when the roles differ", () => {
+    const secondRole: ProductGraphNodeV1 = {
+      id: "probe:role-2",
+      kind: "role",
+      attributes: { name: "Auditor" },
+    };
+    const issues = collectProductGraphDomainIssues(
+      graphWithEdges(
+        [...probeNodes, secondRole],
+        [
+          edge("may", "probe:role", "probe:action", "edge:grant"),
+          edge("cannot", "probe:role-2", "probe:action", "edge:deny"),
+        ],
+      ),
+    );
+    expect(issues).toEqual([]);
+  });
+
+  it("orders issues by documented phase, then target, field, and code", () => {
+    const broken = graphWithEdges(
+      [
+        { id: "probe:zeta", kind: "role", attributes: { name: "Z", scope: "x" } },
+        { id: "probe:alpha", kind: "role", attributes: { name: "A" } },
+        { id: "probe:beta", kind: "entity", attributes: { name: "B" } },
+      ],
+      [
+        edge("may", "probe:alpha", "probe:beta", "edge:z"),
+        edge("may", "probe:alpha", "probe:beta", "edge:a"),
+        edge("depends_on", "probe:alpha", "probe:beta", "edge:m"),
+      ],
+    );
+    const reordered = graphWithEdges(
+      [
+        { id: "probe:beta", kind: "entity", attributes: { name: "B" } },
+        { id: "probe:alpha", kind: "role", attributes: { name: "A" } },
+        { id: "probe:zeta", kind: "role", attributes: { scope: "x", name: "Z" } },
+      ],
+      [
+        edge("depends_on", "probe:alpha", "probe:beta", "edge:m"),
+        edge("may", "probe:alpha", "probe:beta", "edge:a"),
+        edge("may", "probe:alpha", "probe:beta", "edge:z"),
+      ],
+    );
+
+    const baseline = collectProductGraphDomainIssues(broken);
+    expect(baseline.map((issue) => [issue.phase, issue.target, issue.code])).toEqual([
+      ["node", "probe:zeta", "DOMAIN_UNKNOWN_FIELD"],
+      ["edge", "edge:a", "DOMAIN_ENDPOINT_KIND_MISMATCH"],
+      ["edge", "edge:m", "DOMAIN_UNKNOWN_EDGE_KIND"],
+      ["edge", "edge:z", "DOMAIN_ENDPOINT_KIND_MISMATCH"],
+      ["relation", "edge:z", "DOMAIN_DUPLICATE_RELATION"],
+    ]);
+    expect(collectProductGraphDomainIssues(broken)).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);
+  });
+
+  it("keeps one deterministic core issue ahead of every domain phase", () => {
+    const dangling = graphWithEdges(probeNodes, [
+      edge("may", "probe:role", "probe:missing"),
+      edge("depends_on", "probe:role", "probe:action"),
+    ]);
+    const issues = collectProductGraphDomainIssues(dangling);
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_CORE_CONTRACT_INVALID",
+      phase: "core",
+      target: "",
+      field: null,
+    });
+    expect(issues[0]?.message).toContain("references a missing node");
+  });
+
+  it("does not mutate the validated input and preserves canonical revision identity", () => {
+    const candidate: ProductGraphStateV1 = structuredClone(edgeGraph);
+    const before = JSON.stringify(candidate);
+    const revision = createProductGraphRevision(edgeGraph);
+
+    expect(edgeCodes(candidate)).toEqual([]);
+    const validated = validateProductGraphDomain(candidate);
+
+    expect(JSON.stringify(candidate)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(candidate));
+    expect(semanticProductGraphRevision(candidate)).toBe(revision.revision);
+    expect(parseProductGraphRevision(serializeProductGraphRevision(revision)).revision).toBe(
+      revision.revision,
+    );
+
+    const reordered: ProductGraphStateV1 = {
+      ...edgeGraph,
+      nodes: [...edgeGraph.nodes].reverse(),
+      edges: [...edgeGraph.edges].reverse(),
+    };
+    expect(edgeCodes(reordered)).toEqual([]);
+    expect(semanticProductGraphRevision(reordered)).toBe(revision.revision);
+
+    const retargeted: ProductGraphStateV1 = {
+      ...edgeGraph,
+      edges: edgeGraph.edges.map((item) =>
+        item.id === "edge:displays" ? { ...item, to: "probe:workflow" } : item,
+      ),
+    };
+    expect(edgeCodes(retargeted)).toEqual(["DOMAIN_ENDPOINT_KIND_MISMATCH"]);
+    expect(semanticProductGraphRevision(retargeted)).not.toBe(revision.revision);
+  });
+
+  it("preserves ordered single-pass outgoing-edge query results after the OCR-003 repair", () => {
+    const query = openProductGraphRevision(createProductGraphRevision(edgeGraph));
+
+    for (const node of edgeGraph.nodes) {
+      expect(query.outgoingEdges(node.id).map((item) => item.id)).toEqual(
+        edgeGraph.edges
+          .filter((item) => item.from === node.id)
+          .map((item) => item.id)
+          .sort(),
+      );
+    }
+    expect(query.outgoingEdges("probe:role").map((item) => item.id)).toEqual(["edge:may"]);
+    expect(query.outgoingEdges("probe:role-auditor").map((item) => item.id)).toEqual([
+      "edge:cannot",
+    ]);
+    expect(query.outgoingEdges("probe:persona")).toEqual([]);
+    expect(query.outgoingEdges("probe:missing")).toEqual([]);
+    expect(query.sliceFrom("probe:role").edgeIds).toEqual(["edge:may"]);
+  });
+
+  it("covers every declared edge kind in the edge fixture", () => {
+    for (const kind of DOMAIN_EDGE_KINDS) {
+      expect(edgeGraph.edges.some((item) => item.kind === kind)).toBe(true);
+    }
   });
 });
