@@ -76,7 +76,7 @@ their current delivery state:
 | SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | DONE (PR #49) | `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md` |
 | SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | DONE (PR #52) | `docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md` |
 | SG-000024 | IN-P02-S02-T02C | Privacy semantics | DONE (PR #55) | `docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md` |
-| SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02D_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | DONE (PR #58) | `docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -295,15 +295,25 @@ consent, redaction, minimization) with a free-form processing-purpose list, and 
 `DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY`, `DOMAIN_MISSING_REDACTION_CONTROL`, and
 `DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA`.
 
+**IN-P02-S02-T02D — locale and internationalization semantics — is canonically complete** as
+SG-000025 (governance merged as `478e57019e17677def4b60800bdff5b6137dc640`, PR #57; implementation
+merged as `a8055154aac9fa5e4b24326aefdee32c73170709`, PR #58). Exact-head CI run `35644898019` on
+candidate `03da2407c2177aec54b988ccf72660f076f1e400` passed on Ubuntu and Windows; fresh-main run
+`35645248950` passed on the merge commit. The Diffcipline R2 exact-candidate proof returned PASS for
+3 files / `+321/-0`, and the OCR evidence record validated with `ok: true`. Full record:
+`docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md`.
+
+The domain layer now also carries the `localeconfig` node kind with the documented locale-tag subset
+and the `DOMAIN_INVALID_LOCALE_TAG` and `DOMAIN_UNSUPPORTED_LOCALE_REFERENCE` rules. Translated
+content, non-translatable identifiers, route localization, and time-zone semantics remain
+unmodelled and are recorded as out of this slice rather than half-modelled.
+
 Next in dependency order:
 
-1. **IN-P02-S02-T02D — locale and internationalization semantics** now has implementation
-   authority: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000025** through
-   `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `41b8d1ba2fad77734bb69158bc4be8b1574d06ab`,
-   and `specgrain check` reports 25 specs with 0 readiness-blocked. Shaping record:
-   `docs/evidence/P02_S02_T02D_SPECGRAIN_SHAPING_2026-09-21.md`.
-2. IN-P02-S02-T02E (external-effect semantics) follows T02D in dependency order and remains
-   unshaped.
+1. **IN-P02-S02-T02E — external-effect and integration consequence semantics** is the last slice of
+   IN-P02-S02-T02 and requires real SpecGrain shaping before implementation authority exists.
+2. Once T02E is closed, `IN-P02-S02-T02` is complete and the remaining phase work moves to
+   `IN-P02-S03-T01` and the tasks that are blocked behind this handle.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.

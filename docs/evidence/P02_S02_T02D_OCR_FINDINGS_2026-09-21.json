@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "The accepted locale-tag subset rejects well-formed tags that carry variant, extension, or private-use subtags, for example de-1996 or en-Latn-x-private, so a document using a valid tag outside the subset fails closed. This is the intended boundary rather than a defect: the pattern is exported, the module documents it as an Ineractive validation subset and not a claim of full BCP-47 conformance, the SpecNode records the same constraint as a safety requirement, and the accepted and rejected shapes are both pinned by table tests.",
+    "start_line": 300,
+    "end_line": 308,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "Locale reference rules are skipped when the supported-locale list is unusable, meaning absent, blank, or containing an out-of-subset entry, so that document reports only the schema violation for the list instead of also reporting unsupported references. Triaged as non-material: there is no membership to judge without a usable list, one offending value deliberately yields one complaint rather than several derived ones, and the behaviour is pinned by a focused test.",
+    "start_line": 596,
+    "end_line": 603,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]

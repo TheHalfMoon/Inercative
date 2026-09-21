@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "478e57019e17677def4b60800bdff5b6137dc640",
+    "head": "03da2407c2177aec54b988ccf72660f076f1e400",
+    "mergeBase": "478e57019e17677def4b60800bdff5b6137dc640"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head 03da240 on the repository-local candidate clone; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the excluded test oracle: every added assertion was checked against the contract it pins rather than against the implementation, covering the declared locale field groups and the pattern boundaries, eight accepted locale-tag shapes, ten rejected shapes checked against both the predicate and the reported issues, every locale attribute and list entry outside the subset in one document, each of the four unsupported-reference positions, four accepted locale configurations including absent optional metadata, the unusable-supported-list cases, the rule that a field failing its declared type is not re-evaluated, deterministic reporting across node order and repeated runs, and mutation-freedom with unchanged canonical revision identity.",
+        "evidenceReference": "docs/evidence/P02_S02_T02D_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02D_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02D_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T02D_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "23bd262a9063ee13b028b779663865bd08d2b0149f2f8db8764bc7a56331c13f"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-016",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "The tag subset is deliberate and documented: the pattern is exported, the module states it is an Ineractive validation subset rather than full BCP-47 conformance, the SpecNode records that as a safety requirement, and both accepted and rejected shapes are pinned by table tests.",
+        "evidenceReference": "docs/evidence/P02_S02_T02D_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-017",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "Without a usable supported-locale list there is no membership to judge, so the reference rule is skipped and the unusable list is reported once as a schema violation; the case is pinned by a focused test.",
+        "evidenceReference": "docs/evidence/P02_S02_T02D_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}
