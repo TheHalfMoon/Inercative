@@ -68,10 +68,12 @@ describe("Product Graph v1 contracts", () => {
   });
 
   it("rejects duplicate node and edge identities", () => {
-    expect(() => validateProductGraphState({ ...graph, nodes: [graph.nodes[0], graph.nodes[0]] }))
-      .toThrow(/Duplicate Product Graph node id/);
-    expect(() => validateProductGraphState({ ...graph, edges: [graph.edges[0], graph.edges[0]] }))
-      .toThrow(/Duplicate Product Graph edge id/);
+    expect(() =>
+      validateProductGraphState({ ...graph, nodes: [graph.nodes[0], graph.nodes[0]] }),
+    ).toThrow(/Duplicate Product Graph node id/);
+    expect(() =>
+      validateProductGraphState({ ...graph, edges: [graph.edges[0], graph.edges[0]] }),
+    ).toThrow(/Duplicate Product Graph edge id/);
   });
 
   it("rejects dangling edge endpoints", () => {
@@ -110,8 +112,9 @@ describe("Product Graph v1 contracts", () => {
     expect(() =>
       validateProductGraphRevision({ ...document, revision: `sha256:${"0".repeat(64)}` }),
     ).toThrow(/does not match canonical graph state/);
-    expect(() => validateProductGraphRevision({ ...document, representation: "relational" }))
-      .toThrow(/structured-document-v1/);
+    expect(() =>
+      validateProductGraphRevision({ ...document, representation: "relational" }),
+    ).toThrow(/structured-document-v1/);
   });
 
   it("provides deterministic node, outgoing-edge, and one-hop slice queries", () => {
