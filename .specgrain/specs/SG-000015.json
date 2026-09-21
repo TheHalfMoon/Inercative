@@ -1,0 +1,67 @@
+{
+  "acceptance": [
+    "Structured-document persistence round-trips to the same canonical semantic graph.",
+    "Equivalent insertion-order permutations produce identical canonical serialization and semantic revision.",
+    "Node lookup, outgoing-edge lookup, and one-hop slice queries are deterministic on the representative fixture.",
+    "Focused tests, Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/review, and exact-head Ubuntu/Windows repository CI are recorded before merge."
+  ],
+  "change_surface": [
+    "packages/product-graph-lab/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 2800
+  },
+  "dependencies": [
+    "SG-000013",
+    "SG-000014"
+  ],
+  "evidence": {
+    "required": [
+      "Focused structured-document prototype tests for canonicalization, round-trip, revision stability, and queries.",
+      "Diffcipline R1 exact-candidate PASS plus Alibaba OCR exact-diff accounting/review.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000015",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Use one private dependency-free prototype rather than selecting production storage or introducing a database dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Keep the prototype private and non-authoritative; do not expose it as the public Product Graph v1 contract."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A private deterministic structured-document Product Graph prototype proves canonical normalization, round-trip, and bounded query semantics without selecting the production v1 representation.",
+  "parent_id": null,
+  "rationale": "",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000015 and the private structured prototype; no public contract or external state is changed."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Implement one private canonical structured-document Product Graph prototype with explicit graph, node, and edge identity.",
+    "Canonicalize node/edge ordering and nested JSON object keys so semantic revisions and serialization are insertion-order stable.",
+    "Provide one representative Product Graph fixture plus focused round-trip and bounded query tests."
+  ],
+  "scope_out": [
+    "No normalized relational prototype or representation comparison.",
+    "No public Product Graph v1 contract, graph database, production persistence, migration, or remote side effect."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S01-T01A Prototype canonical structured Product Graph document"
+}
