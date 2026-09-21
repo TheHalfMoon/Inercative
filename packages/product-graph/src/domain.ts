@@ -33,7 +33,7 @@ import {
 
 export const DOMAIN_SCHEMA_VERSION = 1 as const;
 
-export const DOMAIN_VALIDATION_PHASES = ["core", "node", "edge", "relation"] as const;
+export const DOMAIN_VALIDATION_PHASES = ["core", "node", "edge", "relation", "governance"] as const;
 export type DomainValidationPhase = (typeof DOMAIN_VALIDATION_PHASES)[number];
 
 export const DOMAIN_FIELD_TYPES = ["string", "string-list", "number", "boolean"] as const;
@@ -65,6 +65,7 @@ export const DOMAIN_EDGE_KINDS = [
   "requires",
   "governs",
   "affects",
+  "classified_as",
 ] as const;
 export type DomainEdgeKind = (typeof DOMAIN_EDGE_KINDS)[number];
 
@@ -85,8 +86,31 @@ export interface DomainNodeKindSpec {
 
 export interface DomainEdgeKindSpec {
   readonly kind: DomainEdgeKind;
+  /** Declared source kinds, derived from `pairs` in first-occurrence order. */
   readonly from: readonly DomainEndpointKind[];
+  /** Declared target kinds, derived from `pairs` in first-occurrence order. */
   readonly to: readonly DomainEndpointKind[];
+  /** Endpoint authority: every source/target combination the relation accepts. */
+  readonly pairs: readonly DomainEndpointPair[];
+}
+
+/**
+ * One accepted source/target combination for a relation kind. A relation name can therefore carry
+ * source-specific targets (`governs` means `permission -> action` and `datapolicy -> entity`)
+ * without widening a declared endpoint set into combinations the previous Grains rejected.
+ */
+export type DomainEndpointPair = readonly [DomainEndpointKind, DomainEndpointKind];
+
+function edgeKindSpec(
+  kind: DomainEdgeKind,
+  pairs: readonly DomainEndpointPair[],
+): DomainEdgeKindSpec {
+  return Object.freeze({
+    kind,
+    from: Object.freeze([...new Set(pairs.map((pair) => pair[0]))]),
+    pairs: Object.freeze(pairs.map((pair) => Object.freeze([pair[0], pair[1]] as const))),
+    to: Object.freeze([...new Set(pairs.map((pair) => pair[1]))]),
+  });
 }
 
 export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
@@ -147,16 +171,26 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
 ];
 
 export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
-  { kind: "may", from: ["role"], to: ["action"] },
-  { kind: "cannot", from: ["role"], to: ["action"] },
-  { kind: "displays", from: ["page"], to: ["entity"] },
-  { kind: "triggers", from: ["page"], to: ["action"] },
-  { kind: "starts", from: ["action"], to: ["workflow"] },
-  { kind: "reads", from: ["workflow"], to: ["entity"] },
-  { kind: "writes", from: ["workflow"], to: ["entity"] },
-  { kind: "requires", from: ["requirement"], to: ["entity", "page", "action", "workflow"] },
-  { kind: "governs", from: ["permission"], to: ["action"] },
-  { kind: "affects", from: ["assumption"], to: [DOMAIN_ANY_NODE_KIND] },
+  edgeKindSpec("may", [["role", "action"]]),
+  edgeKindSpec("cannot", [["role", "action"]]),
+  edgeKindSpec("displays", [["page", "entity"]]),
+  edgeKindSpec("triggers", [["page", "action"]]),
+  edgeKindSpec("starts", [["action", "workflow"]]),
+  edgeKindSpec("reads", [["workflow", "entity"]]),
+  edgeKindSpec("writes", [["workflow", "entity"]]),
+  edgeKindSpec("requires", [
+    ["requirement", "entity"],
+    ["requirement", "page"],
+    ["requirement", "action"],
+    ["requirement", "workflow"],
+    ["requirement", "datapolicy"],
+  ]),
+  edgeKindSpec("governs", [
+    ["permission", "action"],
+    ["datapolicy", "entity"],
+  ]),
+  edgeKindSpec("affects", [["assumption", DOMAIN_ANY_NODE_KIND]]),
+  edgeKindSpec("classified_as", [["entity", "dataclass"]]),
 ];
 
 /**
@@ -186,6 +220,21 @@ export const DOMAIN_DELETION_VALUES = ["none", "soft", "hard", "scheduled"] as c
 export const DOMAIN_EXPORT_VALUES = ["none", "on-request", "continuous"] as const;
 export const DOMAIN_AUDIT_VALUES = ["none", "required"] as const;
 export const DOMAIN_RESIDENCY_VALUES = ["unspecified", "single-region", "multi-region"] as const;
+
+/**
+ * Classification levels whose data requires an explicit handling policy. Derived from the recorded
+ * consistency defect "sensitive/secret data has no handling policy"
+ * (`docs/canonical/PRODUCT_GRAPH.md` §12) applied over the closed v1 classification vocabulary.
+ */
+export const DOMAIN_POLICY_REQUIRED_CLASS_LEVELS = [
+  "personal",
+  "sensitive",
+  "secret",
+  "regulated",
+] as const;
+
+/** Classification levels whose data must never be continuously exported. */
+export const DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS = ["secret", "regulated"] as const;
 
 /** Declares that one node attribute is constrained to a closed vocabulary. */
 export interface DomainEnumFieldSpec {
@@ -221,6 +270,9 @@ export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_SELF_REFERENCE",
   "DOMAIN_DUPLICATE_RELATION",
   "DOMAIN_CONFLICTING_AUTHORIZATION",
+  "DOMAIN_CONFLICTING_CLASSIFICATION",
+  "DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY",
+  "DOMAIN_CLASS_POLICY_CONFLICT",
 ] as const;
 export type DomainIssueCode = (typeof DOMAIN_ISSUE_CODES)[number];
 
@@ -290,6 +342,13 @@ function fieldTypeMatches(value: JsonValue, type: DomainFieldType): boolean {
 
 function endpointKindAllowed(allowed: readonly DomainEndpointKind[], kind: string): boolean {
   return allowed.some((entry) => entry === kind || entry === DOMAIN_ANY_NODE_KIND);
+}
+
+function allowedTargetsFor(
+  spec: DomainEdgeKindSpec,
+  fromKind: string,
+): readonly DomainEndpointKind[] {
+  return spec.pairs.filter((pair) => pair[0] === fromKind).map((pair) => pair[1]);
 }
 
 function relationKey(edge: ProductGraphEdgeV1): string {
@@ -440,7 +499,8 @@ function collectEdgeIssues(
   // Core validation already rejects dangling endpoints, so an unresolved endpoint here can only be
   // an impossible state; it is skipped rather than reported a second time.
   const from = nodeById.get(edge.from);
-  if (from !== undefined && !endpointKindAllowed(spec.from, from.kind)) {
+  const targets = from === undefined ? [] : allowedTargetsFor(spec, from.kind);
+  if (from !== undefined && targets.length === 0) {
     issues.push({
       code: "DOMAIN_ENDPOINT_KIND_MISMATCH",
       phase: "edge",
@@ -451,7 +511,7 @@ function collectEdgeIssues(
   }
 
   const to = nodeById.get(edge.to);
-  if (to !== undefined && !endpointKindAllowed(spec.to, to.kind)) {
+  if (targets.length > 0 && to !== undefined && !endpointKindAllowed(targets, to.kind)) {
     issues.push({
       code: "DOMAIN_ENDPOINT_KIND_MISMATCH",
       phase: "edge",
@@ -507,6 +567,107 @@ function collectRelationIssues(graph: ProductGraphStateV1, issues: DomainIssue[]
   }
 }
 
+function pushDistinct(bucket: Map<string, string[]>, key: string, value: string): void {
+  const existing = bucket.get(key);
+  if (existing === undefined) {
+    bucket.set(key, [value]);
+    return;
+  }
+  if (!existing.includes(value)) existing.push(value);
+}
+
+function includesLevel(levels: readonly string[], level: string): boolean {
+  return levels.some((entry) => entry === level);
+}
+
+/**
+ * Cross-node data-governance rules. These compose node semantics (the classification level of a
+ * `dataclass`) with relations (`classified_as` and `governs`), so they are reported in the
+ * `governance` phase after `relation`. Only structurally admissible relations participate: an edge
+ * that already failed endpoint validation cannot make an entity governed. Core validation sorts
+ * nodes and edges by id before this phase runs, so every reported order is deterministic.
+ */
+function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue[]): void {
+  const kindById = new Map<string, string>();
+  const levelByClassId = new Map<string, string>();
+  for (const node of graph.nodes) {
+    kindById.set(node.id, node.kind);
+    if (node.kind !== "dataclass") continue;
+    const level = ownField(node.attributes, "level");
+    if (typeof level === "string" && level.trim().length > 0) levelByClassId.set(node.id, level);
+  }
+
+  const levelsByEntity = new Map<string, string[]>();
+  const policiesByEntity = new Map<string, string[]>();
+  const entitiesByPolicy = new Map<string, string[]>();
+
+  for (const edge of graph.edges) {
+    if (edge.kind === "classified_as") {
+      if (kindById.get(edge.from) !== "entity") continue;
+      const level = levelByClassId.get(edge.to);
+      if (level !== undefined) pushDistinct(levelsByEntity, edge.from, level);
+      continue;
+    }
+    if (edge.kind === "governs") {
+      if (kindById.get(edge.from) !== "datapolicy" || kindById.get(edge.to) !== "entity") continue;
+      pushDistinct(policiesByEntity, edge.to, edge.from);
+      pushDistinct(entitiesByPolicy, edge.from, edge.to);
+    }
+  }
+
+  for (const [entityId, levels] of levelsByEntity) {
+    if (levels.length > 1) {
+      issues.push({
+        code: "DOMAIN_CONFLICTING_CLASSIFICATION",
+        phase: "governance",
+        target: entityId,
+        field: null,
+        message: `Entity ${entityId} is classified as more than one level: ${levels.join(", ")}.`,
+      });
+    }
+    const requiresPolicy = levels.some((level) =>
+      includesLevel(DOMAIN_POLICY_REQUIRED_CLASS_LEVELS, level),
+    );
+    if (requiresPolicy && (policiesByEntity.get(entityId) ?? []).length === 0) {
+      issues.push({
+        code: "DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY",
+        phase: "governance",
+        target: entityId,
+        field: null,
+        message: `Entity ${entityId} is classified as ${levels.join(
+          ", ",
+        )} but no data policy governs it.`,
+      });
+    }
+  }
+
+  const policyById = new Map<string, ProductGraphNodeV1>();
+  for (const node of graph.nodes) {
+    if (node.kind === "datapolicy") policyById.set(node.id, node);
+  }
+  for (const [policyId, entityIds] of entitiesByPolicy) {
+    const policy = policyById.get(policyId);
+    if (policy === undefined || ownField(policy.attributes, "export") !== "continuous") continue;
+    const blocked = [
+      ...new Set(
+        entityIds
+          .flatMap((entityId) => levelsByEntity.get(entityId) ?? [])
+          .filter((level) => includesLevel(DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS, level)),
+      ),
+    ];
+    if (blocked.length === 0) continue;
+    issues.push({
+      code: "DOMAIN_CLASS_POLICY_CONFLICT",
+      phase: "governance",
+      target: policyId,
+      field: "export",
+      message: `Data policy ${policyId} allows continuous export while governing ${blocked.join(
+        ", ",
+      )} data.`,
+    });
+  }
+}
+
 function runDomainValidation(value: unknown): DomainValidationRun {
   let graph: ProductGraphStateV1;
   try {
@@ -533,6 +694,7 @@ function runDomainValidation(value: unknown): DomainValidationRun {
   for (const node of graph.nodes) nodeById.set(node.id, node);
   for (const edge of graph.edges) collectEdgeIssues(edge, nodeById, issues);
   collectRelationIssues(graph, issues);
+  collectGovernanceIssues(graph, issues);
 
   return {
     state: graph,
