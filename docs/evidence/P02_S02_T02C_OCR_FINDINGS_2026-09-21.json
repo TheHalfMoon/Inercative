@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "The redaction-control rule treats an out-of-vocabulary redaction value as if no control were declared, so a policy that requires audit or minimization and declares a malformed redaction reports only the vocabulary violation. Triaged as non-material: the document already fails closed with the stronger schema violation, one offending value deliberately yields one complaint rather than two, and the suppression is pinned by a focused test so the behaviour cannot drift silently.",
+    "start_line": 663,
+    "end_line": 673,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA only fires when the policy governs data whose classification requires a handling policy, so a policy that declares public visibility while governing nothing is accepted. Triaged as non-material: a policy that governs no classified data exposes nothing, the classification layer owns exposure, and the accepted case is pinned by a focused test so the boundary of the rule is explicit rather than accidental.",
+    "start_line": 679,
+    "end_line": 693,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
