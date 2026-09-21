@@ -2,7 +2,7 @@ name: p02-s01-t01a-shape
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@a3b4cc7a1d9f0d3e4a04f56662a2c5a5a7e1b3c7 # v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
