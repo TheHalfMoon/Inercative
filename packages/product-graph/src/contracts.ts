@@ -258,12 +258,13 @@ class ProductGraphQuerySession implements ProductGraphQueryV1 {
   constructor(document: ProductGraphRevisionDocumentV1) {
     this.#graph = document.graph;
     for (const item of this.#graph.nodes) this.#nodes.set(item.id, item);
-    for (const item of this.#graph.nodes) {
-      this.#outgoing.set(
-        item.id,
-        Object.freeze(this.#graph.edges.filter((candidate) => candidate.from === item.id)),
-      );
-    }
+    // Single pass keyed by edge.from: the index stays complete and ordered with O(edges) work
+    // instead of re-scanning every edge once per node.
+    const outgoingByNode = new Map<string, ProductGraphEdgeV1[]>();
+    for (const item of this.#graph.nodes) outgoingByNode.set(item.id, []);
+    for (const item of this.#graph.edges) outgoingByNode.get(item.from)?.push(item);
+    for (const [nodeId, bucket] of outgoingByNode)
+      this.#outgoing.set(nodeId, Object.freeze(bucket));
   }
 
   getNode(nodeId: string): ProductGraphNodeV1 | null {
