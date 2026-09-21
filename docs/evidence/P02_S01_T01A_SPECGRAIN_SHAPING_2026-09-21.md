@@ -76,3 +76,13 @@ The SpecNode was produced by the pinned SpecGrain CLI. No lifecycle or verificat
 ## Decomposition correction
 
 This Grain supersedes the oversized unmerged SG-000015 candidate preserved in closed PR #22. The correction narrows T01 to one independently verifiable structured-document prototype so repository Diffcipline limits remain authoritative.
+
+
+## Qualification history
+
+- shaping run `35557658224` failed before checkout because the temporary workflow referenced an invalid setup action SHA; no qualification claim is attached to that run;
+- corrected pinned-source shaping run `35557722484` completed successfully and produced the Grain recorded above;
+- repository CI run `35557807568` on implementation head `819086d609acdb2ba8ec0fec6d9d4c9feb794634` failed at Prettier for the two new prototype files; later gates did not execute;
+- one-shot formatter run `35557873822` used repository-pinned pnpm/Node tooling, formatted exactly those two files, verified them with Prettier, removed its workflow, and produced bot-authored head `824cd9ded69ac048fdd7a9d8c2e6c8b74c24616d`;
+- CI #147 on that bot-authored head was `action_required` with no acceptance jobs and is not treated as evidence;
+- fresh exact-head Ubuntu/Windows CI remains required on the connector-authored reconciliation head.
