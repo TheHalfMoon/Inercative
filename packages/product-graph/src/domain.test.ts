@@ -435,6 +435,11 @@ describe("Product Graph domain edge and relation semantics", () => {
       expect(spec.pairs.length).toBeGreaterThan(0);
       expect(spec.from).toEqual([...new Set(spec.pairs.map(([from]) => from))]);
       expect(spec.to).toEqual([...new Set(spec.pairs.map(([, to]) => to))]);
+      // The wildcard is a target-only construct: endpoint matching looks the source up by concrete
+      // node kind, so a pair declaring it as a source would be unreachable.
+      for (const [from] of spec.pairs) {
+        expect(from).not.toBe(DOMAIN_ANY_NODE_KIND);
+      }
     }
   });
 
