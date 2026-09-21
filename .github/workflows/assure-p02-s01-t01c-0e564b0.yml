@@ -1,4 +1,5 @@
 name: assure-p02-s01-t01c-0e564b0
+# Evidence-only workflow; the checked-out candidate remains immutable.
 
 on:
   pull_request:
