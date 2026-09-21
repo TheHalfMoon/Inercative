@@ -74,7 +74,7 @@ their current delivery state:
 | SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | DONE (PR #43) | `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md` |
 | SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
 | SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | DONE (PR #49) | `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md` |
-| SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | DONE (PR #52) | `docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -264,17 +264,29 @@ lifecycle vocabularies (retention, deletion, export, audit, residency) with dete
 stable error code `DOMAIN_LIFECYCLE_CONTRADICTION` for bounded retention without an accepted
 deletion path.
 
+**IN-P02-S02-T02B — data-governance relations and cross-node rules — is also canonically complete.**
+`SG-000023` was promoted through `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline
+`3394799b125c76a0705db1c21635840216f46c26`; governance merged as
+`37ed7501e5c8c59e207df99a23c1fb1e65eceb4d` (PR #51) and implementation merged as
+`59be1a686707346b6d179cbc9783020cb924548d` (PR #52). Exact-head CI run `35640897112` on candidate
+`b2823005423aeadd69bfa691adf410bcfbe0e895` passed on Ubuntu and Windows; fresh-main run
+`35641153443` passed on the merge commit. The Diffcipline R2 exact-candidate proof returned PASS for
+3 files / `+469/-13`, the OCR evidence record validated with `ok: true`, and the delegation review's
+`OCR-012` finding was repaired forward at the reviewed head. Full record:
+`docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md`.
+
+The domain layer now also carries the `classified_as` relation, an endpoint-pair authority that
+keeps every previously rejected endpoint combination rejected, and the `governance` phase with
+`DOMAIN_CONFLICTING_CLASSIFICATION`, `DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY`, and
+`DOMAIN_CLASS_POLICY_CONFLICT`.
+
 Next in dependency order:
 
-1. **IN-P02-S02-T02B — data-governance relations and cross-node rules** (classification and policy
-   edges, source-specific `governs` endpoints, ungoverned sensitive data, conflicting
-   classification, class/policy conflict) now has implementation authority: the canonical
-   `TheHalfMoon/SpecGrain` CLI promoted **SG-000023** through
-   `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `3394799b125c76a0705db1c21635840216f46c26`,
-   and `specgrain check` reports 23 specs with 0 readiness-blocked. Shaping record:
-   `docs/evidence/P02_S02_T02B_SPECGRAIN_SHAPING_2026-09-21.md`.
-2. IN-P02-S02-T02C (privacy semantics), IN-P02-S02-T02D (locale semantics), and IN-P02-S02-T02E
-   (external-effect semantics) follow T02B in dependency order and remain unshaped.
+1. **IN-P02-S02-T02C — privacy semantics** (collection, purpose, visibility, consent, redaction,
+   minimization) is the next slice of IN-P02-S02-T02 and requires real SpecGrain shaping before
+   implementation authority exists.
+2. IN-P02-S02-T02D (locale semantics) and IN-P02-S02-T02E (external-effect semantics) follow T02C in
+   dependency order and remain unshaped.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.

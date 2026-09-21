@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "Endpoint matching now resolves the source through its concrete node kind, so an endpoint pair that declared the any-domain-node wildcard as a source would never match and the pair would be inert. Raised while reviewing this candidate and fixed forward within the same branch: the reviewed head pins the invariant directly, because the pair-table test now fails if any pair declares the wildcard as a source. No endpoint behaviour changed; the wildcard remains a target-only construct.",
+    "start_line": 347,
+    "end_line": 352,
+    "category": "correctness",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "When both endpoints of an edge are incompatible, the pair-based check reports the source mismatch and skips the target check, so one issue is reported instead of the two issues the previous implementation produced. Triaged as non-material: a document with two wrong endpoints is still rejected, the edge-phase target stays unambiguous, and one issue per offending edge is the convention already established for the relation and node phases.",
+    "start_line": 499,
+    "end_line": 514,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
