@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "26d28aa9d2b0b510c563f558b6f5543d8ef3c34a",
+    "head": "bd8b40dae2006712af04b1e00249a43864f0a33b",
+    "mergeBase": "26d28aa9d2b0b510c563f558b6f5543d8ef3c34a"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head bd8b40d on the repository-local candidate clone; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the excluded test oracle: every added assertion was checked against the contract it pins rather than against the implementation, covering the declared privacy vocabularies and their derived subsets (user-visible consent and visibility, public visibility, redaction controls), the processing-purpose list and its malformed forms, every declared policy value accepted with privacy-neutral companion attributes, out-of-vocabulary privacy values reported once as vocabulary violations, both directions of the consent/visibility rule, the redaction-control rule with its declared, absent, and malformed cases, the public-visibility rule with its classification and visibility negative cases including a policy that governs nothing, deterministic reporting across node and edge order, mutation-freedom with unchanged canonical revision identity, the governance phase as the final phase, and fail-closed handling of an undeclared privacy-adjacent attribute.",
+        "evidenceReference": "docs/evidence/P02_S02_T02C_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02C_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02C_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T02C_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "9ab35fbfe64130312682b9ad5c3f5cec9562a7d8964590ea882d65c9f9685d42"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-014",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "A policy that requires audit or minimization and declares a malformed redaction value reports only the vocabulary violation. The document still fails closed, one offending value yields one complaint, and the suppression is pinned by a focused test.",
+        "evidenceReference": "docs/evidence/P02_S02_T02C_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-015",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "Public visibility is only reported when the policy governs data whose classification requires a handling policy. A policy that governs nothing exposes nothing, and the accepted boundary is pinned by a focused test.",
+        "evidenceReference": "docs/evidence/P02_S02_T02C_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}

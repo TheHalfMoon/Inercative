@@ -75,7 +75,7 @@ their current delivery state:
 | SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
 | SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | DONE (PR #49) | `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md` |
 | SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | DONE (PR #52) | `docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md` |
-| SG-000024 | IN-P02-S02-T02C | Privacy semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02C_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000024 | IN-P02-S02-T02C | Privacy semantics | DONE (PR #55) | `docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -281,16 +281,25 @@ keeps every previously rejected endpoint combination rejected, and the `governan
 `DOMAIN_CONFLICTING_CLASSIFICATION`, `DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY`, and
 `DOMAIN_CLASS_POLICY_CONFLICT`.
 
+**IN-P02-S02-T02C — privacy semantics — is canonically complete** as SG-000024 (governance merged as
+`26d28aa9d2b0b510c563f558b6f5543d8ef3c34a`, PR #54; implementation merged as
+`54f5eb7b0fc435b18a6cc5f91d8e4c635e458ee4`, PR #55). Exact-head CI run `35643152217` on candidate
+`bd8b40dae2006712af04b1e00249a43864f0a33b` passed on Ubuntu and Windows; fresh-main run
+`35643378586` passed on the merge commit. The Diffcipline R2 exact-candidate proof returned PASS for
+3 files / `+405/-7`, and the OCR evidence record validated with `ok: true`. Full record:
+`docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md`.
+
+The data layer now also carries the privacy vocabularies (collection source, user visibility,
+consent, redaction, minimization) with a free-form processing-purpose list, and the rules
+`DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY`, `DOMAIN_MISSING_REDACTION_CONTROL`, and
+`DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA`.
+
 Next in dependency order:
 
-1. **IN-P02-S02-T02C — privacy semantics** (collection, purpose, visibility, consent, redaction,
-   minimization) now has implementation authority: the canonical `TheHalfMoon/SpecGrain` CLI
-   promoted **SG-000024** through `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline
-   `8cd309b3780b54299298836c3eb04ffecd8eefac`, and `specgrain check` reports 24 specs with 0
-   readiness-blocked. Shaping record:
-   `docs/evidence/P02_S02_T02C_SPECGRAIN_SHAPING_2026-09-21.md`.
-2. IN-P02-S02-T02D (locale semantics) and IN-P02-S02-T02E (external-effect semantics) follow T02C in
-   dependency order and remain unshaped.
+1. **IN-P02-S02-T02D — locale semantics** is the next slice of IN-P02-S02-T02 and requires real
+   SpecGrain shaping before implementation authority exists.
+2. IN-P02-S02-T02E (external-effect semantics) follows T02D in dependency order and remains
+   unshaped.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.
