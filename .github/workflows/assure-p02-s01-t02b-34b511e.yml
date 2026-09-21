@@ -1,0 +1,144 @@
+name: assure-p02-s01-t02b-34b511e
+
+on:
+  push:
+    branches:
+      - assurance/p02-s01-t02b-34b511e
+    paths:
+      - .github/workflows/assure-p02-s01-t02b-34b511e.yml
+
+permissions:
+  contents: read
+
+jobs:
+  exact-candidate-baseline:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 34b511ee44366be408c6e90143ff451e1fcdbc78
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Record toolchain versions
+        run: |
+          node --version
+          pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Test
+        run: pnpm run test
+
+      - name: Record exact identities
+        if: always()
+        shell: bash
+        run: |
+          echo "base=ff5bcbc3241d43fbb643d037ccb5967a20213af4"
+          echo "candidate=34b511ee44366be408c6e90143ff451e1fcdbc78"
+          echo "checked_out=$(git rev-parse HEAD)"
+
+  exact-candidate-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 34b511ee44366be408c6e90143ff451e1fcdbc78
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install repository dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify stable-contract consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          grain = json.loads(Path(".specgrain/specs/SG-000019.json").read_text(encoding="utf-8"))
+          contracts = Path("packages/product-graph/src/contracts.ts").read_text(encoding="utf-8")
+          index = Path("packages/product-graph/src/index.ts").read_text(encoding="utf-8")
+          current = Path("specs/CURRENT.md").read_text(encoding="utf-8")
+
+          assert grain["id"] == "SG-000019"
+          assert grain["state"] == "GRAIN"
+          assert grain["dependencies"] == ["SG-000018"]
+          assert "structured-document-v1" in contracts
+          assert "PRODUCT_GRAPH_SCHEMA_VERSION = 1" in contracts
+          assert "semanticProductGraphRevision" in contracts
+          assert "validateProductGraphRevision" in contracts
+          assert "openProductGraphRevision" in index
+          assert "product-graph-lab" not in contracts
+          assert "product-graph-lab" not in index
+          assert "| SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) |" in current
+          assert "| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | GRAIN / IMPLEMENTATION CANDIDATE |" in current
+          assert "\\n| SG-000019" not in current
+          print("stable-contract-consistency=PASS")
+          PY
+
+      - name: Alibaba OCR deterministic accounting and rule resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global @alibaba-group/open-code-review@1.12.7
+          ocr --version
+          ocr delegate preview --from ff5bcbc3241d43fbb643d037ccb5967a20213af4 --to 34b511ee44366be408c6e90143ff451e1fcdbc78 --format json | tee /tmp/ocr-preview.json
+          ocr delegate rule .specgrain/specs/SG-000019.json packages/product-graph/src/contracts.ts packages/product-graph/src/contracts.test.ts specs/CURRENT.md | tee /tmp/ocr-rules.txt
+
+      - name: Diffcipline exact-candidate proof
+        uses: TheHalfMoon/Diffcipline@5cb1c77340b75649f6168e0e8f66479ea047ea96
+        with:
+          base: ff5bcbc3241d43fbb643d037ccb5967a20213af4
+          risk: R1
+          run-verification: "true"
+
+      - name: Record exact identities
+        if: always()
+        shell: bash
+        run: |
+          echo "base=ff5bcbc3241d43fbb643d037ccb5967a20213af4"
+          echo "candidate=34b511ee44366be408c6e90143ff451e1fcdbc78"
+          echo "checked_out=$(git rev-parse HEAD)"
