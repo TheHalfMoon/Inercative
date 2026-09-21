@@ -120,6 +120,14 @@ export function reversedInsertionOrder(state: ProductGraphState): ProductGraphSt
   return { ...state, nodes: [...state.nodes].reverse(), edges: [...state.edges].reverse() };
 }
 
+function validatedSnapshotGraph(snapshot: StructuredDocumentSnapshot): ProductGraphState {
+  const graph = canonicalGraphState(snapshot.graph);
+  if (snapshot.revision !== semanticGraphRevision(graph)) {
+    throw new TypeError("Structured Product Graph snapshot revision does not match its graph.");
+  }
+  return graph;
+}
+
 class StructuredQuerySession {
   readonly #graph: ProductGraphState;
   readonly #nodes = new Map<string, ProductGraphNode>();
@@ -169,18 +177,19 @@ export const structuredDocumentPrototype = {
   },
 
   restore(snapshot: StructuredDocumentSnapshot): ProductGraphState {
-    return canonicalGraphState(snapshot.graph);
+    return validatedSnapshotGraph(snapshot);
   },
 
   serialize(snapshot: StructuredDocumentSnapshot): string {
+    const graph = validatedSnapshotGraph(snapshot);
     return JSON.stringify({
       representation: snapshot.representation,
       revision: snapshot.revision,
-      graph: canonicalGraphState(snapshot.graph),
+      graph,
     });
   },
 
   open(snapshot: StructuredDocumentSnapshot): StructuredQuerySession {
-    return new StructuredQuerySession(snapshot.graph);
+    return new StructuredQuerySession(validatedSnapshotGraph(snapshot));
   },
 };
