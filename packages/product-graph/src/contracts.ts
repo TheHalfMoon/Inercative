@@ -4,8 +4,12 @@ export const PRODUCT_GRAPH_SCHEMA_VERSION = 1 as const;
 export const PRODUCT_GRAPH_REPRESENTATION = "structured-document-v1" as const;
 
 export type JsonScalar = string | number | boolean | null;
+
+export interface JsonObject {
+  readonly [key: string]: JsonValue;
+}
+
 export type JsonValue = JsonScalar | readonly JsonValue[] | JsonObject;
-export type JsonObject = Readonly<Record<string, JsonValue>>;
 export type ProductGraphRevision = `sha256:${string}`;
 
 export interface ProductGraphNodeV1 {
@@ -55,7 +59,7 @@ function asRecord(value: unknown, label: string): Record<string, unknown> {
   if (value === null || Array.isArray(value) || typeof value !== "object") {
     throw new TypeError(`${label} must be an object.`);
   }
-  const prototype = Object.getPrototypeOf(value);
+  const prototype: unknown = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) {
     throw new TypeError(`${label} must be a plain object.`);
   }
@@ -69,13 +73,17 @@ function nonBlankString(value: unknown, label: string): string {
   return value;
 }
 
+function isUnknownArray(value: unknown): value is readonly unknown[] {
+  return Array.isArray(value);
+}
+
 function canonicalJson(value: unknown, label = "JSON value"): JsonValue {
   if (value === null || typeof value === "string" || typeof value === "boolean") return value;
   if (typeof value === "number") {
     if (!Number.isFinite(value)) throw new TypeError(`${label} numbers must be finite.`);
     return value;
   }
-  if (Array.isArray(value)) {
+  if (isUnknownArray(value)) {
     return Object.freeze(value.map((item, index) => canonicalJson(item, `${label}[${index}]`)));
   }
   const record = asRecord(value, label);
@@ -90,10 +98,10 @@ function canonicalJson(value: unknown, label = "JSON value"): JsonValue {
 
 function attributes(value: unknown, label: string): JsonObject {
   const canonical = canonicalJson(value, label);
-  if (canonical === null || Array.isArray(canonical) || typeof canonical !== "object") {
+  if (canonical === null || isUnknownArray(canonical) || typeof canonical !== "object") {
     throw new TypeError(`${label} must be a JSON object.`);
   }
-  return canonical as JsonObject;
+  return canonical;
 }
 
 function node(value: unknown): ProductGraphNodeV1 {
