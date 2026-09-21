@@ -10,9 +10,13 @@ import {
   DOMAIN_DELETION_VALUES,
   DOMAIN_EDGE_KINDS,
   DOMAIN_EDGE_KIND_SPECS,
+  DOMAIN_EFFECT_CONSEQUENCE_VALUES,
+  DOMAIN_EFFECT_KINDS,
   DOMAIN_ENUM_FIELDS,
   DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
+  DOMAIN_CONFIRMATION_VALUES,
+  DOMAIN_IRREVERSIBLE_CONSEQUENCE_VALUES,
   DOMAIN_LOCALE_LIST_FIELDS,
   DOMAIN_LOCALE_REFERENCE_FIELDS,
   DOMAIN_LOCALE_TAG_PATTERN,
@@ -21,8 +25,13 @@ import {
   DOMAIN_NODE_KIND_SPECS,
   DOMAIN_POLICY_REQUIRED_CLASS_LEVELS,
   DOMAIN_PUBLIC_VISIBILITY_VALUES,
+  DOMAIN_RECONCILIATION_CONTROL_VALUES,
+  DOMAIN_RECONCILIATION_REQUIRED_CONSEQUENCE_VALUES,
+  DOMAIN_RECONCILIATION_VALUES,
   DOMAIN_REDACTION_CONTROL_VALUES,
   DOMAIN_REDACTION_VALUES,
+  DOMAIN_REMOTE_EFFECT_KINDS,
+  DOMAIN_REQUIRED_CONFIRMATION_VALUES,
   DOMAIN_RESIDENCY_VALUES,
   DOMAIN_RETENTION_VALUES,
   DOMAIN_USER_VISIBLE_CONSENT_VALUES,
@@ -73,6 +82,14 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
     rtlLocales: ["ar"],
     supportedLocales: ["en", "ar"],
     userSelectable: true,
+  },
+  externaleffect: {
+    confirmation: "required",
+    consequence: "informational",
+    effect: "payment",
+    idempotent: true,
+    reconciliation: "receipt",
+    target: "billing-provider",
   },
 };
 
@@ -404,6 +421,13 @@ const edgeGraph: ProductGraphStateV1 = {
       kind: "governs",
       from: "probe:datapolicy",
       to: "probe:entity",
+      attributes: {},
+    },
+    {
+      id: "edge:causes",
+      kind: "causes",
+      from: "probe:workflow",
+      to: "probe:externaleffect",
       attributes: {},
     },
   ],
@@ -1561,6 +1585,342 @@ describe("Product Graph locale semantics", () => {
       supportedLocales: ["ar", "en"],
       userSelectable: true,
     });
+    const before = JSON.stringify(graph);
+    const revision = createProductGraphRevision(graph);
+
+    expect(collectProductGraphDomainIssues(graph)).toEqual([]);
+    const validated = validateProductGraphDomain(graph);
+
+    expect(JSON.stringify(graph)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(graph));
+    expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
+  });
+});
+
+function externalEffect(attributes: JsonObject): ProductGraphStateV1 {
+  return graphWith([{ id: "effect:node", kind: "externaleffect", attributes }]);
+}
+
+const externalEffectEnumFields = DOMAIN_ENUM_FIELDS.filter(
+  (spec) => spec.kind === "externaleffect",
+);
+
+const externalEffectBase: JsonObject = {
+  confirmation: "required",
+  consequence: "informational",
+  effect: "notification",
+  reconciliation: "receipt",
+  target: "local-target",
+};
+
+/** An effect that declares no confirmation requirement, for the classified-data rule. */
+const unconfirmedEffect: JsonObject = {
+  consequence: "informational",
+  effect: "notification",
+  reconciliation: "receipt",
+  target: "local-target",
+};
+
+describe("Product Graph external-effect semantics", () => {
+  it("declares the external-effect vocabularies and their derived subsets", () => {
+    expect([...DOMAIN_EFFECT_KINDS]).toEqual([
+      "network-request",
+      "api-call",
+      "message-send",
+      "payment",
+      "deployment",
+      "authentication",
+      "data-mutation",
+      "file-write",
+      "notification",
+      "destructive-action",
+    ]);
+    expect([...DOMAIN_EFFECT_CONSEQUENCE_VALUES]).toEqual([
+      "informational",
+      "material",
+      "irreversible",
+    ]);
+    expect([...DOMAIN_RECONCILIATION_VALUES]).toEqual(["none", "receipt", "manual"]);
+    expect([...DOMAIN_CONFIRMATION_VALUES]).toEqual(["not-required", "required"]);
+    expect([...DOMAIN_RECONCILIATION_REQUIRED_CONSEQUENCE_VALUES]).toEqual([
+      "material",
+      "irreversible",
+    ]);
+    expect([...DOMAIN_IRREVERSIBLE_CONSEQUENCE_VALUES]).toEqual(["irreversible"]);
+    expect([...DOMAIN_RECONCILIATION_CONTROL_VALUES]).toEqual(["receipt", "manual"]);
+    expect([...DOMAIN_REQUIRED_CONFIRMATION_VALUES]).toEqual(["required"]);
+
+    for (const kind of DOMAIN_REMOTE_EFFECT_KINDS) {
+      expect(DOMAIN_EFFECT_KINDS).toContain(kind);
+    }
+    expect(DOMAIN_REMOTE_EFFECT_KINDS.length).toBeLessThan(DOMAIN_EFFECT_KINDS.length);
+    for (const value of DOMAIN_RECONCILIATION_REQUIRED_CONSEQUENCE_VALUES) {
+      expect(DOMAIN_EFFECT_CONSEQUENCE_VALUES).toContain(value);
+    }
+    for (const value of DOMAIN_RECONCILIATION_CONTROL_VALUES) {
+      expect(DOMAIN_RECONCILIATION_VALUES).toContain(value);
+      expect(DOMAIN_RECONCILIATION_CONTROL_VALUES).not.toContain("none");
+    }
+    for (const value of DOMAIN_REQUIRED_CONFIRMATION_VALUES) {
+      expect(DOMAIN_CONFIRMATION_VALUES).toContain(value);
+    }
+  });
+
+  it("declares an enum field for every external-effect vocabulary", () => {
+    expect(externalEffectEnumFields.map((spec) => spec.field)).toEqual([
+      "confirmation",
+      "consequence",
+      "effect",
+      "reconciliation",
+    ]);
+    for (const spec of externalEffectEnumFields) {
+      const values = DOMAIN_ENUM_FIELDS.find(
+        (entry) => entry.kind === spec.kind && entry.field === spec.field,
+      )?.values;
+      expect(values).toEqual([...spec.values]);
+    }
+  });
+
+  it.each(
+    externalEffectEnumFields.flatMap((spec) =>
+      spec.values.map((value) => [spec.field, value] as [string, string]),
+    ),
+  )("accepts the declared external-effect value %s=%s", (field, value) => {
+    const attributes: Record<string, JsonValue> = { ...externalEffectBase };
+    attributes[field] = value;
+    expect(collectProductGraphDomainIssues(externalEffect(attributes))).toEqual([]);
+  });
+
+  it.each([
+    ["effect", "teleport"],
+    ["consequence", "catastrophic"],
+    ["reconciliation", "auto"],
+    ["confirmation", "maybe"],
+  ])("rejects the out-of-vocabulary external-effect value %s=%s", (field, value) => {
+    const attributes: Record<string, JsonValue> = { ...externalEffectBase };
+    attributes[field] = value;
+    const issues = collectProductGraphDomainIssues(externalEffect(attributes));
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_INVALID_ENUM_VALUE",
+      phase: "node",
+      target: "effect:node",
+      field,
+    });
+  });
+
+  it("reports a remote effect without a target and accepts local effects without one", () => {
+    for (const kind of DOMAIN_REMOTE_EFFECT_KINDS) {
+      const issues = collectProductGraphDomainIssues(
+        externalEffect({ consequence: "informational", effect: kind }),
+      );
+      expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+        ["DOMAIN_MISSING_EFFECT_TARGET", "target"],
+      ]);
+    }
+
+    for (const kind of DOMAIN_EFFECT_KINDS.filter(
+      (entry) => !DOMAIN_REMOTE_EFFECT_KINDS.some((remote) => remote === entry),
+    )) {
+      expect(
+        collectProductGraphDomainIssues(
+          externalEffect({ consequence: "informational", effect: kind }),
+        ),
+      ).toEqual([]);
+      expect(
+        collectProductGraphDomainIssues(
+          externalEffect({ consequence: "informational", effect: kind, target: "named-target" }),
+        ),
+      ).toEqual([]);
+    }
+  });
+
+  it("does not double-report a blank target", () => {
+    const issues = collectProductGraphDomainIssues(
+      externalEffect({ consequence: "informational", effect: "webhook", target: " " }),
+    );
+    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_INVALID_ENUM_VALUE", "effect"],
+      ["DOMAIN_INVALID_FIELD_TYPE", "target"],
+    ]);
+  });
+
+  it.each([
+    [{ consequence: "material", effect: "notification" }, ["DOMAIN_MISSING_RECONCILIATION_POLICY"]],
+    [
+      { consequence: "material", effect: "notification", reconciliation: "none" },
+      ["DOMAIN_MISSING_RECONCILIATION_POLICY"],
+    ],
+    [{ consequence: "material", effect: "notification", reconciliation: "receipt" }, []],
+    [
+      {
+        confirmation: "required",
+        consequence: "irreversible",
+        effect: "notification",
+        reconciliation: "manual",
+      },
+      [],
+    ],
+    [
+      { consequence: "informational", effect: "notification", idempotent: false },
+      ["DOMAIN_MISSING_RECONCILIATION_POLICY"],
+    ],
+    [{ consequence: "informational", effect: "notification", idempotent: true }, []],
+    [{ consequence: "informational", effect: "notification" }, []],
+  ] as [JsonObject, readonly string[]][])(
+    "reports the reconciliation rule for %j",
+    (attributes, expectedCodes) => {
+      const issues = collectProductGraphDomainIssues(externalEffect(attributes));
+      expect(issues.map((issue) => issue.code)).toEqual([...expectedCodes]);
+      for (const issue of issues) {
+        expect(issue).toMatchObject({ phase: "node", field: "reconciliation" });
+      }
+    },
+  );
+
+  it.each([
+    [
+      { consequence: "irreversible", effect: "notification", reconciliation: "receipt" },
+      ["DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION"],
+    ],
+    [
+      {
+        confirmation: "not-required",
+        consequence: "irreversible",
+        effect: "notification",
+        reconciliation: "receipt",
+      },
+      ["DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION"],
+    ],
+    [
+      {
+        confirmation: "required",
+        consequence: "irreversible",
+        effect: "notification",
+        reconciliation: "receipt",
+      },
+      [],
+    ],
+    [
+      { confirmation: "not-required", consequence: "material", effect: "notification" },
+      ["DOMAIN_MISSING_RECONCILIATION_POLICY"],
+    ],
+  ] as [JsonObject, readonly string[]][])(
+    "reports the irreversible-confirmation rule for %j",
+    (attributes, expectedCodes) => {
+      const issues = collectProductGraphDomainIssues(externalEffect(attributes));
+      expect(issues.map((issue) => issue.code)).toEqual([...expectedCodes]);
+      for (const issue of issues) {
+        expect(issue.phase).toBe("node");
+      }
+    },
+  );
+
+  it("accepts the causes relation from workflows and actions only", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      ...probeNodes,
+      { id: "effect:caused", kind: "externaleffect", attributes: { ...externalEffectBase } },
+    ];
+
+    for (const source of ["probe:workflow", "probe:action"]) {
+      expect(
+        collectProductGraphDomainIssues(
+          graphWithEdges(nodes, [edge("causes", source, "effect:caused", "edge:causes")]),
+        ),
+      ).toEqual([]);
+    }
+    for (const [from, to] of [
+      ["probe:role", "effect:caused"],
+      ["probe:entity", "effect:caused"],
+      ["probe:workflow", "probe:entity"],
+    ]) {
+      const codes = governanceCodes(
+        graphWithEdges(nodes, [edge("causes", from ?? "", to ?? "", "edge:causes")]),
+      );
+      expect(codes).toContain("DOMAIN_ENDPOINT_KIND_MISMATCH");
+    }
+  });
+
+  it("reports classified data reaching an external effect without confirmation", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      { id: "flow:workflow", kind: "workflow", attributes: { name: "Export", steps: ["read"] } },
+      { id: "flow:entity", kind: "entity", attributes: { name: "Customer" } },
+      { id: "flow:class", kind: "dataclass", attributes: { level: "personal", name: "PII" } },
+      { id: "flow:policy", kind: "datapolicy", attributes: { name: "PII policy" } },
+      { id: "flow:effect", kind: "externaleffect", attributes: { ...unconfirmedEffect } },
+    ];
+    const causesEdge = edge("causes", "flow:workflow", "flow:effect", "edge:causes");
+    const classification = edge("classified_as", "flow:entity", "flow:class", "edge:class");
+    const governs = edge("governs", "flow:policy", "flow:entity", "edge:governs");
+    const writes = edge("writes", "flow:workflow", "flow:entity", "edge:writes");
+
+    const reported = collectProductGraphDomainIssues(
+      graphWithEdges(nodes, [causesEdge, classification, governs, writes]),
+    );
+    expect(reported.map((issue) => [issue.code, issue.phase, issue.target, issue.field])).toEqual([
+      ["DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT", "governance", "flow:effect", "confirmation"],
+    ]);
+
+    const confirmed = collectProductGraphDomainIssues(
+      graphWithEdges(
+        nodes.map((node) =>
+          node.id === "flow:effect"
+            ? { ...node, attributes: { ...node.attributes, confirmation: "required" } }
+            : node,
+        ),
+        [causesEdge, classification, governs, writes],
+      ),
+    );
+    expect(confirmed).toEqual([]);
+  });
+
+  it("does not report classified data reaching an effect for internal data", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      { id: "flow:workflow", kind: "workflow", attributes: { name: "Export", steps: ["read"] } },
+      { id: "flow:entity", kind: "entity", attributes: { name: "Ops" } },
+      { id: "flow:class", kind: "dataclass", attributes: { level: "internal", name: "Ops" } },
+      { id: "flow:effect", kind: "externaleffect", attributes: { ...unconfirmedEffect } },
+    ];
+
+    expect(
+      collectProductGraphDomainIssues(
+        graphWithEdges(nodes, [
+          edge("causes", "flow:workflow", "flow:effect", "edge:causes"),
+          edge("classified_as", "flow:entity", "flow:class", "edge:class"),
+          edge("writes", "flow:workflow", "flow:entity", "edge:writes"),
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  it("keeps external-effect reporting deterministic across node and edge order", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      { id: "flow:workflow", kind: "workflow", attributes: { name: "Export", steps: ["read"] } },
+      { id: "flow:entity", kind: "entity", attributes: { name: "Customer" } },
+      { id: "flow:class", kind: "dataclass", attributes: { level: "personal", name: "PII" } },
+      { id: "flow:policy", kind: "datapolicy", attributes: { name: "PII policy" } },
+      { id: "flow:effect", kind: "externaleffect", attributes: { ...unconfirmedEffect } },
+    ];
+    const edges: readonly ProductGraphEdgeV1[] = [
+      edge("causes", "flow:workflow", "flow:effect", "edge:causes"),
+      edge("classified_as", "flow:entity", "flow:class", "edge:class"),
+      edge("governs", "flow:policy", "flow:entity", "edge:governs"),
+      edge("writes", "flow:workflow", "flow:entity", "edge:writes"),
+    ];
+    const baseline = collectProductGraphDomainIssues(graphWithEdges(nodes, edges));
+
+    expect(baseline.map((issue) => [issue.code, issue.target])).toEqual([
+      ["DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT", "flow:effect"],
+    ]);
+    expect(
+      collectProductGraphDomainIssues(graphWithEdges([...nodes].reverse(), [...edges].reverse())),
+    ).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(graphWithEdges(nodes, edges))).toEqual(baseline);
+  });
+
+  it("does not mutate external-effect input and preserves revision identity", () => {
+    const graph = externalEffect({ ...externalEffectBase });
     const before = JSON.stringify(graph);
     const revision = createProductGraphRevision(graph);
 

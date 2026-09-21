@@ -52,6 +52,7 @@ export const DOMAIN_NODE_KINDS = [
   "dataclass",
   "datapolicy",
   "localeconfig",
+  "externaleffect",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -67,6 +68,7 @@ export const DOMAIN_EDGE_KINDS = [
   "governs",
   "affects",
   "classified_as",
+  "causes",
 ] as const;
 export type DomainEdgeKind = (typeof DOMAIN_EDGE_KINDS)[number];
 
@@ -185,6 +187,17 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
       userSelectable: "boolean",
     },
   },
+  {
+    kind: "externaleffect",
+    required: { consequence: "string", effect: "string" },
+    optional: {
+      confirmation: "string",
+      idempotent: "boolean",
+      name: "string",
+      reconciliation: "string",
+      target: "string",
+    },
+  },
 ];
 
 export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
@@ -208,6 +221,10 @@ export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
   ]),
   edgeKindSpec("affects", [["assumption", DOMAIN_ANY_NODE_KIND]]),
   edgeKindSpec("classified_as", [["entity", "dataclass"]]),
+  edgeKindSpec("causes", [
+    ["workflow", "externaleffect"],
+    ["action", "externaleffect"],
+  ]),
 ];
 
 /**
@@ -317,6 +334,64 @@ export const DOMAIN_LOCALE_REFERENCE_FIELDS = [
 /** Locale attributes that hold a list of locale tags. */
 export const DOMAIN_LOCALE_LIST_FIELDS = ["supportedLocales", "rtlLocales"] as const;
 
+/**
+ * Closed v1 external-effect vocabularies for the `externaleffect` node kind.
+ *
+ * `docs/canonical/PRODUCT_GRAPH.md` §3 defines `ExternalEffect` as webhook delivery, email/SMS send,
+ * payment mutation, remote deployment, or an irreversible API action, and §12 records "destructive
+ * Action lacks consequence classification" and "external effect has no consequence/reconciliation
+ * policy" as consistency defects. `docs/canonical/RUNTIME_AND_SECURITY.md` §14 requires a
+ * side-effect class per action, and `docs/canonical/PRODUCT_CAPABILITY_MATRIX.md` lists
+ * consequence/idempotency/reconciliation as V1 CORE.
+ *
+ * Validation describes semantics only. No value here causes, attempts, or simulates an effect.
+ */
+export const DOMAIN_EFFECT_KINDS = [
+  "network-request",
+  "api-call",
+  "message-send",
+  "payment",
+  "deployment",
+  "authentication",
+  "data-mutation",
+  "file-write",
+  "notification",
+  "destructive-action",
+] as const;
+
+/** Effect kinds that address a remote system and therefore require an explicit target. */
+export const DOMAIN_REMOTE_EFFECT_KINDS = [
+  "network-request",
+  "api-call",
+  "message-send",
+  "payment",
+  "deployment",
+  "authentication",
+] as const;
+
+export const DOMAIN_EFFECT_CONSEQUENCE_VALUES = [
+  "informational",
+  "material",
+  "irreversible",
+] as const;
+export const DOMAIN_RECONCILIATION_VALUES = ["none", "receipt", "manual"] as const;
+export const DOMAIN_CONFIRMATION_VALUES = ["not-required", "required"] as const;
+
+/** Consequence classes that always require a reconciliation policy. */
+export const DOMAIN_RECONCILIATION_REQUIRED_CONSEQUENCE_VALUES = [
+  "material",
+  "irreversible",
+] as const;
+
+/** Consequence classes that cannot be undone. */
+export const DOMAIN_IRREVERSIBLE_CONSEQUENCE_VALUES = ["irreversible"] as const;
+
+/** Reconciliation declarations that actually reconcile an effect. */
+export const DOMAIN_RECONCILIATION_CONTROL_VALUES = ["receipt", "manual"] as const;
+
+/** Confirmation declarations that gate an effect behind an explicit decision. */
+export const DOMAIN_REQUIRED_CONFIRMATION_VALUES = ["required"] as const;
+
 /** Declares that one node attribute is constrained to a closed vocabulary. */
 export interface DomainEnumFieldSpec {
   readonly kind: DomainNodeKind;
@@ -341,6 +416,10 @@ export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [
   { field: "residency", kind: "datapolicy", values: DOMAIN_RESIDENCY_VALUES },
   { field: "retention", kind: "datapolicy", values: DOMAIN_RETENTION_VALUES },
   { field: "visibility", kind: "datapolicy", values: DOMAIN_VISIBILITY_VALUES },
+  { field: "confirmation", kind: "externaleffect", values: DOMAIN_CONFIRMATION_VALUES },
+  { field: "consequence", kind: "externaleffect", values: DOMAIN_EFFECT_CONSEQUENCE_VALUES },
+  { field: "effect", kind: "externaleffect", values: DOMAIN_EFFECT_KINDS },
+  { field: "reconciliation", kind: "externaleffect", values: DOMAIN_RECONCILIATION_VALUES },
 ];
 
 export const DOMAIN_ISSUE_CODES = [
@@ -364,6 +443,10 @@ export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA",
   "DOMAIN_INVALID_LOCALE_TAG",
   "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE",
+  "DOMAIN_MISSING_EFFECT_TARGET",
+  "DOMAIN_MISSING_RECONCILIATION_POLICY",
+  "DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION",
+  "DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT",
 ] as const;
 export type DomainIssueCode = (typeof DOMAIN_ISSUE_CODES)[number];
 
@@ -530,10 +613,84 @@ function collectNodeIssues(node: ProductGraphNodeV1, issues: DomainIssue[]): voi
 
   collectLifecycleIssues(node, issues);
   collectLocaleIssues(node, spec, issues);
+  collectExternalEffectIssues(node, spec, issues);
 }
 
 function declaredFieldType(spec: DomainNodeKindSpec, field: string): DomainFieldType | null {
   return spec.required[field] ?? spec.optional[field] ?? null;
+}
+
+function passesDeclaredType(
+  node: ProductGraphNodeV1,
+  spec: DomainNodeKindSpec,
+  field: string,
+): boolean {
+  const type = declaredFieldType(spec, field);
+  if (type === null) return false;
+  const value = ownField(node.attributes, field);
+  return value !== undefined && fieldTypeMatches(value, type);
+}
+
+/**
+ * External-effect consequence semantics. A remote effect must name its target; a material,
+ * irreversible, or non-idempotent effect must declare how it is reconciled; and an irreversible
+ * effect must require confirmation. A value that already failed its declared type or vocabulary is
+ * not re-evaluated, so one offending value still yields one complaint. This function reads
+ * attributes only: it performs, attempts, and simulates nothing.
+ */
+function collectExternalEffectIssues(
+  node: ProductGraphNodeV1,
+  spec: DomainNodeKindSpec,
+  issues: DomainIssue[],
+): void {
+  if (spec.kind !== "externaleffect") return;
+  const { attributes } = node;
+
+  if (
+    passesDeclaredType(node, spec, "effect") &&
+    declaredValue(DOMAIN_REMOTE_EFFECT_KINDS, ownField(attributes, "effect")) &&
+    ownField(attributes, "target") === undefined
+  ) {
+    issues.push({
+      code: "DOMAIN_MISSING_EFFECT_TARGET",
+      phase: "node",
+      target: node.id,
+      field: "target",
+      message: `Node ${node.id} declares a remote effect kind without a target.`,
+    });
+  }
+
+  if (!passesDeclaredType(node, spec, "consequence")) return;
+  const consequence = ownField(attributes, "consequence");
+  const consequenceLabel = typeof consequence === "string" ? consequence : "declared";
+  const requiresReconciliation =
+    declaredValue(DOMAIN_RECONCILIATION_REQUIRED_CONSEQUENCE_VALUES, consequence) ||
+    ownField(attributes, "idempotent") === false;
+  if (
+    requiresReconciliation &&
+    !declaredValue(DOMAIN_RECONCILIATION_CONTROL_VALUES, ownField(attributes, "reconciliation"))
+  ) {
+    issues.push({
+      code: "DOMAIN_MISSING_RECONCILIATION_POLICY",
+      phase: "node",
+      target: node.id,
+      field: "reconciliation",
+      message: `Node ${node.id} declares a ${consequenceLabel} effect without a reconciliation policy.`,
+    });
+  }
+
+  if (
+    declaredValue(DOMAIN_IRREVERSIBLE_CONSEQUENCE_VALUES, consequence) &&
+    !declaredValue(DOMAIN_REQUIRED_CONFIRMATION_VALUES, ownField(attributes, "confirmation"))
+  ) {
+    issues.push({
+      code: "DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION",
+      phase: "node",
+      target: node.id,
+      field: "confirmation",
+      message: `Node ${node.id} declares an irreversible effect that does not require confirmation.`,
+    });
+  }
 }
 
 function localeListEntries(value: JsonValue): readonly string[] {
@@ -555,12 +712,6 @@ function collectLocaleIssues(
 ): void {
   if (spec.kind !== "localeconfig") return;
 
-  const passesDeclaredType = (field: string): boolean => {
-    const type = declaredFieldType(spec, field);
-    if (type === null) return false;
-    const value = ownField(node.attributes, field);
-    return value !== undefined && fieldTypeMatches(value, type);
-  };
   const tagMessage = (field: string, entry: string | null): string => {
     const subject =
       entry === null ? `attribute "${field}"` : `attribute "${field}" entry "${entry}"`;
@@ -568,7 +719,7 @@ function collectLocaleIssues(
   };
 
   for (const field of DOMAIN_LOCALE_REFERENCE_FIELDS) {
-    if (!passesDeclaredType(field)) continue;
+    if (!passesDeclaredType(node, spec, field)) continue;
     const value = ownField(node.attributes, field);
     if (typeof value !== "string" || isAcceptedLocaleTag(value)) continue;
     issues.push({
@@ -581,7 +732,7 @@ function collectLocaleIssues(
   }
 
   for (const field of DOMAIN_LOCALE_LIST_FIELDS) {
-    if (!passesDeclaredType(field)) continue;
+    if (!passesDeclaredType(node, spec, field)) continue;
     for (const entry of localeListEntries(ownField(node.attributes, field) ?? null)) {
       if (isAcceptedLocaleTag(entry)) continue;
       issues.push({
@@ -597,7 +748,7 @@ function collectLocaleIssues(
   const supported = localeListEntries(ownField(node.attributes, "supportedLocales") ?? null);
   const supportedIsUsable =
     supported.length > 0 &&
-    passesDeclaredType("supportedLocales") &&
+    passesDeclaredType(node, spec, "supportedLocales") &&
     supported.every((entry) => isAcceptedLocaleTag(entry));
   if (!supportedIsUsable) return;
 
@@ -895,8 +1046,10 @@ function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue
   }
 
   const policyById = new Map<string, ProductGraphNodeV1>();
+  const effectById = new Map<string, ProductGraphNodeV1>();
   for (const node of graph.nodes) {
     if (node.kind === "datapolicy") policyById.set(node.id, node);
+    if (node.kind === "externaleffect") effectById.set(node.id, node);
   }
 
   const levelsByPolicy = new Map<string, string[]>();
@@ -904,6 +1057,25 @@ function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue
     for (const entityId of entityIds) {
       for (const level of levelsByEntity.get(entityId) ?? []) {
         pushDistinct(levelsByPolicy, policyId, level);
+      }
+    }
+  }
+
+  const writtenEntitiesBySource = new Map<string, string[]>();
+  const effectSources = new Map<string, string[]>();
+  for (const edge of graph.edges) {
+    if (
+      edge.kind === "writes" &&
+      kindById.get(edge.from) === "workflow" &&
+      kindById.get(edge.to) === "entity"
+    ) {
+      pushDistinct(writtenEntitiesBySource, edge.from, edge.to);
+      continue;
+    }
+    if (edge.kind === "causes" && kindById.get(edge.to) === "externaleffect") {
+      const sourceKind = kindById.get(edge.from);
+      if (sourceKind === "workflow" || sourceKind === "action") {
+        pushDistinct(effectSources, edge.to, edge.from);
       }
     }
   }
@@ -932,6 +1104,37 @@ function collectGovernanceIssues(graph: ProductGraphStateV1, issues: DomainIssue
 
   for (const policy of policyById.values()) {
     collectPrivacyIssues(policy, levelsByPolicy.get(policy.id) ?? [], issues);
+  }
+
+  for (const [effectId, sourceIds] of effectSources) {
+    const effect = effectById.get(effectId);
+    if (effect === undefined) continue;
+    if (
+      declaredValue(
+        DOMAIN_REQUIRED_CONFIRMATION_VALUES,
+        ownField(effect.attributes, "confirmation"),
+      )
+    ) {
+      continue;
+    }
+    const classifiedLevels = [
+      ...new Set(
+        sourceIds
+          .flatMap((sourceId) => writtenEntitiesBySource.get(sourceId) ?? [])
+          .flatMap((entityId) => levelsByEntity.get(entityId) ?? [])
+          .filter((level) => includesLevel(DOMAIN_POLICY_REQUIRED_CLASS_LEVELS, level)),
+      ),
+    ];
+    if (classifiedLevels.length === 0) continue;
+    issues.push({
+      code: "DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT",
+      phase: "governance",
+      target: effectId,
+      field: "confirmation",
+      message: `External effect ${effectId} is caused by a source that writes ${classifiedLevels.join(
+        ", ",
+      )} data without requiring confirmation.`,
+    });
   }
 }
 
