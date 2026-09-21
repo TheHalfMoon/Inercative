@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "37ed7501e5c8c59e207df99a23c1fb1e65eceb4d",
+    "head": "b2823005423aeadd69bfa691adf410bcfbe0e895",
+    "mergeBase": "37ed7501e5c8c59e207df99a23c1fb1e65eceb4d"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head b282300 on the repository-local candidate clone; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the excluded test oracle: every added assertion was checked against the contract it pins rather than against the implementation, covering the pair-table projection checks (derived from/to sets and the target-only wildcard invariant), acceptance of every declared endpoint pair, the table of endpoint combinations that must stay rejected, the new and extended relations, the declared policy-required and export-blocked level vocabularies, conflicting classification with its same-level negative case, ungoverned classified data with its governed and internal/public negative cases, the rejected-governs-edge case, the continuous-export conflict with three negative cases, deterministic reporting across node and edge order, phase ordering across node, edge, and governance issues, and mutation-freedom with unchanged canonical revision identity.",
+        "evidenceReference": "docs/evidence/P02_S02_T02B_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02B_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02B_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T02B_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "fdc278cf2f3ca16e6b0c848969f806bee2d7633ea8f7f0f7f6c560ce314c2fb9"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-012",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FIXED",
+        "rationale": "Raised while reviewing this candidate and repaired forward within the same branch without rewriting history: the reviewed head b282300 pins the target-only wildcard invariant in the pair-table test, so a pair declaring the wildcard as a source now fails the suite instead of becoming inert.",
+        "evidenceReference": "docs/evidence/P02_S02_T02B_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-013",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "A pair of incompatible endpoints reports the source mismatch and skips the target check, so the issue count for that edge drops from two to one. The document is still rejected, one issue per offending edge is the established convention, and the reported target stays unambiguous.",
+        "evidenceReference": "docs/evidence/P02_S02_T02B_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}
