@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "83d0b09400e50e7a1b83245b4441d586f66ade12",
+    "head": "6a6a886da0524d61d8f8098678c77a1bb453d0f9",
+    "mergeBase": "83d0b09400e50e7a1b83245b4441d586f66ade12"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head 6a6a886 on the repository-local candidate clone; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the excluded test oracle: every added assertion was checked against the contract it pins rather than against the implementation, covering the closed-vocabulary declaration check (declared attribute exists, declared type is string, values non-empty and unique, and one vocabulary per kind/field pair), all six classification levels, five out-of-vocabulary classification strings plus two blank values, every declared lifecycle value for every lifecycle field, five out-of-vocabulary lifecycle values, the eight-row bounded-retention table including the malformed-value row, the fail-closed check for not-yet-declared privacy attributes, deterministic ordering across node insertion order, and mutation-freedom with unchanged canonical revision identity.",
+        "evidenceReference": "docs/evidence/P02_S02_T02A_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02A_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02A_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T02A_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "a78cc06c7553be2d584de0ec86dd3aeb47e0bb6f151f17593ea4cde5ddc53b6b"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-010",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "The enum check skips non-string values before the vocabulary comparison, so an enum entry declared for a non-string attribute would be inert. Every declared entry targets a string attribute today, and the focused test pins the invariant directly, so an inert entry fails the suite rather than disappearing silently.",
+        "evidenceReference": "docs/evidence/P02_S02_T02A_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-011",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "A bounded-retention policy with an out-of-vocabulary deletion value reports only the vocabulary violation and not the lifecycle contradiction. The document already fails closed with the stronger schema violation, one offending value deliberately yields one complaint, and the accepted-deletion-path rule is pinned by a table test that includes the malformed-value row.",
+        "evidenceReference": "docs/evidence/P02_S02_T02A_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}
