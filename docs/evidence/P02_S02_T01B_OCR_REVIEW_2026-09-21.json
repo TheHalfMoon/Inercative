@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "ce591f8e8fd4d94dbc4416cf228451108ab7b6d3",
+    "head": "ef0593794c603416dacca4afe830956ae14ec2cb",
+    "mergeBase": "ce591f8e8fd4d94dbc4416cf228451108ab7b6d3"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "ocr v1.12.7 (85cecfe) windows/amd64; deterministic layer + delegation-mode semantic layer; no hosted LLM endpoint configured (OCR_LLM_* / ANTHROPIC_* unset, no ~/.opencodereview/config.json)"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/contracts.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/contracts.ts",
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the test oracle: every added assertion was checked against the contract it pins rather than against the implementation, including the edge-fixture coverage of all ten edge kinds, the per-kind incompatible endpoint tables, the self-reference and duplicate-relation cases, the conflicting-authorization pair, cross-phase ordering stability, mutation-freedom and revision identity, and the filter-based oracle that pins single-pass outgoing-edge query parity.",
+        "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/contracts.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T01B_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "b5028dd756bc8ead0e0180db02b998b66d606a9f84f31ffe1e0c3d9dace38e7a"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-008",
+        "path": "packages/product-graph/src/contracts.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "The optional-chaining skip is unreachable because buckets are seeded from every validated node and dangling endpoints are rejected before the session is constructed; parity against a filter-based oracle is pinned by test.",
+        "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-009",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "One issue per offending edge is the established convention, keeps the target unambiguous, and preserves per-edge disposition; each message names the counterpart edge.",
+        "evidenceReference": "docs/evidence/P02_S02_T01B_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}

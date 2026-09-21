@@ -1,0 +1,18 @@
+[
+  {
+    "path": "packages/product-graph/src/contracts.ts",
+    "content": "The single-pass outgoing-edge index builds buckets with outgoingByNode.get(edge.from)?.push(edge), so an edge whose from id has no bucket is skipped silently instead of failing loudly. Triaged as non-material rather than repaired: the bucket map is seeded from every validated node id, and validateProductGraphState rejects dangling endpoints before this session can be constructed, so the skip is unreachable; the parity test additionally compares every node against a filter-based oracle over the canonical edge list and asserts empty results for unknown node ids.",
+    "start_line": 263,
+    "end_line": 266,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "A conflicting role authorization pair produces two DOMAIN_CONFLICTING_AUTHORIZATION issues, one per offending edge, so callers counting issues see two entries for one semantic conflict. Triaged as non-material: one-issue-per-offending-target is the same convention the node layer uses, both messages name the counterpart edge id, and the ordering is deterministic. Collapsing the pair into a single graph-level issue would make the target ambiguous and lose the per-edge disposition.",
+    "start_line": 289,
+    "end_line": 391,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
