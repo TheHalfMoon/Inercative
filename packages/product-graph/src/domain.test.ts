@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
+  DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS,
   DOMAIN_DATA_CLASS_LEVELS,
   DOMAIN_DELETION_VALUES,
   DOMAIN_EDGE_KINDS,
@@ -12,6 +13,7 @@ import {
   DOMAIN_FIELD_TYPES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
+  DOMAIN_POLICY_REQUIRED_CLASS_LEVELS,
   DOMAIN_RESIDENCY_VALUES,
   DOMAIN_RETENTION_VALUES,
   DomainValidationError,
@@ -371,6 +373,20 @@ const edgeGraph: ProductGraphStateV1 = {
       to: "probe:requirement",
       attributes: {},
     },
+    {
+      id: "edge:classified-as",
+      kind: "classified_as",
+      from: "probe:entity",
+      to: "probe:dataclass",
+      attributes: {},
+    },
+    {
+      id: "edge:governs-policy",
+      kind: "governs",
+      from: "probe:datapolicy",
+      to: "probe:entity",
+      attributes: {},
+    },
   ],
 };
 
@@ -414,6 +430,11 @@ describe("Product Graph domain edge and relation semantics", () => {
           expect(entry === DOMAIN_ANY_NODE_KIND || DOMAIN_NODE_KINDS.includes(entry)).toBe(true);
         }
       }
+      // The declared from/to sets are derived projections of the endpoint authority, so a pair can
+      // never disagree with what the spec advertises.
+      expect(spec.pairs.length).toBeGreaterThan(0);
+      expect(spec.from).toEqual([...new Set(spec.pairs.map(([from]) => from))]);
+      expect(spec.to).toEqual([...new Set(spec.pairs.map(([, to]) => to))]);
     }
   });
 
@@ -840,5 +861,270 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     expect(parseProductGraphRevision(serializeProductGraphRevision(revision)).revision).toBe(
       revision.revision,
     );
+  });
+});
+
+const governanceNodes: readonly ProductGraphNodeV1[] = [
+  { id: "gov:entity", kind: "entity", attributes: { name: "Customer" } },
+  { id: "gov:class-internal", kind: "dataclass", attributes: { level: "internal", name: "Ops" } },
+  { id: "gov:class-public", kind: "dataclass", attributes: { level: "public", name: "Marketing" } },
+  { id: "gov:class-personal", kind: "dataclass", attributes: { level: "personal", name: "PII" } },
+  {
+    id: "gov:class-personal-copy",
+    kind: "dataclass",
+    attributes: { level: "personal", name: "PII copy" },
+  },
+  { id: "gov:class-secret", kind: "dataclass", attributes: { level: "secret", name: "Secrets" } },
+  {
+    id: "gov:policy",
+    kind: "datapolicy",
+    attributes: { deletion: "hard", name: "Customer policy", retention: "bounded" },
+  },
+  {
+    id: "gov:policy-open",
+    kind: "datapolicy",
+    attributes: { audit: "required", export: "on-request", name: "Open policy" },
+  },
+  { id: "gov:permission", kind: "permission", attributes: { effect: "allow", name: "Read" } },
+];
+
+function governanceGraph(edges: readonly ProductGraphEdgeV1[]): ProductGraphStateV1 {
+  return graphWithEdges(governanceNodes, edges);
+}
+
+function withExportedPolicy(policyExport: string): readonly ProductGraphNodeV1[] {
+  return governanceNodes.map((node) =>
+    node.id === "gov:policy-open"
+      ? { ...node, attributes: { ...node.attributes, export: policyExport } }
+      : node,
+  );
+}
+
+function governanceCodes(value: unknown): readonly string[] {
+  return collectProductGraphDomainIssues(value).map((issue) => issue.code);
+}
+
+describe("Product Graph data-governance relation and cross-node semantics", () => {
+  it("accepts every declared endpoint pair of every relation kind", () => {
+    const cases = DOMAIN_EDGE_KIND_SPECS.flatMap((spec) =>
+      spec.pairs.map(
+        ([from, to]) =>
+          [
+            spec.kind,
+            `probe:${from}`,
+            to === DOMAIN_ANY_NODE_KIND ? "probe:requirement" : `probe:${to}`,
+          ] as [string, string, string],
+      ),
+    );
+
+    expect(cases.length).toBeGreaterThan(DOMAIN_EDGE_KINDS.length);
+    for (const [kind, from, to] of cases) {
+      const issues = collectProductGraphDomainIssues(
+        graphWithEdges(probeNodes, [edge(kind, from, to)]),
+      );
+      expect(issues.filter((issue) => issue.code === "DOMAIN_ENDPOINT_KIND_MISMATCH")).toEqual([]);
+    }
+  });
+
+  it.each([
+    ["governs", "permission", "entity"],
+    ["governs", "datapolicy", "action"],
+    ["requires", "permission", "datapolicy"],
+    ["classified_as", "datapolicy", "dataclass"],
+    ["classified_as", "entity", "entity"],
+    ["displays", "page", "page"],
+  ] as [string, string, string][])(
+    "keeps rejecting the endpoint combination %s %s -> %s",
+    (kind, from, to) => {
+      const issues = collectProductGraphDomainIssues(
+        graphWithEdges(probeNodes, [edge(kind, `probe:${from}`, `probe:${to}`)]),
+      );
+      expect(issues.map((issue) => issue.code)).toContain("DOMAIN_ENDPOINT_KIND_MISMATCH");
+    },
+  );
+
+  it("accepts the source-specific governance relations", () => {
+    expect(
+      collectProductGraphDomainIssues(
+        graphWithEdges(probeNodes, [
+          edge("classified_as", "probe:entity", "probe:dataclass", "edge:classified"),
+          edge("governs", "probe:datapolicy", "probe:entity", "edge:policy-governs"),
+          edge("requires", "probe:requirement", "probe:datapolicy", "edge:requirement"),
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  it("declares the classification levels that require a handling policy", () => {
+    expect([...DOMAIN_POLICY_REQUIRED_CLASS_LEVELS]).toEqual([
+      "personal",
+      "sensitive",
+      "secret",
+      "regulated",
+    ]);
+    expect([...DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS]).toEqual(["secret", "regulated"]);
+    for (const level of DOMAIN_POLICY_REQUIRED_CLASS_LEVELS) {
+      expect(DOMAIN_DATA_CLASS_LEVELS).toContain(level);
+    }
+    for (const level of DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS) {
+      expect(DOMAIN_POLICY_REQUIRED_CLASS_LEVELS).toContain(level);
+    }
+  });
+
+  it("reports an entity that is classified into more than one level", () => {
+    const issues = collectProductGraphDomainIssues(
+      governanceGraph([
+        edge("classified_as", "gov:entity", "gov:class-internal", "edge:class-a"),
+        edge("classified_as", "gov:entity", "gov:class-personal", "edge:class-b"),
+        edge("governs", "gov:policy", "gov:entity", "edge:governs"),
+      ]),
+    );
+
+    expect(issues.map((issue) => [issue.code, issue.phase, issue.target])).toEqual([
+      ["DOMAIN_CONFLICTING_CLASSIFICATION", "governance", "gov:entity"],
+    ]);
+    expect(issues[0]?.message).toContain("internal, personal");
+  });
+
+  it("does not report a conflict when every classification declares the same level", () => {
+    const codes = governanceCodes(
+      governanceGraph([
+        edge("classified_as", "gov:entity", "gov:class-personal", "edge:class-a"),
+        edge("classified_as", "gov:entity", "gov:class-personal-copy", "edge:class-b"),
+        edge("governs", "gov:policy", "gov:entity", "edge:governs"),
+      ]),
+    );
+
+    expect(codes).toEqual([]);
+  });
+
+  it("reports classified data that requires a handling policy but has none", () => {
+    const ungoverned = collectProductGraphDomainIssues(
+      governanceGraph([edge("classified_as", "gov:entity", "gov:class-personal")]),
+    );
+    expect(ungoverned.map((issue) => [issue.code, issue.target, issue.field])).toEqual([
+      ["DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY", "gov:entity", null],
+    ]);
+    expect(ungoverned[0]?.message).toContain("personal");
+
+    const governed = collectProductGraphDomainIssues(
+      governanceGraph([
+        edge("classified_as", "gov:entity", "gov:class-personal", "edge:class"),
+        edge("governs", "gov:policy", "gov:entity", "edge:governs"),
+      ]),
+    );
+    expect(governed).toEqual([]);
+  });
+
+  it("does not require a handling policy for internal or public data", () => {
+    expect(
+      governanceCodes(governanceGraph([edge("classified_as", "gov:entity", "gov:class-internal")])),
+    ).toEqual([]);
+    expect(
+      governanceCodes(governanceGraph([edge("classified_as", "gov:entity", "gov:class-public")])),
+    ).toEqual([]);
+  });
+
+  it("does not treat a rejected governs edge as a governing policy", () => {
+    const codes = governanceCodes(
+      governanceGraph([
+        edge("classified_as", "gov:entity", "gov:class-personal", "edge:class"),
+        edge("governs", "gov:permission", "gov:entity", "edge:governs"),
+      ]),
+    );
+    expect(codes).toEqual([
+      "DOMAIN_ENDPOINT_KIND_MISMATCH",
+      "DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY",
+    ]);
+  });
+
+  it("reports a policy that allows continuous export of secret data", () => {
+    const issues = collectProductGraphDomainIssues(
+      graphWithEdges(withExportedPolicy("continuous"), [
+        edge("classified_as", "gov:entity", "gov:class-secret", "edge:class"),
+        edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+      ]),
+    );
+
+    expect(issues.map((issue) => [issue.code, issue.phase, issue.target, issue.field])).toEqual([
+      ["DOMAIN_CLASS_POLICY_CONFLICT", "governance", "gov:policy-open", "export"],
+    ]);
+    expect(issues[0]?.message).toContain("secret");
+  });
+
+  it.each([
+    ["on-request", "gov:class-secret"],
+    ["none", "gov:class-secret"],
+    ["continuous", "gov:class-personal"],
+    ["continuous", "gov:class-internal"],
+  ] as [string, string][])(
+    "does not report a class/policy conflict for export %s with %s data",
+    (policyExport, classId) => {
+      const codes = governanceCodes(
+        graphWithEdges(withExportedPolicy(policyExport), [
+          edge("classified_as", "gov:entity", classId, "edge:class"),
+          edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+        ]),
+      );
+
+      expect(codes).toEqual([]);
+    },
+  );
+
+  it("keeps governance reporting deterministic across node and edge order", () => {
+    const nodes = withExportedPolicy("continuous");
+    const edges: readonly ProductGraphEdgeV1[] = [
+      edge("classified_as", "gov:entity", "gov:class-secret", "edge:class-a"),
+      edge("classified_as", "gov:entity", "gov:class-personal", "edge:class-b"),
+      edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+    ];
+    const baseline = collectProductGraphDomainIssues(graphWithEdges(nodes, edges));
+
+    expect(baseline.map((issue) => [issue.target, issue.code])).toEqual([
+      ["gov:entity", "DOMAIN_CONFLICTING_CLASSIFICATION"],
+      ["gov:policy-open", "DOMAIN_CLASS_POLICY_CONFLICT"],
+    ]);
+    expect(
+      collectProductGraphDomainIssues(graphWithEdges([...nodes].reverse(), [...edges].reverse())),
+    ).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(graphWithEdges(nodes, edges))).toEqual(baseline);
+  });
+
+  it("orders governance issues after every earlier phase", () => {
+    const issues = collectProductGraphDomainIssues(
+      graphWithEdges(
+        [
+          ...governanceNodes,
+          { id: "gov:role", kind: "role", attributes: { name: "Operator", scope: "global" } },
+        ],
+        [
+          edge("may", "gov:role", "gov:entity", "edge:may-target"),
+          edge("classified_as", "gov:entity", "gov:class-personal", "edge:class"),
+        ],
+      ),
+    );
+
+    expect(issues.map((issue) => issue.phase)).toEqual(["node", "edge", "governance"]);
+    expect(issues.map((issue) => issue.code)).toEqual([
+      "DOMAIN_UNKNOWN_FIELD",
+      "DOMAIN_ENDPOINT_KIND_MISMATCH",
+      "DOMAIN_SENSITIVE_DATA_WITHOUT_POLICY",
+    ]);
+  });
+
+  it("does not mutate governance input and preserves revision identity", () => {
+    const graph = governanceGraph([
+      edge("classified_as", "gov:entity", "gov:class-personal", "edge:class"),
+      edge("governs", "gov:policy", "gov:entity", "edge:governs"),
+    ]);
+    const before = JSON.stringify(graph);
+    const revision = createProductGraphRevision(graph);
+
+    expect(collectProductGraphDomainIssues(graph)).toEqual([]);
+    const validated = validateProductGraphDomain(graph);
+
+    expect(JSON.stringify(graph)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(graph));
+    expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
   });
 });
