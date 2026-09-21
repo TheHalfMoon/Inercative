@@ -1,12 +1,7 @@
 import { createHash } from "node:crypto";
 
 export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | readonly JsonValue[]
-  | { readonly [key: string]: JsonValue };
+  string | number | boolean | null | readonly JsonValue[] | { readonly [key: string]: JsonValue };
 
 export interface ProductGraphNode {
   readonly id: string;

@@ -95,12 +95,18 @@ describe("structured Product Graph prototype", () => {
 
   it("fails closed on duplicate identity and missing edge endpoints", () => {
     expect(() =>
-      structuredDocumentPrototype.persist({ ...fixture, nodes: [...fixture.nodes, fixture.nodes[0]!] }),
+      structuredDocumentPrototype.persist({
+        ...fixture,
+        nodes: [...fixture.nodes, fixture.nodes[0]!],
+      }),
     ).toThrow(/node/);
     expect(() =>
       structuredDocumentPrototype.persist({
         ...fixture,
-        edges: [...fixture.edges, { id: "edge:bad", kind: "uses", from: "missing", to: "page:orders", attributes: {} }],
+        edges: [
+          ...fixture.edges,
+          { id: "edge:bad", kind: "uses", from: "missing", to: "page:orders", attributes: {} },
+        ],
       }),
     ).toThrow(/edge/);
   });
