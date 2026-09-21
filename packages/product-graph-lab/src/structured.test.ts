@@ -72,6 +72,8 @@ describe("structured Product Graph prototype", () => {
       a: { a: 3, z: 2 },
       z: 1,
     });
+    expect(() => canonicalizeJson(Number.NaN)).toThrow(/finite/);
+    expect(() => canonicalizeJson(Number.POSITIVE_INFINITY)).toThrow(/finite/);
   });
 
   it("returns deterministic node, outgoing-edge, and one-hop slice queries", () => {
