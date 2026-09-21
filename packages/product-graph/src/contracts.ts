@@ -52,7 +52,22 @@ export interface ProductGraphQueryV1 {
 }
 
 function compareText(left: string, right: string): number {
-  return left < right ? -1 : left > right ? 1 : 0;
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
+function assertExactKeys(
+  record: Record<string, unknown>,
+  allowedKeys: readonly string[],
+  label: string,
+): void {
+  const unknownKeys = Object.keys(record)
+    .filter((key) => !allowedKeys.includes(key))
+    .sort(compareText);
+  if (unknownKeys.length > 0) {
+    throw new TypeError(`${label} has unknown keys: ${unknownKeys.join(", ")}`);
+  }
 }
 
 function asRecord(value: unknown, label: string): Record<string, unknown> {
@@ -106,6 +121,7 @@ function attributes(value: unknown, label: string): JsonObject {
 
 function node(value: unknown): ProductGraphNodeV1 {
   const record = asRecord(value, "Product Graph node");
+  assertExactKeys(record, ["id", "kind", "attributes"], "Product Graph node");
   return Object.freeze({
     id: nonBlankString(record.id, "Product Graph node id"),
     kind: nonBlankString(record.kind, "Product Graph node kind"),
@@ -115,6 +131,7 @@ function node(value: unknown): ProductGraphNodeV1 {
 
 function edge(value: unknown): ProductGraphEdgeV1 {
   const record = asRecord(value, "Product Graph edge");
+  assertExactKeys(record, ["id", "kind", "from", "to", "attributes"], "Product Graph edge");
   return Object.freeze({
     id: nonBlankString(record.id, "Product Graph edge id"),
     kind: nonBlankString(record.kind, "Product Graph edge kind"),
@@ -126,6 +143,7 @@ function edge(value: unknown): ProductGraphEdgeV1 {
 
 export function validateProductGraphState(value: unknown): ProductGraphStateV1 {
   const record = asRecord(value, "Product Graph state");
+  assertExactKeys(record, ["schemaVersion", "graphId", "nodes", "edges"], "Product Graph state");
   if (record.schemaVersion !== PRODUCT_GRAPH_SCHEMA_VERSION) {
     throw new TypeError("Product Graph schemaVersion must be 1.");
   }
@@ -175,6 +193,11 @@ export function createProductGraphRevision(
 
 export function validateProductGraphRevision(value: unknown): ProductGraphRevisionDocumentV1 {
   const record = asRecord(value, "Product Graph revision document");
+  assertExactKeys(
+    record,
+    ["representation", "revision", "graph"],
+    "Product Graph revision document",
+  );
   if (record.representation !== PRODUCT_GRAPH_REPRESENTATION) {
     throw new TypeError("Product Graph representation must be structured-document-v1.");
   }

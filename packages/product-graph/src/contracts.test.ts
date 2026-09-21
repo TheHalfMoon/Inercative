@@ -117,6 +117,29 @@ describe("Product Graph v1 contracts", () => {
     ).toThrow(/structured-document-v1/);
   });
 
+  it("rejects unknown document fields instead of silently normalizing them", () => {
+    const document = createProductGraphRevision(graph);
+
+    expect(() => validateProductGraphState({ ...graph, unknownState: true })).toThrow(
+      /Product Graph state has unknown keys: unknownState/,
+    );
+    expect(() =>
+      validateProductGraphState({
+        ...graph,
+        nodes: [{ ...graph.nodes[0]!, unexpected: "value" }],
+      }),
+    ).toThrow(/Product Graph node has unknown keys: unexpected/);
+    expect(() =>
+      validateProductGraphState({
+        ...graph,
+        edges: [{ ...graph.edges[0]!, unexpected: "value" }],
+      }),
+    ).toThrow(/Product Graph edge has unknown keys: unexpected/);
+    expect(() => validateProductGraphRevision({ ...document, unknownDocument: 1 })).toThrow(
+      /Product Graph revision document has unknown keys: unknownDocument/,
+    );
+  });
+
   it("provides deterministic node, outgoing-edge, and one-hop slice queries", () => {
     const query = openProductGraphRevision(createProductGraphRevision(graph));
 
