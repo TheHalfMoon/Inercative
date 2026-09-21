@@ -1,0 +1,67 @@
+{
+  "acceptance": [
+    "Normalized-relational persistence round-trips to the same canonical semantic graph.",
+    "Equivalent graph and row insertion-order permutations produce identical canonical serialization and semantic revision.",
+    "Node lookup, outgoing-edge lookup, and one-hop slice queries are deterministic on the representative fixture.",
+    "Malformed attributes plus graphId/revision row mismatches are rejected fail-closed.",
+    "Focused tests, Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/review, and exact-head Ubuntu/Windows repository CI are recorded before merge."
+  ],
+  "change_surface": [
+    "packages/product-graph-lab/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 3200
+  },
+  "dependencies": [
+    "SG-000015"
+  ],
+  "evidence": {
+    "required": [
+      "Focused normalized-relational prototype tests for round-trip, canonical row ordering, revision binding, queries, and malformed rows.",
+      "Diffcipline R1 exact-candidate PASS plus Alibaba OCR exact-diff accounting/review.",
+      "Exact-head Ubuntu and Windows repository CI."
+    ]
+  },
+  "id": "SG-000016",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the private Product Graph lab with one dependency-free normalized-relational prototype instead of selecting production storage or introducing a database dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Keep the prototype private and non-authoritative; do not expose it as the public Product Graph v1 contract."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A private deterministic normalized-relational Product Graph prototype proves canonical row normalization, round-trip, revision binding, and bounded query semantics without selecting the production v1 representation.",
+  "parent_id": null,
+  "rationale": "",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000016 and the private normalized-relational prototype; no public contract or external state is changed."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Implement one private normalized-relational Product Graph snapshot prototype over the current canonical graph semantics.",
+    "Bind revision, node, and edge rows to graph identity and semantic revision, rejecting mismatches fail-closed.",
+    "Provide focused deterministic round-trip, row-order normalization, bounded query, and malformed-row tests."
+  ],
+  "scope_out": [
+    "No cross-representation comparison or Product Graph v1 selection.",
+    "No public Product Graph v1 contract, database schema, Supabase migration, graph database, or remote side effect."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S01-T01B Prototype normalized relational Product Graph snapshot"
+}
