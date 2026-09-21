@@ -71,6 +71,7 @@ their current delivery state:
 | SG-000017 | IN-P02-S01-T01C | Compare Product Graph persistence prototypes | DONE (PR #29) | `docs/evidence/P02_S01_T01C_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | DONE (PR #37) | `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md` |
+| SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -201,13 +202,32 @@ push run for the intermediate commit `87ad2c3` was cancelled by the workflow's o
 concurrency group and is not claimed as PASS. Full record:
 `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md`.
 
+SG-000019 is canonically closed through the closure/frontier record merged as
+`769c76daf8b5c4e7ca0e37bb0ed2adc2a1a138d1` (PR #41). Its accepted-risk findings
+`OCR-003` (outgoing-edge index built in O(nodes × edges)) and `OCR-004` (no cycle/depth
+guard in canonical JSON handling) were carried as named follow-up work to the P02-S02
+grain; they are scheduled into the dependent P02-S02 Grains rather than left as forgotten
+accepted risk.
+
+IN-P02-S02-T01 is delivered as a correctly split dependent Grain chain rather than one
+oversized Grain. A first SG-000020 draft covering the whole domain model plus both carried
+repairs produced a 1,057-added-line candidate, and Diffcipline `v1.0.0` returned **FAIL**
+with reason `added lines 1057 exceed maximum 600`. No gate was weakened and no metric was
+gamed: the unit was re-shaped into bounded slices, and that rejected candidate is preserved
+as negative evidence in the SG-000020 shaping record.
+
 Current eligible frontier:
 
-1. **IN-P02-S02-T01 — Implement domain nodes/edges and deterministic validators.**
-   Dependency `IN-P02-S01-T02` is satisfied by SG-000018 + SG-000019. This unit still
-   requires real SpecGrain shaping before implementation authority exists; the shaping tool
-   surface is the canonical `TheHalfMoon/SpecGrain` CLI.
-2. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until
+1. **IN-P02-S02-T01A — domain node kinds and deterministic node validators.** Dependency
+   `IN-P02-S01-T02` is satisfied by SG-000018 + SG-000019. Implementation authority now
+   exists: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000020** through
+   `DRAFT -> SHAPED -> REFINING -> GRAIN`, and `specgrain check` reports 20 specs,
+   0 readiness-blocked. This slice also carries the `OCR-004` canonical-JSON depth/cycle
+   hardening, because that guard protects the validation input path.
+2. **IN-P02-S02-T01B — domain edge kinds, endpoint compatibility, and relation rules.**
+   Not yet shaped; it depends on SG-000020 and carries the `OCR-003` single-pass
+   outgoing-edge index repair.
+3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until
    IN-P02-S02-T01 closes. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked
    behind IN-P02-S02-T02.
 

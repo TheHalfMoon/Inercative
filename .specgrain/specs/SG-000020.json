@@ -1,0 +1,79 @@
+{
+  "acceptance": [
+    "The stable package exports a closed v1 domain node-kind vocabulary with required and optional attribute fields and field types per kind, without framework, model-provider, or database coupling.",
+    "Deterministic node validation rejects unknown node kinds, unknown attribute fields, missing required fields, and wrong field types, each with a stable error code.",
+    "Issue collection is total and deterministic: the same input yields the same ordered issue list across repeated runs, node insertion orders, and JSON object key orders, under a documented phase order and sort key.",
+    "The throwing validator and the issue-collecting validator agree exactly on issue code, target, field, and message, and a core v1 structural violation surfaces as exactly one deterministic DOMAIN_CORE_CONTRACT_INVALID issue.",
+    "Domain validation does not mutate, reorder, or normalize its input, and well-formed Product Graph v1 canonical revision identity is unchanged by domain validation.",
+    "OCR-004 is repaired: cyclic or over-deep canonical JSON input is rejected deterministically with a TypeError and never raises a stack overflow, while canonical revision identity for well-formed documents is unchanged.",
+    "Focused domain node tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000019"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph v1 domain node-kind vocabulary plus a deterministic node validator and focused tests.",
+      "Proof that well-formed Product Graph v1 revision identity is unchanged and that malformed canonical JSON is rejected deterministically.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI and post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000020",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded data-driven node-vocabulary and validator module plus focused tests instead of adding a package, promoting the prototype lab, or introducing a runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Domain validation composes on top of validated Product Graph v1 core state and must never weaken or bypass core validation, which keeps a single owner for structural rules.",
+          "Deterministic validation must not depend on object iteration accidents, wall-clock time, randomness, network calls, or model inference.",
+          "The OCR-004 repair carried from SG-000019 must not change canonical revision identity for well-formed v1 documents."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A stable, storage-neutral domain layer inside @ineractive/product-graph defines the closed v1 vocabulary of product-domain node kinds with explicit required and optional attribute fields, and a deterministic node validator that reports stable error codes in a documented phase and sort order, without changing Product Graph v1 canonical revision identity for well-formed documents.",
+  "parent_id": null,
+  "rationale": "IN-P02-S01-T02 is satisfied by SG-000018 + SG-000019, so the dependency frontier is IN-P02-S02-T01. A first SG-000020 draft covering the whole domain model plus the carried SG-000019 hardening produced a 1057-added-line candidate, which Diffcipline v1.0.0 rejected with FAIL (added lines exceed the repository maximum of 600). The unit is therefore split correctly rather than squeezed: this Grain delivers the node-side domain vocabulary and validators, and the edge, relation, and carried-hardening slices follow as dependent Grains.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000020 node-side domain module, the OCR-004 canonical JSON guard, tests, evidence, and current-frontier updates; Product Graph v1 contracts, ADR-0003, and SG-000015 through SG-000019 evidence remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add a domain-semantics module to the stable @ineractive/product-graph package defining the closed v1 domain node-kind vocabulary (persona, role, entity, page, action, workflow, permission, assumption, requirement) with explicit required and optional attribute fields and a field-type vocabulary per kind.",
+    "Implement deterministic node validation with stable error codes, a documented phase order, and a total ordering of reported issues, exposed both as an issue-collecting function and as a throwing validator.",
+    "Define and test the prerequisite behavior when the Product Graph v1 core structural contract is violated: exactly one deterministic DOMAIN_CORE_CONTRACT_INVALID issue carrying the core message, so structural rules keep a single owner.",
+    "Repair the SG-000019 accepted-risk finding OCR-004 by rejecting cyclic or over-deep canonical JSON input deterministically instead of raising a stack overflow.",
+    "Add focused deterministic tests covering the node-kind vocabulary, required and optional field rules, unknown kinds and fields, malformed values, deterministic issue ordering, collecting and throwing agreement, mutation-freedom, revision identity, and the repaired canonical JSON guard.",
+    "Advance specs/CURRENT.md to record SG-000019 canonical closure, the Diffcipline-bound Grain split recorded as negative evidence, and SG-000020 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No domain edge kinds, endpoint-kind compatibility, or relation-level rules such as duplicate relations, self-references, and authorization conflicts; the edge and relation slice of IN-P02-S02-T01 follows as a dependent Grain.",
+    "No data-governance, classification, lifecycle, privacy, locale, or external-effect semantics, no Dataset semantics, and no design-system, skill, exploration-branch, or release reference semantics.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger UI, graph views, compiler, database, Supabase migration, graph database, or remote side effect.",
+    "No new workspace package, no new runtime dependency, and no lockfile change; the domain layer extends the existing stable package.",
+    "No change to Product Graph v1 public contract semantics for well-formed documents and no relaxation of existing rejection behavior."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T01A Implement domain node kinds and deterministic node validators"
+}
