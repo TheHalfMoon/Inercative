@@ -1,0 +1,34 @@
+[
+  {
+    "path": "packages/product-graph/src/contracts.ts",
+    "content": "node()/edge() rebuild each record from an allow-list of fields and validateProductGraphState() reads only schemaVersion/graphId/nodes/edges, so unknown node, edge, and state fields are silently discarded instead of rejected. Because the semantic revision identity is hashed from the normalized document, structurally different inputs collapse to the same canonical digest: on the reviewed candidate an extra node field and an extra top-level state field both returned the unmodified revision sha256:f4dd35b620cd3fe8e81a73912f091040a74ea355fce611c022c07ffd1a378598. A malformed or forward-shaped document is therefore accepted and silently loses data, which conflicts with this Grain's stated safety requirement to reject malformed documents deterministically before they can be treated as canonical state. Recommend failing closed on unknown keys at node, edge, state, and revision-document level (repair commit 12a66fc does exactly this and leaves well-formed revision identity unchanged).",
+    "start_line": 107,
+    "end_line": 135,
+    "category": "bug",
+    "severity": "medium"
+  },
+  {
+    "path": "packages/product-graph/src/contracts.ts",
+    "content": "compareText() is written as a nested ternary (left < right ? -1 : left > right ? 1 : 0). The OCR TypeScript rule group resolved for this file forbids nested ternaries, and explicit branches are easier to audit in the function that defines canonical ordering for nodes, edges and object keys.",
+    "start_line": 55,
+    "end_line": 55,
+    "category": "style",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/contracts.ts",
+    "content": "The outgoing-edge index is built by filtering the complete edge list once per node, so construction is O(nodes x edges) and re-scans every edge for every node. A single pass keyed by edge.from builds the same immutable index in O(edges). This is not a defect at the repository's current fixture sizes, but it is an avoidable scaling cost inside the canonical query primitive that ADR-0003 expects to serve growing graphs.",
+    "start_line": 205,
+    "end_line": 212,
+    "category": "performance",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/contracts.ts",
+    "content": "canonicalJson() recurses without a cycle or depth guard. Output of JSON.parse is never cyclic, but the exported validate/serialize helpers accept unknown input, so a cyclic or pathologically deep object raises a RangeError stack overflow instead of the deterministic TypeError that every other malformed input receives.",
+    "start_line": 80,
+    "end_line": 80,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]

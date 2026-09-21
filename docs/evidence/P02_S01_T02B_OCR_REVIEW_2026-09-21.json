@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "ff5bcbc3241d43fbb643d037ccb5967a20213af4",
+    "head": "12a66fc4331551342d403c3e295954fa6e00b5ed",
+    "mergeBase": "ff5bcbc3241d43fbb643d037ccb5967a20213af4"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head 12a66fc; repository-local candidate clone; scoped temporary GIT_CONFIG_GLOBAL supplying only init.defaultBranch, core.autocrlf, and safe.directory for the candidate clones; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": ".specgrain/specs/SG-000019.json", "changeType": "ADDED" },
+      {
+        "path": "docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md",
+        "changeType": "ADDED"
+      },
+      { "path": "packages/product-graph/package.json", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/contracts.test.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/contracts.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/tsconfig.json", "changeType": "ADDED" },
+      { "path": "pnpm-lock.yaml", "changeType": "MODIFIED" },
+      { "path": "specs/CURRENT.md", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      ".specgrain/specs/SG-000019.json",
+      "packages/product-graph/package.json",
+      "packages/product-graph/src/contracts.ts",
+      "packages/product-graph/src/index.ts",
+      "packages/product-graph/tsconfig.json",
+      "pnpm-lock.yaml"
+    ],
+    "excludedFiles": [
+      {
+        "path": "docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md",
+        "excludeReason": "unsupported_ext",
+        "material": true
+      },
+      {
+        "path": "packages/product-graph/src/contracts.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      },
+      {
+        "path": "specs/CURRENT.md",
+        "excludeReason": "unsupported_ext",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md",
+        "method": "Host-agent governance review (OCR excludes Markdown as unsupported_ext): Grain outcome, scope in/out, acceptance, dependencies, and evidence requirements were compared against live SpecGrain state and the canonical frontier; the negative PR #35 lockfile failure is preserved as the shaping rationale.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#separate-review-of-excluded-files"
+      },
+      {
+        "path": "packages/product-graph/src/contracts.test.ts",
+        "method": "Host-agent test-oracle review (OCR default_path filter excludes test paths): every assertion was checked against the contract it pins, including the deliberate empty-slice semantics for an unknown node, revision-tamper rejection, and the unknown-key rejection table added by the repair.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#separate-review-of-excluded-files"
+      },
+      {
+        "path": "specs/CURRENT.md",
+        "method": "Host-agent live-truth reconciliation (OCR excludes Markdown as unsupported_ext): the frontier table, merged-PR claims, and the SG-000019 row were compared against live GitHub state (PR #32 merged as ff5bcbc, PR #37 head 12a66fc) and against .specgrain/specs/SG-000019.json.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#separate-review-of-excluded-files"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": ".specgrain/specs/SG-000019.json",
+      "ruleSetIdentity": "system rule group 1 (**/*.{json,json5}): check JSON keys for spelling errors; ignore JSON values",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 1)"
+    },
+    {
+      "path": "packages/product-graph/tsconfig.json",
+      "ruleSetIdentity": "system rule group 1 (**/*.{json,json5}): check JSON keys for spelling errors; ignore JSON values",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 1)"
+    },
+    {
+      "path": "packages/product-graph/package.json",
+      "ruleSetIdentity": "system rule group 2 (**/package.json): no latest/* dependency versions; no dependency/devDependency duplication; declared tool dependencies",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 2)"
+    },
+    {
+      "path": "packages/product-graph/src/contracts.ts",
+      "ruleSetIdentity": "system rule group 3 (**/*.{ts,js,tsx,jsx,mjs,cjs}): typos, dead code, quality, React, async, and code-security checklist (no var, no loose equality, no any, no nested ternary, no prototype mutation)",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 3)"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system rule group 3 (**/*.{ts,js,tsx,jsx,mjs,cjs}): typos, dead code, quality, React, async, and code-security checklist (no var, no loose equality, no any, no nested ternary, no prototype mutation)",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 3)"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "ruleSetIdentity": "system rule group 4 (**/*.{yaml,yml}): check YAML keys for spelling errors; ignore YAML values",
+      "evidenceReference": "ocr delegate rule --format json output at head 12a66fc (rule group 4)"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S01_T02B_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "6851184cdae8e35dfbfebdfb504b2fe811aa3eb7527b5677b857d76874819c9d"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-001",
+        "path": "packages/product-graph/src/contracts.ts",
+        "material": true,
+        "disposition": "FIXED",
+        "rationale": "Found at head 58ffa9a and fixed at this reviewed head by commit 12a66fc4331551342d403c3e295954fa6e00b5ed, which rejects unknown keys at node, edge, state, and revision-document level and adds the focused rejection tests. Verified at head 12a66fc: the same probe documents that previously produced the identical revision sha256:f4dd35b6...98 now raise deterministic TypeErrors, while the well-formed document still produces that exact digest, proving the repair closes the identity-collision class without changing legitimate canonical identity.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#reproducing-evidence-for-ocr-001"
+      },
+      {
+        "findingId": "OCR-002",
+        "path": "packages/product-graph/src/contracts.ts",
+        "material": false,
+        "disposition": "FIXED",
+        "rationale": "Nested ternary in compareText violated the resolved OCR TypeScript rule group at head 58ffa9a; commit 12a66fc4331551342d403c3e295954fa6e00b5ed rewrites it as explicit branches with identical behaviour, verified by the unchanged revision digest and the passing focused suite at head 12a66fc.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#dispositions"
+      },
+      {
+        "findingId": "OCR-003",
+        "path": "packages/product-graph/src/contracts.ts",
+        "material": false,
+        "disposition": "ACCEPTED_RISK",
+        "rationale": "The O(nodes x edges) outgoing-edge index is a scaling cost, not a correctness defect, and ADR-0003 explicitly defers large-graph performance until workload evidence exists. Carried forward as a P02-S02 query-hardening candidate rather than widening SG-000019 beyond its declared scope.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#dispositions"
+      },
+      {
+        "findingId": "OCR-004",
+        "path": "packages/product-graph/src/contracts.ts",
+        "material": false,
+        "disposition": "ACCEPTED_RISK",
+        "rationale": "Cyclic or pathologically deep programmatic input yields a RangeError instead of the contract TypeError. The canonical read path is JSON.parse output, which cannot be cyclic, so the failure mode is unreachable from persisted documents; carried forward as a hardening candidate with a fixture test.",
+        "evidenceReference": "docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md#dispositions"
+      }
+    ]
+  },
+  "reconciliation": null
+}
