@@ -1,0 +1,183 @@
+name: p02-s01-t02a-shape
+
+on:
+  push:
+    branches:
+      - p02/s01-t02a-select-product-graph-v1
+    paths:
+      - .github/workflows/p02-s01-t02a-shape.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p02-s01-t02a-shape-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: ad191d8227ba847f127c2c5f563895c2315f81a3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          python -c "import importlib.metadata; print('specgrain-package-version=' + importlib.metadata.version('specgrain'))"
+          specgrain --help >/dev/null
+
+      - name: Draft T02A
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft . \
+            --title "IN-P02-S01-T02A Select Product Graph v1 persistence representation" \
+            --outcome "Evidence-backed architectural decision selects the canonical Product Graph v1 persistence representation and explicit revisit triggers without implementing later domain semantics." \
+            --rationale "IN-P02-S01-T01 is canonically complete through SG-000015, SG-000016, and SG-000017; selection must precede stable v1 contract implementation." \
+            --json | tee /tmp/specgrain-draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/specgrain-draft.json"))["spec_id"])')" = "SG-000018"
+
+      - name: Shape T02A
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000018 . \
+            --scope-in "Select one canonical Product Graph v1 persistence representation using the qualified structured-document and normalized-relational evidence from SG-000015 through SG-000017." \
+            --scope-in "Record ADR-0003 with all seven canonical selection criteria, explicit alternatives, consequences, canonical-versus-derived-state rules, and evidence-backed revisit triggers." \
+            --scope-in "Record machine-readable selection evidence that references the deterministic SG-000017 comparison measurements and the post-merge qualification identity." \
+            --scope-out "No stable Product Graph node, edge, or revision public contract implementation; that remains a separate T02B Grain." \
+            --scope-out "No P02-S02 domain nodes, data-governance semantics, or deterministic domain validators." \
+            --scope-out "No production database, Supabase migration, graph database, remote side effect, or unmeasured wall-clock performance claim." \
+            --acceptance "Exactly one canonical v1 representation is selected or the Grain remains explicitly blocked; no ambiguous dual source of truth is allowed." \
+            --acceptance "The decision addresses deterministic diff, mergeability, migration/versioning, slice/query ergonomics, testability, human inspectability, and realistic-size performance/storage surface." \
+            --acceptance "ADR-0003 distinguishes canonical persisted state from any regenerable derived projection or index and defines explicit revisit triggers for evidence not yet measured in production." \
+            --acceptance "Machine-readable decision evidence agrees exactly with ADR-0003 and cites SG-000017 comparison evidence plus fresh-main CI #173 on merge commit ad191d8227ba847f127c2c5f563895c2315f81a3." \
+            --acceptance "No Product Graph v1 public contract or P02-S02 domain semantic is introduced in this decision Grain." \
+            --acceptance "Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/review, independent semantic review, and exact-head Ubuntu/Windows repository CI are recorded before merge." \
+            --dependency SG-000017 \
+            --risk-level medium \
+            --recovery "Revert SG-000018 and its ADR/evidence/current-frontier updates; the two qualified prototypes and comparison evidence remain intact and no production state is mutated." \
+            --context-budget 6000 \
+            --context-estimate 3200 \
+            --change-surface "docs/adr/**" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "ADR-0003 selection record covering all seven canonical criteria and explicit revisit triggers." \
+            --evidence "Machine-readable decision record tied to SG-000017 deterministic comparison evidence and exact canonical merge identity." \
+            --evidence "Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/rule resolution, semantic review, and exact-head Ubuntu/Windows CI." \
+            --minimality-choice new-code \
+            --minimality-rationale "Add one bounded architectural decision record and one machine-readable evidence artifact rather than implementing contracts before the representation is selected." \
+            --safety-status requirements-defined \
+            --safety-requirement "Do not convert deterministic serialized-size/row-count evidence into an unsupported production latency claim." \
+            --safety-requirement "Do not create two authoritative persistence representations; any secondary projection must be explicitly regenerable from canonical state." \
+            --json | tee /tmp/specgrain-shape.json
+
+      - name: Refine and promote T02A
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000018 . --json | tee /tmp/specgrain-refine.json
+          specgrain check . --json | tee /tmp/specgrain-check-refining.json
+          specgrain grain SG-000018 . --json | tee /tmp/specgrain-grain.json
+          specgrain check . --json | tee /tmp/specgrain-check-grain.json
+          specgrain next . --json | tee /tmp/specgrain-next.json
+
+      - name: Record shaping evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          def load(name):
+              return json.loads(Path("/tmp/" + name).read_text(encoding="utf-8"))
+
+          draft = load("specgrain-draft.json")
+          shape = load("specgrain-shape.json")
+          refine = load("specgrain-refine.json")
+          grain = load("specgrain-grain.json")
+          check = load("specgrain-check-grain.json")
+          nxt = load("specgrain-next.json")
+          candidate = next(item for item in nxt["candidates"] if item["node_id"] == "SG-000018")
+
+          lines = [
+              "# P02-S01-T02A — SpecGrain Shaping Evidence",
+              "",
+              "**Task:** IN-P02-S01-T02A",
+              "**SpecGrain:** SG-000018",
+              "**Date:** 2026-09-21",
+              "**Canonical baseline:** " + os.environ["BASELINE_SHA"],
+              "**SpecGrain source:** TheHalfMoon/SpecGrain@" + os.environ["SPECGRAIN_SHA"],
+              "**GitHub Actions run:** " + os.environ["GITHUB_RUN_ID"],
+              "",
+              "## Tool execution",
+              "",
+              "The SpecNode was produced by the real pinned SpecGrain CLI; it was not hand-authored.",
+              "",
+              "- draft state: " + draft["state"],
+              "- shaped revision: " + shape["revision_digest"],
+              "- refine state: " + refine["state"],
+              "- grain state: " + grain["state"],
+              "- final revision: " + grain["revision_digest"],
+              "- project check valid: " + str(check["valid"]).lower(),
+              "- next valid: " + str(nxt["valid"]).lower(),
+              "- next eligible for SG-000018: " + str(candidate["eligible"]).lower(),
+              "- next waiting_on: " + ",".join(candidate["waiting_on"]),
+              "",
+              "## Canonical dependency truth",
+              "",
+              "SG-000017 / IN-P02-S01-T01C is canonically complete through PR #29.",
+              "Exact-head CI #171 passed on Ubuntu and Windows; fresh-main CI #173 passed on merge commit " + os.environ["BASELINE_SHA"] + ".",
+              "The CLI waiting_on value reflects the known missing VERIFIED/CONTROLLED transition surface; no lifecycle state is fabricated.",
+              "",
+              "## Decomposition boundary",
+              "",
+              "This Grain selects the v1 persistence representation only.",
+              "Stable Product Graph v1 node/edge/revision contracts remain a separate IN-P02-S01-T02B Grain after this decision closes canonically.",
+              "P02-S02 domain semantics and validators remain out of scope.",
+              "",
+          ]
+          Path("docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md").write_text("\n".join(lines), encoding="utf-8")
+          PY
+
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          python - <<'PY'
+          import subprocess
+          allowed = {
+              ".specgrain/specs/SG-000018.json",
+              "docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md",
+          }
+          output = subprocess.check_output(["git", "status", "--porcelain=v1"], text=True)
+          changed = {line[3:] for line in output.splitlines() if line}
+          unexpected = sorted(changed - allowed)
+          missing = sorted(allowed - changed)
+          if unexpected or missing:
+              raise SystemExit("unexpected changed paths=" + repr(unexpected) + "; missing expected paths=" + repr(missing))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000018.json docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md
+          git commit -m "chore(p02): shape Product Graph v1 selection grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
