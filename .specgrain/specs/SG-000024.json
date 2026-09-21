@@ -1,0 +1,80 @@
+{
+  "acceptance": [
+    "The stable package exports closed v1 privacy vocabularies plus the processing-purpose list field, without framework, model-provider, or database coupling.",
+    "Deterministic node validation rejects any value outside a declared privacy vocabulary with DOMAIN_INVALID_ENUM_VALUE, and unknown privacy attributes keep failing closed.",
+    "Deterministic governance validation reports consent without user-visible state, an audit or minimization requirement without a redaction control, and public visibility of data that requires a handling policy, each with a stable error code and no false positive on the documented negative cases.",
+    "Issue collection remains total and deterministic across repeated runs, node and edge insertion orders, and JSON object key orders, under the documented phase order and sort key.",
+    "Domain validation does not mutate, reorder, or normalize its input, and well-formed Product Graph v1 canonical revision identity is unchanged by domain validation.",
+    "Focused privacy tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000023"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph privacy vocabularies, processing-purpose field, and the three deterministic governance privacy rules with focused tests.",
+      "Proof that out-of-vocabulary privacy input fails closed and that canonical revision identity is unchanged for well-formed documents.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI plus post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000024",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded set of privacy vocabularies and three governance rules plus focused tests, instead of adding a package, promoting the prototype lab, or introducing a runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Privacy validation composes on top of the node, edge, relation, and governance layers delivered by SG-000020 through SG-000023 and the Product Graph v1 core contract, and must never weaken or bypass any of them.",
+          "Deterministic validation must not depend on object iteration accidents, wall-clock time, randomness, network calls, or model inference.",
+          "Declaring consent, visibility, redaction, minimization, or a processing purpose must never be presented as legal or regulatory compliance, and no validator may claim compliance or encode jurisdiction-specific rules."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph domain layer declares closed v1 privacy vocabularies for collection source, user visibility, consent, redaction, and minimization on the datapolicy node kind, adds a free-form processing-purpose list, and extends the governance phase with deterministic rules that report consent without user-visible state, an audit or minimization requirement without a redaction control, and public visibility of data that requires a handling policy.",
+  "parent_id": null,
+  "rationale": "SG-000023 delivered the data-governance relations and cross-node rules of IN-P02-S02-T02 and deferred the privacy semantics to this dependent Grain; the canonical DataPolicy definition names consent, redaction, and user-visible preference state as required semantics.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000024 privacy vocabularies, the processing-purpose field, the enum registrations, the three governance privacy rules, the focused tests, the evidence record, and the current-frontier update; the SG-000022 and SG-000023 classification, lifecycle, relation, and governance layers, the earlier domain layer, the Product Graph v1 contracts, and ADR-0003 remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Declare closed v1 privacy vocabularies for the datapolicy node kind: collection source, user visibility, consent, redaction, and minimization, in the same data-driven vocabulary style as the SG-000022 classification and lifecycle fields.",
+    "Declare the optional processing-purpose list field on the datapolicy node kind as a free-form string list, because processing purposes are product-specific and a closed vocabulary would invent business meaning.",
+    "Register the new privacy attributes in the enum field table so an out-of-vocabulary value is reported as the stable node-phase error code DOMAIN_INVALID_ENUM_VALUE.",
+    "Extend the governance phase with the stable error code DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY for a policy that requires consent while its own visibility is not user-visible.",
+    "Extend the governance phase with the stable error code DOMAIN_MISSING_REDACTION_CONTROL for a policy that requires audit or minimization while declaring no redaction control.",
+    "Extend the governance phase with the stable error code DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA for a policy that declares public visibility while governing data classified at a level that requires a handling policy.",
+    "Add focused deterministic tests covering every new vocabulary value, every new enum field, out-of-vocabulary privacy values, each new rule with its negative cases, deterministic ordering, no input mutation, and unchanged canonical revision identity.",
+    "Advance specs/CURRENT.md to record SG-000023 canonical closure and SG-000024 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No new node or edge kinds, no change to the classification or lifecycle vocabularies, and no change to any relation or endpoint pair delivered by earlier Grains.",
+    "No locale, external-effect, Dataset, design-system, skill, exploration-branch, or release semantics.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger, graph views, compiler, database, Supabase migration, or remote side effect.",
+    "No claim of legal or regulatory compliance, no regulatory taxonomy, and no jurisdiction-specific rule.",
+    "No new workspace package, no new runtime dependency, no lockfile change, and no relaxation of existing rejection behavior."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T02C Implement privacy semantics"
+}
