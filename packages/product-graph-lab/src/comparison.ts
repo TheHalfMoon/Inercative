@@ -60,10 +60,34 @@ export const representativeGraphFixture: ProductGraphState = {
     { id: "role:operator", kind: "role", attributes: { label: "Operator" } },
   ],
   edges: [
-    { id: "edge:page-order", kind: "displays", from: "page:orders", to: "entity:order", attributes: {} },
-    { id: "edge:page-refund", kind: "offers", from: "page:orders", to: "action:refund", attributes: {} },
-    { id: "edge:role-page", kind: "uses", from: "role:operator", to: "page:orders", attributes: {} },
-    { id: "edge:role-refund", kind: "permits", from: "role:operator", to: "action:refund", attributes: {} },
+    {
+      id: "edge:page-order",
+      kind: "displays",
+      from: "page:orders",
+      to: "entity:order",
+      attributes: {},
+    },
+    {
+      id: "edge:page-refund",
+      kind: "offers",
+      from: "page:orders",
+      to: "action:refund",
+      attributes: {},
+    },
+    {
+      id: "edge:role-page",
+      kind: "uses",
+      from: "role:operator",
+      to: "page:orders",
+      attributes: {},
+    },
+    {
+      id: "edge:role-refund",
+      kind: "permits",
+      from: "role:operator",
+      to: "action:refund",
+      attributes: {},
+    },
   ],
 };
 
@@ -101,7 +125,10 @@ function surface(state: ProductGraphState): SurfaceMeasurement {
   };
 }
 
-function parityFor(state: ProductGraphState, queryNode: string): PrototypeComparisonReport["parity"] {
+function parityFor(
+  state: ProductGraphState,
+  queryNode: string,
+): PrototypeComparisonReport["parity"] {
   const structured = structuredDocumentPrototype.persist(state);
   const relational = normalizedRelationalPrototype.persist(state);
   const structuredSession = structuredDocumentPrototype.open(structured);
@@ -154,20 +181,28 @@ export function buildPrototypeComparisonReport(): PrototypeComparisonReport {
     measurements: { representative: surface(representativeGraphFixture), scaled: surface(scaled) },
     criteria: {
       deterministicDiff: {
-        structuredDocument: "Canonical sorting yields stable documents; array edits can widen textual diff context.",
-        normalizedRelational: "Stable row identities yield deterministic serialization and narrower logical change units.",
+        structuredDocument:
+          "Canonical sorting yields stable documents; array edits can widen textual diff context.",
+        normalizedRelational:
+          "Stable row identities yield deterministic serialization and narrower logical change units.",
       },
       mergeability: {
-        structuredDocument: "One inspectable artifact is simple, while concurrent edits can overlap within shared arrays.",
-        normalizedRelational: "Independent node and edge rows provide narrower logical merge units with more storage structure.",
+        structuredDocument:
+          "One inspectable artifact is simple, while concurrent edits can overlap within shared arrays.",
+        normalizedRelational:
+          "Independent node and edge rows provide narrower logical merge units with more storage structure.",
       },
       migrationVersioning: {
-        structuredDocument: "Whole-document schema transforms are direct but operate on complete revisions.",
-        normalizedRelational: "Explicit revision/node/edge rows support granular migrations with a larger schema surface.",
+        structuredDocument:
+          "Whole-document schema transforms are direct but operate on complete revisions.",
+        normalizedRelational:
+          "Explicit revision/node/edge rows support granular migrations with a larger schema surface.",
       },
       sliceQueryErgonomics: {
-        structuredDocument: "Deterministic in-memory indexes serve slices after complete-document hydration.",
-        normalizedRelational: "Row identity maps naturally to indexed partial-read designs; database behavior is not measured here.",
+        structuredDocument:
+          "Deterministic in-memory indexes serve slices after complete-document hydration.",
+        normalizedRelational:
+          "Row identity maps naturally to indexed partial-read designs; database behavior is not measured here.",
       },
       testability: {
         structuredDocument: "Canonical fixtures and round-trip assertions are compact.",
@@ -175,11 +210,14 @@ export function buildPrototypeComparisonReport(): PrototypeComparisonReport {
       },
       humanInspectability: {
         structuredDocument: "The semantic whole is directly readable as one canonical snapshot.",
-        normalizedRelational: "Rows are explicit, but reconstructing the semantic whole requires projection.",
+        normalizedRelational:
+          "Rows are explicit, but reconstructing the semantic whole requires projection.",
       },
       performance: {
-        structuredDocument: "Deterministic serialized size is measured; production hydration/query latency is not.",
-        normalizedRelational: "Deterministic bytes and row counts are measured; production indexed-query latency is not.",
+        structuredDocument:
+          "Deterministic serialized size is measured; production hydration/query latency is not.",
+        normalizedRelational:
+          "Deterministic bytes and row counts are measured; production indexed-query latency is not.",
       },
     },
     unresolvedTradeoffs: [
