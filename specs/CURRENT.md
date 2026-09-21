@@ -70,7 +70,7 @@ their current delivery state:
 | SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | DONE (PR #27) | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000017 | IN-P02-S01-T01C | Compare Product Graph persistence prototypes | DONE (PR #29) | `docs/evidence/P02_S01_T01C_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
-| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | DONE (PR #37) | `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -101,6 +101,11 @@ The following are **NOT RUN** and are not claimed as PASS:
 - Alibaba Open Code Review **semantic LLM review**: NOT RUN / BLOCKED. Exact-head
   deterministic file-accounting/rule-resolution evidence exists for SG-000008, and the
   scoped endpoint/token blocker is explicitly recorded. This blocker does not become PASS.
+  Scope clarification added 2026-09-21: OCR's **delegation-mode** semantic review is a
+  separate, supported execution layer that runs without an OCR LLM endpoint and has now
+  actually executed for SG-000019
+  (`docs/evidence/P02_S01_T02B_OCR_REVIEW_2026-09-21.md`). The **hosted-LLM** layer remains
+  NOT RUN / BLOCKED and is never reported as PASS.
 - Diffcipline GitHub Action in CI: NOT RUN (policy + local CLI proof are done; the CI
   Action is added only when scoped credentials/config are required).
 - SpecGrain lifecycle completion state for finished Grains: not modeled (the current
@@ -179,12 +184,32 @@ negative evidence. Candidate `34b511ee44366be408c6e90143ff451e1fcdbc78` failed a
 `35564342100` at frozen install because the new workspace importer was absent; no
 out-of-surface lockfile repair or rerun-to-green was performed.
 
+SG-000019 / IN-P02-S01-T02B is canonically complete through PR #37. Candidate
+`12a66fc4331551342d403c3e295954fa6e00b5ed` passed exact-head CI run `35624579291` on Ubuntu
+and Windows, a Diffcipline R1 exact-candidate proof (`REVIEW`, no scope violation,
+`+598/-5` inside the 600-line Grain bound), and Alibaba OCR `v1.12.7` deterministic
+accounting/rule resolution. The OCR semantic layer ran in **delegation mode**: `OCR-001`
+(silent unknown-field dropping that let different documents collapse to one canonical
+revision digest) and `OCR-002` (nested ternary against the resolved OCR TypeScript rule
+group) were fixed forward in `12a66fc`; `OCR-003` and `OCR-004` were dispositioned
+`ACCEPTED_RISK` with named follow-ups. The record validated against the repository OCR
+evidence contract with `ok: true`. The candidate was merged as
+`87ad2c3844345a301f1095c7399fab8d037d5261`, and the OCR review record plus the corrected
+OCR procedure were merged as `e9b02e48612aefda03f282536ba84cea975e0743` (PR #40).
+Fresh-main push CI run `35625457962` on that merge commit passed on Ubuntu and Windows; the
+push run for the intermediate commit `87ad2c3` was cancelled by the workflow's own
+concurrency group and is not claimed as PASS. Full record:
+`docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md`.
+
 Current eligible frontier:
 
-1. **SG-000019 / IN-P02-S01-T02B — Implement stable Product Graph v1 contracts.**
-   Real SpecGrain shaping is complete; the bounded stable-contract implementation candidate is active.
-2. IN-P02-S02-T01 remains blocked until SG-000019 closes canonically; domain-specific
-   Product Graph nodes/edges and deterministic domain validators are not implemented yet.
+1. **IN-P02-S02-T01 — Implement domain nodes/edges and deterministic validators.**
+   Dependency `IN-P02-S01-T02` is satisfied by SG-000018 + SG-000019. This unit still
+   requires real SpecGrain shaping before implementation authority exists; the shaping tool
+   surface is the canonical `TheHalfMoon/SpecGrain` CLI.
+2. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until
+   IN-P02-S02-T01 closes. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked
+   behind IN-P02-S02-T02.
 
 ## Hard constraints
 
