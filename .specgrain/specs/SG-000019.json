@@ -1,0 +1,78 @@
+{
+  "acceptance": [
+    "The stable package exports explicit v1 contracts and deterministic create/validate/parse/serialize/query primitives without framework, model-provider, or database coupling.",
+    "Canonical serialization and revision identity are stable across node/edge insertion order and JSON object key order, while JSON array order remains semantic.",
+    "Invalid schema version, blank graph/node/edge identity, blank kind/endpoint, duplicate identity, dangling edge endpoint, non-finite JSON number, and revision tampering are deterministically rejected.",
+    "pnpm install --frozen-lockfile recognizes packages/product-graph through an explicit lockfile importer and does not mutate the lockfile.",
+    "The canonical structured revision document is the sole authoritative representation exposed by this Grain; relational/index/cache state remains derived and out of scope.",
+    "No P02-S02 domain semantic is introduced, and the prototype lab is not imported by the stable package.",
+    "Focused Product Graph v1 tests plus full repository format, lint, typecheck, and test suites pass on exact candidate; Ubuntu and Windows CI both pass.",
+    "Diffcipline R1 exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution, independent semantic review, and exact-head repository CI are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "pnpm-lock.yaml",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 8500,
+    "estimated_tokens": 5600
+  },
+  "dependencies": [
+    "SG-000018"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph v1 contracts and deterministic focused tests.",
+      "Frozen-lockfile installation proving the new workspace importer is canonical.",
+      "Exact-candidate Diffcipline R1 proof plus Alibaba OCR deterministic accounting/rule resolution and independent semantic review.",
+      "Exact-head Ubuntu/Windows repository CI and post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000019",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Create one small dependency-free stable package plus only the lockfile importer required by the workspace, rather than promoting prototype code or adding persistence/domain layers prematurely."
+      },
+      "safety": {
+        "requirements": [
+          "Preserve exactly one authoritative structured Product Graph revision representation; derived projections may not become a second source of truth.",
+          "Keep domain-specific semantics and validators out of T02B so P02-S02 remains independently reviewable.",
+          "Reject malformed or tampered graph documents deterministically before they can be treated as canonical state."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A stable storage-neutral Product Graph v1 package defines typed node, edge, and immutable revision-document contracts with deterministic canonicalization, validation, serialization, revision identity, and a frozen-installable workspace manifest.",
+  "parent_id": null,
+  "rationale": "SG-000018 selected one structured canonical persisted semantic authority; the first SG-000019 candidate exposed a missing lockfile change-surface declaration and was closed as negative evidence, so this fresh Grain authorizes the required workspace lockfile importer explicitly.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000019 stable package, lockfile importer, evidence, and current-frontier updates; ADR-0003 plus SG-000015 through SG-000018 evidence remain intact and no production data is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add a stable @ineractive/product-graph package with storage-neutral Product Graph v1 node, edge, structured revision-document, slice, and JSON-value contracts.",
+    "Implement deterministic canonicalization and SHA-256 semantic revision identity for the canonical structured document selected by ADR-0003.",
+    "Implement validation and parse/serialize helpers that reject invalid schema versions, empty identities/kinds/endpoints, duplicate node or edge identities, dangling edge endpoints, non-finite JSON numbers, and revision tampering.",
+    "Add deterministic tests proving round-trip behavior, object-key and insertion-order stability, referential-integrity enforcement, and tamper rejection.",
+    "Update pnpm-lock.yaml only as required to register the new dependency-free workspace importer and preserve frozen-lockfile installation.",
+    "Advance specs/CURRENT.md so SG-000018 is recorded DONE through PR #32 and SG-000019 is the active T02B implementation Grain."
+  ],
+  "scope_out": [
+    "No P02-S02 domain-specific node-kind enumerations, permissions, data-governance semantics, locale semantics, external-effect semantics, or domain validators.",
+    "No Change Intent, Question Gate, Assumption Ledger, graph-view UI, compiler, database, Supabase migration, graph database, remote side effect, or derived relational projection implementation.",
+    "Do not make stable production contracts depend on packages/product-graph-lab; the prototype lab remains evidence only."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S01-T02B Implement stable Product Graph v1 contracts"
+}
