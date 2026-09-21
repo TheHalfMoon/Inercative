@@ -67,7 +67,8 @@ their current delivery state:
 | SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | DONE (PR #20) | `docs/evidence/P01_S04_T01_UI_SYSTEM_2026-09-20.md` |
 | SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | DONE (PR #21) | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
 | SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | DONE (PR #23) | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
-| SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | DONE (PR #27) | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000017 | IN-P02-S01-T01C | Compare Product Graph persistence prototypes | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01C_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -156,12 +157,17 @@ SG-000015 / IN-P02-S01-T01A is canonically complete through PR #23. Final candid
 and Windows plus exact-candidate assurance run `35558325706`; fresh-main CI #155 passed
 on merge commit `7749a229c8530f06fd079cc1bd0aa2786b9f50ce`.
 
+SG-000016 / IN-P02-S01-T01B is canonically complete through PR #27. Final candidate
+`dfb9a04f84ed7623c27399ca758f8e2b2d2f6f84` passed exact-head CI #160 on Ubuntu
+and Windows plus exact-candidate assurance run `35559603956`; fresh-main CI #162
+passed on merge commit `ee3d06b24bbbafc507608aeb5ec81282e58e327b`.
+
 Current eligible frontier:
 
-1. **SG-000016 / IN-P02-S01-T01B — Prototype normalized relational Product Graph
-   snapshot.** Real SpecGrain shaping is complete; bounded implementation is active.
-2. Cross-representation comparison remains a separate future Grain under
-   IN-P02-S01-T01 before IN-P02-S01-T02 may select the v1 representation.
+1. **SG-000017 / IN-P02-S01-T01C — Compare Product Graph persistence prototypes.**
+   Real SpecGrain shaping is complete; bounded comparison implementation is active.
+2. IN-P02-S01-T02 remains blocked until this comparison Grain closes canonically; no
+   Product Graph v1 representation has been selected.
 
 ## Hard constraints
 
