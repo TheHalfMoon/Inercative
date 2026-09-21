@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "d9179ca62235327332629baf78f761398f8a81de",
+    "head": "6bb3a900a1bff630359ed87b00c3f38ddfc52a6c",
+    "mergeBase": "d9179ca62235327332629baf78f761398f8a81de"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode (OCR_LLM_* and ANTHROPIC_* unset; OCR never contacted an LLM endpoint); deterministic preview and rule resolution re-run at head 6bb3a90 on the repository-local candidate clone; rule source system"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the excluded test oracle: every added assertion was checked against the contract it pins rather than against the implementation, covering the declared effect, consequence, reconciliation, and confirmation vocabularies with their derived subsets, the enum registration of every external-effect vocabulary, every declared value accepted, four out-of-vocabulary values rejected once each, the target rule for every remote effect kind and the accepted cases for every local kind, the blank-target case, seven reconciliation rows, four irreversible rows, causes acceptance for workflow and action sources with three rejected endpoint combinations, the classified-data rule with its confirmed and internal-data negative cases, deterministic reporting across node and edge order, and mutation-freedom with unchanged canonical revision identity.",
+        "evidenceReference": "docs/evidence/P02_S02_T02E_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02E_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T02E_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T02E_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "1c738fd3e205ab2113d7e31a46be0fed921b03ee4501857bf5fc53b70d5f67cf"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-018",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "The remote-effect subset is a declared product decision, exported and documented, and pinned by a test that exercises every declared effect kind with and without a target, so the boundary is explicit rather than accidental.",
+        "evidenceReference": "docs/evidence/P02_S02_T02E_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-019",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "The classified-data rule is workflow-based because only workflows carry the writes relation today; an action's data access is not modelled yet, the rule is documented, and the accepted path is pinned by a focused test.",
+        "evidenceReference": "docs/evidence/P02_S02_T02E_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}
