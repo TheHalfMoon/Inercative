@@ -1,0 +1,70 @@
+{
+  "acceptance": [
+    "Exactly one canonical v1 representation is selected or the Grain remains explicitly blocked; no ambiguous dual source of truth is allowed.",
+    "The decision addresses deterministic diff, mergeability, migration/versioning, slice/query ergonomics, testability, human inspectability, and realistic-size performance/storage surface.",
+    "ADR-0003 distinguishes canonical persisted state from any regenerable derived projection or index and defines explicit revisit triggers for evidence not yet measured in production.",
+    "Machine-readable decision evidence agrees exactly with ADR-0003 and cites SG-000017 comparison evidence plus fresh-main CI #173 on merge commit ad191d8227ba847f127c2c5f563895c2315f81a3.",
+    "No Product Graph v1 public contract or P02-S02 domain semantic is introduced in this decision Grain.",
+    "Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/review, independent semantic review, and exact-head Ubuntu/Windows repository CI are recorded before merge."
+  ],
+  "change_surface": [
+    "docs/adr/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 3200
+  },
+  "dependencies": [
+    "SG-000017"
+  ],
+  "evidence": {
+    "required": [
+      "ADR-0003 selection record covering all seven canonical criteria and explicit revisit triggers.",
+      "Machine-readable decision record tied to SG-000017 deterministic comparison evidence and exact canonical merge identity.",
+      "Diffcipline R1 exact-candidate proof, Alibaba OCR accounting/rule resolution, semantic review, and exact-head Ubuntu/Windows CI."
+    ]
+  },
+  "id": "SG-000018",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Add one bounded architectural decision record and one machine-readable evidence artifact rather than implementing contracts before the representation is selected."
+      },
+      "safety": {
+        "requirements": [
+          "Do not convert deterministic serialized-size/row-count evidence into an unsupported production latency claim.",
+          "Do not create two authoritative persistence representations; any secondary projection must be explicitly regenerable from canonical state."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "Evidence-backed architectural decision selects the canonical Product Graph v1 persistence representation and explicit revisit triggers without implementing later domain semantics.",
+  "parent_id": null,
+  "rationale": "IN-P02-S01-T01 is canonically complete through SG-000015, SG-000016, and SG-000017; selection must precede stable v1 contract implementation.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000018 and its ADR/evidence/current-frontier updates; the two qualified prototypes and comparison evidence remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Select one canonical Product Graph v1 persistence representation using the qualified structured-document and normalized-relational evidence from SG-000015 through SG-000017.",
+    "Record ADR-0003 with all seven canonical selection criteria, explicit alternatives, consequences, canonical-versus-derived-state rules, and evidence-backed revisit triggers.",
+    "Record machine-readable selection evidence that references the deterministic SG-000017 comparison measurements and the post-merge qualification identity."
+  ],
+  "scope_out": [
+    "No stable Product Graph node, edge, or revision public contract implementation; that remains a separate T02B Grain.",
+    "No P02-S02 domain nodes, data-governance semantics, or deterministic domain validators.",
+    "No production database, Supabase migration, graph database, remote side effect, or unmeasured wall-clock performance claim."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S01-T02A Select Product Graph v1 persistence representation"
+}
