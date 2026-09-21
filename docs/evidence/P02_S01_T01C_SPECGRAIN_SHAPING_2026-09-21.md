@@ -80,3 +80,10 @@ The SpecNode was produced by the pinned SpecGrain CLI. No lifecycle or verificat
 ## Decomposition continuation
 
 SG-000016 / IN-P02-S01-T01B is canonically complete through PR #27 and fresh-main CI #162. This Grain completes the prototype-comparison evidence required by IN-P02-S01-T01 while leaving representation selection to IN-P02-S01-T02.
+
+
+## Qualification restart
+
+The formatting repair commit `e82754498906f96c1b43a98df796523b1a4266ef` was authored by `github-actions[bot]` after the temporary self-deleting formatter workflow ran. The associated `ci` workflow record ended `action_required` with no jobs, so it is preserved as non-acceptance evidence and is not treated as an exact-head CI pass.
+
+This forward-only documentation commit intentionally advances the candidate head without changing implementation semantics so that qualification can restart from a user-authored exact head. Acceptance still requires fresh Ubuntu/Windows CI, Diffcipline R1 proof, Alibaba OCR accounting/review, and independent semantic review on the final immutable candidate.
