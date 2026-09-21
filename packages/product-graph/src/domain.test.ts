@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
+  DOMAIN_COLLECTION_VALUES,
+  DOMAIN_CONSENT_VALUES,
   DOMAIN_CONTINUOUS_EXPORT_BLOCKED_LEVELS,
   DOMAIN_DATA_CLASS_LEVELS,
   DOMAIN_DELETION_VALUES,
@@ -11,11 +13,19 @@ import {
   DOMAIN_ENUM_FIELDS,
   DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
+  DOMAIN_MINIMIZATION_VALUES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
   DOMAIN_POLICY_REQUIRED_CLASS_LEVELS,
+  DOMAIN_PUBLIC_VISIBILITY_VALUES,
+  DOMAIN_REDACTION_CONTROL_VALUES,
+  DOMAIN_REDACTION_VALUES,
   DOMAIN_RESIDENCY_VALUES,
   DOMAIN_RETENTION_VALUES,
+  DOMAIN_USER_VISIBLE_CONSENT_VALUES,
+  DOMAIN_USER_VISIBLE_VISIBILITY_VALUES,
+  DOMAIN_VALIDATION_PHASES,
+  DOMAIN_VISIBILITY_VALUES,
   DomainValidationError,
   collectProductGraphDomainIssues,
   createProductGraphRevision,
@@ -48,7 +58,6 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
   requirement: { statement: "Refunds are audited" },
   dataclass: { level: "personal", name: "Customer personal data" },
   datapolicy: {
-    audit: "required",
     deletion: "scheduled",
     export: "on-request",
     name: "Customer data policy",
@@ -667,10 +676,15 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     expect(DOMAIN_ENUM_FIELDS.length).toBeGreaterThan(0);
     expect(policyEnumFields.map((spec) => spec.field)).toEqual([
       "audit",
+      "collection",
+      "consent",
       "deletion",
       "export",
+      "minimization",
+      "redaction",
       "residency",
       "retention",
+      "visibility",
     ]);
     expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.kind === "dataclass")?.values).toEqual([
       ...DOMAIN_DATA_CLASS_LEVELS,
@@ -689,6 +703,21 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     ]);
     expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "residency")?.values).toEqual([
       ...DOMAIN_RESIDENCY_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "collection")?.values).toEqual([
+      ...DOMAIN_COLLECTION_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "consent")?.values).toEqual([
+      ...DOMAIN_CONSENT_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "minimization")?.values).toEqual([
+      ...DOMAIN_MINIMIZATION_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "redaction")?.values).toEqual([
+      ...DOMAIN_REDACTION_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "visibility")?.values).toEqual([
+      ...DOMAIN_VISIBILITY_VALUES,
     ]);
 
     for (const enumSpec of DOMAIN_ENUM_FIELDS) {
@@ -755,8 +784,13 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     spec.values.map((value) => [spec.field, value] as [string, string]),
   );
 
-  it.each(lifecycleValueCases)("accepts the declared lifecycle value %s=%s", (field, value) => {
-    const attributes: Record<string, JsonValue> = { deletion: "scheduled", name: "Policy" };
+  it.each(lifecycleValueCases)("accepts the declared policy value %s=%s", (field, value) => {
+    const attributes: Record<string, JsonValue> = {
+      deletion: "scheduled",
+      name: "Policy",
+      redaction: "all-fields",
+      visibility: "user-visible",
+    };
     attributes[field] = value;
     expect(collectProductGraphDomainIssues(singleNode("datapolicy", attributes))).toEqual([]);
   });
@@ -767,6 +801,11 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     ["export", "always"],
     ["audit", "optional"],
     ["residency", "eu-only"],
+    ["collection", "scraped"],
+    ["consent", "sometimes"],
+    ["minimization", "optional"],
+    ["redaction", "everything"],
+    ["visibility", "secret"],
   ])("rejects the out-of-vocabulary lifecycle value %s=%s", (field, value) => {
     const issues = collectProductGraphDomainIssues(
       singleNode("datapolicy", { [field]: value, name: "Policy" }),
@@ -807,7 +846,7 @@ describe("Product Graph data classification and lifecycle semantics", () => {
     },
   );
 
-  it("fails closed for classification and lifecycle attributes that are not declared yet", () => {
+  it("fails closed for attributes that are not declared", () => {
     const issues = collectProductGraphDomainIssues(
       graphWith([
         {
@@ -815,12 +854,16 @@ describe("Product Graph data classification and lifecycle semantics", () => {
           kind: "dataclass",
           attributes: { level: "internal", name: "C", purpose: "analytics" },
         },
-        { id: "probe:policy", kind: "datapolicy", attributes: { consent: "required", name: "P" } },
+        {
+          id: "probe:policy",
+          kind: "datapolicy",
+          attributes: { jurisdiction: "eu", name: "P" },
+        },
       ]),
     );
     expect(issues.map((issue) => [issue.target, issue.field, issue.code])).toEqual([
       ["probe:class", "purpose", "DOMAIN_UNKNOWN_FIELD"],
-      ["probe:policy", "consent", "DOMAIN_UNKNOWN_FIELD"],
+      ["probe:policy", "jurisdiction", "DOMAIN_UNKNOWN_FIELD"],
     ]);
   });
 
@@ -888,7 +931,12 @@ const governanceNodes: readonly ProductGraphNodeV1[] = [
   {
     id: "gov:policy-open",
     kind: "datapolicy",
-    attributes: { audit: "required", export: "on-request", name: "Open policy" },
+    attributes: {
+      audit: "required",
+      export: "on-request",
+      name: "Open policy",
+      redaction: "all-fields",
+    },
   },
   { id: "gov:permission", kind: "permission", attributes: { effect: "allow", name: "Read" } },
 ];
@@ -902,6 +950,12 @@ function withExportedPolicy(policyExport: string): readonly ProductGraphNodeV1[]
     node.id === "gov:policy-open"
       ? { ...node, attributes: { ...node.attributes, export: policyExport } }
       : node,
+  );
+}
+
+function withPolicyVisibility(policyId: string, visibility: string): readonly ProductGraphNodeV1[] {
+  return governanceNodes.map((node) =>
+    node.id === policyId ? { ...node, attributes: { ...node.attributes, visibility } } : node,
   );
 }
 
@@ -1131,5 +1185,211 @@ describe("Product Graph data-governance relation and cross-node semantics", () =
     expect(JSON.stringify(graph)).toBe(before);
     expect(validated).toEqual(validateProductGraphState(graph));
     expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
+  });
+});
+
+function privacyPolicy(attributes: JsonObject): ProductGraphStateV1 {
+  return graphWith([{ id: "privacy:policy", kind: "datapolicy", attributes }]);
+}
+
+describe("Product Graph privacy semantics", () => {
+  it("declares the privacy vocabularies and their derived subsets", () => {
+    expect([...DOMAIN_COLLECTION_VALUES]).toEqual([
+      "user-provided",
+      "system-generated",
+      "imported",
+      "derived",
+    ]);
+    expect([...DOMAIN_VISIBILITY_VALUES]).toEqual(["internal-only", "user-visible", "public"]);
+    expect([...DOMAIN_CONSENT_VALUES]).toEqual(["not-required", "required", "policy-driven"]);
+    expect([...DOMAIN_REDACTION_VALUES]).toEqual(["none", "sensitive-fields", "all-fields"]);
+    expect([...DOMAIN_MINIMIZATION_VALUES]).toEqual(["unspecified", "required"]);
+
+    for (const value of DOMAIN_USER_VISIBLE_CONSENT_VALUES) {
+      expect(DOMAIN_CONSENT_VALUES).toContain(value);
+    }
+    for (const value of DOMAIN_USER_VISIBLE_VISIBILITY_VALUES) {
+      expect(DOMAIN_VISIBILITY_VALUES).toContain(value);
+    }
+    for (const value of DOMAIN_PUBLIC_VISIBILITY_VALUES) {
+      expect(DOMAIN_USER_VISIBLE_VISIBILITY_VALUES).toContain(value);
+    }
+    for (const value of DOMAIN_REDACTION_CONTROL_VALUES) {
+      expect(DOMAIN_REDACTION_VALUES).toContain(value);
+      expect(DOMAIN_REDACTION_CONTROL_VALUES).not.toContain("none");
+    }
+  });
+
+  it("accepts a processing-purpose list and rejects a malformed one", () => {
+    expect(
+      collectProductGraphDomainIssues(
+        privacyPolicy({ name: "P", purposes: ["service delivery", "support"] }),
+      ),
+    ).toEqual([]);
+
+    for (const purposes of ["service delivery", [], ["ok", " "]]) {
+      const issues = collectProductGraphDomainIssues(privacyPolicy({ name: "P", purposes }));
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({
+        code: "DOMAIN_INVALID_FIELD_TYPE",
+        phase: "node",
+        target: "privacy:policy",
+        field: "purposes",
+      });
+    }
+  });
+
+  it.each([
+    ["required", undefined],
+    ["policy-driven", undefined],
+    ["required", "internal-only"],
+    ["policy-driven", "internal-only"],
+  ] as [string, string | undefined][])(
+    "reports consent %s with visibility %s",
+    (consent, visibility) => {
+      const attributes: Record<string, JsonValue> = { consent, name: "P" };
+      if (visibility !== undefined) attributes.visibility = visibility;
+
+      const issues = collectProductGraphDomainIssues(privacyPolicy(attributes));
+
+      expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+        ["DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY", "visibility"],
+      ]);
+    },
+  );
+
+  it.each([
+    ["required", "user-visible"],
+    ["policy-driven", "user-visible"],
+    ["required", "public"],
+    ["not-required", "internal-only"],
+    ["not-required", undefined],
+  ] as [string, string | undefined][])(
+    "does not report consent %s with visibility %s",
+    (consent, visibility) => {
+      const attributes: Record<string, JsonValue> = { consent, name: "P" };
+      if (visibility !== undefined) attributes.visibility = visibility;
+
+      expect(collectProductGraphDomainIssues(privacyPolicy(attributes))).toEqual([]);
+    },
+  );
+
+  it.each([
+    [{ audit: "required", name: "P" }],
+    [{ minimization: "required", name: "P" }],
+    [{ audit: "required", name: "P", redaction: "none" }],
+    [{ minimization: "required", name: "P", redaction: "none" }],
+  ] as [JsonObject][])("reports a requirement without a redaction control", (attributes) => {
+    const issues = collectProductGraphDomainIssues(privacyPolicy(attributes));
+
+    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_MISSING_REDACTION_CONTROL", "redaction"],
+    ]);
+  });
+
+  it.each([
+    [{ audit: "required", name: "P", redaction: "sensitive-fields" }],
+    [{ audit: "required", name: "P", redaction: "all-fields" }],
+    [{ minimization: "required", name: "P", redaction: "all-fields" }],
+    [{ audit: "none", minimization: "unspecified", name: "P" }],
+  ] as [JsonObject][])("does not report a redaction gap for %j", (attributes) => {
+    expect(collectProductGraphDomainIssues(privacyPolicy(attributes))).toEqual([]);
+  });
+
+  it("does not report a redaction gap for an out-of-vocabulary redaction value", () => {
+    const issues = collectProductGraphDomainIssues(
+      privacyPolicy({ audit: "required", name: "P", redaction: "purge" }),
+    );
+
+    expect(issues.map((issue) => issue.code)).toEqual(["DOMAIN_INVALID_ENUM_VALUE"]);
+  });
+
+  it.each([
+    ["public", "gov:class-personal"],
+    ["public", "gov:class-secret"],
+  ] as [string, string][])(
+    "reports public visibility of %s data governed by the policy",
+    (visibility, classId) => {
+      const issues = collectProductGraphDomainIssues(
+        graphWithEdges(withPolicyVisibility("gov:policy-open", visibility), [
+          edge("classified_as", "gov:entity", classId, "edge:class"),
+          edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+        ]),
+      );
+
+      expect(issues.map((issue) => [issue.code, issue.target, issue.field])).toEqual([
+        ["DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA", "gov:policy-open", "visibility"],
+      ]);
+    },
+  );
+
+  it.each([
+    ["public", "gov:class-internal"],
+    ["public", "gov:class-public"],
+    ["user-visible", "gov:class-personal"],
+    ["internal-only", "gov:class-secret"],
+  ] as [string, string][])("does not report %s visibility of %s data", (visibility, classId) => {
+    const codes = governanceCodes(
+      graphWithEdges(withPolicyVisibility("gov:policy-open", visibility), [
+        edge("classified_as", "gov:entity", classId, "edge:class"),
+        edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+      ]),
+    );
+
+    expect(codes).toEqual([]);
+  });
+
+  it("does not report public visibility when the policy governs nothing", () => {
+    expect(
+      governanceCodes(graphWithEdges(withPolicyVisibility("gov:policy-open", "public"), [])),
+    ).toEqual([]);
+  });
+
+  it("keeps privacy reporting deterministic across node and edge order", () => {
+    const nodes = withPolicyVisibility("gov:policy-open", "public");
+    const edges: readonly ProductGraphEdgeV1[] = [
+      edge("classified_as", "gov:entity", "gov:class-personal", "edge:class"),
+      edge("governs", "gov:policy-open", "gov:entity", "edge:governs"),
+    ];
+    const baseline = collectProductGraphDomainIssues(graphWithEdges(nodes, edges));
+
+    expect(baseline.map((issue) => [issue.code, issue.target])).toEqual([
+      ["DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA", "gov:policy-open"],
+    ]);
+    expect(
+      collectProductGraphDomainIssues(graphWithEdges([...nodes].reverse(), [...edges].reverse())),
+    ).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(graphWithEdges(nodes, edges))).toEqual(baseline);
+  });
+
+  it("does not mutate privacy input and preserves revision identity", () => {
+    const graph = privacyPolicy({
+      collection: "user-provided",
+      consent: "required",
+      minimization: "required",
+      name: "Customer policy",
+      purposes: ["service delivery"],
+      redaction: "sensitive-fields",
+      visibility: "user-visible",
+    });
+    const before = JSON.stringify(graph);
+    const revision = createProductGraphRevision(graph);
+
+    expect(collectProductGraphDomainIssues(graph)).toEqual([]);
+    const validated = validateProductGraphDomain(graph);
+
+    expect(JSON.stringify(graph)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(graph));
+    expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
+  });
+
+  it("documents the governance phase as the final validation phase", () => {
+    expect([...DOMAIN_VALIDATION_PHASES]).toEqual([
+      "core",
+      "node",
+      "edge",
+      "relation",
+      "governance",
+    ]);
   });
 });
