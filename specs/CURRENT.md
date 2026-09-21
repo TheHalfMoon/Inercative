@@ -69,7 +69,8 @@ their current delivery state:
 | SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | DONE (PR #23) | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | DONE (PR #27) | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000017 | IN-P02-S01-T01C | Compare Product Graph persistence prototypes | DONE (PR #29) | `docs/evidence/P02_S01_T01C_SPECGRAIN_SHAPING_2026-09-21.md` |
-| SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | GRAIN / DECISION CANDIDATE | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -168,12 +169,22 @@ SG-000017 / IN-P02-S01-T01C is canonically complete through PR #29. Final candid
 and Windows plus exact-candidate assurance run `35562088818`; fresh-main CI #173
 passed on merge commit `ad191d8227ba847f127c2c5f563895c2315f81a3`.
 
+SG-000018 / IN-P02-S01-T02A is canonically complete through PR #32. Final candidate
+`0cc36e2063b5aa192c393ccf75ecab3c8a9482e0` passed exact-head CI #175 on Ubuntu
+and Windows plus exact-candidate assurance run `35562780116`; fresh-main CI #177
+passed on merge commit `ff5bcbc3241d43fbb643d037ccb5967a20213af4`.
+
+Closed PR #35 and evidence-only PR #36 preserve the first SG-000019 candidate as
+negative evidence. Candidate `34b511ee44366be408c6e90143ff451e1fcdbc78` failed assurance run
+`35564342100` at frozen install because the new workspace importer was absent; no
+out-of-surface lockfile repair or rerun-to-green was performed.
+
 Current eligible frontier:
 
-1. **SG-000018 / IN-P02-S01-T02A — Select Product Graph v1 persistence representation.**
-   Real SpecGrain shaping is complete; the bounded architectural decision candidate is active.
-2. IN-P02-S01-T02B remains blocked until this decision Grain closes canonically; stable
-   Product Graph v1 node/edge/revision contracts are not implemented yet.
+1. **SG-000019 / IN-P02-S01-T02B — Implement stable Product Graph v1 contracts.**
+   Real SpecGrain shaping is complete; the bounded stable-contract implementation candidate is active.
+2. IN-P02-S02-T01 remains blocked until SG-000019 closes canonically; domain-specific
+   Product Graph nodes/edges and deterministic domain validators are not implemented yet.
 
 ## Hard constraints
 
