@@ -1,0 +1,80 @@
+{
+  "acceptance": [
+    "The stable package exports the closed v1 domain edge-kind vocabulary with declared endpoint-kind compatibility and required and optional edge attribute fields, without framework, model-provider, or database coupling.",
+    "Deterministic edge validation rejects unknown edge kinds, incompatible source endpoints, incompatible target endpoints, and self-referencing edges, each with a stable error code.",
+    "Deterministic relation validation rejects duplicate relations for the same edge kind and endpoint pair and conflicting role authorization where the same role both MAY and CANNOT the same action, each with a stable error code.",
+    "Issue collection remains total and deterministic across repeated runs, node and edge insertion orders, and JSON object key orders, under the documented core -> node -> edge -> relation phase order and sort key.",
+    "Domain validation does not mutate, reorder, or normalize its input, and well-formed Product Graph v1 canonical revision identity is unchanged by domain validation.",
+    "OCR-003 is repaired: the outgoing-edge index is built in a single pass keyed by edge.from, and query results are identical to the previous filtering implementation, pinned by tests.",
+    "Focused edge and relation tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000020"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph v1 domain edge vocabulary with endpoint-kind compatibility plus deterministic edge and relation validators and focused tests.",
+      "Proof that the single-pass outgoing-edge index returns identical results and that canonical revision identity is unchanged for well-formed documents.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI and post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000021",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded data-driven edge and relation module plus focused tests instead of adding a package, promoting the prototype lab, or introducing a runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Edge and relation validation composes on top of the SG-000020 node layer and the Product Graph v1 core contract and must never weaken or bypass either.",
+          "Deterministic validation must not depend on object iteration accidents, wall-clock time, randomness, network calls, or model inference.",
+          "The OCR-003 single-pass index repair must not change outgoing-edge query results or canonical revision identity."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph domain layer defines the closed v1 domain edge-kind vocabulary with explicit endpoint-kind compatibility, and a deterministic edge and relation validator that reports unknown edge kinds, incompatible endpoints, self-references, duplicate relations, and conflicting role authorization as stable error codes in a documented phase and sort order, while repairing the carried SG-000019 finding OCR-003 so the outgoing-edge query index is built in a single pass.",
+  "parent_id": null,
+  "rationale": "SG-000020 delivered the node-side slice of IN-P02-S02-T01 and explicitly deferred the edge, endpoint-compatibility, and relation-rule slice plus the SG-000019 accepted-risk finding OCR-003 to this dependent Grain.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000021 edge and relation validator module, the single-pass outgoing-edge index repair, tests, evidence, and current-frontier updates; the SG-000020 node layer, Product Graph v1 contracts, ADR-0003, and SG-000015 through SG-000020 evidence remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Extend the domain-semantics module of the stable @ineractive/product-graph package with the closed v1 domain edge-kind vocabulary and explicit endpoint-kind compatibility per kind, including the explicit any-domain-node wildcard endpoint used by the assumption AFFECTS relation.",
+    "Implement deterministic edge validation on top of the existing node-side domain layer: unknown edge kinds, incompatible source or target endpoint kinds, and self-referencing edges, each with a stable error code.",
+    "Implement deterministic relation-level validation: duplicate relations for the same kind and endpoint pair, and conflicting role authorization where one role both MAY and CANNOT the same action.",
+    "Extend the documented phase order to core -> node -> edge -> relation and keep a single total ordering of reported issues under the existing sort key.",
+    "Repair the carried SG-000019 accepted-risk finding OCR-003 by building the outgoing-edge query index in a single pass keyed by edge.from with identical query results.",
+    "Add focused deterministic tests covering the edge vocabulary, endpoint compatibility, self-references, duplicate relations, authorization conflicts, deterministic cross-phase issue ordering, and the repaired single-pass index.",
+    "Advance specs/CURRENT.md to record SG-000020 canonical closure and SG-000021 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No new domain node kinds beyond the vocabulary already delivered by SG-000020, and no change to the node-side required and optional field contracts.",
+    "No data-governance, classification, lifecycle, privacy, locale, or external-effect semantics, no Dataset semantics, and no design-system, skill, exploration-branch, or release reference semantics.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger UI, graph views, compiler, database, Supabase migration, graph database, or remote side effect.",
+    "No new workspace package, no new runtime dependency, and no lockfile change.",
+    "No change to Product Graph v1 public contract semantics or canonical revision identity for well-formed documents, and no relaxation of existing rejection behavior."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T01B Implement domain edge kinds, endpoint compatibility, and relation rules"
+}
