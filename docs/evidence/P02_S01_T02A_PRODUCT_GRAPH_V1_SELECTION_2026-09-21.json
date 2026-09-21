@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "task": "IN-P02-S01-T02A",
+  "specGrain": "SG-000018",
+  "decision": "STRUCTURED_DOCUMENT_CANONICAL_WITH_REGENERABLE_DERIVED_PROJECTIONS",
+  "canonicalRepresentation": "structured-document",
+  "authorityRules": {
+    "canonicalState": "One immutable structured Product Graph revision document is authoritative per revision.",
+    "derivedState": "Normalized relational rows, indexes, caches, and other projections are non-authoritative and must be regenerable from an identified canonical revision.",
+    "dualAuthorityAllowed": false
+  },
+  "evidence": {
+    "comparison": "docs/evidence/P02_S01_T01_PRODUCT_GRAPH_PROTOTYPE_COMPARISON_2026-09-21.json",
+    "exactHeadCandidate": "0e564b032bdf8beeac33a87818a771bd76ddd5dd",
+    "exactHeadCi": 171,
+    "exactCandidateAssuranceRun": 35562088818,
+    "mergeCommit": "ad191d8227ba847f127c2c5f563895c2315f81a3",
+    "freshMainCi": 173,
+    "freshMainRun": 35562246818,
+    "measurements": {
+      "representative": {
+        "nodes": 4,
+        "edges": 4,
+        "structuredDocumentBytes": 892,
+        "normalizedRelationalBytes": 2042,
+        "normalizedRelationalRows": 9
+      },
+      "scaled": {
+        "nodes": 128,
+        "edges": 256,
+        "structuredDocumentBytes": 34761,
+        "normalizedRelationalBytes": 89047,
+        "normalizedRelationalRows": 385
+      }
+    }
+  },
+  "criteria": {
+    "deterministicDiff": "Both are deterministic; structured snapshots preserve directly inspectable canonical revision state.",
+    "mergeability": "Normalized rows have narrower logical units, but V1 conflict resolution belongs to immutable graph-delta/revision semantics rather than direct canonical row mutation.",
+    "migrationVersioning": "Structured schema-versioned revisions minimize the authoritative migration surface; derived projections can be rebuilt.",
+    "sliceQueryErgonomics": "Structured state supports deterministic slices after hydration; derived indexes/projections are permitted when workload evidence requires partial reads.",
+    "testability": "Both qualify; structured canonical fixtures make whole-revision equality and reconstruction direct.",
+    "humanInspectability": "Structured canonical state exposes the semantic whole without projection.",
+    "performance": "Only deterministic storage-surface evidence is accepted; structured serialization is smaller on both qualified fixtures and no latency claim is made."
+  },
+  "unmeasured": [
+    "Production database latency and indexing behavior at realistic project sizes.",
+    "Observed concurrent-edit conflict rates.",
+    "Migration cadence and operational cost as later P02 semantics expand."
+  ],
+  "revisitTriggers": [
+    "Realistic Product Graph workloads miss explicit hydration, memory, or slice/query budgets.",
+    "Derived projection regeneration or freshness cannot satisfy recovery/query requirements.",
+    "Observed graph-delta concurrency evidence identifies immutable-revision persistence as the bottleneck.",
+    "Whole-revision migration transforms become unsafe or operationally unacceptable.",
+    "A required transactional partial-update workflow cannot be represented safely as a new immutable Product Revision."
+  ],
+  "next": "IN-P02-S01-T02B"
+}
