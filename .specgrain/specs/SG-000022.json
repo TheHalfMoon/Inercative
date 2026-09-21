@@ -1,0 +1,78 @@
+{
+  "acceptance": [
+    "The stable package exports a closed v1 data-classification level vocabulary and closed v1 lifecycle vocabularies with dataclass and datapolicy node kinds and declared required and optional fields, without framework, model-provider, or database coupling.",
+    "Deterministic node validation rejects any value outside a declared vocabulary with the stable error code DOMAIN_INVALID_ENUM_VALUE, and unknown node kinds and unknown attribute fields keep failing closed.",
+    "Deterministic node validation reports a datapolicy that declares bounded retention without an explicit deletion path as DOMAIN_LIFECYCLE_CONTRADICTION, while a policy that declares a deletion path is accepted.",
+    "Issue collection remains total and deterministic across repeated runs, node insertion orders, and JSON object key orders, under the documented phase order and sort key.",
+    "Domain validation does not mutate, reorder, or normalize its input, and well-formed Product Graph v1 canonical revision identity is unchanged by domain validation.",
+    "Focused classification and lifecycle tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000021"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph v1 classification and lifecycle vocabularies, dataclass and datapolicy node kinds, enum-field validation, and the lifecycle contradiction rule, with focused deterministic tests.",
+      "Proof that out-of-vocabulary input fails closed with a stable error code and that canonical revision identity is unchanged for well-formed documents.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI plus post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000022",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded data-driven vocabulary and node-kind addition plus focused tests, instead of adding a package, promoting the prototype lab, or introducing a runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "Classification and lifecycle validation composes on top of the SG-000020 node layer and the Product Graph v1 core contract and must never weaken or bypass either.",
+          "Deterministic validation must not depend on object iteration accidents, wall-clock time, randomness, network calls, or model inference.",
+          "Declaring a data class or a lifecycle policy must never be presented as legal or regulatory compliance, and no validator may claim compliance."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph domain layer defines a closed v1 data-classification vocabulary and closed v1 data-lifecycle vocabularies, adds deterministic dataclass and datapolicy node kinds with declared required and optional fields, rejects values outside a declared vocabulary with a stable error code, and reports a policy that declares bounded retention without a deletion path as a deterministic lifecycle contradiction.",
+  "parent_id": null,
+  "rationale": "IN-P02-S02-T02 requires data classification, lifecycle, privacy, locale, and external-effect semantics with deterministic validators. This Grain delivers the classification and lifecycle node slice first, because the governance relations and cross-node rules of the remaining IN-P02-S02-T02 slices need these node kinds and vocabularies to exist first.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000022 classification and lifecycle vocabularies, the dataclass and datapolicy node kinds, the enum-field validation, the lifecycle contradiction rule, the focused tests, the evidence record, and the current-frontier update; the SG-000019 through SG-000021 domain layer, the Product Graph v1 contracts, and ADR-0003 remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add the closed v1 data-classification level vocabulary and the closed v1 lifecycle vocabularies for retention, deletion, export, audit, and residency to the domain-semantics module of the stable @ineractive/product-graph package, taking the canonical DataClass list in docs/canonical/PRODUCT_GRAPH.md as authority and mapping the docs/canonical/RUNTIME_AND_SECURITY.md privacy list onto it.",
+    "Add the deterministic dataclass and datapolicy domain node kinds with declared required and optional attribute fields, leaving every existing node-kind contract unchanged.",
+    "Declare a data-driven enum field table so one node attribute can be constrained to a closed vocabulary, and report any value outside that vocabulary as the stable node-phase error code DOMAIN_INVALID_ENUM_VALUE.",
+    "Report a datapolicy that declares bounded retention without an explicit deletion path as the stable node-phase error code DOMAIN_LIFECYCLE_CONTRADICTION.",
+    "Add focused deterministic tests covering every newly declared vocabulary value, every declared enum field, out-of-vocabulary values, a missing classification level, the lifecycle contradiction, deterministic issue ordering, no input mutation, and unchanged canonical revision identity.",
+    "Advance specs/CURRENT.md to record SG-000021 canonical closure and SG-000022 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No data-governance relations: no classified_as or governs relation, no cross-node classification or policy rules, and no change to the existing edge-kind vocabulary or endpoint compatibility.",
+    "No privacy semantics, no consent, purpose, visibility, redaction, minimization, locale/timezone, or external-effect semantics, and no Dataset, design-system, skill, exploration-branch, or release semantics.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger, graph views, compiler, database, Supabase migration, or remote side effect.",
+    "No node kind beyond dataclass and datapolicy, no change to the required or optional fields of existing kinds, and no relaxation of existing rejection behavior.",
+    "No new workspace package, no new runtime dependency, no lockfile change, and no change to Product Graph v1 public contract semantics or to canonical revision identity for well-formed documents."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T02A Implement data classification and lifecycle node semantics"
+}

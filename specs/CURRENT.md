@@ -73,6 +73,7 @@ their current delivery state:
 | SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | DONE (PR #37) | `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md` |
 | SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | DONE (PR #43) | `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md` |
 | SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
+| SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -241,10 +242,22 @@ compatibility, and deterministic node, edge, and relation validators.
 
 Current eligible frontier:
 
-1. **IN-P02-S02-T02 — data classification, lifecycle, privacy, locale, and external-effect
-   semantics with validators.** Dependency IN-P02-S02-T01 is now satisfied. This unit still
-   requires real SpecGrain shaping before implementation authority exists.
-2. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
+**IN-P02-S02-T02 — data classification, lifecycle, privacy, locale, and external-effect semantics
+with validators — is delivered as a bounded dependent Grain chain, for the same reason
+IN-P02-S02-T01 was.** One candidate covering all five semantic surfaces would exceed the
+repository Diffcipline line bound, so the handle is sliced and each slice is shaped only after the
+preceding slice is merged and closed.
+
+1. **IN-P02-S02-T02A — data classification and lifecycle node semantics** now has implementation
+   authority: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000022** through
+   `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `c21e76d7d73451d53ddecbeffad25872f0c50752`,
+   and `specgrain check` reports 22 specs with 0 readiness-blocked. Shaping record:
+   `docs/evidence/P02_S02_T02A_SPECGRAIN_SHAPING_2026-09-21.md`.
+2. IN-P02-S02-T02B (data-governance relations and cross-node rules), IN-P02-S02-T02C (privacy
+   semantics), IN-P02-S02-T02D (locale semantics), and IN-P02-S02-T02E (external-effect semantics)
+   are next in dependency order and remain unshaped; no implementation authority exists for them
+   until their own SpecGrain shaping completes.
+3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
    recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
    IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.
 
