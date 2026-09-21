@@ -1,0 +1,114 @@
+name: assure-p02-s01-t01c-0e564b0
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  exact-candidate-baseline:
+    if: github.event.pull_request.head.ref == 'assurance/p02-s01-t01c-0e564b0'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 0e564b032bdf8beeac33a87818a771bd76ddd5dd
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Test
+        run: pnpm run test
+
+      - name: Record exact identities
+        if: always()
+        shell: bash
+        run: |
+          echo "base=ee3d06b24bbbafc507608aeb5ec81282e58e327b"
+          echo "candidate=0e564b032bdf8beeac33a87818a771bd76ddd5dd"
+          echo "checked_out=$(git rev-parse HEAD)"
+
+  exact-candidate-governance:
+    if: github.event.pull_request.head.ref == 'assurance/p02-s01-t01c-0e564b0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 0e564b032bdf8beeac33a87818a771bd76ddd5dd
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install repository dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Focused Product Graph comparison verification
+        run: |
+          pnpm exec tsc --noEmit -p packages/product-graph-lab/tsconfig.json
+          pnpm exec vitest run packages/product-graph-lab/src/comparison.test.ts
+
+      - name: Alibaba OCR deterministic accounting
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global @alibaba-group/open-code-review@1.12.7
+          ocr --version
+          ocr delegate preview --from ee3d06b24bbbafc507608aeb5ec81282e58e327b --to 0e564b032bdf8beeac33a87818a771bd76ddd5dd --format json | tee /tmp/ocr-preview.json
+          ocr delegate rule packages/product-graph-lab/src/comparison.ts packages/product-graph-lab/src/comparison.test.ts | tee /tmp/ocr-rules.txt
+
+      - name: Diffcipline exact-candidate proof
+        uses: TheHalfMoon/Diffcipline@5cb1c77340b75649f6168e0e8f66479ea047ea96
+        with:
+          base: ee3d06b24bbbafc507608aeb5ec81282e58e327b
+          risk: R1
+          run-verification: "true"
+
+      - name: Record exact identities
+        if: always()
+        shell: bash
+        run: |
+          echo "base=ee3d06b24bbbafc507608aeb5ec81282e58e327b"
+          echo "candidate=0e564b032bdf8beeac33a87818a771bd76ddd5dd"
+          echo "checked_out=$(git rev-parse HEAD)"
