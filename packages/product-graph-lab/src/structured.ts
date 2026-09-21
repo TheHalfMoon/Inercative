@@ -41,6 +41,9 @@ function compareText(left: string, right: string): number {
 }
 
 export function canonicalizeJson(value: JsonValue): JsonValue {
+  if (typeof value === "number" && !Number.isFinite(value)) {
+    throw new TypeError("Canonical JSON numbers must be finite.");
+  }
   if (Array.isArray(value)) {
     return (value as readonly JsonValue[]).map((item) => canonicalizeJson(item));
   }
