@@ -72,7 +72,7 @@ their current delivery state:
 | SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | DONE (PR #37) | `docs/evidence/P02_S01_T02B_CLOSURE_2026-09-21.md` |
 | SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | DONE (PR #43) | `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md` |
-| SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -227,14 +227,26 @@ here. Full record: `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md`.
 
 Current eligible frontier:
 
-1. **IN-P02-S02-T01B — domain edge kinds, endpoint compatibility, and relation rules.** Dependency
-   SG-000020 is satisfied, and implementation authority now exists: the canonical
-   `TheHalfMoon/SpecGrain` CLI promoted **SG-000021** through `DRAFT -> SHAPED -> REFINING -> GRAIN`.
-   This slice carries the SG-000019 finding `OCR-003` (single-pass outgoing-edge index) as named
-   follow-up work, because that repair targets the edge query path.
-2. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until
-   IN-P02-S02-T01 closes. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked
-   behind IN-P02-S02-T02.
+SG-000021 / IN-P02-S02-T01B is canonically complete through PR #45 (governance, merged as
+`ce591f8e8fd4d94dbc4416cf228451108ab7b6d3`) and PR #46 (implementation, merged as
+`63c5b0c3f564e27a6ab76cdf8197bc494670c85d`). Exact-head CI run `35634218937` on candidate
+`ef0593794c603416dacca4afe830956ae14ec2cb` passed on Ubuntu and Windows. The Diffcipline R2
+exact-candidate proof returned PASS for 4 files / `+531/-10`. The carried SG-000019 finding
+`OCR-003` (single-pass outgoing-edge index) was repaired here, so both of SG-000019's
+accepted-risk follow-ups now have a merged, closed owning Grain.
+
+**IN-P02-S02-T01 is therefore complete**: both of its slices (SG-000020 and SG-000021) are merged
+and canonically closed, and the Product Graph domain layer covers node kinds, edge kinds, endpoint
+compatibility, and deterministic node, edge, and relation validators.
+
+Current eligible frontier:
+
+1. **IN-P02-S02-T02 — data classification, lifecycle, privacy, locale, and external-effect
+   semantics with validators.** Dependency IN-P02-S02-T01 is now satisfied. This unit still
+   requires real SpecGrain shaping before implementation authority exists.
+2. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
+   recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
+   IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.
 
 ## Hard constraints
 
