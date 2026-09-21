@@ -95,6 +95,21 @@ describe("structured Product Graph prototype", () => {
     });
   });
 
+  it("fails closed when a persisted revision no longer binds its graph", () => {
+    const snapshot = structuredDocumentPrototype.persist(fixture);
+    const staleSnapshot = {
+      ...snapshot,
+      graph: {
+        ...snapshot.graph,
+        graphId: "fixture:mutated-after-persist",
+      },
+    };
+
+    expect(() => structuredDocumentPrototype.restore(staleSnapshot)).toThrow(/revision/);
+    expect(() => structuredDocumentPrototype.serialize(staleSnapshot)).toThrow(/revision/);
+    expect(() => structuredDocumentPrototype.open(staleSnapshot)).toThrow(/revision/);
+  });
+
   it("fails closed on duplicate identity and missing edge endpoints", () => {
     expect(() =>
       structuredDocumentPrototype.persist({
