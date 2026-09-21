@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "2a71e9a7dbe843483c8bcc307064dea80bc7dacf",
+    "head": "83c286b5d995f438011ea0f9a5303d7dbdd8a21a",
+    "mergeBase": "2a71e9a7dbe843483c8bcc307064dea80bc7dacf"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "ocr v1.12.7 (85cecfe) windows/amd64; deterministic layer + delegation-mode semantic layer; no hosted LLM endpoint configured (OCR_LLM_* / ANTHROPIC_* unset, no ~/.opencodereview/config.json)"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/contracts.ts", "changeType": "MODIFIED" },
+      { "path": "packages/product-graph/src/domain.test.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/domain.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/contracts.ts",
+      "packages/product-graph/src/domain.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/domain.test.ts",
+        "method": "Separate review of the test oracle: every assertion was checked against the contract it pins rather than against the implementation, including the vocabulary-covering fixture, the required-field and field-type tables, the deliberate DOMAIN_CORE_CONTRACT_INVALID prerequisite behavior, the deterministic issue-ordering tuple, the mutation-freedom and revision-identity claims, and the cyclic/over-deep canonical JSON rejection.",
+        "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#4-coverage-accounting"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/contracts.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/domain.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#3-2-rule-resolution-ocr-output-unmodified"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S02_T01A_OCR_FINDINGS_2026-09-21.json",
+      "sha256": "9387bc313f8cae9e246f329cae6f02ca45c7c11c3b8a9c57e11ccc75659699f0"
+    },
+    "findings": [
+      {
+        "findingId": "OCR-005",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FIXED",
+        "rationale": "Duplicate core validation per call; repaired forward by a single internal validation run that returns both the canonical state and the ordered issues, so each public entry point validates once.",
+        "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-006",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "Early return for an unknown node kind is deliberate: a node with no known kind has no known field contract, so field-level judging would invent a contract, and one deterministic root cause per node keeps the issue list stable. Pinned by test.",
+        "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#5-findings"
+      },
+      {
+        "findingId": "OCR-007",
+        "path": "packages/product-graph/src/domain.ts",
+        "material": false,
+        "disposition": "FALSE_POSITIVE",
+        "rationale": "Non-uniform issue-object freezing has no ownership, determinism, or acceptance consequence; both public entry points expose read-only typed arrays and the freeze is defensive rather than contractual.",
+        "evidenceReference": "docs/evidence/P02_S02_T01A_OCR_REVIEW_2026-09-21.md#5-findings"
+      }
+    ]
+  },
+  "reconciliation": null
+}
