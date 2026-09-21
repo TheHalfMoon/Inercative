@@ -1,0 +1,26 @@
+[
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "validateProductGraphDomain() called collectProductGraphDomainIssues() and then called validateProductGraphState() again, so the core structural validation of the same immutable input ran twice for every successful call. The first call already produced the canonical frozen state; the second repeated the full node/edge normalization, sorting and revision-relevant work for no additional guarantee. Repaired forward by a single internal validation run that returns both the canonical state and the deterministically ordered issue list, so each public entry point validates the input exactly once.",
+    "start_line": 225,
+    "end_line": 259,
+    "category": "performance",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "For a node whose kind is not in the v1 vocabulary, collectNodeIssues() returns after reporting DOMAIN_UNKNOWN_NODE_KIND and does not also report per-field issues for that node. This is deliberate, not an oversight: a node with no known kind has no known required/optional field contract, so judging its fields would invent a contract that does not exist. Reporting one deterministic root cause per node also keeps the issue list stable and non-duplicative. Pinned by the unknown-kind test.",
+    "start_line": 161,
+    "end_line": 172,
+    "category": "maintainability",
+    "severity": "low"
+  },
+  {
+    "path": "packages/product-graph/src/domain.ts",
+    "content": "The core-prerequisite issue object is returned inside Object.freeze([...]) while collected issues are frozen only at array level, so issue objects are not uniformly immutable. No ownership, determinism, or acceptance consequence exists: both public entry points return read-only typed arrays and neither path exposes a mutable reference to internal state, and the freeze is a defensive measure rather than part of the stated contract.",
+    "start_line": 258,
+    "end_line": 260,
+    "category": "maintainability",
+    "severity": "low"
+  }
+]
