@@ -1,12 +1,19 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
+  DOMAIN_DATA_CLASS_LEVELS,
+  DOMAIN_DELETION_VALUES,
   DOMAIN_EDGE_KINDS,
   DOMAIN_EDGE_KIND_SPECS,
+  DOMAIN_ENUM_FIELDS,
+  DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
+  DOMAIN_RESIDENCY_VALUES,
+  DOMAIN_RETENTION_VALUES,
   DomainValidationError,
   collectProductGraphDomainIssues,
   createProductGraphRevision,
@@ -17,6 +24,7 @@ import {
   validateProductGraphDomain,
   validateProductGraphState,
   type DomainEndpointKind,
+  type DomainEnumFieldSpec,
   type DomainFieldType,
   type DomainNodeKind,
   type JsonObject,
@@ -36,6 +44,15 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
   permission: { effect: "allow", name: "Refund permission" },
   assumption: { confidence: 0.62, statement: "One tenant per workspace" },
   requirement: { statement: "Refunds are audited" },
+  dataclass: { level: "personal", name: "Customer personal data" },
+  datapolicy: {
+    audit: "required",
+    deletion: "scheduled",
+    export: "on-request",
+    name: "Customer data policy",
+    residency: "single-region",
+    retention: "bounded",
+  },
 };
 
 const probeNodes: readonly ProductGraphNodeV1[] = DOMAIN_NODE_KINDS.map((kind) => ({
@@ -612,5 +629,216 @@ describe("Product Graph domain edge and relation semantics", () => {
     for (const kind of DOMAIN_EDGE_KINDS) {
       expect(edgeGraph.edges.some((item) => item.kind === kind)).toBe(true);
     }
+  });
+});
+
+const policyEnumFields: readonly DomainEnumFieldSpec[] = DOMAIN_ENUM_FIELDS.filter(
+  (spec) => spec.kind === "datapolicy",
+);
+
+describe("Product Graph data classification and lifecycle semantics", () => {
+  it("declares a closed, unique, non-empty vocabulary for every enum-constrained attribute", () => {
+    expect(DOMAIN_ENUM_FIELDS.length).toBeGreaterThan(0);
+    expect(policyEnumFields.map((spec) => spec.field)).toEqual([
+      "audit",
+      "deletion",
+      "export",
+      "residency",
+      "retention",
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.kind === "dataclass")?.values).toEqual([
+      ...DOMAIN_DATA_CLASS_LEVELS,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "retention")?.values).toEqual([
+      ...DOMAIN_RETENTION_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "deletion")?.values).toEqual([
+      ...DOMAIN_DELETION_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "export")?.values).toEqual([
+      ...DOMAIN_EXPORT_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "audit")?.values).toEqual([
+      ...DOMAIN_AUDIT_VALUES,
+    ]);
+    expect(DOMAIN_ENUM_FIELDS.find((spec) => spec.field === "residency")?.values).toEqual([
+      ...DOMAIN_RESIDENCY_VALUES,
+    ]);
+
+    for (const enumSpec of DOMAIN_ENUM_FIELDS) {
+      const kindSpec = DOMAIN_NODE_KIND_SPECS.find((item) => item.kind === enumSpec.kind);
+      const declared: Record<string, DomainFieldType> = {
+        ...kindSpec?.required,
+        ...kindSpec?.optional,
+      };
+      expect(kindSpec).toBeDefined();
+      expect(declared[enumSpec.field]).toBe("string");
+      expect(enumSpec.values.length).toBeGreaterThan(0);
+      expect(new Set(enumSpec.values).size).toBe(enumSpec.values.length);
+    }
+
+    // One declared vocabulary per attribute: a duplicated entry would report the same violation
+    // twice for one value, so the invariant is pinned rather than assumed.
+    expect(new Set(DOMAIN_ENUM_FIELDS.map((spec) => `${spec.kind}.${spec.field}`)).size).toBe(
+      DOMAIN_ENUM_FIELDS.length,
+    );
+  });
+
+  it.each([...DOMAIN_DATA_CLASS_LEVELS])(
+    "accepts the declared data-classification level %s",
+    (level) => {
+      const issues = collectProductGraphDomainIssues(
+        singleNode("dataclass", { level, name: "Customer data" }),
+      );
+      expect(issues).toEqual([]);
+    },
+  );
+
+  it.each(["PUBLIC", "public ", "confidential", "restricted", "private"])(
+    "rejects the out-of-vocabulary classification level %j",
+    (level) => {
+      const issues = collectProductGraphDomainIssues(
+        singleNode("dataclass", { level, name: "Customer data" }),
+      );
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({
+        code: "DOMAIN_INVALID_ENUM_VALUE",
+        phase: "node",
+        target: "probe:node",
+        field: "level",
+      });
+      expect(issues[0]?.message).toContain(
+        "public, internal, personal, sensitive, secret, regulated",
+      );
+    },
+  );
+
+  it.each(["", " "])("rejects the blank classification level %j as a type violation", (level) => {
+    const issues = collectProductGraphDomainIssues(
+      singleNode("dataclass", { level, name: "Customer data" }),
+    );
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_INVALID_FIELD_TYPE",
+      target: "probe:node",
+      field: "level",
+    });
+  });
+
+  const lifecycleValueCases = policyEnumFields.flatMap((spec) =>
+    spec.values.map((value) => [spec.field, value] as [string, string]),
+  );
+
+  it.each(lifecycleValueCases)("accepts the declared lifecycle value %s=%s", (field, value) => {
+    const attributes: Record<string, JsonValue> = { deletion: "scheduled", name: "Policy" };
+    attributes[field] = value;
+    expect(collectProductGraphDomainIssues(singleNode("datapolicy", attributes))).toEqual([]);
+  });
+
+  it.each([
+    ["retention", "forever"],
+    ["deletion", "purge"],
+    ["export", "always"],
+    ["audit", "optional"],
+    ["residency", "eu-only"],
+  ])("rejects the out-of-vocabulary lifecycle value %s=%s", (field, value) => {
+    const issues = collectProductGraphDomainIssues(
+      singleNode("datapolicy", { [field]: value, name: "Policy" }),
+    );
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_INVALID_ENUM_VALUE",
+      phase: "node",
+      target: "probe:node",
+      field,
+    });
+  });
+
+  it.each([
+    [{ name: "Policy", retention: "bounded" }, ["DOMAIN_LIFECYCLE_CONTRADICTION"]],
+    [
+      { deletion: "none", name: "Policy", retention: "bounded" },
+      ["DOMAIN_LIFECYCLE_CONTRADICTION"],
+    ],
+    [{ deletion: "soft", name: "Policy", retention: "bounded" }, []],
+    [{ deletion: "hard", name: "Policy", retention: "bounded" }, []],
+    [{ deletion: "scheduled", name: "Policy", retention: "bounded" }, []],
+    [{ name: "Policy", retention: "indefinite" }, []],
+    [{ deletion: "none", name: "Policy", retention: "indefinite" }, []],
+    [{ deletion: 7, name: "Policy", retention: "bounded" }, ["DOMAIN_INVALID_FIELD_TYPE"]],
+  ] as [JsonObject, readonly string[]][])(
+    "reports the bounded-retention lifecycle rule for %j",
+    (attributes, expectedCodes) => {
+      const issues = collectProductGraphDomainIssues(singleNode("datapolicy", attributes));
+      expect(issues.map((issue) => issue.code)).toEqual([...expectedCodes]);
+      for (const issue of issues) {
+        expect(issue.phase).toBe("node");
+      }
+      if (expectedCodes.includes("DOMAIN_LIFECYCLE_CONTRADICTION")) {
+        expect(issues[0]).toMatchObject({ target: "probe:node", field: "deletion" });
+        expect(issues[0]?.message).toContain("soft");
+      }
+    },
+  );
+
+  it("fails closed for classification and lifecycle attributes that are not declared yet", () => {
+    const issues = collectProductGraphDomainIssues(
+      graphWith([
+        {
+          id: "probe:class",
+          kind: "dataclass",
+          attributes: { level: "internal", name: "C", purpose: "analytics" },
+        },
+        { id: "probe:policy", kind: "datapolicy", attributes: { consent: "required", name: "P" } },
+      ]),
+    );
+    expect(issues.map((issue) => [issue.target, issue.field, issue.code])).toEqual([
+      ["probe:class", "purpose", "DOMAIN_UNKNOWN_FIELD"],
+      ["probe:policy", "consent", "DOMAIN_UNKNOWN_FIELD"],
+    ]);
+  });
+
+  it("keeps classification and lifecycle reporting deterministic across node order", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      { id: "probe:beta", kind: "dataclass", attributes: { level: "restricted", name: "B" } },
+      { id: "probe:alpha", kind: "datapolicy", attributes: { name: "A", retention: "bounded" } },
+      { id: "probe:gamma", kind: "datapolicy", attributes: { export: "always", name: "C" } },
+    ];
+    const baseline = collectProductGraphDomainIssues(graphWith(nodes));
+
+    expect(baseline.map((issue) => [issue.target, issue.field, issue.code])).toEqual([
+      ["probe:alpha", "deletion", "DOMAIN_LIFECYCLE_CONTRADICTION"],
+      ["probe:beta", "level", "DOMAIN_INVALID_ENUM_VALUE"],
+      ["probe:gamma", "export", "DOMAIN_INVALID_ENUM_VALUE"],
+    ]);
+    expect(collectProductGraphDomainIssues(graphWith([...nodes].reverse()))).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(graphWith(nodes))).toEqual(baseline);
+  });
+
+  it("does not mutate classification and lifecycle input and preserves revision identity", () => {
+    const graph: ProductGraphStateV1 = graphWith([
+      {
+        id: "probe:class",
+        kind: "dataclass",
+        attributes: { level: "regulated", name: "Regulated data" },
+      },
+      {
+        id: "probe:policy",
+        kind: "datapolicy",
+        attributes: { deletion: "hard", name: "Regulated policy", retention: "bounded" },
+      },
+    ]);
+    const before = JSON.stringify(graph);
+    const revision = createProductGraphRevision(graph);
+
+    expect(collectProductGraphDomainIssues(graph)).toEqual([]);
+    const validated = validateProductGraphDomain(graph);
+
+    expect(JSON.stringify(graph)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(graph));
+    expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
+    expect(parseProductGraphRevision(serializeProductGraphRevision(revision)).revision).toBe(
+      revision.revision,
+    );
   });
 });

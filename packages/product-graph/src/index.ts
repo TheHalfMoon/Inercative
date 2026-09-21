@@ -13,13 +13,20 @@ export {
 } from "./contracts.ts";
 
 export {
+  DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
+  DOMAIN_DATA_CLASS_LEVELS,
+  DOMAIN_DELETION_VALUES,
   DOMAIN_EDGE_KINDS,
   DOMAIN_EDGE_KIND_SPECS,
+  DOMAIN_ENUM_FIELDS,
+  DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
   DOMAIN_ISSUE_CODES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
+  DOMAIN_RESIDENCY_VALUES,
+  DOMAIN_RETENTION_VALUES,
   DOMAIN_SCHEMA_VERSION,
   DOMAIN_VALIDATION_PHASES,
   DomainValidationError,
@@ -41,9 +48,11 @@ export type {
 } from "./contracts.ts";
 
 export type {
+  DomainDataClassLevel,
   DomainEdgeKind,
   DomainEdgeKindSpec,
   DomainEndpointKind,
+  DomainEnumFieldSpec,
   DomainFieldType,
   DomainIssue,
   DomainIssueCode,

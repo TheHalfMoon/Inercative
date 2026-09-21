@@ -16,6 +16,7 @@ import {
  *
  * - a closed v1 vocabulary of domain node kinds;
  * - required and optional attribute fields with declared field types per kind;
+ * - closed v1 data-classification and data-lifecycle vocabularies for the data-governance kinds;
  * - a closed v1 vocabulary of domain edge kinds with explicit endpoint-kind compatibility;
  * - relation-level rules: self-references, duplicate relations, and authorization conflicts;
  * - total deterministic validation with stable error codes.
@@ -25,6 +26,9 @@ import {
  * `(target, field, code)`. The layer never mutates, reorders, or normalizes its input and never
  * consults wall-clock time, randomness, the network, a model, or object-identity iteration order.
  * Unknown kinds, unknown fields, and malformed values fail closed rather than being coerced.
+ * A value outside a declared classification or lifecycle vocabulary is reported as
+ * `DOMAIN_INVALID_ENUM_VALUE`, and a bounded-retention policy without an accepted deletion path is
+ * additionally reported as `DOMAIN_LIFECYCLE_CONTRADICTION`.
  */
 
 export const DOMAIN_SCHEMA_VERSION = 1 as const;
@@ -45,6 +49,8 @@ export const DOMAIN_NODE_KINDS = [
   "permission",
   "assumption",
   "requirement",
+  "dataclass",
+  "datapolicy",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -121,6 +127,23 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
     optional: { impact: "string", status: "string" },
   },
   { kind: "requirement", required: { statement: "string" }, optional: { verification: "string" } },
+  {
+    kind: "dataclass",
+    required: { level: "string", name: "string" },
+    optional: { description: "string" },
+  },
+  {
+    kind: "datapolicy",
+    required: { name: "string" },
+    optional: {
+      audit: "string",
+      deletion: "string",
+      description: "string",
+      export: "string",
+      residency: "string",
+      retention: "string",
+    },
+  },
 ];
 
 export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
@@ -136,12 +159,63 @@ export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
   { kind: "affects", from: ["assumption"], to: [DOMAIN_ANY_NODE_KIND] },
 ];
 
+/**
+ * Closed v1 data-classification vocabulary.
+ *
+ * `docs/canonical/PRODUCT_GRAPH.md` §3 (`DataClass`) is the Product Graph authority and lists
+ * `public`, `internal`, `personal`, `sensitive`, `secret`, and `regulated`. The parallel privacy
+ * vocabulary in `docs/canonical/RUNTIME_AND_SECURITY.md` §15 is mapped onto these values rather
+ * than introduced as a second competing taxonomy. Values are declared in sensitivity order.
+ *
+ * Declaring a class is a product-semantics statement and is never a legal or regulatory
+ * compliance claim (`docs/canonical/GENERATED_PRODUCT_CONTRACT.md` §9).
+ */
+export const DOMAIN_DATA_CLASS_LEVELS = [
+  "public",
+  "internal",
+  "personal",
+  "sensitive",
+  "secret",
+  "regulated",
+] as const;
+export type DomainDataClassLevel = (typeof DOMAIN_DATA_CLASS_LEVELS)[number];
+
+/** Closed v1 data-lifecycle vocabularies, derived from the `DataPolicy` definition in §3. */
+export const DOMAIN_RETENTION_VALUES = ["bounded", "indefinite"] as const;
+export const DOMAIN_DELETION_VALUES = ["none", "soft", "hard", "scheduled"] as const;
+export const DOMAIN_EXPORT_VALUES = ["none", "on-request", "continuous"] as const;
+export const DOMAIN_AUDIT_VALUES = ["none", "required"] as const;
+export const DOMAIN_RESIDENCY_VALUES = ["unspecified", "single-region", "multi-region"] as const;
+
+/** Declares that one node attribute is constrained to a closed vocabulary. */
+export interface DomainEnumFieldSpec {
+  readonly kind: DomainNodeKind;
+  readonly field: string;
+  readonly values: readonly string[];
+}
+
+/**
+ * Data-driven enum constraint table. Every entry is checked after the declared field type, so a
+ * value of the wrong type is reported once as `DOMAIN_INVALID_FIELD_TYPE` and a value of the right
+ * type outside the vocabulary is reported once as `DOMAIN_INVALID_ENUM_VALUE`.
+ */
+export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [
+  { field: "level", kind: "dataclass", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "audit", kind: "datapolicy", values: DOMAIN_AUDIT_VALUES },
+  { field: "deletion", kind: "datapolicy", values: DOMAIN_DELETION_VALUES },
+  { field: "export", kind: "datapolicy", values: DOMAIN_EXPORT_VALUES },
+  { field: "residency", kind: "datapolicy", values: DOMAIN_RESIDENCY_VALUES },
+  { field: "retention", kind: "datapolicy", values: DOMAIN_RETENTION_VALUES },
+];
+
 export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_CORE_CONTRACT_INVALID",
   "DOMAIN_UNKNOWN_NODE_KIND",
   "DOMAIN_UNKNOWN_FIELD",
   "DOMAIN_MISSING_REQUIRED_FIELD",
   "DOMAIN_INVALID_FIELD_TYPE",
+  "DOMAIN_INVALID_ENUM_VALUE",
+  "DOMAIN_LIFECYCLE_CONTRADICTION",
   "DOMAIN_UNKNOWN_EDGE_KIND",
   "DOMAIN_ENDPOINT_KIND_MISMATCH",
   "DOMAIN_SELF_REFERENCE",
@@ -178,6 +252,12 @@ const NODE_KIND_SPECS: ReadonlyMap<string, DomainNodeKindSpec> = new Map(
 );
 const EDGE_KIND_SPECS: ReadonlyMap<string, DomainEdgeKindSpec> = new Map(
   DOMAIN_EDGE_KIND_SPECS.map((spec) => [spec.kind, spec]),
+);
+const ENUM_FIELDS_BY_KIND: ReadonlyMap<string, readonly DomainEnumFieldSpec[]> = new Map(
+  [...new Set(DOMAIN_ENUM_FIELDS.map((spec) => spec.kind))].map((kind) => [
+    kind,
+    DOMAIN_ENUM_FIELDS.filter((spec) => spec.kind === kind),
+  ]),
 );
 const KEY_SEPARATOR = "\u0000";
 
@@ -282,6 +362,47 @@ function collectNodeIssues(node: ProductGraphNodeV1, issues: DomainIssue[]): voi
       });
     }
   }
+
+  for (const enumField of ENUM_FIELDS_BY_KIND.get(spec.kind) ?? []) {
+    const value = ownField(node.attributes, enumField.field);
+    if (typeof value !== "string" || value.trim().length === 0) continue;
+    if (enumField.values.includes(value)) continue;
+    issues.push({
+      code: "DOMAIN_INVALID_ENUM_VALUE",
+      phase: "node",
+      target: node.id,
+      field: enumField.field,
+      message: `Node ${node.id} attribute "${enumField.field}" must be one of: ${enumField.values.join(
+        ", ",
+      )}.`,
+    });
+  }
+
+  collectLifecycleIssues(node, issues);
+}
+
+/**
+ * Policy-local lifecycle semantics. Bounded retention is a promise to stop holding the data, so it
+ * is only coherent together with an accepted deletion path: a policy that declares bounded
+ * retention while declaring no deletion path, or an explicit `none`, is reported here and never
+ * silently accepted. A malformed deletion value is reported by the field-type and vocabulary checks
+ * instead, so one offending value never produces two identical complaints. The check is node-local
+ * and needs no edge, so it stays in the `node` phase.
+ */
+function collectLifecycleIssues(node: ProductGraphNodeV1, issues: DomainIssue[]): void {
+  if (node.kind !== "datapolicy") return;
+  if (ownField(node.attributes, "retention") !== "bounded") return;
+
+  const deletion = ownField(node.attributes, "deletion");
+  if (deletion !== undefined && deletion !== "none") return;
+
+  issues.push({
+    code: "DOMAIN_LIFECYCLE_CONTRADICTION",
+    phase: "node",
+    target: node.id,
+    field: "deletion",
+    message: `Node ${node.id} declares bounded retention without an accepted deletion path; bounded retention requires deletion "soft", "hard", or "scheduled".`,
+  });
 }
 
 interface DomainValidationRun {
