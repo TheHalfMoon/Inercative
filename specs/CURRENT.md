@@ -5,7 +5,7 @@
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 
-> Reconciled against live repository truth on 2026-09-20. The prior revision
+> Reconciled against live repository truth on 2026-09-21. The prior revision
 > described the repository as `PLANNING_ONLY`; that was stale once P00-S01 merged.
 
 ## Current state
