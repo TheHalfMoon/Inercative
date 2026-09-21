@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 export const PRODUCT_GRAPH_SCHEMA_VERSION = 1 as const;
 export const PRODUCT_GRAPH_REPRESENTATION = "structured-document-v1" as const;
+export const PRODUCT_GRAPH_MAX_JSON_DEPTH = 64 as const;
 
 export type JsonScalar = string | number | boolean | null;
 
@@ -93,22 +94,51 @@ function isUnknownArray(value: unknown): value is readonly unknown[] {
 }
 
 function canonicalJson(value: unknown, label = "JSON value"): JsonValue {
+  return canonicalJsonValue(value, label, 0, new Set<object>());
+}
+
+function canonicalJsonValue(
+  value: unknown,
+  label: string,
+  depth: number,
+  ancestors: Set<object>,
+): JsonValue {
+  if (depth > PRODUCT_GRAPH_MAX_JSON_DEPTH) {
+    throw new TypeError(
+      `${label} exceeds the maximum canonical JSON depth of ${PRODUCT_GRAPH_MAX_JSON_DEPTH.toString()}.`,
+    );
+  }
   if (value === null || typeof value === "string" || typeof value === "boolean") return value;
   if (typeof value === "number") {
     if (!Number.isFinite(value)) throw new TypeError(`${label} numbers must be finite.`);
     return value;
   }
   if (isUnknownArray(value)) {
-    return Object.freeze(value.map((item, index) => canonicalJson(item, `${label}[${index}]`)));
+    if (ancestors.has(value)) throw new TypeError(`${label} must not contain a cycle.`);
+    ancestors.add(value);
+    const canonical = Object.freeze(
+      value.map((item, index) =>
+        canonicalJsonValue(item, `${label}[${index.toString()}]`, depth + 1, ancestors),
+      ),
+    );
+    ancestors.delete(value);
+    return canonical;
   }
   const record = asRecord(value, label);
-  return Object.freeze(
+  if (ancestors.has(record)) throw new TypeError(`${label} must not contain a cycle.`);
+  ancestors.add(record);
+  const canonical = Object.freeze(
     Object.fromEntries(
       Object.keys(record)
         .sort(compareText)
-        .map((key) => [key, canonicalJson(record[key], `${label}.${key}`)]),
+        .map((key) => [
+          key,
+          canonicalJsonValue(record[key], `${label}.${key}`, depth + 1, ancestors),
+        ]),
     ),
   );
+  ancestors.delete(record);
+  return canonical;
 }
 
 function attributes(value: unknown, label: string): JsonObject {
