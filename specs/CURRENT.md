@@ -1,11 +1,11 @@
 # Ineractive Current Frontier
 
-**Date:** 2026-09-20  
-**Status:** P01_IN_PROGRESS  
+**Date:** 2026-09-21  
+**Status:** P02_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 
-> Reconciled against live repository truth on 2026-09-20. The prior revision
+> Reconciled against live repository truth on 2026-09-21. The prior revision
 > described the repository as `PLANNING_ONLY`; that was stale once P00-S01 merged.
 
 ## Current state
@@ -45,7 +45,7 @@ tracks only the live (not-yet-complete) frontier.
 
 ## Current canonical frontier
 
-P00 is canonically complete. The implementation frontier is **P01 — Control plane foundation**.
+P00 and P01 are canonically complete. The implementation frontier is **P02 — Product Graph and intent compiler**.
 
 SpecGrain is initialized (`.specgrain/`, project `ineractive`). Frontier Grains and
 their current delivery state:
@@ -65,7 +65,8 @@ their current delivery state:
 | SG-000011 | IN-P01-S02-T02 | Run/event/evidence/finding schemas | DONE (PR #18) | `docs/evidence/P01_S02_T02_RUN_EVENT_EVIDENCE_FINDING_2026-09-20.md` |
 | SG-000012 | IN-P01-S03-T01 | Project/workspace shell | DONE (PR #19) | `docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md` |
 | SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | DONE (PR #20) | `docs/evidence/P01_S04_T01_UI_SYSTEM_2026-09-20.md` |
-| SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | DONE (PR #21) | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
+| SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -140,12 +141,21 @@ was merged as `db3e93ec6a2d8b3544791b5fd0aa5e134faeb2dd`.
 SG-000013 / IN-P01-S04-T01 is canonically complete through PR #20; fresh-main CI #127
 passed on merge commit `880b78e99a14d1f04eedb2e81482ce6804ab88cd`.
 
+SG-000014 / IN-P01-S05-T01 is canonically complete through PR #21. Final candidate
+`2ba8c41325acec567672d7cf879b2456b5fed081` passed exact-head CI #137 on Ubuntu
+and Windows; fresh-main CI #138 passed on merge commit
+`ec1a8209c8f6164b41b55e77e5d41db5856b14e9`. P01 exit is therefore satisfied.
+
+Closed PR #22 preserves an oversized SG-000015 prototype candidate as negative evidence;
+it was not merged because its +1288-line diff exceeded the repository's 600-added-line
+Diffcipline bound for one Grain. No proof gate was weakened.
+
 Current eligible frontier:
 
-1. **SG-000014 / IN-P01-S05-T01 — Establish minimum Supabase-backed control-plane
-   user/project store with generated-app data-plane separation.** Real SpecGrain shaping
-   is complete; bounded implementation is active on the candidate branch.
-2. P01 phase exit follows canonical completion and fresh evidence for SG-000014.
+1. **SG-000015 / IN-P02-S01-T01A — Prototype canonical structured Product Graph
+   document.** Real SpecGrain shaping is complete; bounded implementation is active.
+2. The relational prototype and cross-representation comparison remain separate future
+   Grains under IN-P02-S01-T01 before IN-P02-S01-T02 may select the v1 representation.
 
 ## Hard constraints
 
