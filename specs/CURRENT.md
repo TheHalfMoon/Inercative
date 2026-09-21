@@ -66,7 +66,8 @@ their current delivery state:
 | SG-000012 | IN-P01-S03-T01 | Project/workspace shell | DONE (PR #19) | `docs/evidence/P01_S03_T01_WORKSPACE_SHELL_2026-09-20.md` |
 | SG-000013 | IN-P01-S04-T01 | Accessible tokenized UI system | DONE (PR #20) | `docs/evidence/P01_S04_T01_UI_SYSTEM_2026-09-20.md` |
 | SG-000014 | IN-P01-S05-T01 | Minimum Supabase-backed control-plane user/project store | DONE (PR #21) | `docs/evidence/P01_S05_T01_SPECGRAIN_SHAPING_2026-09-20.md` |
-| SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | DONE (PR #23) | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -150,12 +151,17 @@ Closed PR #22 preserves an oversized SG-000015 prototype candidate as negative e
 it was not merged because its +1288-line diff exceeded the repository's 600-added-line
 Diffcipline bound for one Grain. No proof gate was weakened.
 
+SG-000015 / IN-P02-S01-T01A is canonically complete through PR #23. Final candidate
+`d99f855d2460fd077ef515a224e27e9ddf56f749` passed exact-head CI #153 on Ubuntu
+and Windows plus exact-candidate assurance run `35558325706`; fresh-main CI #155 passed
+on merge commit `7749a229c8530f06fd079cc1bd0aa2786b9f50ce`.
+
 Current eligible frontier:
 
-1. **SG-000015 / IN-P02-S01-T01A — Prototype canonical structured Product Graph
-   document.** Real SpecGrain shaping is complete; bounded implementation is active.
-2. The relational prototype and cross-representation comparison remain separate future
-   Grains under IN-P02-S01-T01 before IN-P02-S01-T02 may select the v1 representation.
+1. **SG-000016 / IN-P02-S01-T01B — Prototype normalized relational Product Graph
+   snapshot.** Real SpecGrain shaping is complete; bounded implementation is active.
+2. Cross-representation comparison remains a separate future Grain under
+   IN-P02-S01-T01 before IN-P02-S01-T02 may select the v1 representation.
 
 ## Hard constraints
 
