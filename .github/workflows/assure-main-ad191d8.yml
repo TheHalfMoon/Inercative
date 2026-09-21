@@ -1,4 +1,5 @@
 name: assure-main-ad191d8
+# Evidence-only exact-main post-merge assurance.
 
 on:
   pull_request:
