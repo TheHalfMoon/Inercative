@@ -1,0 +1,182 @@
+name: p02-s01-t02b-r2-shape
+
+on:
+  push:
+    branches:
+      - p02/s01-t02b-product-graph-v1-contracts-r2
+    paths:
+      - .github/workflows/p02-s01-t02b-r2-shape.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p02-s01-t02b-r2-shape-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  shape:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      SPECGRAIN_SHA: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+      BASELINE_SHA: ff5bcbc3241d43fbb643d037ccb5967a20213af4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPECGRAIN_SHA}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft corrected T02B
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain draft . \
+            --title "IN-P02-S01-T02B Implement stable Product Graph v1 contracts" \
+            --outcome "A stable storage-neutral Product Graph v1 package defines typed node, edge, and immutable revision-document contracts with deterministic canonicalization, validation, serialization, revision identity, and a frozen-installable workspace manifest." \
+            --rationale "SG-000018 selected one structured canonical persisted semantic authority; the first SG-000019 candidate exposed a missing lockfile change-surface declaration and was closed as negative evidence, so this fresh Grain authorizes the required workspace lockfile importer explicitly." \
+            --json | tee /tmp/draft.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/draft.json"))["spec_id"])')" = "SG-000019"
+
+      - name: Shape corrected T02B
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape SG-000019 . \
+            --scope-in "Add a stable @ineractive/product-graph package with storage-neutral Product Graph v1 node, edge, structured revision-document, slice, and JSON-value contracts." \
+            --scope-in "Implement deterministic canonicalization and SHA-256 semantic revision identity for the canonical structured document selected by ADR-0003." \
+            --scope-in "Implement validation and parse/serialize helpers that reject invalid schema versions, empty identities/kinds/endpoints, duplicate node or edge identities, dangling edge endpoints, non-finite JSON numbers, and revision tampering." \
+            --scope-in "Add deterministic tests proving round-trip behavior, object-key and insertion-order stability, referential-integrity enforcement, and tamper rejection." \
+            --scope-in "Update pnpm-lock.yaml only as required to register the new dependency-free workspace importer and preserve frozen-lockfile installation." \
+            --scope-in "Advance specs/CURRENT.md so SG-000018 is recorded DONE through PR #32 and SG-000019 is the active T02B implementation Grain." \
+            --scope-out "No P02-S02 domain-specific node-kind enumerations, permissions, data-governance semantics, locale semantics, external-effect semantics, or domain validators." \
+            --scope-out "No Change Intent, Question Gate, Assumption Ledger, graph-view UI, compiler, database, Supabase migration, graph database, remote side effect, or derived relational projection implementation." \
+            --scope-out "Do not make stable production contracts depend on packages/product-graph-lab; the prototype lab remains evidence only." \
+            --acceptance "The stable package exports explicit v1 contracts and deterministic create/validate/parse/serialize/query primitives without framework, model-provider, or database coupling." \
+            --acceptance "Canonical serialization and revision identity are stable across node/edge insertion order and JSON object key order, while JSON array order remains semantic." \
+            --acceptance "Invalid schema version, blank graph/node/edge identity, blank kind/endpoint, duplicate identity, dangling edge endpoint, non-finite JSON number, and revision tampering are deterministically rejected." \
+            --acceptance "pnpm install --frozen-lockfile recognizes packages/product-graph through an explicit lockfile importer and does not mutate the lockfile." \
+            --acceptance "The canonical structured revision document is the sole authoritative representation exposed by this Grain; relational/index/cache state remains derived and out of scope." \
+            --acceptance "No P02-S02 domain semantic is introduced, and the prototype lab is not imported by the stable package." \
+            --acceptance "Focused Product Graph v1 tests plus full repository format, lint, typecheck, and test suites pass on exact candidate; Ubuntu and Windows CI both pass." \
+            --acceptance "Diffcipline R1 exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution, independent semantic review, and exact-head repository CI are recorded before guarded merge." \
+            --dependency SG-000018 \
+            --risk-level medium \
+            --recovery "Revert SG-000019 stable package, lockfile importer, evidence, and current-frontier updates; ADR-0003 plus SG-000015 through SG-000018 evidence remain intact and no production data is mutated." \
+            --context-budget 8500 \
+            --context-estimate 5600 \
+            --change-surface "packages/product-graph/**" \
+            --change-surface "pnpm-lock.yaml" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Stable @ineractive/product-graph v1 contracts and deterministic focused tests." \
+            --evidence "Frozen-lockfile installation proving the new workspace importer is canonical." \
+            --evidence "Exact-candidate Diffcipline R1 proof plus Alibaba OCR deterministic accounting/rule resolution and independent semantic review." \
+            --evidence "Exact-head Ubuntu/Windows repository CI and post-merge fresh-main qualification." \
+            --minimality-choice new-code \
+            --minimality-rationale "Create one small dependency-free stable package plus only the lockfile importer required by the workspace, rather than promoting prototype code or adding persistence/domain layers prematurely." \
+            --safety-status requirements-defined \
+            --safety-requirement "Preserve exactly one authoritative structured Product Graph revision representation; derived projections may not become a second source of truth." \
+            --safety-requirement "Keep domain-specific semantics and validators out of T02B so P02-S02 remains independently reviewable." \
+            --safety-requirement "Reject malformed or tampered graph documents deterministically before they can be treated as canonical state." \
+            --json | tee /tmp/shape.json
+
+      - name: Refine and promote corrected T02B
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain refine SG-000019 . --json | tee /tmp/refine.json
+          specgrain check . --json | tee /tmp/check-refining.json
+          specgrain grain SG-000019 . --json | tee /tmp/grain.json
+          specgrain check . --json | tee /tmp/check-grain.json
+          specgrain next . --json | tee /tmp/next.json
+
+      - name: Record shaping and negative evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .specgrain/tmp/pregrain-mutation.lock
+          mkdir -p docs/evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          def load(name):
+              return json.loads(Path("/tmp/" + name).read_text(encoding="utf-8"))
+
+          draft, shape, refine, grain = map(load, ["draft.json", "shape.json", "refine.json", "grain.json"])
+          check, nxt = load("check-grain.json"), load("next.json")
+          candidate = next(item for item in nxt["candidates"] if item["node_id"] == "SG-000019")
+          lines = [
+              "# P02-S01-T02B — Corrected SpecGrain Shaping Evidence",
+              "",
+              "**Task:** IN-P02-S01-T02B",
+              "**SpecGrain:** SG-000019",
+              "**Date:** 2026-09-21",
+              "**Canonical baseline:** " + os.environ["BASELINE_SHA"],
+              "**SpecGrain source:** TheHalfMoon/SpecGrain@" + os.environ["SPECGRAIN_SHA"],
+              "**GitHub Actions run:** " + os.environ["GITHUB_RUN_ID"],
+              "",
+              "## Tool execution",
+              "",
+              "The corrected SpecNode was produced by the real pinned SpecGrain CLI from canonical main.",
+              "",
+              "- draft state: " + draft["state"],
+              "- shaped revision: " + shape["revision_digest"],
+              "- refine state: " + refine["state"],
+              "- grain state: " + grain["state"],
+              "- final revision: " + grain["revision_digest"],
+              "- project check valid: " + str(check["valid"]).lower(),
+              "- next valid: " + str(nxt["valid"]).lower(),
+              "- next eligible for SG-000019: " + str(candidate["eligible"]).lower(),
+              "- next waiting_on: " + ",".join(candidate["waiting_on"]),
+              "",
+              "## Negative evidence retained",
+              "",
+              "Closed PR #35 candidate 34b511ee44366be408c6e90143ff451e1fcdbc78 is superseded.",
+              "Assurance run 35564342100 failed deterministically with ERR_PNPM_PACKAGE_MANAGER_NO_IMPORTER because pnpm-lock.yaml lacked importers[packages/product-graph].",
+              "The first Grain did not authorize pnpm-lock.yaml, so no out-of-surface repair was made and the candidate was not rerun-to-green.",
+              "Closed evidence-only PR #36 preserves the failed assurance path.",
+              "",
+              "## Corrected authority",
+              "",
+              "This fresh SG-000019 explicitly authorizes pnpm-lock.yaml only for the dependency-free workspace importer required by packages/product-graph.",
+              "SG-000018 / IN-P02-S01-T02A remains canonically complete through PR #32 and fresh-main CI #177.",
+              "Any CLI waiting_on value is preserved as tool truth; no lifecycle state is fabricated.",
+              "",
+          ]
+          Path("docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md").write_text("\n".join(lines), encoding="utf-8")
+          PY
+
+      - name: Commit tool-produced state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          allowed = {
+              ".specgrain/specs/SG-000019.json",
+              "docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md",
+          }
+          output = subprocess.check_output(["git", "status", "--porcelain=v1"], text=True)
+          changed = {line[3:] for line in output.splitlines() if line}
+          if changed != allowed:
+              raise SystemExit("unexpected changed paths=" + repr(sorted(changed)))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .specgrain/specs/SG-000019.json docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md
+          git commit -m "chore(p02): reshape Product Graph v1 contracts grain"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
