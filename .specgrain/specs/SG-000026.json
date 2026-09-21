@@ -1,0 +1,82 @@
+{
+  "acceptance": [
+    "The stable package exports the externaleffect node kind, the closed effect, consequence, reconciliation, and confirmation vocabularies, the remote-effect subset, and the causes relation, without framework, model-provider, or database coupling.",
+    "Deterministic node validation reports DOMAIN_MISSING_EFFECT_TARGET, DOMAIN_MISSING_RECONCILIATION_POLICY, and DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION exactly for the documented cases and reports nothing for the documented negative cases.",
+    "Deterministic governance validation reports DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT only when a workflow that writes data classified at a policy-required level causes an effect that does not require confirmation.",
+    "The causes relation accepts workflow and action sources and rejects every other source and target kind, and no previously rejected endpoint combination becomes acceptable.",
+    "Issue collection remains total and deterministic across repeated runs, node and edge insertion orders, and JSON object key orders, under the documented phase order and sort key.",
+    "Domain validation does not mutate, reorder, or normalize its input, performs no external effect and no network access, and leaves canonical Product Graph v1 revision identity unchanged for well-formed documents.",
+    "Focused external-effect tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate, and Ubuntu and Windows CI both pass.",
+    "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments are recorded before guarded merge."
+  ],
+  "change_surface": [
+    "packages/product-graph/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6000,
+    "estimated_tokens": 4500
+  },
+  "dependencies": [
+    "SG-000025"
+  ],
+  "evidence": {
+    "required": [
+      "Stable @ineractive/product-graph external-effect vocabularies, the externaleffect node kind, the causes relation, and the four deterministic rules with focused tests.",
+      "Proof that every rule fails closed, that the validator executes no external effect, and that canonical revision identity is unchanged for well-formed documents.",
+      "Exact-candidate Diffcipline proof, Alibaba OCR deterministic accounting/rule resolution with semantic review, and Jev typed judgments.",
+      "Exact-head Ubuntu and Windows repository CI plus post-merge fresh-main qualification."
+    ]
+  },
+  "id": "SG-000026",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable package with one bounded node kind, one relation, and four deterministic rules plus focused tests, instead of adding a package, promoting the prototype lab, or introducing a runtime dependency."
+      },
+      "safety": {
+        "requirements": [
+          "External-effect validation composes on top of the node, edge, relation, and governance layers delivered by SG-000020 through SG-000025 and the Product Graph v1 core contract, and must never weaken or bypass any of them.",
+          "Validation must never perform, attempt, or simulate an external effect and must never open a network connection; it describes semantics only and must not depend on wall-clock time, randomness, the host locale, or model inference.",
+          "Secret or credential material is out of scope for this Grain and no secret value may appear in a Product Graph document or validator message."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph domain layer declares a deterministic externaleffect node kind with closed vocabularies for effect kind, consequence class, reconciliation, and confirmation, a causes relation from workflows and actions to external effects, and deterministic rules that report a remote effect without a declared target, a material or irreversible effect without a reconciliation policy, an irreversible effect without required confirmation, and classified data reaching an external effect without required confirmation.",
+  "parent_id": null,
+  "rationale": "SG-000025 delivered the locale slice of IN-P02-S02-T02; the canonical ExternalEffect node definition, the recorded consistency defect that an external effect has no consequence or reconciliation policy, and the runtime requirement that each action declares a side-effect class make this the last required slice of the handle.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000026 externaleffect node kind, its vocabularies and rules, the causes relation, the focused tests, the evidence record, and the current-frontier update; the SG-000020 through SG-000025 domain, governance, privacy, and locale layers, the Product Graph v1 contracts, and ADR-0003 remain intact and no production state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Declare a deterministic externaleffect node kind with the required effect-kind and consequence-class attributes and the optional remote-target, idempotency, reconciliation, and confirmation attributes.",
+    "Declare the closed v1 vocabularies for effect kind, consequence class, reconciliation policy, and confirmation requirement, together with the declared subset of effect kinds that address a remote system and therefore require an explicit target.",
+    "Declare the causes relation from a workflow or an action to an external effect, using the endpoint-pair authority so only those two source kinds are accepted.",
+    "Add the stable node-phase error code DOMAIN_MISSING_EFFECT_TARGET for a remote effect kind that declares no target.",
+    "Add the stable node-phase error code DOMAIN_MISSING_RECONCILIATION_POLICY for a material or irreversible effect, or a non-idempotent effect, that declares no reconciliation policy.",
+    "Add the stable node-phase error code DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION for an irreversible effect that does not require confirmation.",
+    "Add the stable governance-phase error code DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT for an external effect caused by a workflow that writes data classified at a level requiring a handling policy, when the effect does not require confirmation.",
+    "Add focused deterministic tests covering every declared value, every new rule with its negative cases, the new relation and its rejected endpoints, deterministic ordering, no input mutation, and unchanged canonical revision identity.",
+    "Advance specs/CURRENT.md to record SG-000025 canonical closure and SG-000026 as the active frontier Grain."
+  ],
+  "scope_out": [
+    "No integration node kind, no secret-reference semantics, no capability node kind, no spend or budget semantics, and no execution of any external effect: validation describes and validates semantics only.",
+    "No network access, no credential handling, no provider call, and no runtime side effect of any kind.",
+    "No privacy, locale, Dataset, design-system, skill, exploration-branch, or release semantics, and no change to the classification, lifecycle, or privacy vocabularies.",
+    "No Change Intent, proposed graph delta, Question Gate, Assumption Ledger, graph views, compiler, database, Supabase migration, or remote deployment.",
+    "No new workspace package, no new runtime dependency, no lockfile change, and no relaxation of existing rejection behavior."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S02-T02E Implement external-effect and integration consequence semantics"
+}
