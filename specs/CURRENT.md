@@ -77,6 +77,7 @@ their current delivery state:
 | SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | DONE (PR #52) | `docs/evidence/P02_S02_T02B_CLOSURE_2026-09-21.md` |
 | SG-000024 | IN-P02-S02-T02C | Privacy semantics | DONE (PR #55) | `docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md` |
 | SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | DONE (PR #58) | `docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md` |
+| SG-000026 | IN-P02-S02-T02E | External-effect and integration consequence semantics | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02E_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -310,8 +311,12 @@ unmodelled and are recorded as out of this slice rather than half-modelled.
 
 Next in dependency order:
 
-1. **IN-P02-S02-T02E — external-effect and integration consequence semantics** is the last slice of
-   IN-P02-S02-T02 and requires real SpecGrain shaping before implementation authority exists.
+1. **IN-P02-S02-T02E — external-effect and integration consequence semantics** now has
+   implementation authority: the canonical `TheHalfMoon/SpecGrain` CLI promoted **SG-000026**
+   through `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline
+   `1b68b17fcf95c6910725da0224782c27753b3540`, and `specgrain check` reports 26 specs with 0
+   readiness-blocked. Shaping record:
+   `docs/evidence/P02_S02_T02E_SPECGRAIN_SHAPING_2026-09-21.md`.
 2. Once T02E is closed, `IN-P02-S02-T02` is complete and the remaining phase work moves to
    `IN-P02-S03-T01` and the tasks that are blocked behind this handle.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
