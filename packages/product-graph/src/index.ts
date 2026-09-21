@@ -26,6 +26,9 @@ export {
   DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
   DOMAIN_ISSUE_CODES,
+  DOMAIN_LOCALE_LIST_FIELDS,
+  DOMAIN_LOCALE_REFERENCE_FIELDS,
+  DOMAIN_LOCALE_TAG_PATTERN,
   DOMAIN_MINIMIZATION_VALUES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
@@ -42,6 +45,7 @@ export {
   DOMAIN_VISIBILITY_VALUES,
   DomainValidationError,
   collectProductGraphDomainIssues,
+  isAcceptedLocaleTag,
   validateProductGraphDomain,
 } from "./domain.ts";
 

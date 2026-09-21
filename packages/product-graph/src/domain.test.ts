@@ -13,6 +13,9 @@ import {
   DOMAIN_ENUM_FIELDS,
   DOMAIN_EXPORT_VALUES,
   DOMAIN_FIELD_TYPES,
+  DOMAIN_LOCALE_LIST_FIELDS,
+  DOMAIN_LOCALE_REFERENCE_FIELDS,
+  DOMAIN_LOCALE_TAG_PATTERN,
   DOMAIN_MINIMIZATION_VALUES,
   DOMAIN_NODE_KINDS,
   DOMAIN_NODE_KIND_SPECS,
@@ -35,6 +38,7 @@ import {
   serializeProductGraphRevision,
   validateProductGraphDomain,
   validateProductGraphState,
+  isAcceptedLocaleTag,
   type DomainEndpointKind,
   type DomainEnumFieldSpec,
   type DomainFieldType,
@@ -63,6 +67,12 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
     name: "Customer data policy",
     residency: "single-region",
     retention: "bounded",
+  },
+  localeconfig: {
+    defaultLocale: "en",
+    rtlLocales: ["ar"],
+    supportedLocales: ["en", "ar"],
+    userSelectable: true,
   },
 };
 
@@ -1391,5 +1401,174 @@ describe("Product Graph privacy semantics", () => {
       "relation",
       "governance",
     ]);
+  });
+});
+
+function localeConfig(attributes: JsonObject): ProductGraphStateV1 {
+  return graphWith([{ id: "locale:config", kind: "localeconfig", attributes }]);
+}
+
+describe("Product Graph locale semantics", () => {
+  it("documents the accepted locale-tag subset", () => {
+    expect([...DOMAIN_LOCALE_REFERENCE_FIELDS]).toEqual([
+      "defaultLocale",
+      "fallbackLocale",
+      "formattingLocale",
+    ]);
+    expect([...DOMAIN_LOCALE_LIST_FIELDS]).toEqual(["supportedLocales", "rtlLocales"]);
+    expect(DOMAIN_LOCALE_TAG_PATTERN.startsWith("^")).toBe(true);
+    expect(DOMAIN_LOCALE_TAG_PATTERN.endsWith("$")).toBe(true);
+  });
+
+  it.each(["en", "ar", "en-US", "en-GB", "zh-Hant", "zh-Hant-TW", "es-419", "sr-Latn-RS"])(
+    "accepts the locale tag %s",
+    (tag) => {
+      expect(isAcceptedLocaleTag(tag)).toBe(true);
+      const issues = collectProductGraphDomainIssues(
+        localeConfig({ defaultLocale: tag, supportedLocales: [tag] }),
+      );
+      expect(issues).toEqual([]);
+    },
+  );
+
+  it.each([
+    "e",
+    "EN",
+    "en-us",
+    "en_US",
+    "english",
+    "en-",
+    "en-USA",
+    "ar-SA-extra",
+    "en-Latn-x-private",
+    "123",
+  ])("rejects the locale tag %s", (tag) => {
+    expect(isAcceptedLocaleTag(tag)).toBe(false);
+    const issues = collectProductGraphDomainIssues(
+      localeConfig({ defaultLocale: tag, supportedLocales: [tag] }),
+    );
+    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_INVALID_LOCALE_TAG", "defaultLocale"],
+      ["DOMAIN_INVALID_LOCALE_TAG", "supportedLocales"],
+    ]);
+  });
+
+  it("reports every locale attribute and list entry outside the subset", () => {
+    const issues = collectProductGraphDomainIssues(
+      localeConfig({
+        defaultLocale: "en",
+        fallbackLocale: "en_US",
+        formattingLocale: "ES",
+        rtlLocales: ["ar", "he_IL"],
+        supportedLocales: ["en", "ar", "EN"],
+      }),
+    );
+
+    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_INVALID_LOCALE_TAG", "fallbackLocale"],
+      ["DOMAIN_INVALID_LOCALE_TAG", "formattingLocale"],
+      ["DOMAIN_INVALID_LOCALE_TAG", "rtlLocales"],
+      ["DOMAIN_INVALID_LOCALE_TAG", "supportedLocales"],
+    ]);
+  });
+
+  it.each([
+    ["defaultLocale", { defaultLocale: "fr", supportedLocales: ["en", "ar"] }],
+    ["fallbackLocale", { defaultLocale: "en", fallbackLocale: "fr", supportedLocales: ["en"] }],
+    ["formattingLocale", { defaultLocale: "en", formattingLocale: "fr", supportedLocales: ["en"] }],
+    ["rtlLocales", { defaultLocale: "en", rtlLocales: ["he"], supportedLocales: ["en"] }],
+  ] as [string, JsonObject][])("reports the unsupported %s reference", (field, attributes) => {
+    const issues = collectProductGraphDomainIssues(localeConfig(attributes));
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE",
+      phase: "node",
+      target: "locale:config",
+      field,
+    });
+  });
+
+  it.each([
+    [{ defaultLocale: "en", supportedLocales: ["en"] }],
+    [{ defaultLocale: "ar", rtlLocales: ["ar"], supportedLocales: ["ar", "en"] }],
+    [
+      {
+        defaultLocale: "en",
+        fallbackLocale: "ar",
+        formattingLocale: "en",
+        supportedLocales: ["en", "ar"],
+      },
+    ],
+    [{ defaultLocale: "en", supportedLocales: ["en"], userSelectable: false }],
+  ] as [JsonObject][])("accepts the locale configuration %j", (attributes) => {
+    expect(collectProductGraphDomainIssues(localeConfig(attributes))).toEqual([]);
+  });
+
+  it("does not judge locale references without a usable supported list", () => {
+    const missing = collectProductGraphDomainIssues(
+      localeConfig({ defaultLocale: "fr", fallbackLocale: "fr" }),
+    );
+    expect(missing.map((issue) => issue.code)).toEqual(["DOMAIN_MISSING_REQUIRED_FIELD"]);
+
+    const malformed = collectProductGraphDomainIssues(
+      localeConfig({ defaultLocale: "fr", supportedLocales: ["EN"] }),
+    );
+    expect(malformed.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_INVALID_LOCALE_TAG", "supportedLocales"],
+    ]);
+  });
+
+  it("does not re-evaluate a locale field that already failed its declared type", () => {
+    const issues = collectProductGraphDomainIssues(
+      localeConfig({ defaultLocale: "en", supportedLocales: ["en"], userSelectable: "yes" }),
+    );
+    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
+      ["DOMAIN_INVALID_FIELD_TYPE", "userSelectable"],
+    ]);
+  });
+
+  it("keeps locale reporting deterministic across node order and repeated runs", () => {
+    const nodes: readonly ProductGraphNodeV1[] = [
+      {
+        id: "locale:b",
+        kind: "localeconfig",
+        attributes: { defaultLocale: "EN", supportedLocales: ["EN"] },
+      },
+      {
+        id: "locale:a",
+        kind: "localeconfig",
+        attributes: { defaultLocale: "fr", supportedLocales: ["en"] },
+      },
+    ];
+    const baseline = collectProductGraphDomainIssues(graphWith(nodes));
+
+    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([
+      ["locale:a", "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE", "defaultLocale"],
+      ["locale:b", "DOMAIN_INVALID_LOCALE_TAG", "defaultLocale"],
+      ["locale:b", "DOMAIN_INVALID_LOCALE_TAG", "supportedLocales"],
+    ]);
+    expect(collectProductGraphDomainIssues(graphWith([...nodes].reverse()))).toEqual(baseline);
+    expect(collectProductGraphDomainIssues(graphWith(nodes))).toEqual(baseline);
+  });
+
+  it("does not mutate locale input and preserves revision identity", () => {
+    const graph = localeConfig({
+      defaultLocale: "ar",
+      fallbackLocale: "en",
+      formattingLocale: "ar",
+      rtlLocales: ["ar"],
+      supportedLocales: ["ar", "en"],
+      userSelectable: true,
+    });
+    const before = JSON.stringify(graph);
+    const revision = createProductGraphRevision(graph);
+
+    expect(collectProductGraphDomainIssues(graph)).toEqual([]);
+    const validated = validateProductGraphDomain(graph);
+
+    expect(JSON.stringify(graph)).toBe(before);
+    expect(validated).toEqual(validateProductGraphState(graph));
+    expect(semanticProductGraphRevision(graph)).toBe(revision.revision);
   });
 });

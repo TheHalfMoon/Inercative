@@ -51,6 +51,7 @@ export const DOMAIN_NODE_KINDS = [
   "requirement",
   "dataclass",
   "datapolicy",
+  "localeconfig",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -174,6 +175,16 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
       visibility: "string",
     },
   },
+  {
+    kind: "localeconfig",
+    required: { defaultLocale: "string", supportedLocales: "string-list" },
+    optional: {
+      fallbackLocale: "string",
+      formattingLocale: "string",
+      rtlLocales: "string-list",
+      userSelectable: "boolean",
+    },
+  },
 ];
 
 export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
@@ -277,6 +288,35 @@ export const DOMAIN_PUBLIC_VISIBILITY_VALUES = ["public"] as const;
 /** Redaction declarations that actually apply a redaction control. */
 export const DOMAIN_REDACTION_CONTROL_VALUES = ["sensitive-fields", "all-fields"] as const;
 
+/**
+ * Accepted locale-tag subset for `localeconfig` attributes, as a source string so it is inspectable
+ * and testable without constructing a regular expression.
+ *
+ * This is an **Ineractive validation subset**, not a claim of full BCP-47 conformance: a
+ * two-or-three-letter lowercase language subtag, an optional four-letter script subtag, and an
+ * optional two-letter uppercase or three-digit region subtag. Extensions, variants, and private-use
+ * subtags are out of the subset and are reported rather than silently accepted.
+ */
+export const DOMAIN_LOCALE_TAG_PATTERN =
+  "^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|[0-9]{3}))?$" as const;
+
+const LOCALE_TAG_REGEXP = new RegExp(DOMAIN_LOCALE_TAG_PATTERN, "u");
+
+/** Returns true when `value` is inside the documented locale-tag subset. */
+export function isAcceptedLocaleTag(value: string): boolean {
+  return LOCALE_TAG_REGEXP.test(value);
+}
+
+/** Locale attributes that hold a single locale tag. */
+export const DOMAIN_LOCALE_REFERENCE_FIELDS = [
+  "defaultLocale",
+  "fallbackLocale",
+  "formattingLocale",
+] as const;
+
+/** Locale attributes that hold a list of locale tags. */
+export const DOMAIN_LOCALE_LIST_FIELDS = ["supportedLocales", "rtlLocales"] as const;
+
 /** Declares that one node attribute is constrained to a closed vocabulary. */
 export interface DomainEnumFieldSpec {
   readonly kind: DomainNodeKind;
@@ -322,6 +362,8 @@ export const DOMAIN_ISSUE_CODES = [
   "DOMAIN_CONSENT_WITHOUT_USER_VISIBILITY",
   "DOMAIN_MISSING_REDACTION_CONTROL",
   "DOMAIN_PUBLIC_VISIBILITY_OF_CLASSIFIED_DATA",
+  "DOMAIN_INVALID_LOCALE_TAG",
+  "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE",
 ] as const;
 export type DomainIssueCode = (typeof DOMAIN_ISSUE_CODES)[number];
 
@@ -487,6 +529,102 @@ function collectNodeIssues(node: ProductGraphNodeV1, issues: DomainIssue[]): voi
   }
 
   collectLifecycleIssues(node, issues);
+  collectLocaleIssues(node, spec, issues);
+}
+
+function declaredFieldType(spec: DomainNodeKindSpec, field: string): DomainFieldType | null {
+  return spec.required[field] ?? spec.optional[field] ?? null;
+}
+
+function localeListEntries(value: JsonValue): readonly string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is string => typeof entry === "string");
+}
+
+/**
+ * Locale semantics for the `localeconfig` kind: the documented tag-subset check plus the rule that
+ * every locale reference resolves to a declared supported locale. A field that already failed its
+ * declared type check is not re-evaluated, so one offending value still yields one complaint. When
+ * no usable supported list exists there is no membership to judge, and the reference rule is
+ * skipped rather than guessed at.
+ */
+function collectLocaleIssues(
+  node: ProductGraphNodeV1,
+  spec: DomainNodeKindSpec,
+  issues: DomainIssue[],
+): void {
+  if (spec.kind !== "localeconfig") return;
+
+  const passesDeclaredType = (field: string): boolean => {
+    const type = declaredFieldType(spec, field);
+    if (type === null) return false;
+    const value = ownField(node.attributes, field);
+    return value !== undefined && fieldTypeMatches(value, type);
+  };
+  const tagMessage = (field: string, entry: string | null): string => {
+    const subject =
+      entry === null ? `attribute "${field}"` : `attribute "${field}" entry "${entry}"`;
+    return `Node ${node.id} ${subject} must be a locale tag of the accepted subset: language, optional script, optional region.`;
+  };
+
+  for (const field of DOMAIN_LOCALE_REFERENCE_FIELDS) {
+    if (!passesDeclaredType(field)) continue;
+    const value = ownField(node.attributes, field);
+    if (typeof value !== "string" || isAcceptedLocaleTag(value)) continue;
+    issues.push({
+      code: "DOMAIN_INVALID_LOCALE_TAG",
+      phase: "node",
+      target: node.id,
+      field,
+      message: tagMessage(field, null),
+    });
+  }
+
+  for (const field of DOMAIN_LOCALE_LIST_FIELDS) {
+    if (!passesDeclaredType(field)) continue;
+    for (const entry of localeListEntries(ownField(node.attributes, field) ?? null)) {
+      if (isAcceptedLocaleTag(entry)) continue;
+      issues.push({
+        code: "DOMAIN_INVALID_LOCALE_TAG",
+        phase: "node",
+        target: node.id,
+        field,
+        message: tagMessage(field, entry),
+      });
+    }
+  }
+
+  const supported = localeListEntries(ownField(node.attributes, "supportedLocales") ?? null);
+  const supportedIsUsable =
+    supported.length > 0 &&
+    passesDeclaredType("supportedLocales") &&
+    supported.every((entry) => isAcceptedLocaleTag(entry));
+  if (!supportedIsUsable) return;
+
+  for (const field of DOMAIN_LOCALE_REFERENCE_FIELDS) {
+    const value = ownField(node.attributes, field);
+    if (typeof value !== "string" || !isAcceptedLocaleTag(value)) continue;
+    if (supported.some((declared) => declared === value)) continue;
+    issues.push({
+      code: "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE",
+      phase: "node",
+      target: node.id,
+      field,
+      message: `Node ${node.id} attribute "${field}" must reference a locale declared in supportedLocales.`,
+    });
+  }
+
+  for (const entry of localeListEntries(ownField(node.attributes, "rtlLocales") ?? null)) {
+    if (!isAcceptedLocaleTag(entry)) continue;
+    if (supported.some((declared) => declared === entry)) continue;
+    issues.push({
+      code: "DOMAIN_UNSUPPORTED_LOCALE_REFERENCE",
+      phase: "node",
+      target: node.id,
+      field: "rtlLocales",
+      message: `Node ${node.id} attribute "rtlLocales" entry "${entry}" must be declared in supportedLocales.`,
+    });
+  }
 }
 
 /**
