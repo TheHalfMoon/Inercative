@@ -74,6 +74,7 @@ their current delivery state:
 | SG-000020 | IN-P02-S02-T01A | Domain node kinds and deterministic node validators | DONE (PR #43) | `docs/evidence/P02_S02_T01A_CLOSURE_2026-09-21.md` |
 | SG-000021 | IN-P02-S02-T01B | Domain edge kinds, endpoint compatibility, and relation rules | DONE (PR #46) | `docs/evidence/P02_S02_T01B_CLOSURE_2026-09-21.md` |
 | SG-000022 | IN-P02-S02-T02A | Data classification and lifecycle node semantics | DONE (PR #49) | `docs/evidence/P02_S02_T02A_CLOSURE_2026-09-21.md` |
+| SG-000023 | IN-P02-S02-T02B | Data-governance relations and cross-node rules | GRAIN active (implementation in progress) | `docs/evidence/P02_S02_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -267,8 +268,11 @@ Next in dependency order:
 
 1. **IN-P02-S02-T02B — data-governance relations and cross-node rules** (classification and policy
    edges, source-specific `governs` endpoints, ungoverned sensitive data, conflicting
-   classification, class/policy conflict). Dependency SG-000022 is satisfied; this slice still
-   requires real SpecGrain shaping before implementation authority exists.
+   classification, class/policy conflict) now has implementation authority: the canonical
+   `TheHalfMoon/SpecGrain` CLI promoted **SG-000023** through
+   `DRAFT -> SHAPED -> REFINING -> GRAIN` at baseline `3394799b125c76a0705db1c21635840216f46c26`,
+   and `specgrain check` reports 23 specs with 0 readiness-blocked. Shaping record:
+   `docs/evidence/P02_S02_T02B_SPECGRAIN_SHAPING_2026-09-21.md`.
 2. IN-P02-S02-T02C (privacy semantics), IN-P02-S02-T02D (locale semantics), and IN-P02-S02-T02E
    (external-effect semantics) follow T02B in dependency order and remain unshaped.
 3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
