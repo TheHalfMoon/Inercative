@@ -69,7 +69,8 @@ their current delivery state:
 | SG-000015 | IN-P02-S01-T01A | Prototype canonical structured Product Graph document | DONE (PR #23) | `docs/evidence/P02_S01_T01A_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000016 | IN-P02-S01-T01B | Prototype normalized relational Product Graph snapshot | DONE (PR #27) | `docs/evidence/P02_S01_T01B_SPECGRAIN_SHAPING_2026-09-21.md` |
 | SG-000017 | IN-P02-S01-T01C | Compare Product Graph persistence prototypes | DONE (PR #29) | `docs/evidence/P02_S01_T01C_SPECGRAIN_SHAPING_2026-09-21.md` |
-| SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |\n| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000018 | IN-P02-S01-T02A | Select Product Graph v1 persistence representation | DONE (PR #32) | `docs/evidence/P02_S01_T02A_SPECGRAIN_SHAPING_2026-09-21.md` |
+| SG-000019 | IN-P02-S01-T02B | Implement stable Product Graph v1 contracts | GRAIN / IMPLEMENTATION CANDIDATE | `docs/evidence/P02_S01_T02B_SPECGRAIN_SHAPING_2026-09-21.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to

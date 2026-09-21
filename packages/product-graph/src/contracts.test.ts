@@ -90,6 +90,8 @@ describe("Product Graph v1 contracts", () => {
     [{ ...graph, nodes: [{ ...graph.nodes[0]!, kind: "" }] }, /node kind must be/],
     [{ ...graph, edges: [{ ...graph.edges[0]!, id: "" }] }, /edge id must be/],
     [{ ...graph, edges: [{ ...graph.edges[0]!, kind: " " }] }, /edge kind must be/],
+    [{ ...graph, edges: [{ ...graph.edges[0]!, from: " " }] }, /edge from must be/],
+    [{ ...graph, edges: [{ ...graph.edges[0]!, to: "" }] }, /edge to must be/],
   ])("rejects malformed graph identity contracts", (candidate, expected) => {
     expect(() => validateProductGraphState(candidate)).toThrow(expected);
   });
