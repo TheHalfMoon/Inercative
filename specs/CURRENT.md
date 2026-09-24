@@ -5,8 +5,9 @@
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
 **Planning amendment:** `docs/canonical/PLAN_REVISION_2026-09-24.md` — competitive/source refresh,
-CLM decision-plane adoption posture, and 18 mapped gap-closure requirements. Planning only:
-the live P02 execution frontier is unchanged.
+CLM decision-plane adoption posture, and 18 mapped gap-closure requirements. The amendment adds
+13 future planned task handles to the historical 176-handle baseline (current task index: 189).
+Planning only: the live P02 execution frontier is unchanged.
 
 > Reconciled against live repository truth on 2026-09-21. The prior revision
 > described the repository as `PLANNING_ONLY`; that was stale once P00-S01 merged.
