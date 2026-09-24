@@ -1,306 +1,66 @@
 # Generated-App Testing and Browser Quality Source Study
 
-**Status:** implementation-ready research addendum; no implementation authority  
-**Date:** 2026-09-23  
-**Repository:** TheHalfMoon/Inercative  
-**Base reviewed:** fd3fd806b8941a03fc96ddfcc395f2da57622a5a
+**Status:** dated research input; no import or implementation authority
+**Date:** 2026-09-23
+**Ineractive base:** `fd3fd806b8941a03fc96ddfcc395f2da57622a5a`
 
-## 1. Purpose
+## 1. Method and decision
 
-This study inventories the strongest testing, browser-automation, quality, security, accessibility, and benchmark sources already present in the founder's GitHub estate and converts them into a bounded source strategy for Ineractive.
+The study selected the smallest donor mechanisms that strengthen deterministic browser execution, independent acceptance, session isolation, failure science, and benchmark evidence. It does not concatenate donor products or add a second assurance authority.
 
-The objective is not to accumulate testing tools. The objective is to ensure that a generated application can be exercised as a user would exercise it, including real clicks and navigation, while preserving independent oracles, exact source/environment binding, truthful flake classification, visual/accessibility evidence, effect safety, and release-quality proof.
+No source is imported by this study. Paths and revisions below make later path-level review reproducible; each future WorkPacket must re-verify the selected revision and admission facts.
 
-## 2. Primary internal source: Ascout
+## 2. Primary internal sources
 
-### 2.1 Spec 016 — Browser and Agentic Verification
+| Repository | Immutable study revision | High-value paths | Disposition |
+|---|---|---|---|
+| `TheHalfMoon/Ascout` | `e02cce13e2412fb6cee329fd70d431d7a6b5910a` | `src/browser/playwright-adapter.ts`, `src/browser/locators.ts`, `src/browser/trace-artifacts.ts`, browser oracle/evidence code under `src/browser/`, browser integration/benchmark tests, `specs/016-browser-agentic-verification/` | primary browser-executor and benchmark adaptation candidate |
+| `TheHalfMoon/Ascout` | `e02cce13e2412fb6cee329fd70d431d7a6b5910a` | `src/quality/stability.ts`, `src/quality/reproduction.ts`, `specs/015-autonomous-quality-engineering/` | primary obligation, stability, admission, reproduction, and residual-risk semantics |
+| `TheHalfMoon/kernux` | `27736f76d68745151fb19c761838eaf90538e576` | `docs/canonical/SECURITY_MODEL.md`, `docs/canonical/QUALITY_AND_EVIDENCE.md`, `docs/canonical/DONOR_PROVENANCE.md`, `specs/tasks.md` | browser/session, hostile-content, capability, and evidence security reference |
+| `TheHalfMoon/wepld` | `666e62d7d9e040505baca277a474d734afcc07a0` | product-capability plan/tasks and adversarial mechanism research under `specs/006-issueops-agentic-engineering-control-plane/` | stale-target, route, effect-time authority, and benchmark reference |
+| `TheHalfMoon/Sentrdel` | `f5747319a50831ef7cee983d253c0ca5503c9a64` | `specs/000-sentrdel-roadmap/security-control-plane-expansion-2026-09-12.md` | bounded Verification Worker reference |
+| `TheHalfMoon/Ecra` | `0e2ff8c687c93e6f158da6984a7a6915339b5f3f` | `research/donor-license-ledger.md`, `specs/000-ecra-platform/benchmark-matrix.md` | benchmark and agentic-fallback source inventory |
+| `TheHalfMoon/Winds` | `3e637403accadc0f446d596f4411c5c9da371e89` | application E2E, visual regression, and performance qualification surfaces | secondary E2E reference |
+| `TheHalfMoon/Pluma` | `f38a3e743a32342f1c25e7a7e606eff6a8c8edb2` | packaged/browser-debug application verification surfaces | secondary E2E reference |
 
-Repository: `TheHalfMoon/Ascout`
+Revisions are the last repository heads at or before the study date, re-fetched from GitHub. They are research pins, not claims that every listed path will be copied.
 
-High-value implementation/reference paths:
+## 3. Mechanisms worth reusing
 
-- `src/browser/playwright-adapter.ts`
-- `src/browser/locators.ts`
-- `src/browser/trace-artifacts.ts`
-- browser evidence/oracle code under `src/browser/`
-- `tests/browser-playwright.integration.test.ts`
-- `tests/browser-benchmark.integration.test.ts`
-- `benchmarks/browser/`
-- `specs/016-browser-agentic-verification/`
+### Ascout
 
-Observed capabilities worth adapting:
+Reuse the Playwright-behind-executor seam, exact browser/package identity, semantic locator priority, typed evidence, trace/screenshot/log/artifact references, bounded recovery, deterministic benchmark fixtures, and separation of deterministic execution from model-assisted recovery.
 
-- Playwright behind an internal executor contract rather than as canonical truth.
-- Exact browser/package pin enforcement.
-- User-facing locator priority instead of fragile selector-first behavior.
-- Browser evidence separated into typed facts rather than one generic PASS.
-- Trace, screenshot, log, DOM/accessibility, and execution evidence.
-- Deterministic browser benchmark fixtures.
-- Bounded recovery rather than arbitrary retry-to-green.
-- Explicit separation between deterministic execution and model-assisted recovery.
-- Source/browser/environment identity binding.
-- Oracle classification and residual-risk rendering.
+Reuse the autonomous-quality mechanisms for requirement obligations, independent oracle classification, candidate-test admission, stability classification, discrimination proof, reproduction/minimization, regression obligations, and residual-risk rendering. A passing generated test is not self-admitting evidence.
 
-The browser benchmark corpus contains useful failure patterns that Ineractive should reproduce or adapt:
+### Kernux
 
-- happy path;
-- ambiguous target;
-- overlay/obstruction;
-- sensitive input;
-- missing step;
-- duplicate submit;
-- rename-equivalent target;
-- noisy-green behavior.
+Reuse the typed separation between browser observation and privileged action, including prompt-injection, secret-exfiltration, cross-project session leakage, duplicate-effect, stale-grant, origin, action-method, and evidence-lineage fixtures. TinyFish/AgentQL-style semantic targeting is a later bounded adapter, never the primary oracle.
 
-**Disposition:** `PRIMARY_INTERNAL_ADAPTATION_SOURCE`.
+### WePLD
 
-Ineractive should reuse concepts and, where path-level review supports it, bounded internal code. Do not import Ascout as a second assurance control plane.
+Reuse structured routes, fresh observation before effect, stale-surface races, origin/navigation drift, effect-time authority, and explicit no-silent-fallback behavior. Benchmark tools such as BrowserGym, WebArena-Verified, and WorkArena are external oracle candidates, not production dependencies.
 
-### 2.2 Spec 015 — Autonomous Quality Engineering
+### Sentrdel, Winds, and Pluma
 
-Repository: `TheHalfMoon/Ascout`
+Reuse the bounded reusable verification-worker boundary and proven application-level visual/performance/E2E discipline. Do not create a browser-only privileged worker when the same bounded contract can safely support HTTP, process, container, and later security verification.
 
-High-value paths:
+## 4. External reference posture
 
-- `src/quality/stability.ts`
-- `src/quality/reproduction.ts`
-- `specs/015-autonomous-quality-engineering/spec.md`
-- `specs/015-autonomous-quality-engineering/plan.md`
-- `specs/015-autonomous-quality-engineering/P015_03_FIRST_WEDGE_IMPLEMENTATION_AUTHORIZATION.md`
+TinyFish/AgentQL, browser-use, Stagehand, rustwright, screenshot/vision grounding, BrowserGym, AgentLab, WebArena-Verified, WorkArena, Online-Mind2Web, and OSWorld-class material are benchmark or bounded-fallback candidates only. They do not become runtime dependencies, acceptance authority, or hidden cloud fallbacks without separate admission, provenance, security, cost, and reproducibility evidence.
 
-Observed capabilities worth adapting:
+## 5. Existing Ineractive owners
 
-- requirement-derived test obligations;
-- independent oracle classification;
-- candidate-test admission;
-- bounded rerun stability classification;
-- flake versus environment-failure separation;
-- discrimination proof before generated tests become acceptance evidence;
-- failure reproduction/minimization;
-- regression obligations;
-- residual-risk rendering;
-- no rerun-to-green;
-- isolated candidate-test worktrees.
+The architecture remains under existing handles: `IN-P04-S05-T01` for browser execution/evidence, `IN-P08-S11-T03` for design-quality browser evidence, `IN-P10-S02-T01` for Ascout-style assurance adapters, `IN-P10-S06-T01/T02` for Evaluation Lab, `IN-P10-S08-T01` for production-web support matrices, and `IN-P10-S10-T03` for exact-source `FrontendEvidenceBundle`.
 
-**Disposition:** `PRIMARY_ASSURANCE_SEMANTICS_SOURCE`.
+No new top-level subsystem or P02 implementation authority is created.
 
-This is especially important for AI-generated tests. A generated browser test that passes must remain a proposal until its oracle is independently grounded and the test demonstrates useful discriminating power.
+## 6. Admission requirements
 
-## 3. Kernux — browser safety and authenticated-session boundaries
+Before any direct reuse, a WorkPacket records exact repository/revision and paths; founder authority and license/NOTICE basis; destination and transformation; dependency, model, asset, and data closure; security and trust-boundary impact; focused characterization tests; independent regression tests; and removal/upgrade strategy. Unpinned remote code never executes in trusted runtime.
 
-Repository: `TheHalfMoon/kernux`
+The first implementation must not import a donor assurance plane, add a browser farm, make raw CSS selectors canonical, treat screenshots or axe as complete correctness/accessibility proof, heal silently, reuse authenticated state by default, or perform consequential effects without bounded authority. It must not add Cypress beside Playwright without measured missing capability or make benchmark/model tools production dependencies.
 
-High-value paths:
+## 7. Reproducibility and revalidation
 
-- `docs/canonical/SECURITY_MODEL.md`
-- `docs/canonical/QUALITY_AND_EVIDENCE.md`
-- `docs/research/EXTERNAL_REFERENCES.md`
-- `docs/canonical/DONOR_PROVENANCE.md`
-- `specs/tasks.md`
-
-Relevant patterns:
-
-- prompt injection -> privileged action attempts;
-- secret exfiltration attempts;
-- cross-project browser/session leakage;
-- remote replay/duplicate side effects;
-- stale grants;
-- browser evidence containing origin, action method, observation, screenshot/artifact, and lineage;
-- malicious page/WebMCP/tool-output injection fixtures;
-- semantic targeting through AgentQL/TinyFish-derived capability behind a provider boundary.
-
-Authorized donor/reference sources recorded in Kernux include:
-
-- `tinyfish-io/agentql`
-- founder-authorized TinyFish source
-- `browser-use/browser-use`
-- Playwright/CDP/WebMCP references
-
-**Disposition:** `SECURITY_AND_SEMANTIC_TARGETING_SOURCE`.
-
-Use these patterns for isolation and hostile-page testing. TinyFish/AgentQL-style semantic targeting may be a later fallback/adaptor candidate, never the primary acceptance oracle.
-
-## 4. WePLD — stale-target, route, and benchmark discipline
-
-Repository: `TheHalfMoon/wepld`
-
-High-value paths:
-
-- `specs/006-issueops-agentic-engineering-control-plane/product-capability-tracks-plan.md`
-- `specs/006-issueops-agentic-engineering-control-plane/product-capability-tracks-tasks.md`
-- `specs/006-issueops-agentic-engineering-control-plane/research/product-capability-source-study-2026-09-06.md`
-- `specs/006-issueops-agentic-engineering-control-plane/research/adversarial-mechanism-recheck-2026-09-06.md`
-
-Relevant patterns:
-
-- semantic/structured route before raw visual input;
-- fresh observation before effect;
-- stale-target/stale-surface race testing;
-- prompt-injection and origin/navigation-drift testing;
-- explicit effect-time authority;
-- BrowserGym/WebArena/WorkArena as test oracles;
-- CDP/WebDriver BiDi as protocol/specification oracles;
-- no silent fallback that changes semantics.
-
-**Disposition:** `INTERACTIVE_SURFACE_AND_BENCHMARK_SOURCE`.
-
-## 5. Ecra — browser-agent evaluation and fallback references
-
-Repository: `TheHalfMoon/Ecra`
-
-High-value paths:
-
-- `research/donor-license-ledger.md`
-- `specs/000-ecra-platform/benchmark-matrix.md`
-
-Relevant references already catalogued there:
-
-- ServiceNow BrowserGym / AgentLab;
-- WebArena-Verified;
-- Online-Mind2Web;
-- OSWorld 2.0 / WeaveBench;
-- `Skyvern-AI/rustwright`;
-- `browser-use/browser-use`;
-- Browserbase Stagehand;
-- Chromium/CDP provider references.
-
-The important lesson is architectural rather than dependency accumulation:
-
-- deterministic browser execution first;
-- benchmark harnesses as test oracles;
-- model-assisted navigation as a bounded fallback;
-- exact benchmark/environment identity;
-- consequential side effects tested separately from task success.
-
-**Disposition:** `BENCHMARK_AND_AGENTIC_FALLBACK_SOURCE`.
-
-## 6. Sentrdel — reusable verification-worker isolation
-
-Repository: `TheHalfMoon/Sentrdel`
-
-High-value path:
-
-- `specs/000-sentrdel-roadmap/security-control-plane-expansion-2026-09-12.md`
-
-Key pattern:
-
-A reusable bounded Verification Worker should isolate browser, HTTP, process, container, and later security verification instead of giving every rule bespoke sandbox authority.
-
-**Disposition:** `VERIFICATION_ISOLATION_SOURCE`.
-
-Ineractive should not create a browser-only privileged worker if the same isolation contract can support other verification surfaces.
-
-## 7. Winds and Pluma — application-level E2E evidence patterns
-
-Repositories:
-
-- `TheHalfMoon/Winds`
-- `TheHalfMoon/Pluma`
-
-Useful patterns found:
-
-- explicit visual-regression/screenshot strategy;
-- performance qualification separate from correctness;
-- executable application E2E harnesses;
-- WebView/browser-debug evidence for packaged application flows.
-
-**Disposition:** `SECONDARY_E2E_REFERENCE`.
-
-These are useful for harness discipline but are not the primary web-generated-app testing architecture.
-
-## 8. Existing Ineractive plan already has the correct anchors
-
-Ineractive already contains important task anchors:
-
-- `IN-P04-S05-T01` — Playwright-class browser runtime and evidence;
-- `IN-P08-S11-T03` — Storybook/Vitest/axe + Playwright visual/accessibility quality loop;
-- `IN-P10-S02-T01` — Ascout test/browser/security evidence adapters;
-- `IN-P10-S06-T01` — Evaluation Lab benchmark corpus and live/recorded replay;
-- `IN-P10-S06-T02` — multidimensional correctness/security/design/cost/latency/question regression reporting;
-- `IN-P10-S08-T01` — i18n/RTL/SEO/accessibility/performance/cross-browser quality pack;
-- `IN-P10-S10-T03` — exact-source FrontendEvidenceBundle.
-
-The plan should therefore be strengthened through bounded implementation slices under these existing handles rather than by creating a second testing subsystem.
-
-## 9. Recommended source hierarchy
-
-### Tier A — direct architecture/implementation adaptation
-
-1. Ascout Spec 016 browser executor/evidence/locator/benchmark work.
-2. Ascout Spec 015 stability/admission/reproduction/residual-risk work.
-3. Ineractive's existing Product Graph, evidence, capability, sandbox, and quality contracts.
-
-### Tier B — security and isolation adaptation
-
-4. Kernux browser/session/prompt-injection/security patterns.
-5. Sentrdel reusable Verification Worker boundary.
-6. WePLD stale-target/fresh-observation/effect-authority patterns.
-
-### Tier C — benchmark oracles
-
-7. BrowserGym / AgentLab.
-8. WebArena-Verified / WorkArena.
-9. Online-Mind2Web where live-web drift is specifically being studied.
-10. OSWorld-class evaluation only if desktop/computer-use scope becomes active.
-
-### Tier D — model-assisted fallback references
-
-11. TinyFish / AgentQL semantic targeting.
-12. browser-use.
-13. Stagehand.
-14. rustwright/CDP references.
-
-Tier D must never become release authority merely because it can complete a task.
-
-## 10. Explicit non-adoptions
-
-The first Ineractive browser-quality implementation should not:
-
-- build a browser farm;
-- invent a browser protocol;
-- make raw CSS selectors the preferred locator strategy;
-- allow AI assertions to self-certify correctness;
-- treat a screenshot similarity score as product correctness;
-- treat axe as complete accessibility conformance;
-- retry until green;
-- auto-heal a locator and silently preserve PASS;
-- reuse authenticated browser state across projects by default;
-- allow a test to perform consequential external effects without explicit bounded authority;
-- introduce Cypress alongside Playwright without a measured missing capability;
-- add BrowserGym/WebArena as runtime production dependencies;
-- make TinyFish/browser-use/Stagehand a correctness dependency.
-
-## 11. Source admission rule
-
-Any direct code reuse must record:
-
-- source repository;
-- immutable revision;
-- exact source paths;
-- license/permission basis;
-- source-to-destination mapping;
-- transformations;
-- test evidence;
-- security review;
-- notices/third-party obligations.
-
-Founder permission does not remove provenance or nested third-party obligations.
-
-## 12. Conclusion
-
-The GitHub estate already contains enough material to build a stronger testing architecture than a conventional E2E suite.
-
-The best composition is:
-
-```text
-Ascout deterministic browser execution + assurance semantics
-+ Ineractive Product Graph requirement authority
-+ Kernux browser/session security
-+ WePLD stale-target/effect authority
-+ Sentrdel worker isolation
-+ BrowserGym/WebArena/WorkArena benchmark oracles
-+ Storybook/Vitest/axe/Playwright frontend evidence
-+ bounded model-assisted targeting only after deterministic baselines
-```
-
-The companion canonical architecture document defines how these pieces fit without creating duplicate authority.
+Before a later Grain relies on this study, re-fetch every selected source revision and path, verify license and notices, compare the donor mechanism with an Ineractive-native implementation, and update provenance when the observed revision or path changes. Competitive and donor observations are dated inputs; only exact, independently verified Ineractive evidence can qualify a candidate.
