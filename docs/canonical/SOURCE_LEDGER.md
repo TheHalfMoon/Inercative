@@ -1,6 +1,6 @@
 # Ineractive Source Ledger
 
-**Research snapshot:** 2026-09-20  
+**Research snapshot:** 2026-09-24  
 **Founder authority:** the founder states permission to use, copy, and adapt the named sources and relevant sources in the connected GitHub account.  
 **Rule:** permission permits consideration; exact import revision, component mapping, dependency closure, security review, notices, and Ineractive-owned qualification remain required.
 
@@ -224,6 +224,70 @@ OCR does not grant PASS.
 REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Concrete runtime providers are intentionally not declared in this public planning ledger.
 
 Use bounded decision models for classification/routing/gating rather than general code generation. Hard permissions and deterministic invariants stay in code.
+
+## 7A. 2026-09-24 source refresh
+
+### Contrastive decision model
+
+| Source | Exact reviewed revision | Candidate value | Planning posture |
+|---|---|---|---|
+| `Contrastive-LM/CLM` | `7956937c58ed5839c06ddc4dc6b6b61c3a3e4094` | fast typed NOUL/CHOICE/SCORE decisions, candidate ranking, best-of-N verification, action-vector caching, fine-tunable projection heads | ADAPT / DEPEND_SELECTIVE / BENCHMARK behind P03 `DecisionPlaneAdapter`; never authorization authority |
+
+The founder explicitly states permission to use/copy/adapt this source. The reviewed public
+repository and reference weights state Apache-2.0. Permission and license eligibility do not
+skip exact import provenance, dependency/model/data-rights review, NOTICE handling, sandbox/runtime
+qualification, security review, or Ineractive-owned evaluation.
+
+CLM is **not** a mandatory local V1 dependency. Its reference serving path uses a Qwen3-8B-class
+pooling encoder and accelerator-oriented examples, so Ineractive must keep deterministic/Jev/generative
+fallbacks and may use user-owned or organization-owned qualified endpoints. A decision score cannot
+create a capability Grant or security PASS.
+
+See:
+
+- `docs/research/CLM_INTERNAL_SOURCE_DEEP_DIVE_2026-09-24.md`;
+- `docs/canonical/PLAN_REVISION_2026-09-24.md`.
+
+### Internal source consolidation
+
+The 2026-09-24 deep dive strengthens these source assignments:
+
+- **Kernux** — capability/grant boundary; ContextSource/ContextItem/ContextBundle; local privacy;
+  egress/provider lifecycle evidence.
+- **Golam** — authority/taint/freshness-bearing context; candidate-vs-durable memory; live truth
+  outranks stale memory; ranking cannot raise authority.
+- **Morize** — governed memory writer and user-controlled durable memory.
+- **Ascout** — exact-target assurance contracts and generated-app/browser/security evidence.
+- **MESC** — content-addressed experiment/model/data/evaluation qualification.
+- **Himsat + Wispral** — multi-engine voice routing and speech-as-evidence-not-authority.
+- **MedScale** — capability-scoped extension ecosystem, re-consent, SBOM/revocation patterns.
+
+Whole donor architectures do not become Ineractive policy. Reuse remains bounded behind
+Ineractive-owned contracts.
+
+### Competitive lifecycle refresh
+
+In addition to the existing competitive baseline, current benchmark/reference coverage now
+explicitly includes:
+
+- Base44;
+- Figma Make;
+- Google Stitch;
+- Google Antigravity / Google AI Studio migration direction;
+- GitHub Copilot coding agents;
+- Cursor;
+- Bubble;
+- Wix/Harmony;
+- Retool;
+- Webflow AI;
+- Framer.
+
+Provider lifecycle changes are benchmark evidence too. The 2026-09-24 research snapshot records
+GitHub Spark retirement, Firebase Studio sunset/migration direction, and Webflow App Gen lifecycle
+changes as concrete reasons to require P11 provider-deprecation/retirement portability fixtures.
+
+Detailed feature evidence and dated source URLs are recorded in
+`docs/research/COMPETITIVE_LANDSCAPE_2026-09-24.md`.
 
 ## 8. Import rule
 
