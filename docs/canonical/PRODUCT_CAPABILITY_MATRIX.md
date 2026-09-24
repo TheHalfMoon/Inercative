@@ -339,6 +339,32 @@ The matrix distinguishes:
 
 These can be built eventually, but they should not distort the first compiler around edge-case infrastructure.
 
+## 12A. 2026-09-24 strengthened competitive baseline
+
+These rows are additive clarifications from the 2026-09-24 competitive/source refresh.
+They do not activate work before the owning roadmap phase.
+
+| Capability | Target | Notes |
+|---|---|---|
+| CLM-class fast bounded decision adapter | V1 CORE | Optional provider under P03-S03; deterministic/Jev/generative fallbacks remain |
+| Decision confidence + abstention escalation | V1 CORE | Ranking never grants capability authority |
+| Branch/worktree isolation for autonomous changes | V1 CORE | PR/exact-head promotion is the safe default |
+| Parallel-agent merge/reconciliation evidence | BETA | P07 Wide Work |
+| Production-like preview parity manifest | BETA | P11; typed parity blockers when production semantics cannot be exercised |
+| Pre-publish security summary/gate | V1 CORE | Exact dependency/secret/auth/RLS/browser/supply-chain evidence before promotion |
+| Safe security auto-fix proposals | BETA | Proposed diff only; normal qualification remains mandatory |
+| Generated-product MCP server/surface | BETA | P13; typed tools/resources, auth, capabilities, effects, audit and revocation |
+| Provider deprecation/retirement portability fixture | BETA | P11 exit/reconnect benchmark |
+| Portable agent-readable design truth | BETA | Product-owned import/export; no external provider format becomes canonical |
+| Live isolated design/build variants | BETA | P08/P07 branch comparison and early steering |
+| Competitive regression corpus | BETA | P10 Evaluation Lab; dated source observations |
+| Physical-device native-mobile qualification | LATER | P14; responsive web is not native proof |
+| User-owned mobile signing/submission evidence | LATER | P14; TestFlight/internal track when release scope requires stores |
+| Mobile/remote builder steering | LATER | Queued text/voice steering with bounded approvals |
+| Governed voice intent | LATER | Transcript provenance, Arabic/code-switch benchmark, explicit confirmation for material effects |
+| Provider-lifecycle state including DEPRECATED/RETIRING/RETIRED | BETA | ProviderAdapter lifecycle |
+| Generated-product AI-provider ownership | BETA | Generated product credentials/providers do not inherit Ineractive control-plane secrets |
+
 ## 13. Scope rule
 
 A feature can move earlier only when it is a dependency of a proven benchmark or removes a material user blocker.
