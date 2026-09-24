@@ -39,6 +39,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P03-S01-T01 | P03 | Implement Run lifecycle/event store | IN-P01-S02-T02, IN-P01-S05-T01 |
 | IN-P03-S02-T01 | P03 | Implement provider-neutral generative adapter | IN-P03-S01-T01 |
 | IN-P03-S03-T01 | P03 | Implement bounded decision adapter and thresholds | IN-P03-S01-T01 |
+| IN-P03-S03-T02 | P03 | Qualify an optional CLM-class DecisionPlane provider with exact candidate/head evidence, confidence/abstention, cache-generation invalidation, deterministic fallback, and no-authority tests | IN-P03-S03-T01 |
 | IN-P03-S04-T01 | P03 | Implement model capability registry/router | IN-P03-S02-T01, IN-P03-S03-T01 |
 | IN-P03-S05-T01 | P03 | Implement context compiler and context provenance | IN-P02-S05-T01, IN-P02-S06-T01, IN-P03-S04-T01 |
 | IN-P03-S06-T01 | P03 | Implement durable Project Context store, revisions, Execution Header, and continuation policy | IN-P03-S05-T01, IN-P03-S01-T01 |
@@ -51,12 +52,13 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P04-S02-T02 | P04 | Qualify first local Docker-compatible sandbox adapter | IN-P04-S02-T01 |
 | IN-P04-S03-T01 | P04 | Implement network policy and secret broker | IN-P04-S01-T01, IN-P04-S02-T02 |
 | IN-P04-S04-T01 | P04 | Implement Git runtime/checkpoint primitives | IN-P04-S02-T02 |
+| IN-P04-S04-T02 | P04 | Enforce autonomous branch/worktree isolation, protected-main no-direct-write default, and exact-head PR promotion evidence | IN-P04-S04-T01, IN-P04-S01-T01 |
 | IN-P04-S05-T01 | P04 | Implement Playwright-class browser runtime and evidence | IN-P04-S02-T02, IN-P04-S03-T01 |
 | IN-P04-S06-T01 | P04 | Implement stable Tool Catalog identities and capability/eligibility masking | IN-P04-S01-T01, IN-P03-S07-T01 |
 | IN-P04-S06-T02 | P04 | Implement connector/MCP trust metadata and untrusted-content probe | IN-P04-S06-T01, IN-P03-S05-T01 |
 | IN-P04-S06-T03 | P04 | Implement risk-triggered intent-aware action guard with bounded deny-and-continue | IN-P04-S06-T01, IN-P04-S06-T02, IN-P04-S03-T01 |
 | IN-P04-S06-T04 | P04 | Implement typed Lifecycle Hook Bus and runtime/browser trust classes | IN-P04-S06-T03, IN-P04-S05-T01 |
-| IN-P05-S01-T01 | P05 | Qualify/generated-project V1 scaffold | IN-P02-S05-T01, IN-P03-S06-T01, IN-P04-S04-T01, IN-P04-S05-T01, IN-P04-S06-T04 |
+| IN-P05-S01-T01 | P05 | Qualify/generated-project V1 scaffold | IN-P02-S05-T01, IN-P03-S06-T01, IN-P04-S04-T02, IN-P04-S05-T01, IN-P04-S06-T04 |
 | IN-P05-S02-T01 | P05 | Compile routes/pages/components from Product Graph | IN-P05-S01-T01 |
 | IN-P05-S03-T01 | P05 | Compile forms/validation/actions | IN-P05-S01-T01, IN-P05-S02-T01 |
 | IN-P05-S04-T01 | P05 | Implement incremental bounded source edits | IN-P05-S02-T01, IN-P05-S03-T01 |
@@ -95,6 +97,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P07-S02-T01 | P07 | Implement build orchestrator and write ownership | IN-P07-S01-T01, IN-P04-S04-T01, IN-P04-S05-T01 |
 | IN-P07-S02-T02 | P07 | Implement durable checkpoints, external-effect receipts, and ambiguity reconciliation | IN-P07-S02-T01 |
 | IN-P07-S02-T03 | P07 | Implement Wide Work/context-branch orchestration with isolated write ownership and synthesis | IN-P07-S02-T02, IN-P03-S06-T01, IN-P03-S08-T01, IN-P04-S04-T01 |
+| IN-P07-S02-T04 | P07 | Implement parallel-candidate merge/reconciliation evidence, conflict disposition, and loser-branch retention/cleanup policy | IN-P07-S02-T03, IN-P04-S04-T02 |
 | IN-P07-S03-T01 | P07 | Normalize build/browser/backend failures | IN-P07-S02-T02, IN-P05-S04-T01, IN-P06-S04-T02 |
 | IN-P07-S03-T02 | P07 | Implement structured Failure Ledger with artifact/source/attempt provenance | IN-P07-S03-T01, IN-P03-S09-T01 |
 | IN-P07-S04-T01 | P07 | Implement bounded repair loop | IN-P07-S03-T02 |
@@ -106,9 +109,11 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P08-S05-T01 | P08 | Implement first visual edits to real code | IN-P08-S03-T01, IN-P08-S04-T01 |
 | IN-P08-S06-T01 | P08 | Finalize Ineractive brand system | IN-P08-S01-T01 |
 | IN-P08-S07-T01 | P08 | Implement Design Context Compiler and versioned DesignSystemRevision | IN-P08-S01-T01, IN-P03-S06-T01 |
+| IN-P08-S07-T02 | P08 | Implement portable product-owned agent-readable design truth import/export without making any external provider format canonical | IN-P08-S07-T01 |
 | IN-P08-S08-T01 | P08 | Implement semantic product/source/runtime/design component bindings and drift states | IN-P08-S04-T01, IN-P08-S07-T01 |
 | IN-P08-S09-T01 | P08 | Implement Annotation Intent/locality and direct-manipulation semantic diffs | IN-P08-S05-T01, IN-P08-S08-T01 |
 | IN-P08-S09-T02 | P08 | Implement design exploration branches and independent Design Evaluator | IN-P08-S03-T01, IN-P08-S09-T01, IN-P07-S02-T03 |
+| IN-P08-S09-T03 | P08 | Implement live isolated design/build variant steering and canvas task-state projection across source/design branches | IN-P08-S09-T02, IN-P07-S02-T04 |
 | IN-P08-S10-T01 | P08 | Implement asset/font provenance and inventory contract | IN-P00-S04-T03, IN-P08-S01-T01 |
 | IN-P08-S11-T01 | P08 | Integrate pinned/versioned Impeccable, Vercel Web Interface Guidelines, and Vercel React Best Practices rule packs | IN-P08-S02-T01, IN-P03-S07-T01, IN-P05-S07-T01 |
 | IN-P08-S11-T02 | P08 | Qualify Storybook component workbench/MCP and reusable component-state catalog path | IN-P05-S07-T03, IN-P04-S06-T04 |
@@ -128,8 +133,10 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P10-S03-T01 | P10 | Integrate Alibaba OCR machine-readable exact-diff review | IN-P10-S01-T01 |
 | IN-P10-S04-T01 | P10 | Integrate Diffcipline exact-candidate proof | IN-P10-S01-T01 |
 | IN-P10-S05-T01 | P10 | Complete generated-app security negative fixture pack | IN-P10-S01-T02, IN-P06-S04-T02 |
+| IN-P10-S05-T02 | P10 | Implement pre-publish security summary/gate with proposal-only safe-fix diffs and blocker propagation into release promotion | IN-P10-S05-T01, IN-P10-S07-T01, IN-P10-S10-T03 |
 | IN-P10-S06-T01 | P10 | Implement Evaluation Lab benchmark corpus and live/recorded replay runner | IN-P03-S09-T02, IN-P07-S05-T01, IN-P08-S09-T02, IN-P09-S05-T01 |
 | IN-P10-S06-T02 | P10 | Implement multidimensional harness correctness/security/design/cost/latency/question regression reports | IN-P10-S06-T01, IN-P03-S08-T01 |
+| IN-P10-S06-T03 | P10 | Add dated competitive-regression cases and provider-lifecycle benchmark metadata with source-observation dates and no competitor-failure claims | IN-P10-S06-T01, IN-P10-S06-T02 |
 | IN-P10-S07-T01 | P10 | Implement generated-app supply-chain/source/asset/build-artifact integrity pack and optional SBOM | IN-P00-S04-T03, IN-P05-S01-T01, IN-P08-S10-T01 |
 | IN-P10-S08-T01 | P10 | Implement i18n/RTL/SEO/accessibility/performance plus declared cross-browser/device support-matrix production-web quality pack | IN-P05-S05-T01, IN-P05-S06-T01, IN-P04-S05-T01 |
 | IN-P10-S09-T01 | P10 | Implement dataset quality/lineage/count/referential-integrity/privacy/data-rights/consent and deterministic-seed assurance pack | IN-P06-S08-T02, IN-P06-S10-T03, IN-P06-S11-T01, IN-P10-S01-T02 |
@@ -140,16 +147,18 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P11-S00-T02 | P11 | Implement provider capability/preflight and typed ExternalBlocker model with permissions/plan/billing/quota/region/policy checks | IN-P11-S00-T01, IN-P03-S08-T01 |
 | IN-P11-S00-T03 | P11 | Implement provider reconciliation/state-sync, async provisioning, revocation, reconnect, detach-vs-delete, and idempotent create semantics | IN-P11-S00-T02, IN-P07-S02-T02 |
 | IN-P11-S00-T04 | P11 | Qualify platform lifecycle fixtures for permission denial, owner approval, expiry/revocation, rate limit, partial create, timeout, duplicate create, and plan/quota blockers | IN-P11-S00-T03, IN-P10-S01-T02 |
+| IN-P11-S00-T05 | P11 | Implement DEPRECATED/RETIRING/RETIRED provider lifecycle states and qualify provider-sunset replacement/export/reconnect fixtures | IN-P11-S00-T04, IN-P10-S06-T03 |
 | IN-P11-S01-T01 | P11 | Implement GitHub repository/branch/push flow | IN-P11-S00-T04, IN-P04-S04-T01, IN-P10-S03-T01, IN-P10-S04-T01, IN-P10-S05-T01, IN-P10-S06-T02, IN-P10-S07-T01, IN-P10-S08-T01 |
 | IN-P11-S01-T02 | P11 | Harden GitHub installation/authorization/repository-selection/token-expiry/revocation and repository-rules preflight lifecycle | IN-P11-S01-T01, IN-P11-S00-T03 |
 | IN-P11-S02-T01 | P11 | Qualify first preview deployment target behind ProviderAdapter lifecycle contract | IN-P11-S01-T02, IN-P11-S00-T04 |
-| IN-P11-S03-T01 | P11 | Qualify first production deployment + Docker export | IN-P11-S02-T01 |
+| IN-P11-S02-T02 | P11 | Implement PreviewParityManifest and qualify production-like server/backend/environment parity with typed parity blockers | IN-P11-S02-T01 |
+| IN-P11-S03-T01 | P11 | Qualify first production deployment + Docker export | IN-P11-S02-T02 |
 | IN-P11-S03-T02 | P11 | Prove clean-room generated-product portability without Ineractive runtime services | IN-P11-S03-T01 |
 | IN-P11-S04-T01 | P11 | Implement env/domain/secret deployment contracts | IN-P11-S02-T01 |
 | IN-P11-S04-T02 | P11 | Implement SecretRef/SecretVersion/SecretBinding validation, rotation, expiry, revocation, and redeploy/reverification lifecycle | IN-P11-S04-T01, IN-P04-S03-T01 |
 | IN-P11-S04-T03 | P11 | Implement DomainBinding/DNS record/propagation/verification/certificate lifecycle with manual fallback | IN-P11-S04-T01, IN-P11-S00-T03 |
 | IN-P11-S05-T01 | P11 | Implement guarded Supabase remote publish | IN-P06-S02-T02, IN-P06-S07-T02, IN-P10-S05-T01, IN-P11-S02-T01 |
-| IN-P11-S06-T01 | P11 | Implement ReleaseManifest, promotion states, last-known-good identity, and app/schema compatibility gate | IN-P11-S03-T01, IN-P11-S05-T01, IN-P10-S07-T01 |
+| IN-P11-S06-T01 | P11 | Implement ReleaseManifest, promotion states, last-known-good identity, app/schema compatibility gate, and pre-publish security blocker binding | IN-P11-S03-T01, IN-P11-S05-T01, IN-P10-S05-T02, IN-P10-S07-T01 |
 | IN-P11-S07-T01 | P11 | Implement portable generated-app health/log/error/release-identity and optional telemetry/analytics baseline | IN-P11-S02-T01, IN-P05-S06-T01 |
 | IN-P11-S08-T01 | P11 | Qualify production recovery across deploy/migration/credential/drift/last-known-good scenarios | IN-P11-S06-T01, IN-P11-S07-T01, IN-P06-S02-T02 |
 | IN-P11-S08-T02 | P11 | Qualify provider-aware backup/PITR/restore expectations and execute an isolated restore drill where supported, otherwise prove typed blocker/manual recovery path | IN-P11-S08-T01, IN-P11-S00-T04, IN-P06-S07-T02 |
@@ -159,10 +168,12 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P11-S09-T04 | P11 | Implement OwnershipManifest, provider detach/reconnect/transfer-export/delete distinctions, and connected-resource reconciliation UX contract | IN-P11-S09-T03, IN-P11-S00-T03 |
 | IN-P11-S10-T02 | P11 | Generate minimal operational/ownership/recovery documentation from real manifests and enforce ProductCompleteness gate | IN-P07-S01-T04, IN-P11-S06-T01, IN-P11-S09-T04 |
 | IN-P11-S10-T01 | P11 | Pass B17 idea+spreadsheet-to-owned-production-product end-to-end benchmark including Data Studio, data-rights policy, recovery, and post-launch change | IN-P06-S10-T03, IN-P06-S11-T01, IN-P06-S12-T01, IN-P10-S09-T01, IN-P11-S08-T02, IN-P11-S09-T04, IN-P11-S10-T02 |
-| IN-P11-S11-T01 | P11 | Pass A-to-exit benchmark: revoke Ineractive access, preserve expected runtime/ownership, reconnect and reconcile without duplicate resources | IN-P11-S10-T01, IN-P11-S09-T04, IN-P11-S03-T02 |
+| IN-P11-S11-T01 | P11 | Pass A-to-exit benchmark: revoke or retire provider access, preserve expected runtime/ownership, export/migrate/reconnect, and reconcile without duplicate resources | IN-P11-S10-T01, IN-P11-S09-T04, IN-P11-S03-T02, IN-P11-S00-T05, IN-P10-S06-T03 |
 | IN-P12-S01-T01 | P12 | Implement Ineractive teams/projects/roles | IN-P11-S11-T01 |
 | IN-P12-S02-T01 | P12 | Implement collaboration/activity/comment primitives | IN-P12-S01-T01 |
 | IN-P12-S03-T01 | P12 | Implement collaborative Project Context intelligence/provenance UX | IN-P03-S06-T01, IN-P12-S01-T01 |
+| IN-P12-S03-T02 | P12 | Implement bounded remote builder steering queue/control surface with project/run state, queued text intent, and explicit approval for material actions | IN-P12-S03-T01, IN-P04-S01-T01, IN-P04-S06-T03 |
+| IN-P12-S03-T03 | P12 | Qualify voice steering as provenance-bound transcript evidence with revision history, Arabic/code-switch benchmark, no hidden cloud fallback, and current confirmation for material effects | IN-P12-S03-T02, IN-P03-S04-T01, IN-P04-S06-T03 |
 | IN-P12-S05-T01 | P12 | Implement evidence-backed Project Learning proposals with approval/version/rollback | IN-P03-S06-T01, IN-P12-S01-T01 |
 | IN-P12-S05-T02 | P12 | Implement team/project Skill proposal, qualification, and library UX | IN-P03-S07-T01, IN-P12-S05-T01 |
 | IN-P12-S05-T03 | P12 | Implement ExplorationBranch compare/selective-merge UX across graph/design/source/evidence | IN-P07-S02-T03, IN-P08-S09-T02, IN-P12-S01-T01 |
@@ -173,12 +184,14 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P13-S04-T01 | P13 | Define and prove plugin SDK/capability isolation | IN-P13-S02-T01, IN-P04-S01-T01 |
 | IN-P13-S05-T01 | P13 | Implement provider-neutral generated-app AI primitives for streaming/structured output/embeddings/retrieval/tools | IN-P03-S04-T01, IN-P06-S04-T01, IN-P06-S06-T01 |
 | IN-P13-S05-T02 | P13 | Implement AI-feature eval, policy, secret-isolation, usage/rate-limit fixture pack | IN-P13-S05-T01, IN-P10-S01-T02, IN-P03-S08-T01 |
+| IN-P13-S05-T03 | P13 | Generate optional product-owned MCP server/surface for qualified app data/actions with typed auth, capability, effect, audit, rate, idempotency/reconciliation, and revocation contracts | IN-P13-S05-T01, IN-P13-S05-T02, IN-P04-S06-T03, IN-P06-S04-T02 |
 | IN-P13-S06-T01 | P13 | Define and prove high-risk external-integration qualification harness | IN-P06-S09-T02, IN-P10-S05-T01 |
 | IN-P13-S07-T01 | P13 | Implement Product Kit contract combining graph fragments, components, tokens, Skills, backend patterns, and verification | IN-P13-S03-T01, IN-P03-S07-T01, IN-P08-S07-T01 |
 | IN-P13-S08-T01 | P13 | Qualify multiple creative-media provider adapters and bounded decision routing by modality/operation/quality/cost/latency/privacy/policy | IN-P03-S04-T01, IN-P03-S08-T01, IN-P08-S12-T01, IN-P08-S12-T02, IN-P10-S01-T02, IN-P13-S05-T01 |
 | IN-P14-S01-T01 | P14 | Harden PWA compiler behavior | IN-P11-S03-T01 |
 | IN-P14-S02-T01 | P14 | Prototype/qualify Expo mobile target | IN-P02-S05-T01, IN-P06-S06-T01, IN-P14-S01-T01 |
-| IN-P14-S03-T01 | P14 | Define cross-target portability/evidence contract | IN-P14-S02-T01 |
+| IN-P14-S02-T02 | P14 | Qualify real-device execution, user-owned signing, TestFlight/internal-track submission evidence where in release scope, and native release rollback identity | IN-P14-S02-T01, IN-P11-S06-T01 |
+| IN-P14-S03-T01 | P14 | Define cross-target portability/evidence contract | IN-P14-S02-T02 |
 | IN-P15-S01-T01 | P15 | Harden hosted multi-tenant control plane | IN-P11-S03-T01, IN-P12-S02-T01 |
 | IN-P15-S02-T01 | P15 | Implement metering/budget/spend controls | IN-P15-S01-T01 |
 | IN-P15-S03-T01 | P15 | Qualify managed Supabase provisioning/transfer | IN-P15-S01-T01, IN-P11-S05-T01 |
