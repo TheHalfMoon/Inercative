@@ -13,6 +13,25 @@ export {
 } from "./contracts.ts";
 
 export {
+  CHANGE_INTENT_ERROR_CODES,
+  CHANGE_INTENT_OPERATION_KINDS,
+  CHANGE_INTENT_PROVENANCE_SOURCES,
+  CHANGE_INTENT_SCHEMA_VERSION,
+  ChangeIntentError,
+  compileChangeIntent,
+} from "./change-intent.ts";
+
+export type {
+  ChangeIntentErrorCode,
+  ChangeIntentOperationKind,
+  ChangeIntentOperationV1,
+  ChangeIntentProvenanceSource,
+  ChangeIntentProvenanceV1,
+  ChangeIntentV1,
+  ProposedGraphDeltaV1,
+} from "./change-intent.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
