@@ -1,0 +1,13 @@
+[
+  {
+    "id": "SG27-001",
+    "path": "packages/product-graph/src/change-intent.ts",
+    "start_line": 131,
+    "end_line": 131,
+    "category": "bug",
+    "severity": "high",
+    "content": "The initial delta canonicalizer used localeCompare, so proposal and delta identity could vary with host locale.",
+    "disposition": "FIXED_FORWARD",
+    "fixed_in_head": "f6e4b7914e671c181bb14cdb3cf3e2231c877bd1"
+  }
+]

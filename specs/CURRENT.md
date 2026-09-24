@@ -82,6 +82,7 @@ their current delivery state:
 | SG-000024 | IN-P02-S02-T02C | Privacy semantics | DONE (PR #55) | `docs/evidence/P02_S02_T02C_CLOSURE_2026-09-21.md` |
 | SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | DONE (PR #58) | `docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md` |
 | SG-000026 | IN-P02-S02-T02E | External-effect and integration consequence semantics | DONE (PR #61) | `docs/evidence/P02_S02_T02E_CLOSURE_2026-09-21.md` |
+| SG-000027 | IN-P02-S03-T01A | Change Intent and proposed graph delta core | DONE (PR #66) | `docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -335,14 +336,10 @@ across SG-000022, SG-000023, SG-000024, SG-000025, and SG-000026.
 
 Next in dependency order:
 
-1. **IN-P02-S03-T01 — Change Intent → proposed graph delta** is the next eligible unit; its task row
-   lists `IN-P02-S02-T01` as its dependency, which is satisfied. It still requires real SpecGrain
-   shaping before implementation authority exists.
-2. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 were gated behind IN-P02-S02-T02, which is
-   now complete, so they are unblocked in dependency terms; each still requires its own SpecGrain
-   shaping before implementation.
-3. IN-P02-S04-T01 remains blocked behind IN-P02-S03-T01, and IN-P02-S05-T01 behind
-   IN-P02-S04-T01.
+1. **IN-P02-S03-T01A is complete** through SG-000027 and PR #66. The full `IN-P02-S03-T01` handle remains open for richer graph-operation proposal semantics.
+2. The next eligible action is to shape a bounded dependent Grain under `IN-P02-S03-T01` for edge/remove/multi-operation behavior before implementation authority.
+3. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 remain dependency-eligible but require their own SpecGrain shaping.
+4. IN-P02-S04-T01 remains blocked behind the full IN-P02-S03-T01 handle, and IN-P02-S05-T01 behind IN-P02-S04-T01.
 
 ## Hard constraints
 
