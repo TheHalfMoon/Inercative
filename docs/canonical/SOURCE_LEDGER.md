@@ -161,7 +161,13 @@ Exact versions and security state are requalified at implementation time.
 | freestylefly/awesome-gpt-image-2 @ `0dc09c46c8a30b1fdd89c18cc78a894dac2104e3` | Prompt-as-Code schemas, industrial visual templates, reusable style Skill/data patterns, visual-case/evaluation UX | ADAPT / COPY_SELECTIVE / BENCHMARK; third-party gallery items still require item-level provenance/rights review |
 | robbietilton/Compositor @ `a19db9011282399785dc18efcfded904627bdcc2` | layers/masks/transforms/selections/content-aware fill/retouching/adjustments for bounded product-asset refinement | ADAPT / COPY_SELECTIVE; do not turn Ineractive into a general Photoshop clone |
 | X: robbietilton/status/2100946395972976843 | product/interaction demonstration associated with Compositor | REFERENCE; GitHub repository is the primary code source |
-| X: higgsfield_ai/status/2101117855622463719 | creative-media routing research lead | REFERENCE pending direct post capture; surrounding same-account evidence supports decision-routing -> media-provider separation, but must not be misattributed to the exact post |
+| `higgsfield-ai/skills` @ `d071406147a37b835bed09543d85ab3e9bd85c7d` | official open-source creative/workflow Skills: generation, BrandKit, product photoshoot, websites, explainers, thumbnails, games, marketing analysis | COPY_SELECTIVE / ADAPT behind Ineractive Skills, Product Kits and media contracts; reviewed public license MIT |
+| `higgsfield-ai/cli` @ `dc7e2d2eac0b1fdad255de24d87552d1ba479037` | official CLI patterns for model/workflow discovery, async jobs, polling, media workflows and agent integration | COPY_SELECTIVE / ADAPT; reviewed public license MIT |
+| `higgsfield-ai/higgsfield-client` @ `aefd1ca677929762b9f69a7a7ea530a4a695d6a8` | official Python SDK; sync/async queue/job lifecycle and callbacks | ADAPT / DEPEND_SELECTIVE; reviewed public license Apache-2.0 |
+| `higgsfield-ai/higgsfield-js` @ `e3f274249962417e21f6566d4eecec6d8491d11c` | official server-side TypeScript SDK; secret isolation, polling/status lifecycle and webhook patterns | ADAPT / DEPEND_SELECTIVE; package metadata declares MIT |
+| `higgsfield-ai/cursor-plugin` @ `c9215059e409dc81c69ff0fe77ea2740c5fc6249` | official Cursor/MCP plugin packaging and distribution patterns | COPY_SELECTIVE / ADAPT; reviewed public license MIT |
+| `higgsfield-ai/higgsfield` @ `d12a36e66024a93d33ec61826a77d5a346c16869` | distributed GPU experiment/training orchestration | REFERENCE / LATER ADAPT only if a future Ineractive-owned training program needs it; reviewed public license Apache-2.0 |
+| X: higgsfield_ai/status/2101117855622463719 | older creative-media routing research lead | REFERENCE only; superseded as primary engineering evidence by the official repositories above |
 | X: nereasolenne/status/2101265048824074535 | animated-web/design workflow research lead | REFERENCE only; tutorial/award claims are not acceptance evidence |
 | convaiinnovations/laya (Hub head observed as `1c5edc1` on 2026-09-20) | bounded System-1 typed decisions, calibrated probabilities/confidence, routing/scoring benchmark | OPTIONAL QUALIFIED SOURCE / BENCHMARK / ADAPT; resolve full immutable Hub SHA before import |
 
@@ -288,6 +294,9 @@ changes as concrete reasons to require P11 provider-deprecation/retirement porta
 
 Detailed feature evidence and dated source URLs are recorded in
 `docs/research/COMPETITIVE_LANDSCAPE_2026-09-24.md`.
+
+Official Higgsfield open-source donor roles, exact revisions, licenses and hosted-provider boundaries are recorded in
+`docs/research/HIGGSFIELD_OPEN_SOURCE_DEEP_DIVE_2026-09-24.md`.
 
 ## 8. Import rule
 
