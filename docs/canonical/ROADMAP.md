@@ -1101,7 +1101,7 @@ It strengthens existing phase ownership with the following cross-phase requireme
   no-silent-cloud-fallback qualification.
 
 The exact gap register and acceptance intent are `IN-REV26-001` through
-`IN-REV26-018` in the amendment. Browser/generated-app verification details remain owned
+`IN-REV26-018` in the amendment. Dedicated task handles were added to `specs/tasks.md` where the prior task index was not precise enough; existing handles remain the owner where they already cover the strengthened requirement. Browser/generated-app verification details remain owned
 by the existing P04/P08/P10 roadmap and the planning work tracked separately by PR #63.
 
 ## 2. Cross-phase invariants
