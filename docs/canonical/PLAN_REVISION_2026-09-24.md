@@ -98,6 +98,23 @@ Voice is later than core quality. transcripts retain capture and revision proven
 
 Primary ownership remains P02 intent/semantics, P03 decisions/context, P04 capability/runtime/browser/Git trust, P05 web, P06 backend/data/auth/RLS, P07 orchestration/repair/parallel work, P08 design, P09 import, P10 assurance/security/evaluation, P11 publish/ownership/portability, P12 collaboration/intelligence, P13 ecosystem/MCP/generated AI, P14 mobile, and P15 managed hardening.
 
+### Higgsfield open-source donor amendment
+
+The founder explicitly authorizes copying/adapting Higgsfield source code. The 2026-09-24 source refresh verified multiple official public Higgsfield repositories useful to Ineractive, including Skills, CLI, Python/TypeScript clients, Cursor/MCP plugin packaging, and the older distributed-training framework.
+
+Adoption is bounded:
+
+- P03-S07 may adapt reusable Skill packaging/composition;
+- P08-S12 may adapt branded creative-media workflow composition;
+- P13-S04 may adapt plugin/MCP packaging patterns;
+- P13-S07 may adapt compound workflow/Product Kit patterns such as BrandKit, product imagery, explainers, websites and browser games;
+- P13-S08 may qualify Higgsfield as one optional MediaProviderAdapter and selectively reuse official open-source client/workflow code;
+- P10-S06 remains the independent benchmark owner for quality/cost/latency/reliability.
+
+Open-source client/Skill code does **not** make Higgsfield-hosted models or the hosted platform canonical Ineractive infrastructure. Hosted calls remain optional external-provider operations, credentials stay user/product owned, and Ineractive must remain functional when Higgsfield is unavailable.
+
+See `docs/research/HIGGSFIELD_OPEN_SOURCE_DEEP_DIVE_2026-09-24.md` for exact reviewed revisions, license evidence, reuse posture and security requirements.
+
 ## 6. Completion criteria
 
 This planning amendment closes only when the dated research is recorded, CLM identity/posture is pinned, all 18 requirements map to existing primary tasks, dedicated task handles close index gaps, task-graph validation passes, the current frontier is consistent, PR #63 is referenced rather than duplicated, Diffcipline size limits are satisfied, exact-head OCR/Jev/CI evidence is recorded, and no implementation PASS is inferred from planning.
