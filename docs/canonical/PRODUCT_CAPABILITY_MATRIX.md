@@ -220,6 +220,7 @@ The matrix distinguishes:
 | Asset/font provenance | V1 CORE | Rights metadata where known; no automatic clearance claim |
 | VisualPromptProtocol | BETA | Structured, versioned creative-media intent compiled from product/design truth |
 | Provider-neutral creative-media generation/editing | BETA | MediaGenerationRequest + MediaProviderAdapter; provider remains replaceable |
+| Higgsfield-style reusable creative Skills/workflows | BETA | P08/P13; official open-source workflow code may be selectively adapted behind Ineractive-owned contracts |
 | Bounded creative-media routing | BETA | Deterministic eligibility first; decision model ranks only compatible options |
 | CreativeAsset provenance/evaluation | BETA | Generation/edit lineage, rights metadata, Product Graph/design bindings, evidence |
 | Bounded raster/compositing refinement | BETA | Product-asset finishing only; not a general Photoshop replacement |
