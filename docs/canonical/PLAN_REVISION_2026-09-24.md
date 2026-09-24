@@ -1,327 +1,103 @@
-# Canonical Plan Revision — Competitive Supremacy and Decision Plane — 2026-09-24
+# Canonical Plan Revision — Decision Plane and Competitive Baseline — 2026-09-24
 
-**Status:** CANONICAL PLANNING AMENDMENT — IMPLEMENTATION NOT ACTIVATED EARLY  
-**Applies to:** `docs/canonical/ROADMAP.md`, `PRODUCT_CAPABILITY_MATRIX.md`, `SOURCE_LEDGER.md`  
-**Execution authority:** `specs/CURRENT.md` remains authoritative for the active frontier.  
-**Current main at study start:** `fd3fd806b8941a03fc96ddfcc395f2da57622a5a`  
-**Browser-quality dependency:** PR #63 is complementary and should land or be reconciled independently; this amendment does not duplicate its generated-app browser verification architecture.
+**Status:** canonical planning amendment; no early implementation authority
+**Applies to:** `ROADMAP.md`, `PRODUCT_CAPABILITY_MATRIX.md`, `SOURCE_LEDGER.md`
+**Execution authority:** `specs/CURRENT.md` and the active SpecGrain
+**Study base:** `fd3fd806b8941a03fc96ddfcc395f2da57622a5a`
 
 ## 1. Decision
 
-The existing P00-P15 architecture remains valid and is more complete than the current market baseline in several governance areas.
+The P00-P15 architecture remains valid. The dated review found bounded gaps rather than a need for a parallel roadmap. This amendment preserves the P02 frontier, adds no early implementation authority, strengthens existing phase acceptance, and adds stable task handles only where the prior index was not precise enough.
 
-The 2026-09-24 review found **no reason to replace the roadmap**. It found a bounded set of missing or under-specified requirements that must be closed inside existing phase ownership.
+PR #63 independently owns generated-app browser verification. This amendment references that work and does not duplicate its contracts.
 
-This amendment therefore:
+The product remains a provider-neutral Product Operating System whose advantage is inspectable product truth, user ownership, exact evidence, safe authority, and exit portability—not raw prompt count or one model brand.
 
-- adds no parallel architecture;
-- creates no early implementation authority;
-- preserves the P02 frontier;
-- preserves existing stable task handles unless a later eligible SpecGrain explicitly reshapes a task;
-- strengthens P03, P04, P07, P08, P10, P11, P13 and P14 acceptance;
-- adds CLM-class contrastive decision providers to the provider-neutral decision fabric;
-- converts provider retirement/deprecation into a first-class portability test;
-- makes branch-safe agent delivery, preview parity and pre-publish security explicit.
+## 2. Decision Plane
 
-## 2. Product thesis
-
-Ineractive should not try to win by being the fastest demo generator.
-
-It should win by being the first system in this class where the whole product lifecycle is one coherent, inspectable object:
-
-```text
-intent
-  -> Product Graph
-  -> design + data + policy truth
-  -> bounded work plan
-  -> isolated branch/sandbox execution
-  -> generated source
-  -> real runtime/browser/device evidence
-  -> independent assurance
-  -> preview/release manifest
-  -> user-owned Git/backend/deployment
-  -> observable operations
-  -> governed project learning
-  -> next evidence-backed change
-```
-
-The core moat is **truth + ownership + proof + portability**, with model/provider quality remaining replaceable.
-
-## 3. Gap-closure register
-
-Every new requirement has one roadmap owner and a falsifiable acceptance shape.
-
-| ID | Requirement | Primary task | Dependencies / acceptance intent |
-|---|---|---|---|
-| IN-REV26-001 | CLM-class Decision Plane adapter | IN-P03-S03-T02 | Exact provider/head/candidate evidence; confidence/abstention; deterministic fallback; no authority transfer |
-| IN-REV26-002 | Confidence/abstention escalation | IN-P03-S03-T01 | Low-confidence result escalates or returns unavailable; top-1 never silently becomes authority |
-| IN-REV26-003 | Fast shortlist before expensive evaluator | IN-P10-S06-T02 | Use P03 decision providers only after protected correctness/security floors are met; record latency/cost delta |
-| IN-REV26-004 | Branch-safe autonomous delivery | IN-P04-S04-T02 | Branch/worktree isolation; protected-main no-direct-write default; exact-head PR promotion |
-| IN-REV26-005 | Merge/reconciliation evidence for parallel agents | IN-P07-S02-T04 | Explicit conflict/synthesis/disposition; retain loser evidence until policy cleanup |
-| IN-REV26-006 | Production-like preview parity | IN-P11-S02-T02 | PreviewParityManifest; server/backend/env semantics; typed parity blockers |
-| IN-REV26-007 | Pre-publish security gate | IN-P10-S05-T02 | Security summary binds exact evidence; unresolved release blockers propagate to ReleaseManifest |
-| IN-REV26-008 | Safe-fix proposal mode | IN-P10-S05-T02 | Automatic fix is a proposed diff that re-enters normal qualification; never self-authorizes release |
-| IN-REV26-009 | Generated-app MCP surface | IN-P13-S05-T03 | Product-owned typed tools/resources with auth, capabilities, audit, effects, rate/idempotency and revocation |
-| IN-REV26-010 | Provider-sunset portability | IN-P11-S00-T05 | DEPRECATED/RETIRING/RETIRED states; replacement/export/reconnect fixtures; A-to-exit consumes the evidence |
-| IN-REV26-011 | Portable design truth artifact | IN-P08-S07-T02 | Product-owned agent-readable import/export; external formats are adapters, not canonical truth |
-| IN-REV26-012 | Live parallel design/build variants | IN-P08-S09-T03 | Isolated variants, visible task/canvas state, early steering, qualified selective merge |
-| IN-REV26-013 | Competitive regression corpus | IN-P10-S06-T03 | Dated benchmark cases with observed source date and reproducible Evaluation Lab execution |
-| IN-REV26-014 | Real-device mobile proof | IN-P14-S02-T02 | Physical-device run; user-owned signing; TestFlight/internal-track evidence when store delivery is in scope |
-| IN-REV26-015 | Mobile/remote builder steering | IN-P12-S03-T02 | Queue/inspect/approve builder actions without ambient host authority; later mobile clients consume this contract |
-| IN-REV26-016 | Voice as evidence, not authority | IN-P12-S03-T03 | Transcript revisions/provenance; Arabic/code-switch; no hidden cloud fallback; current confirmation for material effects |
-| IN-REV26-017 | Generated-product provider ownership | IN-P13-S05-T02 | Generated app providers/credentials stay product-scoped and never inherit Ineractive control-plane secrets |
-| IN-REV26-018 | Market-lifecycle revalidation | IN-P10-S06-T03 | Implementation shaping re-checks dated feature/deprecation assumptions; benchmark metadata preserves observation date |
-
-## 4. P03 — Decision Plane amendment
-
-### 4.1 Architecture
-
-Add a dedicated `DecisionPlaneAdapter` family under the existing P03-S03 bounded-decision contract.
-
-Eligible provider classes:
-
-- deterministic/rule baseline;
-- CLM-class contrastive scorer;
-- Jev-class typed decision model;
-- generative evaluator;
-- specialized future providers.
-
-The router chooses only among **already policy-eligible** decision providers.
-
-### 4.2 Decision flow
+P03 adds a provider-neutral `DecisionPlaneAdapter` family with deterministic/rule, CLM-class contrastive, Jev-class typed, generative, and later specialized providers.
 
 ```text
 candidate discovery
-  -> hard eligibility/capability/security filter
+  -> hard eligibility / capability / security filter
   -> bounded DecisionRequest
-  -> rank / typed decision
-  -> confidence policy
-      -> accept ranking for next verification step
-      -> abstain/escalate
+  -> provider decision
+  -> confidence and abstention policy
   -> independent verification where required
-  -> capability/action authorization
+  -> capability authorization
+  -> action
 ```
 
-This ordering is normative. Ranking never precedes hard policy filtering and never replaces authorization.
+Ranking occurs only after hard filtering. A score, rank, confidence value, or abstention recommendation is never permission or a security PASS. CLM is optional; deterministic/Jev/generative paths remain usable without it, local GPU, CLM, or founder-paid inference.
 
-### 4.3 Candidate applications
+Candidate uses include tool/model routing, retrieval and patch shortlisting, plan/design/test prioritization, best-of-N evaluation, and generated-product MCP routing. The first P03 contract must bind provider/model/head, candidate-set digest, policy/context identity, latency/cost, typed output, confidence, abstention, evidence, and fallback lineage.
 
-- tool selection;
-- model selection;
-- retrieval shortlist;
-- repair shortlist;
-- design variant shortlist;
-- test-priority shortlist;
-- plan candidate ranking;
-- best-of-N verifier;
-- generated-product MCP tool routing.
+## 3. Gap-closure register
 
-## 5. P04/P07 — Git-safe parallel execution amendment
+| ID | Requirement | Primary task | Acceptance intent |
+|---|---|---|---|
+| IN-REV26-001 | CLM-class Decision Plane adapter | IN-P03-S03-T02 | exact provider/head/candidate; confidence/abstention; deterministic fallback; no authority transfer |
+| IN-REV26-002 | Confidence/abstention escalation | IN-P03-S03-T01 | low confidence escalates or returns unavailable; top-1 never becomes authority |
+| IN-REV26-003 | Fast shortlist before expensive evaluator | IN-P10-S06-T02 | protected correctness/security floors remain first; record latency/cost delta |
+| IN-REV26-004 | Branch-safe autonomous delivery | IN-P04-S04-T02 | branch/worktree isolation; protected-main no-direct-write default; exact-head PR promotion |
+| IN-REV26-005 | Parallel merge/reconciliation evidence | IN-P07-S02-T04 | explicit conflict/synthesis/disposition; retain loser evidence until policy cleanup |
+| IN-REV26-006 | Production-like preview parity | IN-P11-S02-T02 | `PreviewParityManifest`; source/build/runtime/backend/env identity; typed parity blockers |
+| IN-REV26-007 | Pre-publish security gate | IN-P10-S05-T02 | exact evidence summary; critical blockers propagate to `ReleaseManifest` |
+| IN-REV26-008 | Safe-fix proposal mode | IN-P10-S05-T02 | automatic repair remains a proposed diff and re-enters normal qualification |
+| IN-REV26-009 | Generated-app MCP surface | IN-P13-S05-T03 | product-owned typed tools/resources; auth, capability, effect, audit, rate, idempotency, revocation |
+| IN-REV26-010 | Provider-sunset portability | IN-P11-S00-T05 | DEPRECATED/RETIRING/RETIRED; export/replacement/reconnect fixtures |
+| IN-REV26-011 | Portable design truth | IN-P08-S07-T02 | product-owned import/export; external formats remain adapters |
+| IN-REV26-012 | Live design/build variants | IN-P08-S09-T03 | isolated alternatives, visible task state, early steering, qualified merge |
+| IN-REV26-013 | Competitive regression corpus | IN-P10-S06-T03 | dated reproducible cases; no competitor-failure claims |
+| IN-REV26-014 | Real-device mobile proof | IN-P14-S02-T02 | physical-device run; user-owned signing; store evidence when in scope |
+| IN-REV26-015 | Mobile/remote builder steering | IN-P12-S03-T02 | queued bounded intent; explicit material-action approval; no ambient host authority |
+| IN-REV26-016 | Voice as evidence | IN-P12-S03-T03 | revision/provenance; Arabic/code-switch benchmark; no hidden cloud fallback; current confirmation |
+| IN-REV26-017 | Generated-product provider ownership | IN-P13-S05-T02 | product-scoped providers/credentials never inherit control-plane secrets |
+| IN-REV26-018 | Market-lifecycle revalidation | IN-P10-S06-T03 | observation dates and reproducible re-check metadata |
 
-Autonomous changes default to isolated branch/worktree identity.
+## 4. Phase amendments
 
-Required evidence:
+### P03 — bounded decisions and governed context
 
-- base revision;
-- agent/run/work-unit identity;
-- branch/worktree identity;
-- generated commits;
-- tests/assurance bound to exact head;
-- merge-base and reconciliation state;
-- final PR/promotion identity.
+Decision providers rank only already eligible candidates. Context, Skills, memory, and retrieval preserve source revision, trust/taint, freshness, sensitivity, derivation, and revocation. Live authoritative source outranks stale derived memory. CLM admission retains exact code/weight/data rights, dependency and model provenance, cache invalidation, model-unavailable behavior, deterministic fallback, and adversarial candidate-text tests.
 
-Direct writes to a protected canonical branch are never the default autonomous path.
+### P04/P07 — Git-safe execution and reconciliation
 
-Parallel work may share Product Graph/context truth, but source mutation remains isolated until reconciliation.
+Autonomous changes default to branch/worktree isolation and exact-head PR promotion. Parallel units retain base, agent/run identity, write ownership, generated commits, exact verification, merge-base, conflict/synthesis disposition, and final promotion identity. Direct writes to protected canonical branches are not the default.
 
-## 6. P08 — Live design/build amendment
+### P08 — design truth and live steering
 
-The existing design architecture already supports direct manipulation, annotations, design variants and semantic bindings. Strengthen it with:
+Design alternatives remain isolated across source/design branches. Users can steer before completion and compare responsive/device states. Independent rendered evaluation precedes canonical selection. Portable product-owned design truth survives provider change; DESIGN.md-like artifacts are adapters, not a provider's private state.
 
-- parallel design alternatives that render simultaneously;
-- a canvas/task-manager view that shows active alternatives and build state;
-- early steering before an agent finishes a whole redesign;
-- portable product-owned design truth, not provider-only design metadata;
-- import/export of DESIGN.md-like rules without making any external format canonical;
-- explicit responsive/device state comparison;
-- independent rendered evaluator before a design branch becomes canonical.
+### P10/P11 — assurance, preview, and lifecycle
 
-## 7. P10 — Publish assurance and competitive regression amendment
+The pre-publish gate summarizes exact dependency, secret, auth/authorization, RLS/backend, external-effect, browser-origin/session, supply-chain/NOTICE/SBOM, and unresolved critical findings. Safe automatic repair is only a proposed diff.
 
-### Pre-publish gate
+Every preview declares source, build, runtime, server capability, backend/schema, environment/secret references, network policy, artifact digest, and known production differences. An unavailable required production semantic is a typed blocker, not an assumed parity result.
 
-Before a release candidate may be promoted, the UI must surface a compact release-security summary derived from exact evidence.
+ProviderAdapter lifecycle includes AVAILABLE, DEGRADED, REVOKED, PLAN_BLOCKED, DEPRECATED, RETIRING, and RETIRED. A-to-exit proves export, replacement/reconnect, continued runtime, ownership, and no duplicate resources.
 
-Required categories where applicable:
+### P13/P14/P12 — generated MCP, native mobile, and voice
 
-- dependency vulnerabilities;
-- secret exposure;
-- auth/authorization gaps;
-- RLS/data-access gaps;
-- external-effect policy violations;
-- browser-origin/session issues;
-- supply-chain/NOTICE/SBOM issues;
-- unresolved critical assurance findings.
+A generated product's optional MCP surface is independent from Ineractive's internal tool identity and requires typed schemas, product authentication, least privilege, effect/confirmation, audit, rate/abuse bounds, idempotency/reconciliation, secret handles, compatibility, and revocation.
 
-Safe automatic repair is a **proposal** that goes back through normal diff/test/review qualification.
+Responsive web is not native-mobile evidence. Native claims require a real supported device, deep-link/auth/network/storage/crash evidence, user-owned signing, store/internal-track evidence when in release scope, and rollback/version identity.
 
-### Competitive regression corpus
+Voice is later than core quality. transcripts retain capture and revision provenance; Arabic and Arabic-English code-switch are benchmark lanes; speech is evidence rather than permission; no hidden cloud fallback is allowed; material effects require current confirmation; push-to-talk precedes opt-in wake word.
 
-Evaluation Lab gains dated benchmark workflows such as:
+## 5. Sequencing and ownership
 
-- idea -> authenticated CRUD product;
-- existing GitHub repo -> bounded change -> PR;
-- design artifact -> editable implementation -> round-trip reconcile;
-- spreadsheet -> typed data model -> working table/admin;
-- product -> production-like preview -> security gate -> release manifest;
-- web product -> PWA/native target -> physical device;
-- app -> generated MCP tool surface -> authenticated read/action;
-- provider revoked/deprecated -> export/reconnect without loss;
-- parallel agent variants -> merge one qualified result;
-- Arabic/RTL business product workflow.
+1. Keep P02 and the next `IN-P02-S03-T01` Grain unchanged.
+2. Implement the provider-neutral Decision Plane contract before optional CLM/Jev/generative adapters.
+3. Enforce branch/worktree isolation before broad parallel autonomy.
+4. Add live design variants on semantic design bindings.
+5. Make pre-publish assurance and preview parity release gates.
+6. Generate product-owned MCP only after internal capability/tool contracts mature.
+7. Require real-device and user-owned signing evidence before native claims.
+8. Revalidate dated competitive and provider-lifecycle assumptions at each owning Grain and release.
 
-The corpus is evidence for Ineractive's own quality, not a claim that competitors fail it.
+Primary ownership remains P02 intent/semantics, P03 decisions/context, P04 capability/runtime/browser/Git trust, P05 web, P06 backend/data/auth/RLS, P07 orchestration/repair/parallel work, P08 design, P09 import, P10 assurance/security/evaluation, P11 publish/ownership/portability, P12 collaboration/intelligence, P13 ecosystem/MCP/generated AI, P14 mobile, and P15 managed hardening.
 
-## 8. P11 — Preview, ownership and provider-lifecycle amendment
+## 6. Completion criteria
 
-### Preview parity contract
-
-Every preview declares:
-
-- runtime image/runtime family;
-- server capabilities;
-- environment variables/secrets-by-reference;
-- backend identity;
-- migrations/schema identity;
-- network policy;
-- build artifact digest;
-- source revision;
-- known parity differences from production.
-
-A preview that cannot exercise a required production feature returns an explicit parity blocker.
-
-### Provider lifecycle
-
-ProviderAdapter gains lifecycle states at least equivalent to:
-
-`AVAILABLE / DEGRADED / REVOKED / PLAN_BLOCKED / DEPRECATED / RETIRING / RETIRED`.
-
-P11-S11 exit/reconnect adds retirement/deprecation fixtures.
-
-## 9. P13 — Generated-app MCP amendment
-
-A generated product may optionally expose an MCP-compatible surface.
-
-That surface is generated from Product Graph/API/action semantics and is governed independently from Ineractive's internal MCP client.
-
-Required properties:
-
-- explicit tool/resource schemas;
-- user/product authentication;
-- least-privilege capabilities;
-- consequence/effect class;
-- confirmation policy;
-- idempotency/reconciliation where required;
-- rate/abuse bounds;
-- audit events;
-- revocation;
-- secret handles rather than secret values;
-- versioning/backward-compatibility declaration.
-
-This turns generated products into safe participants in the wider AI ecosystem instead of static endpoints.
-
-## 10. P14 — Native mobile qualification amendment
-
-Responsive web is not native mobile proof.
-
-Before a native-mobile claim:
-
-- Expo/React Native build succeeds;
-- relevant device capabilities are declared;
-- app runs on at least one real supported device class;
-- deep links/auth/network/storage behavior are exercised;
-- crash/log evidence is captured;
-- signing credentials remain user-owned;
-- TestFlight/internal-track submission is proven through a user-owned developer account when release scope includes store delivery;
-- rollback/version identity is recorded.
-
-## 11. Durable context and memory amendment
-
-No new memory subsystem is needed. P03/P12 should explicitly adopt the strongest existing internal contracts:
-
-- `ContextSource`;
-- `ContextItem`;
-- `ContextBundle`;
-- scoped `MemoryRecord`;
-- provenance/trust/taint/freshness;
-- derived indexes/embeddings/graphs;
-- user-inspectable durable memory;
-- source revocation/deletion invalidation;
-- live authoritative source beats stale memory;
-- ranking cannot raise authority.
-
-This should be considered a product capability, not only internal agent plumbing.
-
-## 12. Voice amendment
-
-Voice remains later than core compiler quality, but its architecture is now fixed enough to avoid a future rewrite:
-
-- capture/source lineage;
-- conditioning/VAD;
-- replaceable speech providers;
-- Arabic + Arabic/English code-switch benchmark;
-- transcript revision;
-- intent extraction;
-- current explicit confirmation for material effects;
-- no hidden cloud fallback;
-- push-to-talk before wake-word;
-- speech evidence never grants capabilities.
-
-## 13. No-gap ownership audit
-
-The amendment is complete only if every category below has exactly one primary owner:
-
-| Surface | Primary owner |
-|---|---|
-| intent/product semantics | P02 |
-| bounded decisions/routing/context | P03 |
-| capability/sandbox/Git/browser/tool trust | P04 |
-| web compiler | P05 |
-| backend/data/auth/RLS | P06 |
-| orchestration/repair/parallel work | P07 |
-| design/visual round trip | P08 |
-| import/brownfield | P09 |
-| assurance/security/evaluation | P10 |
-| GitHub/preview/deploy/portability | P11 |
-| collaboration/project intelligence | P12 |
-| ecosystem/MCP/generated AI products | P13 |
-| mobile/cross-surface | P14 |
-| managed commercial/enterprise scale | P15 |
-
-No requirement introduced by this amendment requires a new top-level phase. The executable task index now contains dedicated handles for each gap that was not already represented precisely enough by an existing task.
-
-## 14. Sequencing
-
-1. **Now:** keep the live P02 execution chain unchanged. Merge/reconcile planning-only work normally.
-2. **P03 eligibility:** implement DecisionPlane contract first, then qualify CLM/Jev/generative adapters as replaceable providers.
-3. **P04/P07 eligibility:** enforce branch-safe agent execution before broad parallel autonomy.
-4. **P08 eligibility:** implement live variants/portable design truth on top of semantic design bindings.
-5. **P10/P11 eligibility:** make pre-publish security and preview parity mandatory for release promotion.
-6. **P13 eligibility:** generate a bounded MCP surface only after internal tool/capability contracts are mature.
-7. **P14 eligibility:** require real-device/store-path evidence before native-mobile product claims.
-8. **Every release:** run dated competitive regression cases and provider-lifecycle fixtures.
-
-## 15. Done criteria for this planning amendment
-
-Planning can be considered closed when:
-
-- the research refresh is recorded;
-- CLM exact source identity and adoption posture are recorded;
-- each new requirement maps to a phase owner;
-- canonical roadmap points to the amendment;
-- capability matrix contains the strengthened surfaces;
-- source ledger includes CLM and refreshed competitor/lifecycle references;
-- current frontier remains truthful;
-- PR #63 is referenced rather than duplicated;
-- no implementation PASS is claimed from planning evidence.
-
+This planning amendment closes only when the dated research is recorded, CLM identity/posture is pinned, all 18 requirements map to existing primary tasks, dedicated task handles close index gaps, task-graph validation passes, the current frontier is consistent, PR #63 is referenced rather than duplicated, Diffcipline size limits are satisfied, exact-head OCR/Jev/CI evidence is recorded, and no implementation PASS is inferred from planning.

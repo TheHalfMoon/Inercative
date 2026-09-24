@@ -1,8 +1,8 @@
 # Ineractive Implementation Readiness Audit
 
-**Date:** 2026-09-20  
-**Scope:** current P00 truth + canonically accepted post-P00 planning readiness; not product/runtime qualification  
-**Branch:** `main`
+**Date:** 2026-09-20; historical reconciliation note added 2026-09-24
+**Scope:** historical P00/post-P00 planning snapshot; current execution is defined by `specs/CURRENT.md`
+**Branch:** `main` at the original audit
 
 ## 1. Decision
 
@@ -175,9 +175,9 @@ Mitigation:
 - Diffcipline proof;
 - benchmark fixtures with known faults.
 
-## 6. Current execution condition
+## 6. Historical execution condition at 2026-09-20
 
-The live execution frontier remains P00 and is governed by canonical `main`, `specs/CURRENT.md`, active SpecGrain state, and real evidence.
+At the original audit, the live execution frontier was P00 and was governed by canonical `main`, `specs/CURRENT.md`, active SpecGrain state, and real evidence. This section is preserved as dated planning evidence. The current frontier is P02 and is defined only by `specs/CURRENT.md`.
 
 Canonical PR #6 planning must not be used to skip the remaining P00 founder/credential/review gates.
 
@@ -188,11 +188,11 @@ P01 may not begin until:
 - fresh main is reverified;
 - SpecGrain makes the next dependency-eligible unit executable.
 
-## 7. Canonical graph validation
+## 7. Historical graph validation and current index
 
-The canonical task index contains **176 stable task handles**.
+At the original audit, the canonical task index contained **176 stable task handles**. The 2026-09-24 amendment adds a net 13 handles for **189 total**. Current count and graph validation are owned by `specs/tasks.md` and its pinned package test.
 
-Structural validation after the A-to-Z + frontend/tooling + final coverage hardening pass:
+Historical structural validation after the A-to-Z + frontend/tooling + final coverage hardening pass:
 
 - duplicate task IDs: 0;
 - missing dependency references: 0;
@@ -210,18 +210,17 @@ Final coverage red-team additionally closed explicit ownership/proof paths for:
 
 See `docs/research/FINAL_PLAN_COVERAGE_AUDIT_2026-09-20.md`.
 
-## 8. Planning readiness verdict
+## 8. Historical planning readiness verdict
 
-**CURRENT_EXECUTION_FRONTIER = P00_IN_PROGRESS**
+These values record the 2026-09-20 audit and are not current execution state:
 
-**CANONICAL_POST_P00_PLAN_STRUCTURALLY_READY = YES**
-
-**KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_FINAL_COVERAGE_RED_TEAM**
-
-**PR6_MERGED = YES**
-
-**PRODUCT_IMPLEMENTED = NO**
-
-**P01_PLUS_EXECUTION_AUTHORITY = NO**
+```text
+CURRENT_EXECUTION_FRONTIER_AT_2026_09_20 = P00_IN_PROGRESS
+CANONICAL_POST_P00_PLAN_STRUCTURALLY_READY = YES
+KNOWN_MATERIAL_ARCHITECTURE_GAP = NONE_IDENTIFIED_AFTER_FINAL_COVERAGE_RED_TEAM
+PR6_MERGED = YES
+PRODUCT_IMPLEMENTED = NO
+P01_PLUS_EXECUTION_AUTHORITY_AT_2026_09_20 = NO
+```
 
 This is a planning/readiness statement. Implementation evidence can still reveal invalid assumptions and must trigger SpecGrain refinement rather than being hidden.

@@ -1,6 +1,6 @@
 # Ineractive Source Ledger
 
-**Research snapshot:** 2026-09-24  
+**Research snapshot:** 2026-09-24
 **Founder authority:** the founder states permission to use, copy, and adapt the named sources and relevant sources in the connected GitHub account.  
 **Rule:** permission permits consideration; exact import revision, component mapping, dependency closure, security review, notices, and Ineractive-owned qualification remain required.
 
@@ -221,7 +221,7 @@ OCR does not grant PASS.
 
 ### Decision-model ecosystem
 
-REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Concrete runtime providers are intentionally not declared in this public planning ledger.
+REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Core contracts remain provider-neutral; optional qualified providers may be recorded below without becoming defaults or authority.
 
 Use bounded decision models for classification/routing/gating rather than general code generation. Hard permissions and deterministic invariants stay in code.
 
