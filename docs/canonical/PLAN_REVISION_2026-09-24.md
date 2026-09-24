@@ -51,26 +51,26 @@ The core moat is **truth + ownership + proof + portability**, with model/provide
 
 Every new requirement has one roadmap owner and a falsifiable acceptance shape.
 
-| ID | Requirement | Owning phase | Acceptance intent |
+| ID | Requirement | Primary task | Dependencies / acceptance intent |
 |---|---|---|---|
-| IN-REV26-001 | CLM-class Decision Plane adapter | P03-S03 | Typed NOUL/CHOICE/SCORE/RANK contract; exact provider/head/candidate evidence; deterministic and unavailable fallbacks |
-| IN-REV26-002 | Confidence/abstention escalation | P03-S03/P03-S04 | Low-confidence decisions escalate or return unavailable; top-1 never silently becomes authority |
-| IN-REV26-003 | Fast shortlist before expensive evaluator | P03-S04/P10-S06 | Routing benchmark proves quality floor plus latency/cost benefit on protected workloads |
-| IN-REV26-004 | Branch-safe autonomous delivery | P04-S04/P07-S06 | autonomous run writes isolated branch/worktree by default; PR/exact-head promotion; no silent main write |
-| IN-REV26-005 | Merge/reconciliation evidence for parallel agents | P07-S06 | conflicting parallel candidates are explicitly reconciled; loser branches remain inspectable evidence until policy cleanup |
-| IN-REV26-006 | Production-like preview parity | P11-S02 | preview exercises declared server/runtime/backend/env semantics; parity gaps are typed blockers |
-| IN-REV26-007 | Pre-publish security gate | P10-S05/P11-S06 | dependency/secret/auth/RLS/backend/browser/supply-chain findings summarized before promotion; unresolved blockers stop release |
-| IN-REV26-008 | Safe-fix proposal mode | P10-S05 | automatically proposed fixes are diffs requiring normal qualification; scanner output cannot self-authorize release |
-| IN-REV26-009 | Generated-app MCP surface | P13-S02/P13-S05 | optional generated product exposes typed tools/resources with auth, capabilities, audit, rate/effect policy and revocation |
-| IN-REV26-010 | Provider-sunset portability | P11-S00/P11-S03/P11-S11 | deprecation fixture proves export, ownership, migration/reconnect and no duplicate infrastructure |
-| IN-REV26-011 | Portable design truth artifact | P08-S07/P09-S04 | design rules/tokens/components/intent can be exported/imported through a product-owned agent-readable representation |
-| IN-REV26-012 | Live parallel design/build variants | P08-S09/P07-S06 | alternatives can run in isolated branches, preview separately and merge only after comparison |
-| IN-REV26-013 | Competitive regression corpus | P10-S06 | dated workflows derived from competitor parity floor run as reproducible Evaluation Lab cases |
-| IN-REV26-014 | Real-device mobile proof | P14-S02 | physical-device preview plus user-owned signing/submission evidence before native-mobile release claim |
-| IN-REV26-015 | Mobile/remote builder steering | P12/P14 | later companion surface can queue text/voice changes, inspect run state and approve bounded actions without ambient host authority |
-| IN-REV26-016 | Voice as evidence, not authority | P03/P12/P14 later | transcript revision/provenance; explicit confirmation for material actions; Arabic/code-switch benchmark; no hidden cloud fallback |
-| IN-REV26-017 | Generated-product provider ownership | P13-S05 | generated app AI/integration credentials and providers are configured for that product, not inherited from Ineractive control-plane secrets |
-| IN-REV26-018 | Market-lifecycle revalidation | P10-S06/P11-S00 | benchmark metadata includes observed date/source; implementation shaping re-checks changed/deprecated competitor/provider assumptions |
+| IN-REV26-001 | CLM-class Decision Plane adapter | IN-P03-S03-T02 | Exact provider/head/candidate evidence; confidence/abstention; deterministic fallback; no authority transfer |
+| IN-REV26-002 | Confidence/abstention escalation | IN-P03-S03-T01 | Low-confidence result escalates or returns unavailable; top-1 never silently becomes authority |
+| IN-REV26-003 | Fast shortlist before expensive evaluator | IN-P10-S06-T02 | Use P03 decision providers only after protected correctness/security floors are met; record latency/cost delta |
+| IN-REV26-004 | Branch-safe autonomous delivery | IN-P04-S04-T02 | Branch/worktree isolation; protected-main no-direct-write default; exact-head PR promotion |
+| IN-REV26-005 | Merge/reconciliation evidence for parallel agents | IN-P07-S02-T04 | Explicit conflict/synthesis/disposition; retain loser evidence until policy cleanup |
+| IN-REV26-006 | Production-like preview parity | IN-P11-S02-T02 | PreviewParityManifest; server/backend/env semantics; typed parity blockers |
+| IN-REV26-007 | Pre-publish security gate | IN-P10-S05-T02 | Security summary binds exact evidence; unresolved release blockers propagate to ReleaseManifest |
+| IN-REV26-008 | Safe-fix proposal mode | IN-P10-S05-T02 | Automatic fix is a proposed diff that re-enters normal qualification; never self-authorizes release |
+| IN-REV26-009 | Generated-app MCP surface | IN-P13-S05-T03 | Product-owned typed tools/resources with auth, capabilities, audit, effects, rate/idempotency and revocation |
+| IN-REV26-010 | Provider-sunset portability | IN-P11-S00-T05 | DEPRECATED/RETIRING/RETIRED states; replacement/export/reconnect fixtures; A-to-exit consumes the evidence |
+| IN-REV26-011 | Portable design truth artifact | IN-P08-S07-T02 | Product-owned agent-readable import/export; external formats are adapters, not canonical truth |
+| IN-REV26-012 | Live parallel design/build variants | IN-P08-S09-T03 | Isolated variants, visible task/canvas state, early steering, qualified selective merge |
+| IN-REV26-013 | Competitive regression corpus | IN-P10-S06-T03 | Dated benchmark cases with observed source date and reproducible Evaluation Lab execution |
+| IN-REV26-014 | Real-device mobile proof | IN-P14-S02-T02 | Physical-device run; user-owned signing; TestFlight/internal-track evidence when store delivery is in scope |
+| IN-REV26-015 | Mobile/remote builder steering | IN-P12-S03-T02 | Queue/inspect/approve builder actions without ambient host authority; later mobile clients consume this contract |
+| IN-REV26-016 | Voice as evidence, not authority | IN-P12-S03-T03 | Transcript revisions/provenance; Arabic/code-switch; no hidden cloud fallback; current confirmation for material effects |
+| IN-REV26-017 | Generated-product provider ownership | IN-P13-S05-T02 | Generated app providers/credentials stay product-scoped and never inherit Ineractive control-plane secrets |
+| IN-REV26-018 | Market-lifecycle revalidation | IN-P10-S06-T03 | Implementation shaping re-checks dated feature/deprecation assumptions; benchmark metadata preserves observation date |
 
 ## 4. P03 — Decision Plane amendment
 
@@ -298,7 +298,7 @@ The amendment is complete only if every category below has exactly one primary o
 | mobile/cross-surface | P14 |
 | managed commercial/enterprise scale | P15 |
 
-No requirement introduced by this amendment requires a new top-level phase.
+No requirement introduced by this amendment requires a new top-level phase. The executable task index now contains dedicated handles for each gap that was not already represented precisely enough by an existing task.
 
 ## 14. Sequencing
 
