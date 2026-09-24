@@ -1,0 +1,78 @@
+{
+  "acceptance": [
+    "The stable package exports ChangeIntentV1, ProposedGraphDeltaV1, a closed operation vocabulary, deterministic validation/compilation, and stable typed errors without provider or persistence coupling.",
+    "A no-op intent compiles to a proposal whose candidate revision equals the validated base revision, whose delta contains no graph mutation, and whose proposal/delta identity is deterministic.",
+    "An upsert-node intent can add a valid new node or replace the attributes of an existing node of the same kind, and rejects a kind change, duplicate target, malformed node, or domain-invalid candidate with stable typed errors/issues.",
+    "Every proposal preserves the exact base revision, intent reference and digest, source provenance, confidence, and candidate revision; missing, out-of-range, or contradictory metadata fails closed.",
+    "Compilation does not mutate, reorder, or normalize the input document; results are deterministic across node/edge/JSON-key insertion order and repeated execution.",
+    "Candidate ProductGraphStateV1 passes the existing structural and domain validators, while canonical ProductGraphRevisionV1 identity remains unchanged for the base input and candidate identity is separately bound to the proposal.",
+    "Focused tests plus the full repository format, lint, typecheck, and test suites pass on the exact candidate; Diffcipline, Alibaba OCR, Jev, exact-head CI, and post-merge CI are recorded before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6500,
+    "estimated_tokens": 4800
+  },
+  "dependencies": [
+    "SG-000026"
+  ],
+  "evidence": {
+    "required": [
+      "Exact candidate and merge SHAs with base/head/merge-base and full changed-file accounting.",
+      "Focused compiler tests proving no-op/upsert behavior, fail-closed metadata/domain errors, deterministic digests, ordering independence, and input immutability.",
+      "Pinned Diffcipline proof, Alibaba OCR v1.12.7 accounting/delegation semantic review, Jev exact-diff judgments, and exact-head Ubuntu/Windows CI.",
+      "Post-merge fresh-main CI and canonical CURRENT/task frontier reconciliation."
+    ]
+  },
+  "id": "SG-000027",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "Extend the already-qualified stable @ineractive/product-graph package with one small deterministic contract/compiler slice; no new package, dependency, provider, framework, or persistence abstraction is needed for this first vertical."
+      },
+      "safety": {
+        "requirements": [
+          "The compiler is pure and deterministic: no network, model inference, wall-clock/randomness dependence, source mutation, database, capability, or external effect.",
+          "Confidence is bounded numeric evidence only and never grants authority; provenance is mandatory and cannot be fabricated by the compiler.",
+          "Base revision identity, graph identity, operation targets, and candidate structural/domain validity are checked before a proposal is returned.",
+          "A proposal is not a canonical revision: callers must separately review/accept it, and this Grain cannot perform the later Question Gate or commit/source mutation."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph package accepts a bounded deterministic ChangeIntent and emits a validated ProposedGraphDelta plus candidate ProductGraphRevision for a no-op or one node upsert, with mandatory provenance/confidence and no canonical or source mutation.",
+  "parent_id": null,
+  "rationale": "IN-P02-S03-T01 is the next dependency-eligible P02 handle. This first Grain provides a small executable vertical slice before natural-language parsing, edge operations, Question Gate, or model integration can be added safely.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the SG-000027 change-intent/delta module, exports, focused tests, evidence, and frontier record; the existing Product Graph contracts and SG-000020 through SG-000026 domain semantics remain intact, and no canonical or source state is mutated."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a stable ChangeIntentV1 envelope with an intent identity, exact base ProductGraphRevision, bounded user/source provenance, confidence, and a closed operation set containing no-op and upsert-node.",
+    "Define a stable ProposedGraphDeltaV1 envelope with proposal identity, base revision, intent reference/digest, typed operations, provenance/confidence, deterministic delta digest, candidate ProductGraphRevision, and validation issues.",
+    "Implement deterministic compilation of no-op and one-node upsert intents against a validated ProductGraphRevisionDocumentV1, including add, same-kind attribute replacement, duplicate-operation rejection, kind-change rejection, and domain validation of the candidate.",
+    "Export the contracts and compiler from @ineractive/product-graph and add focused tests for accepted and rejected cases, ordering independence, input immutability, and canonical/candidate digest behavior.",
+    "Record the Grain shaping, exact candidate evidence, and the next dependent frontier without claiming natural-language parsing or later P02-S04/P02-S05 completion."
+  ],
+  "scope_out": [
+    "No natural-language or model/provider parsing, no edge add/remove/update operations, no delete or bulk graph operation, no Question Gate, Assumption Ledger, source binding, graph view, compiler, database, migration, network, credential, capability, or external-effect execution.",
+    "No mutation of canonical ProductGraphRevision input, source tree, database, Git state, or external system; a candidate revision is an in-memory proposal only.",
+    "No new workspace package, runtime dependency, lockfile change, framework adapter, or provider-paid inference.",
+    "No semantic changes to the already-qualified domain vocabularies, validators, persistence representation, or canonical JSON identity.",
+    "No claim that the full IN-P02-S03-T01 handle is closed; later Grains must cover richer operations and intent interpretation."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S03-T01A Change Intent and proposed graph delta core"
+}
