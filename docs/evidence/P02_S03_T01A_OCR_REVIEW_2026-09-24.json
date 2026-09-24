@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "target": {
+    "base": "57f2f77cedd3ddda43ab983e8eb6fecf3e54a21b",
+    "head": "f6e4b7914e671c181bb14cdb3cf3e2231c877bd1",
+    "mergeBase": "57f2f77cedd3ddda43ab983e8eb6fecf3e54a21b"
+  },
+  "tool": {
+    "name": "alibaba/open-code-review",
+    "release": "v1.12.7 (open-code-review v1.12.7 (85cecfe) windows/amd64, built 2026-09-19T08:48:49Z)",
+    "binarySha256": "7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64",
+    "configIdentity": "delegation mode; deterministic preview and rule resolution on the exact candidate; no hosted LLM endpoint"
+  },
+  "fileAccounting": {
+    "changedFiles": [
+      { "path": "packages/product-graph/src/change-intent.test.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/change-intent.ts", "changeType": "ADDED" },
+      { "path": "packages/product-graph/src/index.ts", "changeType": "MODIFIED" }
+    ],
+    "reviewableFiles": [
+      "packages/product-graph/src/change-intent.ts",
+      "packages/product-graph/src/index.ts"
+    ],
+    "excludedFiles": [
+      {
+        "path": "packages/product-graph/src/change-intent.test.ts",
+        "excludeReason": "default_path",
+        "material": true
+      }
+    ],
+    "separateReviews": [
+      {
+        "path": "packages/product-graph/src/change-intent.test.ts",
+        "method": "Separate review of the excluded test oracle against the SG-000027 acceptance contract and focused behavior cases.",
+        "evidenceReference": "docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md#coverage"
+      }
+    ]
+  },
+  "ruleResolution": [
+    {
+      "path": "packages/product-graph/src/change-intent.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md#coverage"
+    },
+    {
+      "path": "packages/product-graph/src/index.ts",
+      "ruleSetIdentity": "system group 1: **/*.{ts,js,tsx,jsx,mjs,cjs}",
+      "evidenceReference": "docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md#coverage"
+    }
+  ],
+  "semanticReview": {
+    "state": "RUN",
+    "blocker": null,
+    "output": {
+      "format": "JSON",
+      "reference": "docs/evidence/P02_S03_T01A_OCR_FINDINGS_2026-09-24.json",
+      "sha256": "c8be0783d71ee4dab9d13798ebf5e505baae7f355092c98d0ec9ac7af74c8fb1"
+    },
+    "findings": [
+      {
+        "findingId": "SG27-001",
+        "path": "packages/product-graph/src/change-intent.ts",
+        "material": true,
+        "disposition": "FIXED",
+        "rationale": "Locale-sensitive ordering was repaired forward in f6e4b79 and the repaired exact head received fresh CI and review.",
+        "evidenceReference": "docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md#finding"
+      }
+    ]
+  },
+  "reconciliation": null
+}
