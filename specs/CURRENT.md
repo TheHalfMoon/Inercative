@@ -1,11 +1,15 @@
 # Ineractive Current Frontier
 
-**Date:** 2026-09-21  
+**Date:** 2026-09-24
 **Status:** P02_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative
+**Planning amendment:** `docs/canonical/PLAN_REVISION_2026-09-24.md` — competitive/source refresh,
+CLM decision-plane adoption posture, and 18 mapped gap-closure requirements. The amendment adds
+13 future planned task handles to the historical 176-handle baseline (current task index: 189).
+Planning only: the live P02 execution frontier is unchanged.
 
-> Reconciled against live repository truth on 2026-09-21. The prior revision
+> Reconciled against live repository truth on 2026-09-24. The prior revision
 > described the repository as `PLANNING_ONLY`; that was stale once P00-S01 merged.
 
 ## Current state
@@ -323,7 +327,7 @@ the rules `DOMAIN_MISSING_EFFECT_TARGET`, `DOMAIN_MISSING_RECONCILIATION_POLICY`
 `DOMAIN_IRREVERSIBLE_EFFECT_WITHOUT_CONFIRMATION`, and `DOMAIN_CLASSIFIED_DATA_EXTERNAL_EFFECT`.
 Validation performs no external effect: it describes and validates semantics only.
 
-Next in dependency order:
+Completion:
 
 **IN-P02-S02-T02 is therefore complete.** All five required semantic surfaces — classification,
 lifecycle, privacy, locale, and external effects — are merged, qualified, and canonically closed
@@ -334,14 +338,11 @@ Next in dependency order:
 1. **IN-P02-S03-T01 — Change Intent → proposed graph delta** is the next eligible unit; its task row
    lists `IN-P02-S02-T01` as its dependency, which is satisfied. It still requires real SpecGrain
    shaping before implementation authority exists.
-2. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 were gated behind `IN-P02-S02-T02`, which is
+2. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 were gated behind IN-P02-S02-T02, which is
    now complete, so they are unblocked in dependency terms; each still requires its own SpecGrain
    shaping before implementation.
 3. IN-P02-S04-T01 remains blocked behind IN-P02-S03-T01, and IN-P02-S05-T01 behind
    IN-P02-S04-T01.
-3. IN-P02-S03-T01 (Change Intent → proposed graph delta) remains blocked until IN-P02-S02-T01 is
-   recorded complete here (now satisfied) and its own shaping completes. IN-P02-S06-T01,
-   IN-P02-S07-T01, and IN-P02-S08-T01 remain blocked behind IN-P02-S02-T02.
 
 ## Hard constraints
 

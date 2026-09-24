@@ -1,6 +1,6 @@
 # Ineractive Source Ledger
 
-**Research snapshot:** 2026-09-20  
+**Research snapshot:** 2026-09-24
 **Founder authority:** the founder states permission to use, copy, and adapt the named sources and relevant sources in the connected GitHub account.  
 **Rule:** permission permits consideration; exact import revision, component mapping, dependency closure, security review, notices, and Ineractive-owned qualification remain required.
 
@@ -161,7 +161,13 @@ Exact versions and security state are requalified at implementation time.
 | freestylefly/awesome-gpt-image-2 @ `0dc09c46c8a30b1fdd89c18cc78a894dac2104e3` | Prompt-as-Code schemas, industrial visual templates, reusable style Skill/data patterns, visual-case/evaluation UX | ADAPT / COPY_SELECTIVE / BENCHMARK; third-party gallery items still require item-level provenance/rights review |
 | robbietilton/Compositor @ `a19db9011282399785dc18efcfded904627bdcc2` | layers/masks/transforms/selections/content-aware fill/retouching/adjustments for bounded product-asset refinement | ADAPT / COPY_SELECTIVE; do not turn Ineractive into a general Photoshop clone |
 | X: robbietilton/status/2100946395972976843 | product/interaction demonstration associated with Compositor | REFERENCE; GitHub repository is the primary code source |
-| X: higgsfield_ai/status/2101117855622463719 | creative-media routing research lead | REFERENCE pending direct post capture; surrounding same-account evidence supports decision-routing -> media-provider separation, but must not be misattributed to the exact post |
+| `higgsfield-ai/skills` @ `d071406147a37b835bed09543d85ab3e9bd85c7d` | official open-source creative/workflow Skills: generation, BrandKit, product photoshoot, websites, explainers, thumbnails, games, marketing analysis | COPY_SELECTIVE / ADAPT behind Ineractive Skills, Product Kits and media contracts; reviewed public license MIT |
+| `higgsfield-ai/cli` @ `dc7e2d2eac0b1fdad255de24d87552d1ba479037` | official CLI patterns for model/workflow discovery, async jobs, polling, media workflows and agent integration | COPY_SELECTIVE / ADAPT; reviewed public license MIT |
+| `higgsfield-ai/higgsfield-client` @ `aefd1ca677929762b9f69a7a7ea530a4a695d6a8` | official Python SDK; sync/async queue/job lifecycle and callbacks | ADAPT / DEPEND_SELECTIVE; reviewed public license Apache-2.0 |
+| `higgsfield-ai/higgsfield-js` @ `e3f274249962417e21f6566d4eecec6d8491d11c` | official server-side TypeScript SDK; secret isolation, polling/status lifecycle and webhook patterns | ADAPT / DEPEND_SELECTIVE; package metadata declares MIT |
+| `higgsfield-ai/cursor-plugin` @ `c9215059e409dc81c69ff0fe77ea2740c5fc6249` | official Cursor/MCP plugin packaging and distribution patterns | COPY_SELECTIVE / ADAPT; reviewed public license MIT |
+| `higgsfield-ai/higgsfield` @ `d12a36e66024a93d33ec61826a77d5a346c16869` | distributed GPU experiment/training orchestration | REFERENCE / LATER ADAPT only if a future Ineractive-owned training program needs it; reviewed public license Apache-2.0 |
+| X: higgsfield_ai/status/2101117855622463719 | older creative-media routing research lead | REFERENCE only; superseded as primary engineering evidence by the official repositories above |
 | X: nereasolenne/status/2101265048824074535 | animated-web/design workflow research lead | REFERENCE only; tutorial/award claims are not acceptance evidence |
 | convaiinnovations/laya (Hub head observed as `1c5edc1` on 2026-09-20) | bounded System-1 typed decisions, calibrated probabilities/confidence, routing/scoring benchmark | OPTIONAL QUALIFIED SOURCE / BENCHMARK / ADAPT; resolve full immutable Hub SHA before import |
 
@@ -221,9 +227,76 @@ OCR does not grant PASS.
 
 ### Decision-model ecosystem
 
-REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Concrete runtime providers are intentionally not declared in this public planning ledger.
+REFERENCE for bounded typed choices, scores, confidence-aware routing, and gating. Core contracts remain provider-neutral; optional qualified providers may be recorded below without becoming defaults or authority.
 
 Use bounded decision models for classification/routing/gating rather than general code generation. Hard permissions and deterministic invariants stay in code.
+
+## 7A. 2026-09-24 source refresh
+
+### Contrastive decision model
+
+| Source | Exact reviewed revision | Candidate value | Planning posture |
+|---|---|---|---|
+| `Contrastive-LM/CLM` | `7956937c58ed5839c06ddc4dc6b6b61c3a3e4094` | fast typed NOUL/CHOICE/SCORE decisions, candidate ranking, best-of-N verification, action-vector caching, fine-tunable projection heads | ADAPT / DEPEND_SELECTIVE / BENCHMARK behind P03 `DecisionPlaneAdapter`; never authorization authority |
+
+The founder explicitly states permission to use/copy/adapt this source. The reviewed public
+repository and reference weights state Apache-2.0. Permission and license eligibility do not
+skip exact import provenance, dependency/model/data-rights review, NOTICE handling, sandbox/runtime
+qualification, security review, or Ineractive-owned evaluation.
+
+CLM is **not** a mandatory local V1 dependency. Its reference serving path uses a Qwen3-8B-class
+pooling encoder and accelerator-oriented examples, so Ineractive must keep deterministic/Jev/generative
+fallbacks and may use user-owned or organization-owned qualified endpoints. A decision score cannot
+create a capability Grant or security PASS.
+
+See:
+
+- `docs/research/CLM_INTERNAL_SOURCE_DEEP_DIVE_2026-09-24.md`;
+- `docs/canonical/PLAN_REVISION_2026-09-24.md`.
+
+### Internal source consolidation
+
+The 2026-09-24 deep dive strengthens these source assignments:
+
+- **Kernux** — capability/grant boundary; ContextSource/ContextItem/ContextBundle; local privacy;
+  egress/provider lifecycle evidence.
+- **Golam** — authority/taint/freshness-bearing context; candidate-vs-durable memory; live truth
+  outranks stale memory; ranking cannot raise authority.
+- **Morize** — governed memory writer and user-controlled durable memory.
+- **Ascout** — exact-target assurance contracts and generated-app/browser/security evidence.
+- **MESC** — content-addressed experiment/model/data/evaluation qualification.
+- **Himsat + Wispral** — multi-engine voice routing and speech-as-evidence-not-authority.
+- **MedScale** — capability-scoped extension ecosystem, re-consent, SBOM/revocation patterns.
+
+Whole donor architectures do not become Ineractive policy. Reuse remains bounded behind
+Ineractive-owned contracts.
+
+### Competitive lifecycle refresh
+
+In addition to the existing competitive baseline, current benchmark/reference coverage now
+explicitly includes:
+
+- Base44;
+- Figma Make;
+- Google Stitch;
+- Google Antigravity / Google AI Studio migration direction;
+- GitHub Copilot coding agents;
+- Cursor;
+- Bubble;
+- Wix/Harmony;
+- Retool;
+- Webflow AI;
+- Framer.
+
+Provider lifecycle changes are benchmark evidence too. The 2026-09-24 research snapshot records
+GitHub Spark retirement, Firebase Studio sunset/migration direction, and Webflow App Gen lifecycle
+changes as concrete reasons to require P11 provider-deprecation/retirement portability fixtures.
+
+Detailed feature evidence and dated source URLs are recorded in
+`docs/research/COMPETITIVE_LANDSCAPE_2026-09-24.md`.
+
+Official Higgsfield open-source donor roles, exact revisions, licenses and hosted-provider boundaries are recorded in
+`docs/research/HIGGSFIELD_OPEN_SOURCE_DEEP_DIVE_2026-09-24.md`.
 
 ## 8. Import rule
 

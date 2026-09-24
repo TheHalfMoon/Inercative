@@ -1081,6 +1081,29 @@ Kits accelerate normal source/graph generation; they are not opaque templates.
 
 **Exit:** hosted operation has evidence for tenant isolation, recovery, cost control, user ownership, and enterprise governance.
 
+## 1A. 2026-09-24 competitive and decision-plane amendment
+
+The 2026-09-24 market/source refresh is canonical planning input through
+[`PLAN_REVISION_2026-09-24.md`](PLAN_REVISION_2026-09-24.md).
+
+It does **not** change the active execution frontier or create early implementation authority.
+It strengthens existing phase ownership with the following cross-phase requirements:
+
+- P03-S03/P03-S04: provider-neutral CLM-class bounded ranking/typed decision adapter with
+  confidence/abstention, exact candidate/model evidence, and no authority transfer;
+- P04-S04/P07-S06: branch/worktree-isolated autonomous writes and PR/exact-head promotion by default;
+- P08: live isolated design/build variants plus portable product-owned design truth;
+- P10: pre-publish security gate and a dated competitive-regression corpus;
+- P11: production-like preview parity plus provider-deprecation/retirement portability fixtures;
+- P13: optional generated-product MCP capability surface with independent auth/effect/audit policy;
+- P14: physical-device and user-owned signing/submission evidence before native-mobile release claims;
+- P03/P12/P14 later: voice remains evidence, never permission, with Arabic/code-switch and
+  no-silent-cloud-fallback qualification.
+
+The exact gap register and acceptance intent are `IN-REV26-001` through
+`IN-REV26-018` in the amendment. Dedicated task handles were added to `specs/tasks.md` where the prior task index was not precise enough; existing handles remain the owner where they already cover the strengthened requirement. Browser/generated-app verification details remain owned
+by the existing P04/P08/P10 roadmap and the planning work tracked separately by PR #63.
+
 ## 2. Cross-phase invariants
 
 Every phase preserves:
