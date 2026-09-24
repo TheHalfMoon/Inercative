@@ -133,7 +133,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P10-S03-T01 | P10 | Integrate Alibaba OCR machine-readable exact-diff review | IN-P10-S01-T01 |
 | IN-P10-S04-T01 | P10 | Integrate Diffcipline exact-candidate proof | IN-P10-S01-T01 |
 | IN-P10-S05-T01 | P10 | Complete generated-app security negative fixture pack | IN-P10-S01-T02, IN-P06-S04-T02 |
-| IN-P10-S05-T02 | P10 | Implement pre-publish security summary/gate with proposal-only safe-fix diffs and blocker propagation into release promotion | IN-P10-S05-T01, IN-P10-S07-T01, IN-P10-S10-T03 |
+| IN-P10-S05-T02 | P10 | Implement pre-publish security summary/gate with proposal-only safe-fix diffs and blocker propagation into release promotion | IN-P10-S05-T01 |
 | IN-P10-S06-T01 | P10 | Implement Evaluation Lab benchmark corpus and live/recorded replay runner | IN-P03-S09-T02, IN-P07-S05-T01, IN-P08-S09-T02, IN-P09-S05-T01 |
 | IN-P10-S06-T02 | P10 | Implement multidimensional harness correctness/security/design/cost/latency/question regression reports | IN-P10-S06-T01, IN-P03-S08-T01 |
 | IN-P10-S06-T03 | P10 | Add dated competitive-regression cases and provider-lifecycle benchmark metadata with source-observation dates and no competitor-failure claims | IN-P10-S06-T01, IN-P10-S06-T02 |
@@ -158,7 +158,7 @@ Every dependency is expressed as a full stable task ID except the root sentinel 
 | IN-P11-S04-T02 | P11 | Implement SecretRef/SecretVersion/SecretBinding validation, rotation, expiry, revocation, and redeploy/reverification lifecycle | IN-P11-S04-T01, IN-P04-S03-T01 |
 | IN-P11-S04-T03 | P11 | Implement DomainBinding/DNS record/propagation/verification/certificate lifecycle with manual fallback | IN-P11-S04-T01, IN-P11-S00-T03 |
 | IN-P11-S05-T01 | P11 | Implement guarded Supabase remote publish | IN-P06-S02-T02, IN-P06-S07-T02, IN-P10-S05-T01, IN-P11-S02-T01 |
-| IN-P11-S06-T01 | P11 | Implement ReleaseManifest, promotion states, last-known-good identity, app/schema compatibility gate, and pre-publish security blocker binding | IN-P11-S03-T01, IN-P11-S05-T01, IN-P10-S05-T02, IN-P10-S07-T01 |
+| IN-P11-S06-T01 | P11 | Implement ReleaseManifest, promotion states, last-known-good identity, app/schema compatibility gate, and pre-publish security blocker binding | IN-P11-S03-T01, IN-P11-S05-T01, IN-P10-S05-T02, IN-P10-S07-T01, IN-P10-S10-T03 |
 | IN-P11-S07-T01 | P11 | Implement portable generated-app health/log/error/release-identity and optional telemetry/analytics baseline | IN-P11-S02-T01, IN-P05-S06-T01 |
 | IN-P11-S08-T01 | P11 | Qualify production recovery across deploy/migration/credential/drift/last-known-good scenarios | IN-P11-S06-T01, IN-P11-S07-T01, IN-P06-S02-T02 |
 | IN-P11-S08-T02 | P11 | Qualify provider-aware backup/PITR/restore expectations and execute an isolated restore drill where supported, otherwise prove typed blocker/manual recovery path | IN-P11-S08-T01, IN-P11-S00-T04, IN-P06-S07-T02 |
