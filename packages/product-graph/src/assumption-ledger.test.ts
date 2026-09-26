@@ -151,6 +151,19 @@ describe("Assumption Ledger", () => {
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_STALE_ASSUMPTION" }));
   });
 
+  it("enforces reference and replay bounds", () => {
+    const assumption = origin();
+    expect(() =>
+      validateAssumptionLedgerEventInput({
+        ...event(assumption, { action: "correct", correctedStatement: "Corrected." }),
+        dependentWorkRefs: Array.from({ length: 129 }, (_, index) => `task:${index}`),
+      }),
+    ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_REFERENCES" }));
+    expect(() =>
+      replayAssumptionLedger(assumption, Array.from({ length: 65 }, () => event(assumption))),
+    ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_SCHEMA" }));
+  });
+
   it("fails closed on malformed schemas, references, and tampered origin identity", () => {
     const assumption = origin();
     expect(() =>
