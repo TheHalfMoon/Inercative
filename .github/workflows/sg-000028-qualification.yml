@@ -16,8 +16,6 @@ jobs:
       CANDIDATE_SHA: 1c2005b70fedf971bfffa9495788a70340c169fd
       DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
       OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
-      EVIDENCE_DIR: ${{ runner.temp }}/sg000028/evidence
-      TOOLS_DIR: ${{ runner.temp }}/sg000028/tools
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
@@ -27,7 +25,13 @@ jobs:
 
       - name: Initialize isolated qualification directories
         shell: bash
-        run: mkdir -p "$EVIDENCE_DIR" "$TOOLS_DIR"
+        run: |
+          set -euo pipefail
+          evidence_dir="$RUNNER_TEMP/sg000028/evidence"
+          tools_dir="$RUNNER_TEMP/sg000028/tools"
+          mkdir -p "$evidence_dir" "$tools_dir"
+          echo "EVIDENCE_DIR=$evidence_dir" >> "$GITHUB_ENV"
+          echo "TOOLS_DIR=$tools_dir" >> "$GITHUB_ENV"
 
       - name: Set up Node 24
         uses: actions/setup-node@v4
@@ -97,5 +101,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sg-000028-exact-candidate-qualification
-          path: ${{ runner.temp }}/sg000028/evidence/
+          path: ${{ env.EVIDENCE_DIR }}/
           if-no-files-found: error
