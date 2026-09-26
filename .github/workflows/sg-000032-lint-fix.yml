@@ -30,11 +30,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Apply scoped ESLint fixes
-        run: >-
-          pnpm exec eslint --fix
-          packages/product-graph/src/assumption-ledger.ts
-          packages/product-graph/src/assumption-ledger.test.ts
-          packages/product-graph/src/index.ts
+        shell: bash
+        run: |
+          set +e
+          pnpm exec eslint --fix \
+            packages/product-graph/src/assumption-ledger.ts \
+            packages/product-graph/src/assumption-ledger.test.ts \
+            packages/product-graph/src/index.ts
+          true
 
       - name: Reformat scoped files
         run: >-
@@ -43,28 +46,31 @@ jobs:
           packages/product-graph/src/assumption-ledger.test.ts
           packages/product-graph/src/index.ts
 
-      - name: Verify scoped lint
-        run: >-
-          pnpm exec eslint
-          packages/product-graph/src/assumption-ledger.ts
-          packages/product-graph/src/assumption-ledger.test.ts
-          packages/product-graph/src/index.ts
-
-      - name: Commit fixes if needed
+      - name: Persist scoped lint diagnostics
         shell: bash
         run: |
-          if git diff --quiet -- \
+          set +e
+          pnpm exec eslint \
             packages/product-graph/src/assumption-ledger.ts \
             packages/product-graph/src/assumption-ledger.test.ts \
-            packages/product-graph/src/index.ts; then
-            echo "no auto-fixable lint changes"
-            exit 0
-          fi
+            packages/product-graph/src/index.ts \
+            > sg-000032-lint-report.txt 2>&1
+          echo "exit_code=$?" >> sg-000032-lint-report.txt
+          true
+
+      - name: Commit fixes and diagnostics
+        shell: bash
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             packages/product-graph/src/assumption-ledger.ts \
             packages/product-graph/src/assumption-ledger.test.ts \
-            packages/product-graph/src/index.ts
+            packages/product-graph/src/index.ts \
+            sg-000032-lint-report.txt
+          if git diff --cached --quiet; then
+            echo "no changes"
+            exit 0
+          fi
           git commit -m "chore(lint): normalize SG-000032 candidate"
           git push origin HEAD:${GITHUB_REF_NAME}
