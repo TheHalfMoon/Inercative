@@ -127,7 +127,11 @@ function canonicalReferences(value: unknown, label: string): readonly string[] {
     return fail("ASSUMPTION_LEDGER_INVALID_REFERENCES", `${label} has an invalid reference count.`);
   }
   const refs = value.map((item) => {
-    if (typeof item !== "string" || item.trim().length === 0 || item.length > MAX_REFERENCE_LENGTH) {
+    if (
+      typeof item !== "string" ||
+      item.trim().length === 0 ||
+      item.length > MAX_REFERENCE_LENGTH
+    ) {
       return fail(
         "ASSUMPTION_LEDGER_INVALID_REFERENCES",
         `${label} must contain bounded non-empty strings.`,

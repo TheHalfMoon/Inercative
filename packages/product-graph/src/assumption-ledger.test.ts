@@ -160,7 +160,10 @@ describe("Assumption Ledger", () => {
       }),
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_REFERENCES" }));
     expect(() =>
-      replayAssumptionLedger(assumption, Array.from({ length: 65 }, () => event(assumption))),
+      replayAssumptionLedger(
+        assumption,
+        Array.from({ length: 65 }, () => event(assumption)),
+      ),
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_SCHEMA" }));
   });
 
