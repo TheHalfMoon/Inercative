@@ -11,6 +11,7 @@ import {
 } from "./change-intent.ts";
 import {
   validateProductGraphRevision,
+  type JsonObject,
   type JsonValue,
   type ProductGraphRevision,
 } from "./contracts.ts";
@@ -176,17 +177,19 @@ function provenance(value: unknown, label: string): ChangeIntentProvenanceV1 {
 function canonical(value: JsonValue): JsonValue {
   if (Array.isArray(value)) return value.map((item) => canonical(item));
   if (value !== null && typeof value === "object") {
+    const object = value as JsonObject;
     return Object.fromEntries(
-      Object.entries(value)
+      Object.entries(object)
         .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-        .map(([key, item]) => [key, canonical(item as JsonValue)]),
+        .map(([key, item]) => [key, canonical(item)]),
     );
   }
   return value;
 }
 
 function json(value: unknown): JsonValue {
-  return JSON.parse(JSON.stringify(value)) as JsonValue;
+  const parsed: unknown = JSON.parse(JSON.stringify(value));
+  return parsed as JsonValue;
 }
 
 function digest(value: unknown): string {
