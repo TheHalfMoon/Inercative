@@ -1,0 +1,100 @@
+name: sg-000030-qualification
+
+on:
+  push:
+    branches:
+      - evidence/sg-000030-qualification
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: 6fec46470b4926addaf18fcdd6a139317a6c2a9e
+      CANDIDATE_SHA: ffbee62a9e6f926dd3757d8cd2744a42eda3157e
+      DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
+      OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+
+      - name: Initialize isolated qualification directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="$RUNNER_TEMP/sg000030/evidence"
+          tools_dir="$RUNNER_TEMP/sg000030/tools"
+          mkdir -p "$evidence_dir" "$tools_dir"
+          echo "EVIDENCE_DIR=$evidence_dir" >> "$GITHUB_ENV"
+          echo "TOOLS_DIR=$tools_dir" >> "$GITHUB_ENV"
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pnpm and frozen dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global pnpm@12.4.2
+          pnpm install --frozen-lockfile
+
+      - name: Verify exact identities and clean worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          merge_base="$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")"
+          test "$merge_base" = "$BASE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'base=%s\nhead=%s\nmerge_base=%s\n' "$BASE_SHA" "$CANDIDATE_SHA" "$merge_base" > "$EVIDENCE_DIR/identities.txt"
+          git diff --stat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-stat.txt"
+          git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-numstat.txt"
+          git diff --name-status "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-files.txt"
+
+      - name: Run checksum-verified Diffcipline R2 proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o "$TOOLS_DIR/diffcipline"
+          echo "$DIFFCIPLINE_SHA256  $TOOLS_DIR/diffcipline" | sha256sum --check
+          chmod +x "$TOOLS_DIR/diffcipline"
+          "$TOOLS_DIR/diffcipline" check --base "$BASE_SHA" --risk R2 --run --json | tee "$EVIDENCE_DIR/diffcipline-proof.json"
+
+      - name: Run checksum-verified OCR accounting and rule resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o "$TOOLS_DIR/ocr"
+          echo "$OCR_SHA256  $TOOLS_DIR/ocr" | sha256sum --check
+          chmod +x "$TOOLS_DIR/ocr"
+          "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/product-graph/src/request-intent.ts | tee "$EVIDENCE_DIR/ocr-request-intent-rules.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/product-graph/src/index.ts | tee "$EVIDENCE_DIR/ocr-index-rules.json"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/product-graph/src/request-intent.test.ts > "$EVIDENCE_DIR/excluded-test-review.diff"
+
+      - name: Probe Jev availability truthfully
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v jev >/dev/null 2>&1; then
+            printf 'state=AVAILABLE\npath=%s\n' "$(command -v jev)" | tee "$EVIDENCE_DIR/jev-availability.txt"
+            jev --version 2>&1 | tee -a "$EVIDENCE_DIR/jev-availability.txt" || true
+          else
+            printf 'state=NOT_RUN_UNAVAILABLE\nreason=jev executable is not installed on the GitHub-hosted qualification runner\n' | tee "$EVIDENCE_DIR/jev-availability.txt"
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000030-exact-candidate-qualification
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
