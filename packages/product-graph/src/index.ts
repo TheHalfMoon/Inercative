@@ -57,6 +57,33 @@ export type {
 } from "./question-gate.ts";
 
 export {
+  ASSUMPTION_LEDGER_ACTIONS,
+  ASSUMPTION_LEDGER_EFFECT,
+  ASSUMPTION_LEDGER_ERROR_CODES,
+  ASSUMPTION_LEDGER_MAX_REFERENCE_COUNT,
+  ASSUMPTION_LEDGER_MAX_REFERENCE_LENGTH,
+  ASSUMPTION_LEDGER_SCHEMA_VERSION,
+  ASSUMPTION_LEDGER_STATUSES,
+  AssumptionLedgerError,
+  replayAssumptionLedger,
+  validateAssumptionLedgerEventInput,
+} from "./assumption-ledger.ts";
+
+export type {
+  AssumptionInvalidationManifestId,
+  AssumptionInvalidationManifestV1,
+  AssumptionLedgerAction,
+  AssumptionLedgerErrorCode,
+  AssumptionLedgerEventId,
+  AssumptionLedgerEventInputV1,
+  AssumptionLedgerEventV1,
+  AssumptionLedgerStateId,
+  AssumptionLedgerStateV1,
+  AssumptionLedgerStatus,
+  AssumptionReplacementV1,
+} from "./assumption-ledger.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
