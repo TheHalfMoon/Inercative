@@ -91,6 +91,19 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
     reconciliation: "receipt",
     target: "billing-provider",
   },
+  designsystemrevisionref: {
+    designSystemId: "design-system:workspace",
+    revision: "sha256:design-system-revision",
+  },
+  skillref: { skillId: "skill:product-review", version: "1.0.0" },
+  explorationbranch: {
+    baseRevision: "sha256:product-revision",
+    branchId: "exploration:checkout-redesign",
+  },
+  release: {
+    productRevision: "sha256:product-revision",
+    releaseId: "release:2026-09-26.1",
+  },
 };
 
 const probeNodes: readonly ProductGraphNodeV1[] = DOMAIN_NODE_KINDS.map((kind) => ({
@@ -133,6 +146,35 @@ describe("Product Graph domain node semantics", () => {
   it("declares a spec for every node kind and exercises every kind in the fixture", () => {
     expect(DOMAIN_NODE_KIND_SPECS.map((spec) => spec.kind)).toEqual([...DOMAIN_NODE_KINDS]);
     expect(nodeGraph.nodes.map((node) => node.kind)).toEqual([...DOMAIN_NODE_KINDS]);
+  });
+
+  it("pins the four SG-000029 semantic reference node contracts", () => {
+    expect(
+      DOMAIN_NODE_KIND_SPECS.filter((spec) =>
+        ["designsystemrevisionref", "skillref", "explorationbranch", "release"].includes(spec.kind),
+      ),
+    ).toEqual([
+      {
+        kind: "designsystemrevisionref",
+        required: { designSystemId: "string", revision: "string" },
+        optional: { name: "string", status: "string" },
+      },
+      {
+        kind: "skillref",
+        required: { skillId: "string", version: "string" },
+        optional: { name: "string", scope: "string" },
+      },
+      {
+        kind: "explorationbranch",
+        required: { baseRevision: "string", branchId: "string" },
+        optional: { name: "string", status: "string" },
+      },
+      {
+        kind: "release",
+        required: { productRevision: "string", releaseId: "string" },
+        optional: { name: "string", status: "string" },
+      },
+    ]);
   });
 
   const requiredCases = DOMAIN_NODE_KIND_SPECS.flatMap((spec) =>

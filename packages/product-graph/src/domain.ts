@@ -53,6 +53,10 @@ export const DOMAIN_NODE_KINDS = [
   "datapolicy",
   "localeconfig",
   "externaleffect",
+  "designsystemrevisionref",
+  "skillref",
+  "explorationbranch",
+  "release",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -197,6 +201,26 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
       reconciliation: "string",
       target: "string",
     },
+  },
+  {
+    kind: "designsystemrevisionref",
+    required: { designSystemId: "string", revision: "string" },
+    optional: { name: "string", status: "string" },
+  },
+  {
+    kind: "skillref",
+    required: { skillId: "string", version: "string" },
+    optional: { name: "string", scope: "string" },
+  },
+  {
+    kind: "explorationbranch",
+    required: { baseRevision: "string", branchId: "string" },
+    optional: { name: "string", status: "string" },
+  },
+  {
+    kind: "release",
+    required: { productRevision: "string", releaseId: "string" },
+    optional: { name: "string", status: "string" },
   },
 ];
 
