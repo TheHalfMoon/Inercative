@@ -64,8 +64,7 @@ jobs:
           curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o .tools/diffcipline
           echo "$DIFFCIPLINE_SHA256  .tools/diffcipline" | sha256sum --check
           chmod +x .tools/diffcipline
-          printf 'sha256=%s\n' "$DIFFCIPLINE_SHA256" > _qualification/diffcipline-tool.txt
-          .tools/diffcipline --version | tee -a _qualification/diffcipline-tool.txt
+          printf 'release=v1.0.0\nasset=diffcipline-x86_64-unknown-linux-gnu\nsha256=%s\n' "$DIFFCIPLINE_SHA256" > _qualification/diffcipline-tool.txt
 
       - name: Run Diffcipline R2 exact-candidate proof
         shell: bash
@@ -80,8 +79,7 @@ jobs:
           curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o .tools/ocr
           echo "$OCR_SHA256  .tools/ocr" | sha256sum --check
           chmod +x .tools/ocr
-          printf 'sha256=%s\n' "$OCR_SHA256" > _qualification/ocr-tool.txt
-          .tools/ocr --version | tee -a _qualification/ocr-tool.txt
+          printf 'release=v1.12.7\nasset=opencodereview-linux-amd64\nsha256=%s\n' "$OCR_SHA256" > _qualification/ocr-tool.txt
 
       - name: Run OCR deterministic accounting and rule resolution
         shell: bash
