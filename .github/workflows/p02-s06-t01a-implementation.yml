@@ -1,0 +1,68 @@
+name: p02-s06-t01a-implementation
+
+on:
+  push:
+    branches:
+      - p02/s06-t01a-reference-nodes-implementation
+    paths:
+      - .github/workflows/p02-s06-t01a-implementation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    if: ${{ !contains(github.event.head_commit.message, '[implemented]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply bounded SG-000029 implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          domain = Path('packages/product-graph/src/domain.ts')
+          s = domain.read_text()
+          old_kinds = '''  "datapolicy",\n  "localeconfig",\n  "externaleffect",\n] as const;'''
+          new_kinds = '''  "datapolicy",\n  "localeconfig",\n  "externaleffect",\n  "designsystemrevisionref",\n  "skillref",\n  "explorationbranch",\n  "release",\n] as const;'''
+          if old_kinds not in s:
+              raise SystemExit('domain kind anchor not found')
+          s = s.replace(old_kinds, new_kinds, 1)
+
+          old_spec_tail = '''  {\n    kind: "externaleffect",\n    required: { consequence: "string", effect: "string" },\n    optional: {\n      confirmation: "string",\n      idempotent: "boolean",\n      name: "string",\n      reconciliation: "string",\n      target: "string",\n    },\n  },\n];'''
+          new_spec_tail = '''  {\n    kind: "externaleffect",\n    required: { consequence: "string", effect: "string" },\n    optional: {\n      confirmation: "string",\n      idempotent: "boolean",\n      name: "string",\n      reconciliation: "string",\n      target: "string",\n    },\n  },\n  {\n    kind: "designsystemrevisionref",\n    required: { designSystemId: "string", revision: "string" },\n    optional: { name: "string", status: "string" },\n  },\n  {\n    kind: "skillref",\n    required: { skillId: "string", version: "string" },\n    optional: { name: "string", scope: "string" },\n  },\n  {\n    kind: "explorationbranch",\n    required: { baseRevision: "string", branchId: "string" },\n    optional: { name: "string", status: "string" },\n  },\n  {\n    kind: "release",\n    required: { productRevision: "string", releaseId: "string" },\n    optional: { name: "string", status: "string" },\n  },\n];'''
+          if old_spec_tail not in s:
+              raise SystemExit('domain spec tail anchor not found')
+          domain.write_text(s.replace(old_spec_tail, new_spec_tail, 1))
+
+          test = Path('packages/product-graph/src/domain.test.ts')
+          t = test.read_text()
+          old_attrs = '''  externaleffect: {\n    confirmation: "required",\n    consequence: "informational",\n    effect: "payment",\n    idempotent: true,\n    reconciliation: "receipt",\n    target: "billing-provider",\n  },\n};'''
+          new_attrs = '''  externaleffect: {\n    confirmation: "required",\n    consequence: "informational",\n    effect: "payment",\n    idempotent: true,\n    reconciliation: "receipt",\n    target: "billing-provider",\n  },\n  designsystemrevisionref: {\n    designSystemId: "design-system:workspace",\n    revision: "sha256:design-system-revision",\n  },\n  skillref: { skillId: "skill:product-review", version: "1.0.0" },\n  explorationbranch: {\n    baseRevision: "sha256:product-revision",\n    branchId: "exploration:checkout-redesign",\n  },\n  release: {\n    productRevision: "sha256:product-revision",\n    releaseId: "release:2026-09-26.1",\n  },\n};'''
+          if old_attrs not in t:
+              raise SystemExit('minimal attribute anchor not found')
+          t = t.replace(old_attrs, new_attrs, 1)
+
+          old_test = '''  it("declares a spec for every node kind and exercises every kind in the fixture", () => {\n    expect(DOMAIN_NODE_KIND_SPECS.map((spec) => spec.kind)).toEqual([...DOMAIN_NODE_KINDS]);\n    expect(nodeGraph.nodes.map((node) => node.kind)).toEqual([...DOMAIN_NODE_KINDS]);\n  });\n'''
+          new_test = '''  it("declares a spec for every node kind and exercises every kind in the fixture", () => {\n    expect(DOMAIN_NODE_KIND_SPECS.map((spec) => spec.kind)).toEqual([...DOMAIN_NODE_KINDS]);\n    expect(nodeGraph.nodes.map((node) => node.kind)).toEqual([...DOMAIN_NODE_KINDS]);\n  });\n\n  it("pins the four SG-000029 semantic reference node contracts", () => {\n    expect(\n      DOMAIN_NODE_KIND_SPECS.filter((spec) =>\n        [\n          "designsystemrevisionref",\n          "skillref",\n          "explorationbranch",\n          "release",\n        ].includes(spec.kind),\n      ),\n    ).toEqual([\n      {\n        kind: "designsystemrevisionref",\n        required: { designSystemId: "string", revision: "string" },\n        optional: { name: "string", status: "string" },\n      },\n      {\n        kind: "skillref",\n        required: { skillId: "string", version: "string" },\n        optional: { name: "string", scope: "string" },\n      },\n      {\n        kind: "explorationbranch",\n        required: { baseRevision: "string", branchId: "string" },\n        optional: { name: "string", status: "string" },\n      },\n      {\n        kind: "release",\n        required: { productRevision: "string", releaseId: "string" },\n        optional: { name: "string", status: "string" },\n      },\n    ]);\n  });\n'''
+          if old_test not in t:
+              raise SystemExit('node spec test anchor not found')
+          test.write_text(t.replace(old_test, new_test, 1))
+          PY
+
+          npm install --global pnpm@12.4.2
+          pnpm install --frozen-lockfile
+          pnpm exec prettier --write packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts
+          pnpm run check
+          rm .github/workflows/p02-s06-t01a-implementation.yml
+          git diff --check
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts .github/workflows/p02-s06-t01a-implementation.yml
+          git commit -m "feat(product-graph): add semantic reference node contracts [implemented]"
+          git push origin HEAD:p02/s06-t01a-reference-nodes-implementation
