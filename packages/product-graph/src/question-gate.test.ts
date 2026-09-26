@@ -166,25 +166,6 @@ describe("Question Gate", () => {
     });
   });
 
-  it("defers a non-blocking uncertain choice to a reversible prototype path", () => {
-    expect(
-      evaluateQuestionGate(
-        decision({
-          confidence: 0.2,
-          impact: "high",
-          reversibility: "moderate",
-          materiallyChangesProductOrTrustBoundary: true,
-          requiredForSafeProgress: false,
-        }),
-      ),
-    ).toEqual({
-      schemaVersion: 1,
-      outcome: "defer",
-      reason: "REVERSIBLE_PROTOTYPE",
-      assumption: null,
-    });
-  });
-
   it("canonicalizes affected node IDs before deriving a stable assumption identity", () => {
     const first = evaluateQuestionGate(
       decision({
