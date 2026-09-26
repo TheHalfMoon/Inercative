@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  INTENT_INTERPRETATION_MAX_UNCERTAINTIES,
-  USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
   compileUserRequestInterpretation,
   createIntentInterpretation,
   createProductGraphRevision,
@@ -120,16 +118,13 @@ describe("request intent boundary", () => {
     expect(() =>
       validateIntentInterpretation(pair.userRequest, {
         ...pair.interpretation,
-        uncertainties: Array.from(
-          { length: INTENT_INTERPRETATION_MAX_UNCERTAINTIES + 1 },
-          () => "unknown",
-        ),
+        uncertainties: Array.from({ length: 17 }, () => "unknown"),
       }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_INVALID_UNCERTAINTY" }));
     expect(() =>
       createUserChangeRequest({
         baseRevision: base.revision,
-        text: "x".repeat(USER_CHANGE_REQUEST_MAX_TEXT_LENGTH + 1),
+        text: "x".repeat(16_385),
         provenance: { source: "user", reference: "message:44" },
       }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_INVALID_SCHEMA" }));
