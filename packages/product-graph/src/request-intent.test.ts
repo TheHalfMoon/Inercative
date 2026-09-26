@@ -20,7 +20,6 @@ function baseGraph(name = "request-intent"): ProductGraphRevisionDocumentV1 {
     edges: [],
   });
 }
-
 function request(base: ProductGraphRevisionDocumentV1) {
   return createUserChangeRequest({
     baseRevision: base.revision,
@@ -28,7 +27,6 @@ function request(base: ProductGraphRevisionDocumentV1) {
     provenance: { source: "user", reference: "message:42" },
   });
 }
-
 function interpretation(base: ProductGraphRevisionDocumentV1) {
   const userRequest = request(base);
   return {
@@ -41,7 +39,6 @@ function interpretation(base: ProductGraphRevisionDocumentV1) {
     }),
   };
 }
-
 describe("request intent boundary", () => {
   it("creates stable identities and preserves proposal metadata without mutating inputs", () => {
     const base = baseGraph();
@@ -49,7 +46,6 @@ describe("request intent boundary", () => {
     const secondRequest = request(base);
     expect(firstRequest).toEqual(secondRequest);
     expect(firstRequest.requestId).toMatch(/^request-[0-9a-f]{64}$/);
-
     const first = createIntentInterpretation(firstRequest, {
       provenance: { source: "system", reference: "interpretation:fixture" },
       confidence: 0.82,
@@ -64,12 +60,10 @@ describe("request intent boundary", () => {
     });
     expect(first).toEqual(second);
     expect(first.interpretationId).toMatch(/^interpretation-[0-9a-f]{64}$/);
-
     const beforeBase = structuredClone(base);
     const beforeRequest = structuredClone(firstRequest);
     const beforeInterpretation = structuredClone(first);
     const proposal = compileUserRequestInterpretation(base, firstRequest, first);
-
     expect(proposal.requestId).toBe(firstRequest.requestId);
     expect(proposal.interpretationId).toBe(first.interpretationId);
     expect(proposal.confidence).toBe(0.82);
@@ -81,21 +75,18 @@ describe("request intent boundary", () => {
     expect(firstRequest).toEqual(beforeRequest);
     expect(first).toEqual(beforeInterpretation);
   });
-
   it("fails closed when request identity or exact base binding is stale", () => {
     const base = baseGraph();
     const userRequest = request(base);
     expect(() =>
       validateUserChangeRequest({ ...userRequest, text: "Tampered request" }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_REQUEST_ID_MISMATCH" }));
-
     const otherBase = baseGraph("other");
     const { interpretation: parsed } = interpretation(base);
     expect(() => compileUserRequestInterpretation(otherBase, userRequest, parsed)).toThrowError(
       expect.objectContaining({ code: "REQUEST_INTENT_BASE_MISMATCH" }),
     );
   });
-
   it("rejects interpretations bound to another request or base revision", () => {
     const base = baseGraph();
     const pair = interpretation(base);
@@ -114,7 +105,6 @@ describe("request intent boundary", () => {
       }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_BASE_MISMATCH" }));
   });
-
   it("rejects malformed confidence, provenance, uncertainty, bounds, and unknown fields", () => {
     const base = baseGraph();
     const pair = interpretation(base);
@@ -147,7 +137,6 @@ describe("request intent boundary", () => {
       validateUserChangeRequest({ ...pair.userRequest, authority: "admin" }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_INVALID_SCHEMA" }));
   });
-
   it("forwards ordered operations into the existing deterministic Change Intent compiler", () => {
     const base = baseGraph();
     const userRequest = request(base);
@@ -164,13 +153,11 @@ describe("request intent boundary", () => {
     });
     const first = compileUserRequestInterpretation(base, userRequest, parsed);
     const second = compileUserRequestInterpretation(base, userRequest, parsed);
-
     expect(first).toEqual(second);
     expect(first.proposedDelta.intentId).toBe(parsed.interpretationId);
     expect(first.proposedDelta.operations).toEqual(parsed.operations);
     expect(first.proposedDelta.candidateRevision.graph.nodes).toHaveLength(2);
   });
-
   it("preserves Change Intent domain-validation failures instead of bypassing them", () => {
     const base = baseGraph();
     const userRequest = request(base);
@@ -185,7 +172,6 @@ describe("request intent boundary", () => {
         },
       ],
     });
-
     expect(() => compileUserRequestInterpretation(base, userRequest, parsed)).toThrowError(
       expect.objectContaining({ code: "CHANGE_INTENT_DOMAIN_INVALID" }),
     );
