@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_SHA: 6fec46470b4926addaf18fcdd6a139317a6c2a9e
-      CANDIDATE_SHA: ffbee62a9e6f926dd3757d8cd2744a42eda3157e
+      CANDIDATE_SHA: c61bf92177b061539fdfbd2e3d6f4da920ec5741
       DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
       OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
     steps:
