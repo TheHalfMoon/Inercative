@@ -16,27 +16,20 @@ import {
 
 export const ASSUMPTION_LEDGER_SCHEMA_VERSION = 1 as const;
 export const ASSUMPTION_LEDGER_ACTIONS = ["confirm", "correct", "supersede"] as const;
-export const ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH = 1_024 as const;
-export const ASSUMPTION_LEDGER_MAX_STATEMENT_LENGTH = 1_024 as const;
-export const ASSUMPTION_LEDGER_MAX_REFERENCES = 128 as const;
-export const ASSUMPTION_LEDGER_MAX_EVENTS = 64 as const;
-export const ASSUMPTION_LEDGER_MAX_REFERENCE_LENGTH = 256 as const;
-
-export const ASSUMPTION_LEDGER_ERROR_CODES = [
-  "ASSUMPTION_LEDGER_INVALID_SCHEMA",
-  "ASSUMPTION_LEDGER_INVALID_ASSUMPTION",
-  "ASSUMPTION_LEDGER_STALE_ASSUMPTION",
-  "ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS",
-  "ASSUMPTION_LEDGER_INVALID_REFERENCES",
-  "ASSUMPTION_LEDGER_INVALID_TRANSITION",
-] as const;
+const MAX_TEXT_LENGTH = 1_024;
+const MAX_REFERENCES = 128;
+const MAX_EVENTS = 64;
+const MAX_REFERENCE_LENGTH = 256;
 
 export type AssumptionLedgerAction = (typeof ASSUMPTION_LEDGER_ACTIONS)[number];
 export type AssumptionLedgerStatus = "inferred" | "confirmed" | "corrected" | "superseded";
-export type AssumptionLedgerErrorCode = (typeof ASSUMPTION_LEDGER_ERROR_CODES)[number];
-export type AssumptionLedgerEventId = `assumption-event-${string}`;
-export type AssumptionInvalidationManifestId = `assumption-invalidation-${string}`;
-export type AssumptionLedgerRevisionId = `assumption-ledger-${string}`;
+export type AssumptionLedgerErrorCode =
+  | "ASSUMPTION_LEDGER_INVALID_SCHEMA"
+  | "ASSUMPTION_LEDGER_INVALID_ASSUMPTION"
+  | "ASSUMPTION_LEDGER_STALE_ASSUMPTION"
+  | "ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS"
+  | "ASSUMPTION_LEDGER_INVALID_REFERENCES"
+  | "ASSUMPTION_LEDGER_INVALID_TRANSITION";
 
 export interface AssumptionLedgerEventInputV1 {
   readonly schemaVersion: typeof ASSUMPTION_LEDGER_SCHEMA_VERSION;
@@ -50,21 +43,21 @@ export interface AssumptionLedgerEventInputV1 {
 }
 
 export interface AssumptionLedgerEventV1 extends AssumptionLedgerEventInputV1 {
-  readonly eventId: AssumptionLedgerEventId;
+  readonly eventId: `assumption-event-${string}`;
 }
 
 export interface AssumptionInvalidationManifestV1 {
   readonly schemaVersion: typeof ASSUMPTION_LEDGER_SCHEMA_VERSION;
-  readonly manifestId: AssumptionInvalidationManifestId;
+  readonly manifestId: `assumption-invalidation-${string}`;
   readonly assumptionId: AssumptionId;
-  readonly eventId: AssumptionLedgerEventId;
+  readonly eventId: AssumptionLedgerEventV1["eventId"];
   readonly dependentWorkRefs: readonly string[];
   readonly evidenceRefs: readonly string[];
 }
 
 export interface AssumptionLedgerStateV1 {
   readonly schemaVersion: typeof ASSUMPTION_LEDGER_SCHEMA_VERSION;
-  readonly ledgerRevisionId: AssumptionLedgerRevisionId;
+  readonly ledgerRevisionId: `assumption-ledger-${string}`;
   readonly originAssumption: AssumptionRecordV1;
   readonly status: AssumptionLedgerStatus;
   readonly effectiveStatement: string;
@@ -112,13 +105,11 @@ function exactKeys(
 }
 
 function compareText(left: string, right: string): number {
-  if (left < right) return -1;
-  if (left > right) return 1;
-  return 0;
+  return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function boundedText(value: unknown, label: string, maxLength: number): string {
-  if (typeof value !== "string" || value.trim().length === 0 || value.length > maxLength) {
+function boundedText(value: unknown, label: string): string {
+  if (typeof value !== "string" || value.trim().length === 0 || value.length > MAX_TEXT_LENGTH) {
     return fail("ASSUMPTION_LEDGER_INVALID_SCHEMA", `${label} must be bounded non-empty text.`);
   }
   return value;
@@ -132,15 +123,11 @@ function assumptionId(value: unknown, label: string): AssumptionId {
 }
 
 function canonicalReferences(value: unknown, label: string): readonly string[] {
-  if (!Array.isArray(value) || value.length > ASSUMPTION_LEDGER_MAX_REFERENCES) {
+  if (!Array.isArray(value) || value.length > MAX_REFERENCES) {
     return fail("ASSUMPTION_LEDGER_INVALID_REFERENCES", `${label} has an invalid reference count.`);
   }
   const refs = value.map((item) => {
-    if (
-      typeof item !== "string" ||
-      item.trim().length === 0 ||
-      item.length > ASSUMPTION_LEDGER_MAX_REFERENCE_LENGTH
-    ) {
+    if (typeof item !== "string" || item.trim().length === 0 || item.length > MAX_REFERENCE_LENGTH) {
       return fail(
         "ASSUMPTION_LEDGER_INVALID_REFERENCES",
         `${label} must contain bounded non-empty strings.`,
@@ -200,16 +187,8 @@ function validateOriginAssumption(value: unknown): AssumptionRecordV1 {
   }
 
   const id = assumptionId(candidate.assumptionId, "Origin assumptionId");
-  const statement = boundedText(
-    candidate.statement,
-    "Origin statement",
-    ASSUMPTION_LEDGER_MAX_STATEMENT_LENGTH,
-  );
-  const source = boundedText(
-    candidate.source,
-    "Origin source",
-    ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH,
-  );
+  const statement = boundedText(candidate.statement, "Origin statement");
+  const source = boundedText(candidate.source, "Origin source");
   const affectedNodeIds = canonicalReferences(candidate.affectedNodeIds, "Origin affectedNodeIds");
   const canonical = {
     schemaVersion: QUESTION_GATE_SCHEMA_VERSION,
@@ -258,19 +237,11 @@ export function validateAssumptionLedgerEventInput(value: unknown): AssumptionLe
 
   const id = assumptionId(candidate.assumptionId, "Assumption event assumptionId");
   const action = candidate.action as AssumptionLedgerAction;
-  const source = boundedText(
-    candidate.source,
-    "Assumption event source",
-    ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH,
-  );
+  const source = boundedText(candidate.source, "Assumption event source");
   const correctedStatement =
     candidate.correctedStatement === null
       ? null
-      : boundedText(
-          candidate.correctedStatement,
-          "Corrected statement",
-          ASSUMPTION_LEDGER_MAX_STATEMENT_LENGTH,
-        );
+      : boundedText(candidate.correctedStatement, "Corrected statement");
   const replacementAssumptionId =
     candidate.replacementAssumptionId === null
       ? null
@@ -309,7 +280,7 @@ export function validateAssumptionLedgerEventInput(value: unknown): AssumptionLe
 }
 
 function event(input: AssumptionLedgerEventInputV1): AssumptionLedgerEventV1 {
-  const eventId = hash("assumption-event", input) as AssumptionLedgerEventId;
+  const eventId = hash("assumption-event", input) as AssumptionLedgerEventV1["eventId"];
   return Object.freeze({ ...input, eventId });
 }
 
@@ -323,7 +294,10 @@ function invalidation(eventRecord: AssumptionLedgerEventV1): AssumptionInvalidat
   };
   return Object.freeze({
     ...content,
-    manifestId: hash("assumption-invalidation", content) as AssumptionInvalidationManifestId,
+    manifestId: hash(
+      "assumption-invalidation",
+      content,
+    ) as AssumptionInvalidationManifestV1["manifestId"],
   });
 }
 
@@ -332,7 +306,7 @@ export function replayAssumptionLedger(
   eventValues: readonly unknown[],
 ): AssumptionLedgerStateV1 {
   const origin = validateOriginAssumption(originValue);
-  if (!Array.isArray(eventValues) || eventValues.length > ASSUMPTION_LEDGER_MAX_EVENTS) {
+  if (!Array.isArray(eventValues) || eventValues.length > MAX_EVENTS) {
     return fail(
       "ASSUMPTION_LEDGER_INVALID_SCHEMA",
       "Assumption ledger events must be a bounded array.",
@@ -400,7 +374,10 @@ export function replayAssumptionLedger(
 
   return Object.freeze({
     schemaVersion: ASSUMPTION_LEDGER_SCHEMA_VERSION,
-    ledgerRevisionId: hash("assumption-ledger", revisionContent) as AssumptionLedgerRevisionId,
+    ledgerRevisionId: hash(
+      "assumption-ledger",
+      revisionContent,
+    ) as AssumptionLedgerStateV1["ledgerRevisionId"],
     originAssumption: origin,
     status,
     effectiveStatement,
