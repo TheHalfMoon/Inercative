@@ -33,11 +33,6 @@ export type {
 } from "./change-intent.ts";
 
 export {
-  INTENT_INTERPRETATION_MAX_UNCERTAINTIES,
-  REQUEST_INTENT_ERROR_CODES,
-  REQUEST_INTENT_SCHEMA_VERSION,
-  USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
-  RequestIntentError,
   compileUserRequestInterpretation,
   createIntentInterpretation,
   createUserChangeRequest,
@@ -46,10 +41,7 @@ export {
 } from "./request-intent.ts";
 
 export type {
-  IntentInterpretationId,
   IntentInterpretationV1,
-  RequestIntentErrorCode,
-  UserChangeRequestId,
   UserChangeRequestV1,
   UserRequestProposalV1,
 } from "./request-intent.ts";
