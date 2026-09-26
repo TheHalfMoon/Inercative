@@ -1,0 +1,186 @@
+name: p02-s04-t01a-shaping
+
+on:
+  push:
+    branches:
+      - p02/s04-t01a-question-gate-core-shaping
+    paths:
+      - .github/workflows/p02-s04-t01a-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: 1b07ac99374952533ffaf98f38708dfadc4b05b6
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S04-T01A deterministic Question Gate core" \
+            --outcome "A typed unresolved product decision can be deterministically classified as derive, assume, ask, or defer using impact, reversibility, confidence, derivability, trust significance, and question-budget policy, while any inferred choice becomes an inspectable Assumption Ledger record and no result grants runtime authority." \
+            --rationale "SG-000030 closes the user-request to proposed Product Graph delta boundary. The next canonical dependency is IN-P02-S04-T01. The smallest useful first slice is the deterministic Question Gate policy and assumption-record contract; correction-driven invalidation and user-facing graph views remain later bounded slices." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000031"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Define closed QuestionGateDecisionInputV1 semantics for impact, reversibility, confidence, derivability, material/trust-boundary significance, safe-progress requirement, and bounded question-budget state." \
+            --scope-in "Define deterministic QuestionGateResultV1 outcomes derive, assume, ask, and defer with stable reason codes, inspectable rationale data, and no capability or execution authority." \
+            --scope-in "Implement the zero-question-default policy: derive when derivable; assume reversible/low-impact or sufficiently high-confidence defaults; ask only when the missing answer materially changes product/trust boundaries, is costly or dangerous to reverse, confidence is insufficient, and project/runtime context cannot derive it; otherwise defer through a reversible prototype path." \
+            --scope-in "Define AssumptionRecordV1 for meaningful inferred choices with stable identity, statement, source/reason, confidence, impact, reversibility, affected Product Graph node IDs, and inferred status." \
+            --scope-in "Add focused deterministic tests covering all gate outcomes, boundary confidence values, malformed/unknown input, zero-question behavior, question-budget exhaustion, trust/safety blockers, stable assumption identity, canonical ordering, and input immutability." \
+            --scope-out "No model/provider/CLM/Jev invocation or natural-language decision generation; P03 owns learned decision providers." \
+            --scope-out "No correction, confirmation, supersession, or dependent-work/evidence invalidation semantics; those remain a later IN-P02-S04-T01 slice." \
+            --scope-out "No user-interface question batching, preview UI, Product Graph views, source/Git/database/network mutation, capability grants, credentials, deployment, billing, or external effects." \
+            --scope-out "No automatic Product Graph mutation; this Grain returns policy/ledger data only." \
+            --acceptance "Question Gate schemas are closed and deterministic, reject malformed/unknown/out-of-range input, and produce stable outcomes/reason codes independent of locale, time, randomness, network, or provider state." \
+            --acceptance "The implementation enforces zero questions by default and never returns ask unless the non-derivable decision is materially significant, expensive or dangerous to reverse, below the safe default confidence threshold, and required for safe progress; exhausted question budget cannot be bypassed." \
+            --acceptance "Assume outcomes produce a deterministic AssumptionRecordV1 whose identity is stable over canonical input, whose affected-node IDs are canonicalized, and whose confidence/impact/reversibility remain evidence rather than authority." \
+            --acceptance "Focused tests cover derive/assume/ask/defer, thresholds, question budget, malformed inputs, deterministic identity/order, and no input mutation; the public package surface adds no runtime dependency." \
+            --acceptance "The exact candidate passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR deterministic/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI before closure." \
+            --dependency SG-000030 \
+            --risk-level medium \
+            --recovery "Revert the question-gate module, exports, tests, and evidence. SG-000030 and the completed Change Intent/request interpretation path remain intact; IN-P02-S04-T01 stays open." \
+            --context-budget 7600 \
+            --context-estimate 5400 \
+            --change-surface "packages/product-graph/src/question-gate.ts" \
+            --change-surface "packages/product-graph/src/question-gate.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused deterministic Question Gate and Assumption Ledger tests plus full repository gates." \
+            --evidence "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI." \
+            --minimality-choice vertical-slice \
+            --minimality-rationale "Question Gate policy and first-class assumption records form one cohesive deterministic decision boundary. Correction/invalidation can be delivered later without weakening or duplicating this contract." \
+            --safety-status requirements-defined \
+            --safety-requirement "Question Gate output is planning evidence only and never grants capabilities, executes effects, or overrides deterministic security/privacy/billing policy." \
+            --safety-requirement "The gate must fail closed on malformed input and cannot ask around an exhausted question budget; safe-progress blockers remain explicit." \
+            --safety-requirement "Confidence is not authority. High confidence may support a reversible assumption but cannot authorize destructive, privileged, secret-bearing, billing, publication, or external-effect execution." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Reconcile SG-000030 closure and record SG-000031 shaping
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md <<'EOF'
+          # P02-S03-T01C closure — SG-000030
+
+          **Task:** `IN-P02-S03-T01C` — user-request intent interpretation boundary  
+          **SpecGrain:** `SG-000030`  
+          **Date:** 2026-09-26  
+          **Status:** canonically complete through PR #75
+
+          ## Canonical identities
+
+          - implementation base: `6fec46470b4926addaf18fcdd6a139317a6c2a9e`
+          - exact qualified candidate: `e1ecbe6033bd0719759cfa90a44bbaeb8edc10bd`
+          - implementation merge: `1b07ac99374952533ffaf98f38708dfadc4b05b6`
+          - exact-head CI: `36253536460` — SUCCESS on Ubuntu and Windows
+          - exact-candidate qualification: `36253606629` — SUCCESS
+          - post-merge fresh-main CI: `36253759531` — SUCCESS on merge commit `1b07ac99374952533ffaf98f38708dfadc4b05b6`
+
+          ## Delivered contract
+
+          SG-000030 adds the provider-neutral deterministic bridge from a raw user request plus one typed interpretation into the already-qualified Change Intent compiler. It binds request and interpretation identities to the exact Product Graph base, preserves confidence/uncertainty/provenance as proposal metadata, forwards ordered operations without semantic widening, and performs no model/provider call, source mutation, capability grant, network action, credential use, deployment, or external effect.
+
+          The exact candidate changed three files with final accounting `+597/-0`, passed Diffcipline v1.0.0 at R2, passed the full repository verification inside the qualification run (15 test files / 486 tests), and passed Alibaba Open Code Review v1.12.7 deterministic range accounting and rule resolution. The hosted OCR LLM is not claimed as PASS. Jev was `NOT_RUN_UNAVAILABLE` on the GitHub-hosted qualification runner and no Jev PASS is fabricated.
+
+          Earlier format/lint/typecheck and stale-qualification failures listed in PR #75 remain preserved as negative evidence and were repaired forward under new candidate identities.
+
+          ## Parent-handle completion
+
+          SG-000027, SG-000028, and SG-000030 together satisfy `IN-P02-S03-T01`: a user request can now become an exact-base-bound proposed Product Graph delta with uncertainty, confidence, and provenance, without source mutation.
+
+          `IN-P02-S03-T01 = DONE / CLOSED_CANONICAL`
+
+          This unlocks `IN-P02-S04-T01` Question Gate and Assumption Ledger. The first bounded slice is `SG-000031 / IN-P02-S04-T01A`.
+          EOF
+
+          cat > docs/evidence/P02_S04_T01A_SPECGRAIN_SHAPING_2026-09-26.md <<EOF
+          # P02-S04-T01A SpecGrain shaping evidence — 2026-09-26
+
+          **Task:** \`IN-P02-S04-T01A\` — deterministic Question Gate core  
+          **SpecGrain:** \`SG-000031\`  
+          **Canonical shaping base:** \`${CANONICAL_BASE}\`  
+          **SpecGrain source:** \`TheHalfMoon/SpecGrain@${SPEC_GRAIN_SOURCE}\`
+
+          ## Why this Grain is eligible
+
+          SG-000030 merged as \`${CANONICAL_BASE}\` and post-merge fresh-main CI run \`36253759531\` succeeded. That closes parent \`IN-P02-S03-T01\` and unlocks \`IN-P02-S04-T01\`.
+
+          ## Bounded outcome
+
+          This first S04 slice implements only the deterministic Question Gate decision contract and first-class inferred Assumption Ledger record. It intentionally leaves correction/confirmation/supersession and dependent-work/evidence invalidation for a later bounded S04 slice.
+
+          ## Native authoring
+
+          The temporary branch workflow installs exact SpecGrain source \`${SPEC_GRAIN_SOURCE}\` and executes \`draft -> shape -> refine -> grain -> check\`. The workflow removes itself before the persisted candidate. The resulting \`.specgrain/specs/SG-000031.json\` is the implementation authority after this governance branch is merged.
+
+          ## Safety boundary
+
+          Question Gate output is evidence/policy data, never capability authority. No model/provider, source/Git/database/network mutation, credentials, billing, publication, deployment, or external effect is authorized by this Grain.
+          EOF
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('specs/CURRENT.md')
+          s = p.read_text()
+          row = '| SG-000029 | IN-P02-S06-T01A | Semantic reference node contracts | DONE (PR #72) | `docs/evidence/P02_S06_T01A_CLOSURE_2026-09-26.md` |'
+          replacement = row + '\n| SG-000030 | IN-P02-S03-T01C | User-request intent interpretation boundary | DONE (PR #75) | `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md` |\n| SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | GRAIN / SHAPED | `docs/evidence/P02_S04_T01A_SPECGRAIN_SHAPING_2026-09-26.md` |'
+          if row not in s:
+              raise SystemExit('CURRENT table anchor missing')
+          s = s.replace(row, replacement, 1)
+          old = '''Next in dependency order:\n\n1. **IN-P02-S03-T01A and IN-P02-S03-T01B are complete** through SG-000027/PR #66 and SG-000028/PR #69. The full `IN-P02-S03-T01` handle remains open because both delivered slices intentionally start from already-typed Change Intent input, while the canonical S03 outcome begins from a user request and requires uncertainty/confidence/provenance.\n2. The next required S03 action is to shape `IN-P02-S03-T01C`: a bounded provider-neutral typed user-request / intent-interpretation boundary that feeds the deterministic Change Intent compiler without introducing P03 model/provider routing.\n3. **SG-000029 / IN-P02-S06-T01A is canonically complete through PR #72** with exact-head CI, Diffcipline R2, Alibaba OCR delegation review, and fresh-main Ubuntu/Windows CI. Later S06 relation semantics remain outside SG-000029.\n4. IN-P02-S07-T01 and IN-P02-S08-T01 remain dependency-eligible but require their own SpecGrain shaping.\n5. IN-P02-S04-T01 remains blocked behind the full IN-P02-S03-T01 handle, and IN-P02-S05-T01 behind IN-P02-S04-T01.\n'''
+          new = '''Next in dependency order:\n\n1. **IN-P02-S03-T01 is complete** across SG-000027, SG-000028, and SG-000030. SG-000030 merged through PR #75 as `1b07ac99374952533ffaf98f38708dfadc4b05b6`; post-merge fresh-main CI `36253759531` passed.\n2. **SG-000031 / IN-P02-S04-T01A is the active shaped frontier**: implement the deterministic Question Gate core and inferred Assumption Ledger record exactly as bounded by the Grain.\n3. The remainder of `IN-P02-S04-T01` (assumption correction/confirmation/supersession and dependent-work/evidence invalidation) stays outside SG-000031 and requires a later bounded Grain.\n4. **SG-000029 / IN-P02-S06-T01A remains canonically complete through PR #72**; later S06 relation semantics remain a separate eligible slice.\n5. IN-P02-S07-T01 remains dependency-eligible; IN-P02-S08-T01 follows its dataset dependency. IN-P02-S05-T01 remains blocked until the full `IN-P02-S04-T01` handle closes.\n'''
+          if old not in s:
+              raise SystemExit('CURRENT frontier anchor missing')
+          p.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Persist closure and native SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s04-t01a-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain docs/evidence specs/CURRENT.md .github/workflows/p02-s04-t01a-shaping.yml
+          git commit -m "spec(p02): close S03 and shape Question Gate core [shaped]"
+          git push origin HEAD:p02/s04-t01a-question-gate-core-shaping
