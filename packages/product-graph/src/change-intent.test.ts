@@ -374,7 +374,7 @@ describe("compileChangeIntent", () => {
     ).toThrowError(
       expect.objectContaining({
         code: "CHANGE_INTENT_DOMAIN_INVALID",
-        issues: [expect.objectContaining({ code: "DOMAIN_INVALID_EDGE_ENDPOINT" })],
+        issues: [expect.objectContaining({ code: "DOMAIN_ENDPOINT_KIND_MISMATCH" })],
       }),
     );
   });
