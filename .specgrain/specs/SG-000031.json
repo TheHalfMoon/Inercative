@@ -1,0 +1,73 @@
+{
+  "acceptance": [
+    "Schemas are closed and deterministic and reject malformed, unknown, or out-of-range input.",
+    "Ask is impossible unless all canonical blocker conditions are met and budget remains; exhausted budget fails safe to a non-ask outcome.",
+    "Assume creates a stable inferred AssumptionRecordV1 with canonical affected-node ordering; confidence remains evidence, never authority.",
+    "Focused tests cover derive/assume/ask/defer, confidence boundaries, budget, malformed input, deterministic identity, and no input mutation.",
+    "Exact implementation candidate must later pass full repository checks, Diffcipline R2, Alibaba OCR review/accounting where applicable, Jev where available, exact-head CI, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/question-gate.ts",
+    "packages/product-graph/src/question-gate.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7600,
+    "estimated_tokens": 5400
+  },
+  "dependencies": [
+    "SG-000030"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused Question Gate/Assumption Ledger tests plus full repository gates.",
+      "Diffcipline R2, Alibaba OCR where applicable, Jev where available, exact-head CI, and fresh-main CI."
+    ]
+  },
+  "id": "SG-000031",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "No existing Question Gate implementation exists in the product-graph package; this is a bounded new deterministic policy module reusing existing package conventions."
+      },
+      "safety": {
+        "requirements": [
+          "Question Gate output is planning evidence only and never capability or execution authority.",
+          "Malformed input and exhausted question budget fail closed; confidence never authorizes privileged or external effects."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A typed unresolved product decision is deterministically classified as derive, assume, ask, or defer while inferred choices become inspectable Assumption Ledger records and never grant runtime authority.",
+  "parent_id": null,
+  "rationale": "SG-000030 closes P02-S03 and unlocks IN-P02-S04-T01; the smallest first slice is deterministic Question Gate policy plus inferred assumption records, with correction/invalidation deferred.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000031 implementation/evidence; SG-000030 remains closed and IN-P02-S04-T01 remains open."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define closed typed decision input covering impact, reversibility, confidence, derivability, material/trust significance, safe-progress requirement, and bounded question budget.",
+    "Implement deterministic derive, assume, ask, and defer outcomes with stable reason codes and zero runtime authority.",
+    "Enforce zero-question default: derive when derivable; assume reversible/low-impact or sufficiently high-confidence defaults; ask only for a non-derivable material trust/product decision that is expensive or dangerous to reverse, below safe confidence, required for safe progress, and within budget; otherwise defer.",
+    "Define deterministic inferred AssumptionRecordV1 with statement, source/reason, confidence, impact, reversibility, canonical affected Product Graph node IDs, and stable identity.",
+    "Add focused tests for all outcomes, thresholds, malformed input, question budget, stable identity/order, and immutability."
+  ],
+  "scope_out": [
+    "No model/provider/CLM/Jev invocation, natural-language decision generation, or learned routing.",
+    "No assumption correction/confirmation/supersession or dependent-work/evidence invalidation; those require a later bounded S04 Grain.",
+    "No UI, Product Graph views, source/Git/database/network mutation, capability grants, credentials, billing, publication, deployment, or external effects."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S04-T01A deterministic Question Gate core"
+}
