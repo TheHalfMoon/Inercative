@@ -1,0 +1,205 @@
+name: p02-s04-t01b-shaping
+
+on:
+  push:
+    branches:
+      - p02/s04-t01b-assumption-ledger-lifecycle-shaping
+    paths:
+      - .github/workflows/p02-s04-t01b-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: d6c1fd8aee6b2361877cd4c307a9da178ea40c0b
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S04-T01B assumption lifecycle and invalidation ledger" \
+            --outcome "An inferred assumption can be deterministically confirmed, corrected, or superseded while the ledger emits stable invalidation references for dependent work/evidence and never grants runtime authority or performs the invalidation side effect itself." \
+            --rationale "SG-000031 delivers the deterministic Question Gate and immutable inferred AssumptionRecordV1. The remaining canonical P02-S04 outcome requires assumption correction/invalidation. The smallest dependent slice is an event-sourced lifecycle/reducer plus an inspectable invalidation manifest; persistence/UI/execution stay downstream." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000032"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Define a closed AssumptionLedgerEventInputV1 contract bound to an existing AssumptionRecordV1, with confirm/correct/supersede actions, bounded source text, action-specific replacement data, and bounded dependent-work/evidence reference lists." \
+            --scope-in "Implement a deterministic event/reducer state machine that preserves the original AssumptionRecordV1, rejects invalid or contradictory transitions, and produces inspectable inferred/confirmed/corrected/superseded ledger state without mutation of caller input." \
+            --scope-in "For correction or supersession, emit a stable AssumptionInvalidationManifestV1 containing canonical sorted/deduplicated dependent-work and evidence references; empty invalidation sets remain explicit and deterministic." \
+            --scope-in "Keep confirmation/correction/supersession as product-planning evidence only: confirmation may update ledger state but cannot grant capabilities, authorize privileged/external effects, or bypass later security/publish gates." \
+            --scope-in "Add focused tests for valid transitions, invalid transition order, action-specific required/forbidden fields, deterministic event/invalidation identities, canonical ordering, bounds, malformed/unknown inputs, immutability, and replay determinism." \
+            --scope-out "No UI/question batching, persistence/database writes, source/Git mutation, task cancellation, evidence deletion, cache eviction, or automatic downstream re-execution; this Grain emits invalidation data only." \
+            --scope-out "No model/provider/CLM/Jev invocation or learned routing; no natural-language assumption generation." \
+            --scope-out "No Product Graph user views, P03 run lifecycle, capability grants, credentials, billing, deployment, publication, or external effects." \
+            --scope-out "No change to SG-000031 Question Gate policy thresholds or derive/assume/ask/defer decision semantics." \
+            --acceptance "Schemas are closed, bounded, deterministic, and fail closed on malformed/unknown input or an invalid lifecycle transition." \
+            --acceptance "Confirm/correct/supersede replay produces stable ledger state while preserving the immutable origin AssumptionRecordV1; the same canonical input/event sequence produces byte-equivalent semantic output identities." \
+            --acceptance "Correction and supersession emit deterministic invalidation manifests whose dependent-work/evidence references are sorted, deduplicated, bounded, and carry no execution authority." \
+            --acceptance "Focused tests cover every valid action, invalid transitions, field constraints, identity/order, empty/non-empty invalidation sets, malformed input, replay determinism, and caller-input immutability." \
+            --acceptance "The exact implementation candidate later passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR review/accounting where applicable, Jev where available, exact-head CI, and fresh-main CI before closure." \
+            --dependency SG-000031 \
+            --risk-level medium \
+            --recovery "Revert the assumption-ledger module, exports, tests, and evidence. SG-000031 Question Gate core remains closed and IN-P02-S04-T01 remains partially complete." \
+            --context-budget 7800 \
+            --context-estimate 5600 \
+            --change-surface "packages/product-graph/src/assumption-ledger.ts" \
+            --change-surface "packages/product-graph/src/assumption-ledger.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused lifecycle/replay/invalidation tests plus full repository gates." \
+            --evidence "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI." \
+            --minimality-choice new-code \
+            --minimality-rationale "SG-000031 intentionally excludes lifecycle/invalidation behavior. A small dedicated event/reducer module composes with the existing immutable AssumptionRecordV1 without widening Question Gate policy or introducing persistence." \
+            --safety-status requirements-defined \
+            --safety-requirement "Ledger confirmation/correction/supersession is product-planning evidence and cannot become capability, security, billing, publication, deployment, or external-effect authority." \
+            --safety-requirement "Invalidation manifests identify stale dependent work/evidence but do not delete, mutate, cancel, or rerun anything automatically." \
+            --safety-requirement "Malformed inputs, contradictory transitions, stale assumption identities, and action-field mismatches fail closed." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Record SG-000031 closure and SG-000032 shaping
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md <<'EOF'
+          # P02-S04-T01A closure — SG-000031
+
+          **Task:** `IN-P02-S04-T01A` — deterministic Question Gate core  
+          **SpecGrain:** `SG-000031`  
+          **Date:** 2026-09-26  
+          **Status:** canonically complete through PR #78
+
+          ## Canonical identities
+
+          - implementation base: `475b80ae583b0f6e96df9cd2659456cb9da3af36`
+          - exact qualified candidate: `f751495988b786513fae55e3dce6b2ce8e5be1ff`
+          - implementation merge: `d6c1fd8aee6b2361877cd4c307a9da178ea40c0b`
+          - exact-head CI: `36255290815` — SUCCESS on Ubuntu and Windows
+          - exact-candidate qualification: `36255607413` — SUCCESS
+          - post-merge fresh-main CI: `36255715278` / #296 — SUCCESS on Ubuntu and Windows
+
+          ## Delivered contract
+
+          SG-000031 adds a closed deterministic `QuestionGateDecisionInputV1` plus `derive / assume / ask / defer` policy and immutable inferred `AssumptionRecordV1` output. `ask` is possible only for a non-derivable material product/trust-boundary decision that is hard to reverse, below the safe confidence threshold, required for safe progress, and still inside the bounded question budget. Exhausted budget fails safe to `defer`.
+
+          Assumption identity is deterministic over canonical content, affected Product Graph node IDs are sorted/deduplicated before identity derivation, outputs are frozen, and confidence remains evidence rather than authority.
+
+          ## Qualification
+
+          The exact implementation candidate changed three files at `+588/-0`, passed full Ubuntu/Windows CI, Diffcipline v1.0.0 R2, checksum-verified Alibaba Open Code Review v1.12.7 deterministic delegation accounting/rule resolution, and host semantic review with zero unresolved material findings.
+
+          Qualification artifact: `sg-000031-exact-candidate-qualification`, artifact ID `10910965492`, digest `sha256:4032f01cdb61e0ae41ad5f45a97393d89755e145b32b5951c4fdafd7017f64cc`.
+
+          Hosted OCR LLM remained `NOT_RUN / BLOCKED`; Jev was `NOT_RUN / UNAVAILABLE` on the GitHub-hosted runner. Neither is represented as PASS.
+
+          ## Preserved negative evidence
+
+          Earlier format/setup/size failures on prior candidate identities remain preserved in PR #78. They were repaired forward. No proof threshold was weakened.
+
+          ## Closure and remaining parent scope
+
+          All SG-000031 acceptance/evidence obligations are satisfied.
+
+          `SG-000031 = DONE / CLOSED_CANONICAL`
+
+          This does not close parent `IN-P02-S04-T01`. Assumption confirmation/correction/supersession and dependent-work/evidence invalidation remain and are shaped next as SG-000032.
+          EOF
+
+          cat > docs/evidence/P02_S04_T01B_SPECGRAIN_SHAPING_2026-09-26.md <<EOF
+          # P02-S04-T01B SpecGrain shaping evidence — 2026-09-26
+
+          **Task:** \`IN-P02-S04-T01B\` — assumption lifecycle and invalidation ledger  
+          **SpecGrain:** \`SG-000032\`  
+          **Canonical shaping base:** \`${CANONICAL_BASE}\`  
+          **SpecGrain source:** \`TheHalfMoon/SpecGrain@${SPEC_GRAIN_SOURCE}\`  
+          **Native shaping run:** \`${GITHUB_RUN_ID}\`
+
+          ## Eligibility
+
+          SG-000031 merged as \`${CANONICAL_BASE}\` through PR #78 and fresh-main CI \`36255715278\` completed SUCCESS on Ubuntu and Windows. The first Question Gate slice is therefore closable and its explicitly deferred lifecycle/invalidation remainder is dependency-eligible.
+
+          ## Bounded outcome
+
+          SG-000032 owns only deterministic assumption confirmation/correction/supersession state plus inspectable invalidation references. It does not perform persistence or invalidate/delete/rerun dependent work itself.
+
+          ## Native SpecGrain execution
+
+          This temporary workflow installs exact SpecGrain source \`${SPEC_GRAIN_SOURCE}\` and executes \`draft -> shape -> refine -> grain -> check\`. It removes itself before persisting the final shaping candidate.
+
+          ## Safety boundary
+
+          Lifecycle state is planning evidence only. Confirmation or correction never becomes capability/security/billing/deployment/external-effect authority, and invalidation output never performs the invalidation side effect.
+          EOF
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('specs/CURRENT.md')
+          s = p.read_text()
+          anchor = '| SG-000030 | IN-P02-S03-T01C | Provider-neutral user-request / intent-interpretation boundary | DONE (implementation PR #75) | `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md` |'
+          rows = anchor + '\n| SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | DONE (PR #78) | `docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md` |\n| SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | GRAIN / SHAPED | `docs/evidence/P02_S04_T01B_SPECGRAIN_SHAPING_2026-09-26.md` |'
+          if anchor not in s:
+              raise SystemExit('CURRENT ledger anchor missing')
+          s = s.replace(anchor, rows, 1)
+
+          insert_before = '### P02-S06\n'
+          section = '''### P02-S04\n\nPartially delivered. SG-000031 / `IN-P02-S04-T01A` closes the deterministic Question Gate core and immutable inferred Assumption Ledger record.\n\nSG-000032 / `IN-P02-S04-T01B` is the active shaped remainder for deterministic assumption confirmation/correction/supersession and inspectable dependent-work/evidence invalidation references. It must not mutate or rerun downstream work automatically and cannot grant runtime authority.\n\n`IN-P02-S05-T01` remains blocked until SG-000032 is implemented, qualified, merged, and the full parent `IN-P02-S04-T01` is canonically closed.\n\n'''
+          if '### P02-S04\n' not in s:
+              if insert_before not in s:
+                  raise SystemExit('CURRENT P02-S06 anchor missing')
+              s = s.replace(insert_before, section + insert_before, 1)
+
+          start = s.index('## Current dependency-unlocking frontier')
+          end = s.index('## Truthfully not run')
+          frontier = '''## Current dependency-unlocking frontier\n\nThe active dependency-unlocking unit is:\n\n`SG-000032 / IN-P02-S04-T01B — assumption lifecycle and invalidation ledger`\n\nSG-000031 is closed canonically after PR #78 plus fresh-main CI `36255715278`. SG-000032 is the bounded remainder required to finish the canonical P02-S04 correction/invalidation outcome.\n\nThe implementation must remain deterministic/provider-neutral, preserve the immutable origin assumption, reject invalid lifecycle transitions, and emit invalidation references without deleting/mutating/rerunning dependent work. Confirmation/correction/supersession remains planning evidence and never capability authority.\n\nAfter SG-000032 closes, re-evaluate whether the full `IN-P02-S04-T01` outcome is satisfied; if yes, close the parent and unlock `IN-P02-S05-T01 — Build Product Graph user views`.\n\nParallel P02-S06 relation vocabulary and P02-S07 dataset semantics remain separately eligible and must not be combined into SG-000032 merely for convenience.\n\n'''
+          s = s[:start] + frontier + s[end:]
+          p.write_text(s)
+          PY
+
+      - name: Persist closure and native SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s04-t01b-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain docs/evidence specs/CURRENT.md .github/workflows/p02-s04-t01b-shaping.yml
+          git commit -m "spec(p02): close Question Gate core and shape assumption lifecycle [shaped]"
+          git push origin HEAD:p02/s04-t01b-assumption-ledger-lifecycle-shaping
