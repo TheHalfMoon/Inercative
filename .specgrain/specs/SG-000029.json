@@ -1,0 +1,71 @@
+{
+  "acceptance": [
+    "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include exactly the four new reference node kinds with deterministic closed field schemas while all previously qualified node kinds remain compatible.",
+    "Focused positive and negative tests prove required fields, optional fields, unknown-field rejection, type validation, deterministic issue ordering, and compatibility with existing domain validators.",
+    "The implementation adds no dependency or provider/runtime side effect and the full repository format, lint, typecheck, and test suites pass on the exact candidate.",
+    "Exact candidate evidence records Diffcipline, Alibaba OCR deterministic/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/domain.ts",
+    "packages/product-graph/src/domain.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6200,
+    "estimated_tokens": 4300
+  },
+  "dependencies": [
+    "SG-000026"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused semantic-reference node validation tests plus full format/lint/typecheck/test suites.",
+      "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000029",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "The existing Product Graph domain node-kind/spec/validator machinery already provides the correct deterministic extension point; adding a new package or abstraction would duplicate it."
+      },
+      "safety": {
+        "requirements": [
+          "Reference nodes are semantic data only and cannot grant capability, execute a Skill, mutate source, deploy a release, call a provider, or perform an external effect.",
+          "Referenced identities and revisions remain explicit data and must not be treated as proof that an external artifact exists or is trusted."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable Product Graph domain layer can represent design-system revision references, skill references, exploration branches, and releases as typed deterministic nodes without provider, source, deployment, or capability side effects.",
+  "parent_id": null,
+  "rationale": "IN-P02-S06-T01 is dependency-eligible because IN-P02-S02-T02 is canonically complete. The full semantic-reference task includes both node contracts and later relation semantics, so this first Grain is deliberately bounded to node contracts only.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the four semantic-reference node-kind/spec additions, their focused tests, exports, and evidence; all Product Graph semantics through SG-000028 remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add closed domain node kinds for design-system revision references, skill references, exploration branches, and releases using the existing Product Graph node contract.",
+    "Define deterministic required/optional attribute schemas for the four reference node kinds, including stable referenced revision/identity fields and explicit human-inspectable metadata.",
+    "Extend domain validation and focused tests so malformed or unknown reference fields fail closed and canonical JSON identity remains deterministic.",
+    "Export the new node-kind vocabulary through the existing @ineractive/product-graph public surface without adding a package or runtime dependency."
+  ],
+  "scope_out": [
+    "No semantic edges such as bound_to, may_use, forks, promotes, or targets; those remain a later bounded S06 slice.",
+    "No source bindings, design compiler behavior, Skill execution, exploration worktree creation, release deployment, provider calls, secrets, network access, or external effects.",
+    "No Dataset/ProductCompleteness work and no change to P02-S03 Change Intent or P02-S04 Question Gate semantics."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S06-T01A semantic reference node contracts"
+}
