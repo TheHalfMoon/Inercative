@@ -115,7 +115,9 @@ function closed(value: unknown, keys: readonly string[], label: string): Record<
     return fail("ASSUMPTION_LEDGER_INVALID_SCHEMA", `${label} must be a plain object.`);
   }
   const candidate = value as Record<string, unknown>;
-  const unknown = Object.keys(candidate).filter((key) => !keys.includes(key)).sort(compareText);
+  const unknown = Object.keys(candidate)
+    .filter((key) => !keys.includes(key))
+    .sort(compareText);
   if (unknown.length > 0) {
     fail("ASSUMPTION_LEDGER_INVALID_SCHEMA", `${label} has unknown keys: ${unknown.join(", ")}.`);
   }
@@ -187,7 +189,10 @@ function normalizeOrigin(value: unknown): AssumptionRecordV1 {
     "Assumption origin",
   );
   if (candidate.schemaVersion !== QUESTION_GATE_SCHEMA_VERSION || candidate.status !== "inferred") {
-    return fail("ASSUMPTION_LEDGER_INVALID_ORIGIN", "Origin must be an inferred AssumptionRecordV1.");
+    return fail(
+      "ASSUMPTION_LEDGER_INVALID_ORIGIN",
+      "Origin must be an inferred AssumptionRecordV1.",
+    );
   }
   if (
     typeof candidate.confidence !== "number" ||
