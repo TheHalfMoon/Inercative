@@ -40,11 +40,7 @@ export {
   validateUserChangeRequest,
 } from "./request-intent.ts";
 
-export type {
-  IntentInterpretationV1,
-  UserChangeRequestV1,
-  UserRequestProposalV1,
-} from "./request-intent.ts";
+export type { IntentInterpretationV1, UserChangeRequestV1 } from "./request-intent.ts";
 
 export {
   DOMAIN_AUDIT_VALUES,
