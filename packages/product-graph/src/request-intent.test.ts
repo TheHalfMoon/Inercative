@@ -143,9 +143,9 @@ describe("request intent boundary", () => {
         provenance: { source: "user", reference: "message:44" },
       }),
     ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_INVALID_SCHEMA" }));
-    expect(() => validateUserChangeRequest({ ...pair.userRequest, authority: "admin" })).toThrowError(
-      expect.objectContaining({ code: "REQUEST_INTENT_INVALID_SCHEMA" }),
-    );
+    expect(() =>
+      validateUserChangeRequest({ ...pair.userRequest, authority: "admin" }),
+    ).toThrowError(expect.objectContaining({ code: "REQUEST_INTENT_INVALID_SCHEMA" }));
   });
 
   it("forwards ordered operations into the existing deterministic Change Intent compiler", () => {

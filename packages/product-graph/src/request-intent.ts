@@ -123,7 +123,11 @@ function record(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function exactKeys(value: Record<string, unknown>, allowed: readonly string[], label: string): void {
+function exactKeys(
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  label: string,
+): void {
   const unknown = Object.keys(value)
     .filter((key) => !allowed.includes(key))
     .sort();
@@ -161,7 +165,11 @@ function provenance(value: unknown, label: string): ChangeIntentProvenanceV1 {
   }
   return Object.freeze({
     source: source as ChangeIntentProvenanceSource,
-    reference: boundedText(candidate.reference, `${label} reference`, REQUEST_INTENT_MAX_REFERENCE_LENGTH),
+    reference: boundedText(
+      candidate.reference,
+      `${label} reference`,
+      REQUEST_INTENT_MAX_REFERENCE_LENGTH,
+    ),
   });
 }
 
@@ -182,7 +190,9 @@ function json(value: unknown): JsonValue {
 }
 
 function digest(value: unknown): string {
-  return createHash("sha256").update(JSON.stringify(canonical(json(value)))).digest("hex");
+  return createHash("sha256")
+    .update(JSON.stringify(canonical(json(value))))
+    .digest("hex");
 }
 
 function requestParts(value: unknown, envelope: boolean): RequestParts {
@@ -199,7 +209,11 @@ function requestParts(value: unknown, envelope: boolean): RequestParts {
   }
   return {
     baseRevision: revision(candidate.baseRevision, "User change request baseRevision"),
-    text: boundedText(candidate.text, "User change request text", USER_CHANGE_REQUEST_MAX_TEXT_LENGTH),
+    text: boundedText(
+      candidate.text,
+      "User change request text",
+      USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
+    ),
     provenance: provenance(candidate.provenance, "User change request provenance"),
   };
 }
@@ -244,8 +258,15 @@ function operationList(value: unknown): readonly ChangeIntentOperationV1[] {
   return Object.freeze(JSON.parse(JSON.stringify(value)) as ChangeIntentOperationV1[]);
 }
 
-function interpretationParts(value: unknown, request: UserChangeRequestV1, envelope: boolean): InterpretationParts {
-  const candidate = record(value, envelope ? "Intent interpretation" : "Intent interpretation input");
+function interpretationParts(
+  value: unknown,
+  request: UserChangeRequestV1,
+  envelope: boolean,
+): InterpretationParts {
+  const candidate = record(
+    value,
+    envelope ? "Intent interpretation" : "Intent interpretation input",
+  );
   exactKeys(
     candidate,
     envelope
@@ -264,7 +285,10 @@ function interpretationParts(value: unknown, request: UserChangeRequestV1, envel
   );
   if (envelope) {
     if (candidate.schemaVersion !== REQUEST_INTENT_SCHEMA_VERSION) {
-      return fail("REQUEST_INTENT_INVALID_SCHEMA", "Intent interpretation schemaVersion must be 1.");
+      return fail(
+        "REQUEST_INTENT_INVALID_SCHEMA",
+        "Intent interpretation schemaVersion must be 1.",
+      );
     }
     if (candidate.requestId !== request.requestId) {
       return fail(
@@ -303,7 +327,9 @@ function interpretationFrom(
   });
 }
 
-export function createUserChangeRequest(input: CreateUserChangeRequestInputV1): UserChangeRequestV1 {
+export function createUserChangeRequest(
+  input: CreateUserChangeRequestInputV1,
+): UserChangeRequestV1 {
   return requestFrom(requestParts(input, false));
 }
 
