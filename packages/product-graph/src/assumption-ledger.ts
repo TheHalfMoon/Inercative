@@ -305,6 +305,7 @@ function invalidation(eventRecord: AssumptionLedgerEventV1): AssumptionInvalidat
   });
 }
 
+// Replay emits evidence only; callers own every downstream invalidation side effect.
 export function replayAssumptionLedger(
   originValue: unknown,
   eventValues: readonly unknown[],
