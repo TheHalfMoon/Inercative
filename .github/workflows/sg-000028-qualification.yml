@@ -23,15 +23,19 @@ jobs:
           ref: ${{ env.CANDIDATE_SHA }}
           fetch-depth: 0
 
+      - name: Initialize qualification evidence directories
+        shell: bash
+        run: mkdir -p _qualification .tools
+
       - name: Set up Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'pnpm'
 
       - name: Set up pnpm 12.4.2
         shell: bash
         run: |
+          set -euo pipefail
           npm install --global pnpm@12.4.2
           pnpm --version
 
@@ -43,7 +47,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p _qualification .tools
           head="$(git rev-parse HEAD)"
           test "$head" = "$CANDIDATE_SHA"
           git cat-file -e "$BASE_SHA^{commit}"
