@@ -137,7 +137,10 @@ function boolean(value: unknown, label: string): boolean {
 
 function confidence(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) {
-    return fail("QUESTION_GATE_INVALID_CONFIDENCE", "Question Gate confidence must be between 0 and 1.");
+    return fail(
+      "QUESTION_GATE_INVALID_CONFIDENCE",
+      "Question Gate confidence must be between 0 and 1.",
+    );
   }
   return value;
 }
@@ -184,7 +187,10 @@ function questionBudget(value: unknown): QuestionBudgetV1 {
 
 function affectedNodeIds(value: unknown): readonly string[] {
   if (!Array.isArray(value) || value.length > QUESTION_GATE_MAX_AFFECTED_NODE_IDS) {
-    return fail("QUESTION_GATE_INVALID_AFFECTED_NODE_IDS", "Invalid affected Product Graph node count.");
+    return fail(
+      "QUESTION_GATE_INVALID_AFFECTED_NODE_IDS",
+      "Invalid affected Product Graph node count.",
+    );
   }
   const ids = value.map((item) => {
     if (
@@ -226,7 +232,11 @@ export function validateQuestionGateDecisionInput(value: unknown): QuestionGateD
   }
   return Object.freeze({
     schemaVersion: QUESTION_GATE_SCHEMA_VERSION,
-    statement: boundedText(candidate.statement, "Question Gate statement", QUESTION_GATE_MAX_TEXT_LENGTH),
+    statement: boundedText(
+      candidate.statement,
+      "Question Gate statement",
+      QUESTION_GATE_MAX_TEXT_LENGTH,
+    ),
     source: boundedText(candidate.source, "Question Gate source", QUESTION_GATE_MAX_TEXT_LENGTH),
     confidence: confidence(candidate.confidence),
     impact: impact(candidate.impact),
