@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "Schemas are closed, bounded, deterministic, and fail closed on malformed/unknown input or an invalid lifecycle transition.",
+    "Confirm/correct/supersede replay produces stable ledger state while preserving the immutable origin AssumptionRecordV1; the same canonical input/event sequence produces byte-equivalent semantic output identities.",
+    "Correction and supersession emit deterministic invalidation manifests whose dependent-work/evidence references are sorted, deduplicated, bounded, and carry no execution authority.",
+    "Focused tests cover every valid action, invalid transitions, field constraints, identity/order, empty/non-empty invalidation sets, malformed input, replay determinism, and caller-input immutability.",
+    "The exact implementation candidate later passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR review/accounting where applicable, Jev where available, exact-head CI, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/assumption-ledger.ts",
+    "packages/product-graph/src/assumption-ledger.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7800,
+    "estimated_tokens": 5600
+  },
+  "dependencies": [
+    "SG-000031"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused lifecycle/replay/invalidation tests plus full repository gates.",
+      "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000032",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "SG-000031 intentionally excludes lifecycle/invalidation behavior. A small dedicated event/reducer module composes with the existing immutable AssumptionRecordV1 without widening Question Gate policy or introducing persistence."
+      },
+      "safety": {
+        "requirements": [
+          "Ledger confirmation/correction/supersession is product-planning evidence and cannot become capability, security, billing, publication, deployment, or external-effect authority.",
+          "Invalidation manifests identify stale dependent work/evidence but do not delete, mutate, cancel, or rerun anything automatically.",
+          "Malformed inputs, contradictory transitions, stale assumption identities, and action-field mismatches fail closed."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "An inferred assumption can be deterministically confirmed, corrected, or superseded while the ledger emits stable invalidation references for dependent work/evidence and never grants runtime authority or performs the invalidation side effect itself.",
+  "parent_id": null,
+  "rationale": "SG-000031 delivers the deterministic Question Gate and immutable inferred AssumptionRecordV1. The remaining canonical P02-S04 outcome requires assumption correction/invalidation. The smallest dependent slice is an event-sourced lifecycle/reducer plus an inspectable invalidation manifest; persistence/UI/execution stay downstream.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the assumption-ledger module, exports, tests, and evidence. SG-000031 Question Gate core remains closed and IN-P02-S04-T01 remains partially complete."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a closed AssumptionLedgerEventInputV1 contract bound to an existing AssumptionRecordV1, with confirm/correct/supersede actions, bounded source text, action-specific replacement data, and bounded dependent-work/evidence reference lists.",
+    "Implement a deterministic event/reducer state machine that preserves the original AssumptionRecordV1, rejects invalid or contradictory transitions, and produces inspectable inferred/confirmed/corrected/superseded ledger state without mutation of caller input.",
+    "For correction or supersession, emit a stable AssumptionInvalidationManifestV1 containing canonical sorted/deduplicated dependent-work and evidence references; empty invalidation sets remain explicit and deterministic.",
+    "Keep confirmation/correction/supersession as product-planning evidence only: confirmation may update ledger state but cannot grant capabilities, authorize privileged/external effects, or bypass later security/publish gates.",
+    "Add focused tests for valid transitions, invalid transition order, action-specific required/forbidden fields, deterministic event/invalidation identities, canonical ordering, bounds, malformed/unknown inputs, immutability, and replay determinism."
+  ],
+  "scope_out": [
+    "No UI/question batching, persistence/database writes, source/Git mutation, task cancellation, evidence deletion, cache eviction, or automatic downstream re-execution; this Grain emits invalidation data only.",
+    "No model/provider/CLM/Jev invocation or learned routing; no natural-language assumption generation.",
+    "No Product Graph user views, P03 run lifecycle, capability grants, credentials, billing, deployment, publication, or external effects.",
+    "No change to SG-000031 Question Gate policy thresholds or derive/assume/ask/defer decision semantics."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S04-T01B assumption lifecycle and invalidation ledger"
+}
