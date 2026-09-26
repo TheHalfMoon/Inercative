@@ -1,0 +1,86 @@
+name: p02-s04-t01a-shaping-retry
+
+on:
+  push:
+    branches:
+      - p02/s04-t01a-question-gate-core-shaping
+    paths:
+      - .github/workflows/p02-s04-t01a-shaping-retry.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: 1b07ac99374952533ffaf98f38708dfadc4b05b6
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify exact base and install pinned SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+      - name: Author SG-000031
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S04-T01A deterministic Question Gate core" \
+            --outcome "A typed unresolved product decision is deterministically classified as derive, assume, ask, or defer while inferred choices become inspectable Assumption Ledger records and never grant runtime authority." \
+            --rationale "SG-000030 closes P02-S03 and unlocks IN-P02-S04-T01; the smallest first slice is deterministic Question Gate policy plus inferred assumption records, with correction/invalidation deferred." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000031"
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Define closed typed decision input covering impact, reversibility, confidence, derivability, material/trust significance, safe-progress requirement, and bounded question budget." \
+            --scope-in "Implement deterministic derive, assume, ask, and defer outcomes with stable reason codes and zero runtime authority." \
+            --scope-in "Enforce zero-question default: derive when derivable; assume reversible/low-impact or sufficiently high-confidence defaults; ask only for a non-derivable material trust/product decision that is expensive or dangerous to reverse, below safe confidence, required for safe progress, and within budget; otherwise defer." \
+            --scope-in "Define deterministic inferred AssumptionRecordV1 with statement, source/reason, confidence, impact, reversibility, canonical affected Product Graph node IDs, and stable identity." \
+            --scope-in "Add focused tests for all outcomes, thresholds, malformed input, question budget, stable identity/order, and immutability." \
+            --scope-out "No model/provider/CLM/Jev invocation, natural-language decision generation, or learned routing." \
+            --scope-out "No assumption correction/confirmation/supersession or dependent-work/evidence invalidation; those require a later bounded S04 Grain." \
+            --scope-out "No UI, Product Graph views, source/Git/database/network mutation, capability grants, credentials, billing, publication, deployment, or external effects." \
+            --acceptance "Schemas are closed and deterministic and reject malformed, unknown, or out-of-range input." \
+            --acceptance "Ask is impossible unless all canonical blocker conditions are met and budget remains; exhausted budget fails safe to a non-ask outcome." \
+            --acceptance "Assume creates a stable inferred AssumptionRecordV1 with canonical affected-node ordering; confidence remains evidence, never authority." \
+            --acceptance "Focused tests cover derive/assume/ask/defer, confidence boundaries, budget, malformed input, deterministic identity, and no input mutation." \
+            --acceptance "Exact implementation candidate must later pass full repository checks, Diffcipline R2, Alibaba OCR review/accounting where applicable, Jev where available, exact-head CI, and fresh-main CI before closure." \
+            --dependency SG-000030 \
+            --risk-level medium \
+            --recovery "Revert SG-000031 implementation/evidence; SG-000030 remains closed and IN-P02-S04-T01 remains open." \
+            --context-budget 7600 \
+            --context-estimate 5400 \
+            --change-surface "packages/product-graph/src/question-gate.ts" \
+            --change-surface "packages/product-graph/src/question-gate.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused Question Gate/Assumption Ledger tests plus full repository gates." \
+            --evidence "Diffcipline R2, Alibaba OCR where applicable, Jev where available, exact-head CI, and fresh-main CI." \
+            --minimality-choice new-code \
+            --minimality-rationale "No existing Question Gate implementation exists in the product-graph package; this is a bounded new deterministic policy module reusing existing package conventions." \
+            --safety-status requirements-defined \
+            --safety-requirement "Question Gate output is planning evidence only and never capability or execution authority." \
+            --safety-requirement "Malformed input and exhausted question budget fail closed; confidence never authorizes privileged or external effects." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+      - name: Persist native state and remove temporary workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/p02-s04-t01a-shaping.yml .github/workflows/p02-s04-t01a-shaping-retry.yml
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows
+          git commit -m "spec(p02): shape Question Gate core [shaped]"
+          git push origin HEAD:p02/s04-t01a-question-gate-core-shaping
