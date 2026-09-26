@@ -33,6 +33,16 @@ export type {
 } from "./change-intent.ts";
 
 export {
+  compileUserRequestInterpretation,
+  createIntentInterpretation,
+  createUserChangeRequest,
+  validateIntentInterpretation,
+  validateUserChangeRequest,
+} from "./request-intent.ts";
+
+export type { IntentInterpretationV1, UserChangeRequestV1 } from "./request-intent.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
