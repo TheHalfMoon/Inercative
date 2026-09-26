@@ -1,0 +1,103 @@
+name: p02-s06-t01a-shaping
+
+on:
+  push:
+    branches:
+      - p02/s06-t01a-reference-nodes-shaping
+    paths:
+      - .github/workflows/p02-s06-t01a-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: bc58a8e9b2f261bbf1d98459bf2eb91310ae1ce8
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S06-T01A semantic reference node contracts" \
+            --outcome "The stable Product Graph domain layer can represent design-system revision references, skill references, exploration branches, and releases as typed deterministic nodes without provider, source, deployment, or capability side effects." \
+            --rationale "IN-P02-S06-T01 is dependency-eligible because IN-P02-S02-T02 is canonically complete. The full semantic-reference task includes both node contracts and later relation semantics, so this first Grain is deliberately bounded to node contracts only." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000029"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Add closed domain node kinds for design-system revision references, skill references, exploration branches, and releases using the existing Product Graph node contract." \
+            --scope-in "Define deterministic required/optional attribute schemas for the four reference node kinds, including stable referenced revision/identity fields and explicit human-inspectable metadata." \
+            --scope-in "Extend domain validation and focused tests so malformed or unknown reference fields fail closed and canonical JSON identity remains deterministic." \
+            --scope-in "Export the new node-kind vocabulary through the existing @ineractive/product-graph public surface without adding a package or runtime dependency." \
+            --scope-out "No semantic edges such as bound_to, may_use, forks, promotes, or targets; those remain a later bounded S06 slice." \
+            --scope-out "No source bindings, design compiler behavior, Skill execution, exploration worktree creation, release deployment, provider calls, secrets, network access, or external effects." \
+            --scope-out "No Dataset/ProductCompleteness work and no change to P02-S03 Change Intent or P02-S04 Question Gate semantics." \
+            --acceptance "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include exactly the four new reference node kinds with deterministic closed field schemas while all previously qualified node kinds remain compatible." \
+            --acceptance "Focused positive and negative tests prove required fields, optional fields, unknown-field rejection, type validation, deterministic issue ordering, and compatibility with existing domain validators." \
+            --acceptance "The implementation adds no dependency or provider/runtime side effect and the full repository format, lint, typecheck, and test suites pass on the exact candidate." \
+            --acceptance "Exact candidate evidence records Diffcipline, Alibaba OCR deterministic/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI before closure." \
+            --dependency SG-000026 \
+            --risk-level medium \
+            --recovery "Revert the four semantic-reference node-kind/spec additions, their focused tests, exports, and evidence; all Product Graph semantics through SG-000028 remain intact." \
+            --context-budget 6200 \
+            --context-estimate 4300 \
+            --change-surface "packages/product-graph/src/domain.ts" \
+            --change-surface "packages/product-graph/src/domain.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused semantic-reference node validation tests plus full format/lint/typecheck/test suites." \
+            --evidence "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI." \
+            --minimality-choice reuse-existing \
+            --minimality-rationale "The existing Product Graph domain node-kind/spec/validator machinery already provides the correct deterministic extension point; adding a new package or abstraction would duplicate it." \
+            --safety-status requirements-defined \
+            --safety-requirement "Reference nodes are semantic data only and cannot grant capability, execute a Skill, mutate source, deploy a release, call a provider, or perform an external effect." \
+            --safety-requirement "Referenced identities and revisions remain explicit data and must not be treated as proof that an external artifact exists or is trusted." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Persist only SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s06-t01a-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows/p02-s06-t01a-shaping.yml
+          git commit -m "spec(p02): shape S06 semantic reference nodes [shaped]"
+          git push origin HEAD:p02/s06-t01a-reference-nodes-shaping
