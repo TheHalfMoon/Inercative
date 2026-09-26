@@ -91,16 +91,31 @@ jobs:
           review_focus=closed schema;derive-assume-ask-defer precedence;question budget;confidence boundary;stable assumption identity;canonical node ordering;immutability;no capability authority;no external effects
           EOF
 
-      - name: Probe Jev availability truthfully
+      - name: Detect Jev availability
+        id: jev
         shell: bash
         run: |
           set -euo pipefail
           if command -v jev >/dev/null 2>&1; then
-            printf 'state=AVAILABLE\npath=%s\n' "$(command -v jev)" | tee "$EVIDENCE_DIR/jev-availability.txt"
-            jev --version 2>&1 | tee -a "$EVIDENCE_DIR/jev-availability.txt" || true
+            echo 'available=true' >> "$GITHUB_OUTPUT"
           else
-            printf 'state=NOT_RUN_UNAVAILABLE\nreason=jev executable is not installed on the GitHub-hosted qualification runner\n' | tee "$EVIDENCE_DIR/jev-availability.txt"
+            echo 'available=false' >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Jev AVAILABLE — record executable identity
+        if: steps.jev.outputs.available == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'state=AVAILABLE\npath=%s\n' "$(command -v jev)" | tee "$EVIDENCE_DIR/jev-availability.txt"
+          jev --version 2>&1 | tee -a "$EVIDENCE_DIR/jev-availability.txt" || true
+
+      - name: Jev NOT_RUN_UNAVAILABLE — no executable on runner
+        if: steps.jev.outputs.available != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'state=NOT_RUN_UNAVAILABLE\nreason=jev executable is not installed on the GitHub-hosted qualification runner\n' | tee "$EVIDENCE_DIR/jev-availability.txt"
 
       - name: Upload evidence
         if: always()
