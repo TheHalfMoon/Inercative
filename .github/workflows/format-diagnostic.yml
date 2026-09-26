@@ -1,0 +1,50 @@
+name: format-diagnostic
+
+on:
+  push:
+    branches: [diagnostic/prettier-sg000028]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: format-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply canonical formatting
+        run: pnpm exec prettier --write packages/product-graph/src/change-intent.ts packages/product-graph/src/change-intent.test.ts packages/product-graph/src/index.ts
+
+      - name: Commit formatter result when needed
+        shell: bash
+        run: |
+          git add packages/product-graph/src/change-intent.ts packages/product-graph/src/change-intent.test.ts packages/product-graph/src/index.ts
+          if git diff --cached --quiet; then
+            echo "No formatter changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style(diagnostic): apply prettier output"
+          git push
