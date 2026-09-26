@@ -18,9 +18,11 @@ jobs:
         with:
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 24.x
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Apply repository formatter to SG-000031 candidate
@@ -35,9 +37,5 @@ jobs:
           git config user.name "TheHalfMoon"
           git config user.email "alshehriofficial@gmail.com"
           git add packages/product-graph/src .github/workflows/p02-s04-t01a-format.yml
-          if git diff --cached --quiet; then
-            echo "Formatter produced no changes." >&2
-            exit 1
-          fi
           git commit -m "style(product-graph): format SG-000031 candidate [formatted]"
           git push origin HEAD:p02/s04-t01a-question-gate-core
