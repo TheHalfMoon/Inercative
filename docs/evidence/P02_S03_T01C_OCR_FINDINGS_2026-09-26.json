@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "task": "IN-P02-S03-T01C",
+  "specgrain": "SG-000030",
+  "base": "6fec46470b4926addaf18fcdd6a139317a6c2a9e",
+  "candidate": "e1ecbe6033bd0719759cfa90a44bbaeb8edc10bd",
+  "ocr_version": "1.12.7",
+  "ocr_binary_sha256": "56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a",
+  "qualification_run": 36253606629,
+  "hosted_ocr_llm": "NOT_RUN_BLOCKED",
+  "jev": "NOT_RUN_UNAVAILABLE",
+  "findings": [
+    {
+      "id": "HOST-001",
+      "severity": "medium",
+      "state": "FIXED_FORWARD",
+      "path": "packages/product-graph/src/request-intent.ts",
+      "summary": "JSON serialization of interpretation operations could sanitize malformed non-JSON values before downstream closed validation.",
+      "resolution": "Final candidate uses structuredClone so malformed operation structure reaches compileChangeIntent validation unchanged."
+    }
+  ],
+  "unresolved_material_findings": 0
+}
