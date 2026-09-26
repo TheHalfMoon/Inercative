@@ -179,9 +179,9 @@ function canonical(value: JsonValue): JsonValue {
   if (value !== null && typeof value === "object") {
     const object = value as JsonObject;
     return Object.fromEntries(
-      Object.entries(object)
-        .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-        .map(([key, item]) => [key, canonical(item)]),
+      Object.keys(object)
+        .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0))
+        .map((key) => [key, canonical(object[key])]),
     );
   }
   return value;
