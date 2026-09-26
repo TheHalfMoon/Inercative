@@ -1,0 +1,96 @@
+name: sg-000028-qualification
+
+on:
+  push:
+    branches:
+      - evidence/sg-000028-qualification
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: windows-latest
+    env:
+      BASE_SHA: 4ce66697b907ce67828fc255348052366a1fa64a
+      CANDIDATE_SHA: 1c2005b70fedf971bfffa9495788a70340c169fd
+      DIFFCIPLINE_SHA256: 5fee721d3837ab86f2c36003d02ca67ebac793ff8dadcdb3b7eea074690e57a8
+      OCR_SHA256: 7c40f72363c66bd49aa16ddde48ddb458eed6d8492c3a0c35a94d6a9bac1bb64
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Set up pnpm 12.4.2
+        shell: pwsh
+        run: |
+          npm install --global pnpm@12.4.2
+          pnpm --version
+
+      - name: Install frozen dependencies
+        shell: pwsh
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify exact Git identities
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force _qualification | Out-Null
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -ne $env:CANDIDATE_SHA) { throw "HEAD mismatch: $head" }
+          git cat-file -e "$env:BASE_SHA^{commit}"
+          $mergeBase = (git merge-base $env:BASE_SHA $env:CANDIDATE_SHA).Trim()
+          if ($mergeBase -ne $env:BASE_SHA) { throw "Merge-base mismatch: $mergeBase" }
+          "base=$env:BASE_SHA`nhead=$env:CANDIDATE_SHA`nmerge_base=$mergeBase" | Set-Content _qualification/identities.txt
+          git diff --stat "$env:BASE_SHA..$env:CANDIDATE_SHA" | Tee-Object -FilePath _qualification/diff-stat.txt
+          git diff --numstat "$env:BASE_SHA..$env:CANDIDATE_SHA" | Tee-Object -FilePath _qualification/diff-numstat.txt
+          git diff --name-status "$env:BASE_SHA..$env:CANDIDATE_SHA" | Tee-Object -FilePath _qualification/diff-files.txt
+
+      - name: Download and verify Diffcipline v1.0.0
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .tools | Out-Null
+          Invoke-WebRequest -Uri 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-pc-windows-msvc.exe' -OutFile .tools/diffcipline.exe
+          $hash = (Get-FileHash .tools/diffcipline.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne $env:DIFFCIPLINE_SHA256) { throw "Diffcipline checksum mismatch: $hash" }
+          "sha256=$hash" | Set-Content _qualification/diffcipline-tool.txt
+          .tools/diffcipline.exe --version | Tee-Object -Append -FilePath _qualification/diffcipline-tool.txt
+
+      - name: Run Diffcipline R2 exact-candidate proof
+        shell: pwsh
+        run: |
+          .tools/diffcipline.exe check --base $env:BASE_SHA --risk R2 --run --json | Tee-Object -FilePath _qualification/diffcipline-proof.json
+          if ($LASTEXITCODE -ne 0) { throw "Diffcipline did not return PASS (exit $LASTEXITCODE)" }
+
+      - name: Download and verify Alibaba OCR v1.12.7
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-windows-amd64.exe' -OutFile .tools/ocr.exe
+          $hash = (Get-FileHash .tools/ocr.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne $env:OCR_SHA256) { throw "OCR checksum mismatch: $hash" }
+          "sha256=$hash" | Set-Content _qualification/ocr-tool.txt
+          .tools/ocr.exe --version | Tee-Object -Append -FilePath _qualification/ocr-tool.txt
+
+      - name: Run OCR deterministic accounting and rule resolution
+        shell: pwsh
+        run: |
+          .tools/ocr.exe delegate preview --from $env:BASE_SHA --to $env:CANDIDATE_SHA --format json | Tee-Object -FilePath _qualification/ocr-preview.json
+          if ($LASTEXITCODE -ne 0) { throw "OCR preview failed (exit $LASTEXITCODE)" }
+          .tools/ocr.exe delegate rule --format json packages/product-graph/src/change-intent.ts packages/product-graph/src/index.ts | Tee-Object -FilePath _qualification/ocr-rules.json
+          if ($LASTEXITCODE -ne 0) { throw "OCR rule resolution failed (exit $LASTEXITCODE)" }
+          git diff "$env:BASE_SHA..$env:CANDIDATE_SHA" -- packages/product-graph/src/change-intent.test.ts | Set-Content _qualification/excluded-test-review.diff
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000028-exact-candidate-qualification
+          path: _qualification/
+          if-no-files-found: error
