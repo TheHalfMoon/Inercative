@@ -13,7 +13,6 @@ import {
   validateProductGraphRevision,
   type JsonValue,
   type ProductGraphRevision,
-  type ProductGraphRevisionDocumentV1,
 } from "./contracts.ts";
 
 export const REQUEST_INTENT_SCHEMA_VERSION = 1 as const;
@@ -92,16 +91,29 @@ export class RequestIntentError extends Error {
   }
 }
 
+interface RequestParts {
+  readonly baseRevision: ProductGraphRevision;
+  readonly text: string;
+  readonly provenance: ChangeIntentProvenanceV1;
+}
+
+interface InterpretationParts {
+  readonly provenance: ChangeIntentProvenanceV1;
+  readonly confidence: number;
+  readonly uncertainties: readonly string[];
+  readonly operations: readonly ChangeIntentOperationV1[];
+}
+
 function fail(code: RequestIntentErrorCode, message: string): never {
   throw new RequestIntentError(code, message);
 }
 
-function isUnknownArray(value: unknown): value is readonly unknown[] {
+function array(value: unknown): value is readonly unknown[] {
   return Array.isArray(value);
 }
 
 function record(value: unknown, label: string): Record<string, unknown> {
-  if (value === null || isUnknownArray(value) || typeof value !== "object") {
+  if (value === null || array(value) || typeof value !== "object") {
     return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} must be an object.`);
   }
   const prototype: unknown = Object.getPrototypeOf(value);
@@ -111,11 +123,7 @@ function record(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function exactKeys(
-  value: Record<string, unknown>,
-  allowed: readonly string[],
-  label: string,
-): void {
+function exactKeys(value: Record<string, unknown>, allowed: readonly string[], label: string): void {
   const unknown = Object.keys(value)
     .filter((key) => !allowed.includes(key))
     .sort();
@@ -126,13 +134,10 @@ function exactKeys(
 
 function boundedText(value: unknown, label: string, maxLength: number): string {
   if (typeof value !== "string" || value.trim().length === 0) {
-    return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} must be a non-empty string.`);
+    return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} must be non-empty text.`);
   }
   if (value.length > maxLength) {
-    return fail(
-      "REQUEST_INTENT_INVALID_SCHEMA",
-      `${label} must not exceed ${maxLength.toString()} characters.`,
-    );
+    return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} exceeds ${maxLength.toString()} chars.`);
   }
   return value;
 }
@@ -156,163 +161,159 @@ function provenance(value: unknown, label: string): ChangeIntentProvenanceV1 {
   }
   return Object.freeze({
     source: source as ChangeIntentProvenanceSource,
-    reference: boundedText(
-      candidate.reference,
-      `${label} reference`,
-      REQUEST_INTENT_MAX_REFERENCE_LENGTH,
-    ),
+    reference: boundedText(candidate.reference, `${label} reference`, REQUEST_INTENT_MAX_REFERENCE_LENGTH),
   });
 }
 
-function canonicalValue(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) return value.map((item) => canonicalValue(item));
+function canonical(value: JsonValue): JsonValue {
+  if (Array.isArray(value)) return value.map((item) => canonical(item));
   if (value !== null && typeof value === "object") {
     return Object.fromEntries(
       Object.entries(value)
         .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-        .map(([key, item]) => [key, canonicalValue(item)]),
+        .map(([key, item]) => [key, canonical(item)]),
     );
   }
   return value;
 }
 
-function jsonValue(value: unknown): JsonValue {
+function json(value: unknown): JsonValue {
   return JSON.parse(JSON.stringify(value)) as JsonValue;
 }
 
-function digest(value: JsonValue): string {
-  return createHash("sha256").update(JSON.stringify(canonicalValue(value))).digest("hex");
+function digest(value: unknown): string {
+  return createHash("sha256").update(JSON.stringify(canonical(json(value)))).digest("hex");
 }
 
-function requestIdFor(
-  baseRevision: ProductGraphRevision,
-  text: string,
-  requestProvenance: ChangeIntentProvenanceV1,
-): UserChangeRequestId {
-  return `request-${digest(
-    jsonValue({
-      schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-      baseRevision,
-      text,
-      provenance: requestProvenance,
-    }),
-  )}`;
+function requestParts(value: unknown, envelope: boolean): RequestParts {
+  const candidate = record(value, envelope ? "User change request" : "User change request input");
+  exactKeys(
+    candidate,
+    envelope
+      ? ["schemaVersion", "requestId", "baseRevision", "text", "provenance"]
+      : ["baseRevision", "text", "provenance"],
+    envelope ? "User change request" : "User change request input",
+  );
+  if (envelope && candidate.schemaVersion !== REQUEST_INTENT_SCHEMA_VERSION) {
+    return fail("REQUEST_INTENT_INVALID_SCHEMA", "User change request schemaVersion must be 1.");
+  }
+  return {
+    baseRevision: revision(candidate.baseRevision, "User change request baseRevision"),
+    text: boundedText(candidate.text, "User change request text", USER_CHANGE_REQUEST_MAX_TEXT_LENGTH),
+    provenance: provenance(candidate.provenance, "User change request provenance"),
+  };
+}
+
+function requestFrom(parts: RequestParts): UserChangeRequestV1 {
+  const requestId = `request-${digest({
+    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
+    ...parts,
+  })}` as UserChangeRequestId;
+  return Object.freeze({ schemaVersion: REQUEST_INTENT_SCHEMA_VERSION, requestId, ...parts });
 }
 
 function confidence(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) {
-    return fail(
-      "REQUEST_INTENT_INVALID_CONFIDENCE",
-      "Intent interpretation confidence must be between 0 and 1.",
-    );
+    return fail("REQUEST_INTENT_INVALID_CONFIDENCE", "Confidence must be between 0 and 1.");
   }
   return value;
 }
 
-function uncertainties(value: unknown): readonly string[] {
-  if (!isUnknownArray(value) || value.length > INTENT_INTERPRETATION_MAX_UNCERTAINTIES) {
-    return fail(
-      "REQUEST_INTENT_INVALID_UNCERTAINTY",
-      `Intent interpretation accepts at most ${INTENT_INTERPRETATION_MAX_UNCERTAINTIES.toString()} uncertainty notes.`,
-    );
+function uncertaintyList(value: unknown): readonly string[] {
+  if (!array(value) || value.length > INTENT_INTERPRETATION_MAX_UNCERTAINTIES) {
+    return fail("REQUEST_INTENT_INVALID_UNCERTAINTY", "Invalid uncertainty-note count.");
   }
   return Object.freeze(
-    value.map((item, index) => {
-      if (typeof item !== "string" || item.trim().length === 0) {
-        return fail(
-          "REQUEST_INTENT_INVALID_UNCERTAINTY",
-          `Intent interpretation uncertainty ${index.toString()} must be non-empty text.`,
-        );
-      }
-      if (item.length > INTENT_INTERPRETATION_MAX_UNCERTAINTY_LENGTH) {
-        return fail(
-          "REQUEST_INTENT_INVALID_UNCERTAINTY",
-          `Intent interpretation uncertainty ${index.toString()} is too long.`,
-        );
+    value.map((item) => {
+      if (
+        typeof item !== "string" ||
+        item.trim().length === 0 ||
+        item.length > INTENT_INTERPRETATION_MAX_UNCERTAINTY_LENGTH
+      ) {
+        return fail("REQUEST_INTENT_INVALID_UNCERTAINTY", "Invalid uncertainty note.");
       }
       return item;
     }),
   );
 }
 
-function operations(value: unknown): readonly ChangeIntentOperationV1[] {
-  if (!isUnknownArray(value) || value.length === 0 || value.length > CHANGE_INTENT_MAX_OPERATIONS) {
-    return fail(
-      "REQUEST_INTENT_INVALID_OPERATIONS",
-      `Intent interpretation requires 1-${CHANGE_INTENT_MAX_OPERATIONS.toString()} operations.`,
-    );
+function operationList(value: unknown): readonly ChangeIntentOperationV1[] {
+  if (!array(value) || value.length === 0 || value.length > CHANGE_INTENT_MAX_OPERATIONS) {
+    return fail("REQUEST_INTENT_INVALID_OPERATIONS", "Invalid interpretation operation count.");
   }
-  return Object.freeze(
-    JSON.parse(JSON.stringify(value)) as ChangeIntentOperationV1[],
+  return Object.freeze(JSON.parse(JSON.stringify(value)) as ChangeIntentOperationV1[]);
+}
+
+function interpretationParts(value: unknown, request: UserChangeRequestV1, envelope: boolean): InterpretationParts {
+  const candidate = record(value, envelope ? "Intent interpretation" : "Intent interpretation input");
+  exactKeys(
+    candidate,
+    envelope
+      ? [
+          "schemaVersion",
+          "interpretationId",
+          "requestId",
+          "baseRevision",
+          "provenance",
+          "confidence",
+          "uncertainties",
+          "operations",
+        ]
+      : ["provenance", "confidence", "uncertainties", "operations"],
+    envelope ? "Intent interpretation" : "Intent interpretation input",
   );
+  if (envelope) {
+    if (candidate.schemaVersion !== REQUEST_INTENT_SCHEMA_VERSION) {
+      return fail("REQUEST_INTENT_INVALID_SCHEMA", "Intent interpretation schemaVersion must be 1.");
+    }
+    if (candidate.requestId !== request.requestId) {
+      return fail(
+        "REQUEST_INTENT_INTERPRETATION_REQUEST_MISMATCH",
+        "Intent interpretation is bound to another request.",
+      );
+    }
+    if (candidate.baseRevision !== request.baseRevision) {
+      return fail("REQUEST_INTENT_BASE_MISMATCH", "Intent interpretation baseRevision is stale.");
+    }
+  }
+  return {
+    provenance: provenance(candidate.provenance, "Intent interpretation provenance"),
+    confidence: confidence(candidate.confidence),
+    uncertainties: uncertaintyList(candidate.uncertainties),
+    operations: operationList(candidate.operations),
+  };
 }
 
-function interpretationIdFor(
+function interpretationFrom(
   request: UserChangeRequestV1,
-  interpretationProvenance: ChangeIntentProvenanceV1,
-  interpretationConfidence: number,
-  interpretationUncertainties: readonly string[],
-  interpretationOperations: readonly ChangeIntentOperationV1[],
-): IntentInterpretationId {
-  return `interpretation-${digest(
-    jsonValue({
-      schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-      requestId: request.requestId,
-      baseRevision: request.baseRevision,
-      provenance: interpretationProvenance,
-      confidence: interpretationConfidence,
-      uncertainties: interpretationUncertainties,
-      operations: interpretationOperations,
-    }),
-  )}`;
-}
-
-export function createUserChangeRequest(
-  input: CreateUserChangeRequestInputV1,
-): UserChangeRequestV1 {
-  const baseRevision = revision(input.baseRevision, "User change request baseRevision");
-  const text = boundedText(input.text, "User change request text", USER_CHANGE_REQUEST_MAX_TEXT_LENGTH);
-  const requestProvenance = provenance(input.provenance, "User change request provenance");
+  parts: InterpretationParts,
+): IntentInterpretationV1 {
+  const interpretationId = `interpretation-${digest({
+    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
+    requestId: request.requestId,
+    baseRevision: request.baseRevision,
+    ...parts,
+  })}` as IntentInterpretationId;
   return Object.freeze({
     schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-    requestId: requestIdFor(baseRevision, text, requestProvenance),
-    baseRevision,
-    text,
-    provenance: requestProvenance,
+    interpretationId,
+    requestId: request.requestId,
+    baseRevision: request.baseRevision,
+    ...parts,
   });
+}
+
+export function createUserChangeRequest(input: CreateUserChangeRequestInputV1): UserChangeRequestV1 {
+  return requestFrom(requestParts(input, false));
 }
 
 export function validateUserChangeRequest(value: unknown): UserChangeRequestV1 {
   const candidate = record(value, "User change request");
-  exactKeys(
-    candidate,
-    ["schemaVersion", "requestId", "baseRevision", "text", "provenance"],
-    "User change request",
-  );
-  if (candidate.schemaVersion !== REQUEST_INTENT_SCHEMA_VERSION) {
-    return fail("REQUEST_INTENT_INVALID_SCHEMA", "User change request schemaVersion must be 1.");
+  const parsed = requestFrom(requestParts(candidate, true));
+  if (candidate.requestId !== parsed.requestId) {
+    return fail("REQUEST_INTENT_REQUEST_ID_MISMATCH", "User change request content changed.");
   }
-  const baseRevision = revision(candidate.baseRevision, "User change request baseRevision");
-  const text = boundedText(
-    candidate.text,
-    "User change request text",
-    USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
-  );
-  const requestProvenance = provenance(candidate.provenance, "User change request provenance");
-  const expected = requestIdFor(baseRevision, text, requestProvenance);
-  if (candidate.requestId !== expected) {
-    return fail(
-      "REQUEST_INTENT_REQUEST_ID_MISMATCH",
-      "User change request identity does not match its exact content.",
-    );
-  }
-  return Object.freeze({
-    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-    requestId: expected,
-    baseRevision,
-    text,
-    provenance: requestProvenance,
-  });
+  return parsed;
 }
 
 export function createIntentInterpretation(
@@ -320,29 +321,7 @@ export function createIntentInterpretation(
   input: CreateIntentInterpretationInputV1,
 ): IntentInterpretationV1 {
   const request = validateUserChangeRequest(requestValue);
-  const interpretationProvenance = provenance(
-    input.provenance,
-    "Intent interpretation provenance",
-  );
-  const interpretationConfidence = confidence(input.confidence);
-  const interpretationUncertainties = uncertainties(input.uncertainties);
-  const interpretationOperations = operations(input.operations);
-  return Object.freeze({
-    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-    interpretationId: interpretationIdFor(
-      request,
-      interpretationProvenance,
-      interpretationConfidence,
-      interpretationUncertainties,
-      interpretationOperations,
-    ),
-    requestId: request.requestId,
-    baseRevision: request.baseRevision,
-    provenance: interpretationProvenance,
-    confidence: interpretationConfidence,
-    uncertainties: interpretationUncertainties,
-    operations: interpretationOperations,
-  });
+  return interpretationFrom(request, interpretationParts(input, request, false));
 }
 
 export function validateIntentInterpretation(
@@ -351,65 +330,14 @@ export function validateIntentInterpretation(
 ): IntentInterpretationV1 {
   const request = validateUserChangeRequest(requestValue);
   const candidate = record(value, "Intent interpretation");
-  exactKeys(
-    candidate,
-    [
-      "schemaVersion",
-      "interpretationId",
-      "requestId",
-      "baseRevision",
-      "provenance",
-      "confidence",
-      "uncertainties",
-      "operations",
-    ],
-    "Intent interpretation",
-  );
-  if (candidate.schemaVersion !== REQUEST_INTENT_SCHEMA_VERSION) {
-    return fail("REQUEST_INTENT_INVALID_SCHEMA", "Intent interpretation schemaVersion must be 1.");
-  }
-  if (candidate.requestId !== request.requestId) {
-    return fail(
-      "REQUEST_INTENT_INTERPRETATION_REQUEST_MISMATCH",
-      "Intent interpretation is not bound to the supplied request.",
-    );
-  }
-  if (candidate.baseRevision !== request.baseRevision) {
-    return fail(
-      "REQUEST_INTENT_BASE_MISMATCH",
-      "Intent interpretation baseRevision does not match the supplied request.",
-    );
-  }
-  const interpretationProvenance = provenance(
-    candidate.provenance,
-    "Intent interpretation provenance",
-  );
-  const interpretationConfidence = confidence(candidate.confidence);
-  const interpretationUncertainties = uncertainties(candidate.uncertainties);
-  const interpretationOperations = operations(candidate.operations);
-  const expected = interpretationIdFor(
-    request,
-    interpretationProvenance,
-    interpretationConfidence,
-    interpretationUncertainties,
-    interpretationOperations,
-  );
-  if (candidate.interpretationId !== expected) {
+  const parsed = interpretationFrom(request, interpretationParts(candidate, request, true));
+  if (candidate.interpretationId !== parsed.interpretationId) {
     return fail(
       "REQUEST_INTENT_INTERPRETATION_ID_MISMATCH",
-      "Intent interpretation identity does not match its exact content.",
+      "Intent interpretation content changed.",
     );
   }
-  return Object.freeze({
-    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
-    interpretationId: expected,
-    requestId: request.requestId,
-    baseRevision: request.baseRevision,
-    provenance: interpretationProvenance,
-    confidence: interpretationConfidence,
-    uncertainties: interpretationUncertainties,
-    operations: interpretationOperations,
-  });
+  return parsed;
 }
 
 export function compileUserRequestInterpretation(
@@ -417,7 +345,7 @@ export function compileUserRequestInterpretation(
   requestValue: unknown,
   interpretationValue: unknown,
 ): UserRequestProposalV1 {
-  let base: ProductGraphRevisionDocumentV1;
+  let base;
   try {
     base = validateProductGraphRevision(baseValue);
   } catch (error) {
@@ -428,10 +356,7 @@ export function compileUserRequestInterpretation(
   }
   const request = validateUserChangeRequest(requestValue);
   if (request.baseRevision !== base.revision) {
-    return fail(
-      "REQUEST_INTENT_BASE_MISMATCH",
-      "User change request baseRevision does not match the supplied Product Graph base.",
-    );
+    return fail("REQUEST_INTENT_BASE_MISMATCH", "User change request baseRevision is stale.");
   }
   const interpretation = validateIntentInterpretation(request, interpretationValue);
   const proposedDelta = compileChangeIntent(base, {
