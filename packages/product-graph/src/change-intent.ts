@@ -209,7 +209,10 @@ function parsedNode(value: unknown): ProductGraphNodeV1 {
     });
     const validated = checked.nodes[0];
     if (validated === undefined) {
-      return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent upsert-node requires a valid node.");
+      return fail(
+        "CHANGE_INTENT_INVALID_OPERATION",
+        "ChangeIntent upsert-node requires a valid node.",
+      );
     }
     return validated;
   } catch (error) {
@@ -222,13 +225,24 @@ function parsedNode(value: unknown): ProductGraphNodeV1 {
 
 function parsedEdge(value: unknown): ProductGraphEdgeV1 {
   const edge = record(value, "ChangeIntent upsert-edge edge");
-  exactKeys(edge, ["id", "kind", "from", "to", "attributes"], "ChangeIntent upsert-edge edge");
+  exactKeys(
+    edge,
+    ["id", "kind", "from", "to", "attributes"],
+    "ChangeIntent upsert-edge edge",
+  );
   const id = text(edge.id, "ChangeIntent edge id");
   const kind = text(edge.kind, "ChangeIntent edge kind");
   const from = text(edge.from, "ChangeIntent edge from");
   const to = text(edge.to, "ChangeIntent edge to");
-  if (edge.attributes === null || typeof edge.attributes !== "object" || isUnknownArray(edge.attributes)) {
-    return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent upsert-edge requires JSON-object attributes.");
+  if (
+    edge.attributes === null ||
+    typeof edge.attributes !== "object" ||
+    isUnknownArray(edge.attributes)
+  ) {
+    return fail(
+      "CHANGE_INTENT_INVALID_OPERATION",
+      "ChangeIntent upsert-edge requires JSON-object attributes.",
+    );
   }
   try {
     const endpointIds = [...new Set([from, to])];
@@ -240,7 +254,10 @@ function parsedEdge(value: unknown): ProductGraphEdgeV1 {
     });
     const validated = checked.edges[0];
     if (validated === undefined) {
-      return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent upsert-edge requires a valid edge.");
+      return fail(
+        "CHANGE_INTENT_INVALID_OPERATION",
+        "ChangeIntent upsert-edge requires a valid edge.",
+      );
     }
     return validated;
   } catch (error) {
@@ -267,11 +284,17 @@ function operation(value: unknown): ChangeIntentOperationV1 {
   }
   if (candidate.kind === "remove-node") {
     exactKeys(candidate, ["kind", "nodeId"], "ChangeIntent remove-node operation");
-    return Object.freeze({ kind: "remove-node", nodeId: text(candidate.nodeId, "ChangeIntent nodeId") });
+    return Object.freeze({
+      kind: "remove-node",
+      nodeId: text(candidate.nodeId, "ChangeIntent nodeId"),
+    });
   }
   if (candidate.kind === "remove-edge") {
     exactKeys(candidate, ["kind", "edgeId"], "ChangeIntent remove-edge operation");
-    return Object.freeze({ kind: "remove-edge", edgeId: text(candidate.edgeId, "ChangeIntent edgeId") });
+    return Object.freeze({
+      kind: "remove-edge",
+      edgeId: text(candidate.edgeId, "ChangeIntent edgeId"),
+    });
   }
   return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent operation kind is not supported.");
 }
@@ -310,7 +333,10 @@ function intentEnvelope(value: unknown, base: ProductGraphRevisionDocumentV1): C
     fail("CHANGE_INTENT_INVALID_CONFIDENCE", "ChangeIntent confidence must be between 0 and 1.");
   }
   if (!isUnknownArray(candidate.operations) || candidate.operations.length === 0) {
-    return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent requires at least one operation.");
+    return fail(
+      "CHANGE_INTENT_INVALID_OPERATION",
+      "ChangeIntent requires at least one operation.",
+    );
   }
   if (candidate.operations.length > CHANGE_INTENT_MAX_OPERATIONS) {
     return fail(
@@ -375,7 +401,10 @@ function candidateFor(
   if (op.kind === "upsert-node") {
     const current = base.graph.nodes.find((node) => node.id === op.node.id);
     if (current !== undefined && current.kind !== op.node.kind) {
-      return fail("CHANGE_INTENT_NODE_KIND_CHANGE", "ChangeIntent cannot change an existing node kind.");
+      return fail(
+        "CHANGE_INTENT_NODE_KIND_CHANGE",
+        "ChangeIntent cannot change an existing node kind.",
+      );
     }
     const nodes =
       current === undefined
@@ -387,12 +416,12 @@ function candidateFor(
   if (op.kind === "upsert-edge") {
     const current = base.graph.edges.find((edge) => edge.id === op.edge.id);
     if (current !== undefined && current.kind !== op.edge.kind) {
-      return fail("CHANGE_INTENT_EDGE_KIND_CHANGE", "ChangeIntent cannot change an existing edge kind.");
+      return fail(
+        "CHANGE_INTENT_EDGE_KIND_CHANGE",
+        "ChangeIntent cannot change an existing edge kind.",
+      );
     }
-    if (
-      current !== undefined &&
-      (current.from !== op.edge.from || current.to !== op.edge.to)
-    ) {
+    if (current !== undefined && (current.from !== op.edge.from || current.to !== op.edge.to)) {
       return fail(
         "CHANGE_INTENT_EDGE_ENDPOINT_CHANGE",
         "ChangeIntent cannot change existing edge endpoints under the same edge id.",
@@ -408,7 +437,10 @@ function candidateFor(
   if (op.kind === "remove-edge") {
     const current = base.graph.edges.find((edge) => edge.id === op.edgeId);
     if (current === undefined) {
-      return fail("CHANGE_INTENT_TARGET_NOT_FOUND", `ChangeIntent edge target not found: ${op.edgeId}.`);
+      return fail(
+        "CHANGE_INTENT_TARGET_NOT_FOUND",
+        `ChangeIntent edge target not found: ${op.edgeId}.`,
+      );
     }
     return validatedCandidate(
       base,
@@ -419,7 +451,10 @@ function candidateFor(
 
   const current = base.graph.nodes.find((node) => node.id === op.nodeId);
   if (current === undefined) {
-    return fail("CHANGE_INTENT_TARGET_NOT_FOUND", `ChangeIntent node target not found: ${op.nodeId}.`);
+    return fail(
+      "CHANGE_INTENT_TARGET_NOT_FOUND",
+      `ChangeIntent node target not found: ${op.nodeId}.`,
+    );
   }
   if (base.graph.edges.some((edge) => edge.from === op.nodeId || edge.to === op.nodeId)) {
     return fail(
@@ -450,7 +485,10 @@ export function compileChangeIntent(
   const intent = intentEnvelope(intentValue, base);
   const firstOperation = intent.operations[0];
   if (firstOperation === undefined) {
-    return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent requires at least one operation.");
+    return fail(
+      "CHANGE_INTENT_INVALID_OPERATION",
+      "ChangeIntent requires at least one operation.",
+    );
   }
   const intentDigest = digest(
     jsonValue({
