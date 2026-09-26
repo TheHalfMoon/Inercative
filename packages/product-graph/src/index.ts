@@ -43,6 +43,20 @@ export {
 export type { IntentInterpretationV1, UserChangeRequestV1 } from "./request-intent.ts";
 
 export {
+  QUESTION_GATE_HIGH_CONFIDENCE_THRESHOLD,
+  QUESTION_GATE_SCHEMA_VERSION,
+  QuestionGateError,
+  evaluateQuestionGate,
+  validateQuestionGateDecisionInput,
+} from "./question-gate.ts";
+
+export type {
+  AssumptionRecordV1,
+  QuestionGateDecisionInputV1,
+  QuestionGateResultV1,
+} from "./question-gate.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
