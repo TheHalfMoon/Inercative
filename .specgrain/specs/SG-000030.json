@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "UserChangeRequestV1 and IntentInterpretationV1 have closed deterministic schemas, stable identities, exact base/request binding, bounded text/metadata, and fail closed on malformed, stale, mismatched, or out-of-range input.",
+    "A valid interpretation is translated without semantic widening into the existing ChangeIntentV1 operation vocabulary; compileUserRequestInterpretation delegates to compileChangeIntent and returns the same deterministic proposed graph delta semantics without accepting it as canonical truth.",
+    "Confidence, uncertainty, and provenance remain inspectable proposal metadata only: they cannot grant capability, bypass domain validation, suppress validation issues, or trigger an external effect.",
+    "Focused tests cover deterministic identity, request/base mismatch, malformed provenance/uncertainty/confidence, operation forwarding, domain-validation propagation, and no mutation of the request, interpretation, or base graph.",
+    "The exact candidate passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR deterministic/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/request-intent.ts",
+    "packages/product-graph/src/request-intent.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7600,
+    "estimated_tokens": 5600
+  },
+  "dependencies": [
+    "SG-000028"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused request/interpretation identity-binding and deterministic bridge tests plus full repository gates.",
+      "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000030",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "The existing ChangeIntentV1 and compileChangeIntent implementation already owns graph-operation semantics and proposal construction. The smallest missing layer is a typed request/interpretation boundary and adapter; duplicating a parser, router, or proposal engine would violate phase ownership."
+      },
+      "safety": {
+        "requirements": [
+          "Raw user text and interpretation metadata are untrusted proposal input and never grant capability, authorization, trust, or execution authority.",
+          "An interpretation must be cryptographically/deterministically identity-bound to the exact request and Product Graph base revision; stale or mismatched interpretations fail closed.",
+          "The bridge must preserve existing Change Intent/domain validation and cannot silently drop uncertainty, validation issues, or unsupported operations."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A raw user change request plus one typed provider-neutral interpretation can be validated, identity-bound, and deterministically compiled through the existing Change Intent compiler into a proposed Product Graph delta while preserving confidence, uncertainty, and provenance and performing no source mutation or provider call.",
+  "parent_id": null,
+  "rationale": "SG-000027 and SG-000028 complete deterministic Change Intent proposal semantics but intentionally begin from already-typed ChangeIntent input. The canonical P02-S03 outcome begins from a user request. This final bounded slice adds only the provider-neutral request/interpretation contract and deterministic bridge; model/provider routing remains P03 authority.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the request-intent boundary module, exports, tests, and evidence. SG-000027 and SG-000028 deterministic Change Intent behavior remains intact and IN-P02-S04 stays blocked."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a closed UserChangeRequestV1 contract with exact Product Graph base revision, bounded raw user text, deterministic request identity, and explicit request provenance metadata.",
+    "Define a closed IntentInterpretationV1 contract bound to the exact request identity and base revision, carrying a bounded ordered ChangeIntent operation set plus explicit confidence, uncertainty notes, and interpretation provenance.",
+    "Implement deterministic validation and a bridge that converts a valid request/interpretation pair into the existing ChangeIntentV1 contract and delegates proposal construction to compileChangeIntent without mutating canonical graph state.",
+    "Add focused positive/negative tests for request identity binding, base-revision binding, confidence bounds, uncertainty/provenance validation, operation forwarding, deterministic proposal identity, and rejection of stale/mismatched interpretations.",
+    "Export the request/interpretation contracts and bridge through the existing @ineractive/product-graph public surface without adding a runtime dependency."
+  ],
+  "scope_out": [
+    "No LLM/model/provider invocation, provider routing, prompt construction, tool execution, retrieval, CLM/Jev decision routing, or model-generated interpretation implementation; those remain P03 concerns.",
+    "No Question Gate or Assumption Ledger policy; P02-S04 remains the consumer of interpretation confidence/uncertainty once this parent S03 handle closes.",
+    "No source mutation, Git mutation, database write, network access, credential use, capability grant, deployment, external effect, UI, or backend compiler behavior.",
+    "No new graph-operation semantics beyond SG-000028 and no semantic-reference relation work from P02-S06."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S03-T01C user-request intent interpretation boundary"
+}
