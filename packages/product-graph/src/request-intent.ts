@@ -261,7 +261,7 @@ function operationList(value: unknown): readonly ChangeIntentOperationV1[] {
   if (!array(value) || value.length === 0 || value.length > CHANGE_INTENT_MAX_OPERATIONS) {
     return fail("REQUEST_INTENT_INVALID_OPERATIONS", "Invalid interpretation operation count.");
   }
-  return Object.freeze(JSON.parse(JSON.stringify(value)) as ChangeIntentOperationV1[]);
+  return Object.freeze(structuredClone(value) as ChangeIntentOperationV1[]);
 }
 
 function interpretationParts(
