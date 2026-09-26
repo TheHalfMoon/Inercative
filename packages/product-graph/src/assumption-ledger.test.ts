@@ -79,7 +79,7 @@ describe("Assumption Ledger", () => {
 
   it("supersedes an assumption with a different canonical assumption identity", () => {
     const assumption = origin();
-    const replacement = `assumption-${"a".repeat(64)}` as AssumptionRecordV1["assumptionId"];
+    const replacement = `assumption-${"a".repeat(64)}`;
     const state = replayAssumptionLedger(assumption, [
       event(assumption, {
         action: "supersede",
