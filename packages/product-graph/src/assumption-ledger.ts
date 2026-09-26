@@ -103,7 +103,11 @@ function record(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function exactKeys(value: Record<string, unknown>, allowed: readonly string[], label: string): void {
+function exactKeys(
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  label: string,
+): void {
   const unknown = Object.keys(value)
     .filter((key) => !allowed.includes(key))
     .sort(compareText);
@@ -200,7 +204,11 @@ function validateOriginAssumption(value: unknown): AssumptionRecordV1 {
     "Origin statement",
     ASSUMPTION_LEDGER_MAX_STATEMENT_LENGTH,
   );
-  const source = boundedText(candidate.source, "Origin source", ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH);
+  const source = boundedText(
+    candidate.source,
+    "Origin source",
+    ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH,
+  );
   const affectedNodeIds = canonicalReferences(candidate.affectedNodeIds, "Origin affectedNodeIds");
   const canonical = {
     schemaVersion: QUESTION_GATE_SCHEMA_VERSION,
@@ -277,7 +285,9 @@ export function validateAssumptionLedgerEventInput(value: unknown): AssumptionLe
         evidenceRefs.length > 0)) ||
     (action === "correct" && (correctedStatement === null || replacementAssumptionId !== null)) ||
     (action === "supersede" &&
-      (correctedStatement !== null || replacementAssumptionId === null || replacementAssumptionId === id))
+      (correctedStatement !== null ||
+        replacementAssumptionId === null ||
+        replacementAssumptionId === id))
   ) {
     return fail(
       "ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS",
@@ -322,7 +332,10 @@ export function replayAssumptionLedger(
 ): AssumptionLedgerStateV1 {
   const origin = validateOriginAssumption(originValue);
   if (!Array.isArray(eventValues) || eventValues.length > ASSUMPTION_LEDGER_MAX_EVENTS) {
-    return fail("ASSUMPTION_LEDGER_INVALID_SCHEMA", "Assumption ledger events must be a bounded array.");
+    return fail(
+      "ASSUMPTION_LEDGER_INVALID_SCHEMA",
+      "Assumption ledger events must be a bounded array.",
+    );
   }
 
   let status: AssumptionLedgerStatus = "inferred";
@@ -341,7 +354,10 @@ export function replayAssumptionLedger(
       status === "superseded" ||
       (status === "confirmed" && input.action === "confirm")
     ) {
-      return fail("ASSUMPTION_LEDGER_INVALID_TRANSITION", "Assumption lifecycle transition is invalid.");
+      return fail(
+        "ASSUMPTION_LEDGER_INVALID_TRANSITION",
+        "Assumption lifecycle transition is invalid.",
+      );
     }
 
     const eventRecord = event(input);
@@ -358,7 +374,10 @@ export function replayAssumptionLedger(
       invalidations.push(invalidation(eventRecord));
     } else {
       if (input.replacementAssumptionId === null) {
-        return fail("ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS", "Replacement assumption is required.");
+        return fail(
+          "ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS",
+          "Replacement assumption is required.",
+        );
       }
       status = "superseded";
       replacementAssumptionId = input.replacementAssumptionId;
