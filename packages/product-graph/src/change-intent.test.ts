@@ -323,7 +323,9 @@ describe("compileChangeIntent", () => {
         base,
         intent(
           base,
-          Array.from({ length: CHANGE_INTENT_MAX_OPERATIONS + 1 }, () => ({ kind: "no-op" as const })),
+          Array.from({ length: CHANGE_INTENT_MAX_OPERATIONS + 1 }, () => ({
+            kind: "no-op" as const,
+          })),
         ),
       ),
     ).toThrowError(expect.objectContaining({ code: "CHANGE_INTENT_TOO_MANY_OPERATIONS" }));
