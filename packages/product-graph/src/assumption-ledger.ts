@@ -213,20 +213,20 @@ function normalizeOrigin(value: unknown): AssumptionRecordV1 {
       QUESTION_GATE_REASON_CODES,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin reason",
-    ) as QuestionGateReasonCode,
+    ),
     confidence: candidate.confidence,
     impact: enumValue(
       candidate.impact,
       QUESTION_GATE_IMPACTS,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin impact",
-    ) as QuestionGateImpact,
+    ),
     reversibility: enumValue(
       candidate.reversibility,
       QUESTION_GATE_REVERSIBILITIES,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin reversibility",
-    ) as QuestionGateReversibility,
+    ),
     affectedNodeIds: list(
       candidate.affectedNodeIds,
       QUESTION_GATE_MAX_AFFECTED_NODE_IDS,
@@ -337,7 +337,7 @@ function manifest(event: AssumptionLedgerEventV1): AssumptionInvalidationManifes
   } as const;
   return Object.freeze({
     ...body,
-    manifestId: `assumption-invalidation-${hash(body)}` as AssumptionInvalidationManifestId,
+    manifestId: `assumption-invalidation-${hash(body)}`,
   });
 }
 
@@ -373,7 +373,7 @@ export function replayAssumptionLedger(
         sequence,
         previousEventId,
         ...input,
-      })}` as AssumptionLedgerEventId,
+      })}`,
       sequence,
     });
     events.push(event);
@@ -402,6 +402,6 @@ export function replayAssumptionLedger(
   } as const;
   return Object.freeze({
     ...semantic,
-    stateId: `assumption-ledger-${hash(semantic)}` as AssumptionLedgerStateId,
+    stateId: `assumption-ledger-${hash(semantic)}`,
   });
 }

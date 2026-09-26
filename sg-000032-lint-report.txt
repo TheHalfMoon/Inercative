@@ -1,0 +1,21 @@
+
+/home/runner/work/Inercative/Inercative/packages/product-graph/src/assumption-ledger.ts
+   13:8   error  'QuestionGateImpact' is defined but never used                                           @typescript-eslint/no-unused-vars
+   14:8   error  'QuestionGateReasonCode' is defined but never used                                       @typescript-eslint/no-unused-vars
+   15:8   error  'QuestionGateReversibility' is defined but never used                                    @typescript-eslint/no-unused-vars
+  379:17  error  Unsafe argument of type `any` assigned to a parameter of type `AssumptionLedgerEventV1`  @typescript-eslint/no-unsafe-argument
+  380:5   error  Unsafe assignment of an `any` value                                                      @typescript-eslint/no-unsafe-assignment
+  380:29  error  Unsafe member access .eventId on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  382:13  error  Unsafe member access .action on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  384:17  error  Unsafe member access .action on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  387:15  error  Unsafe member access .replacement on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  388:7   error  Unsafe assignment of an `any` value                                                      @typescript-eslint/no-unsafe-assignment
+  388:32  error  Unsafe member access .replacement on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  389:7   error  Unsafe assignment of an `any` value                                                      @typescript-eslint/no-unsafe-assignment
+  389:29  error  Unsafe member access .replacement on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  391:15  error  Unsafe member access .action on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  391:73  error  Unsafe argument of type `any` assigned to a parameter of type `AssumptionLedgerEventV1`  @typescript-eslint/no-unsafe-argument
+
+✖ 15 problems (15 errors, 0 warnings)
+
+exit_code=1
