@@ -179,7 +179,7 @@ function canonical(value: JsonValue): JsonValue {
     return Object.fromEntries(
       Object.entries(value)
         .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-        .map(([key, item]) => [key, canonical(item)]),
+        .map(([key, item]) => [key, canonical(item as JsonValue)]),
     );
   }
   return value;
@@ -222,7 +222,7 @@ function requestFrom(parts: RequestParts): UserChangeRequestV1 {
   const requestId = `request-${digest({
     schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
     ...parts,
-  })}` as UserChangeRequestId;
+  })}`;
   return Object.freeze({ schemaVersion: REQUEST_INTENT_SCHEMA_VERSION, requestId, ...parts });
 }
 
@@ -317,7 +317,7 @@ function interpretationFrom(
     requestId: request.requestId,
     baseRevision: request.baseRevision,
     ...parts,
-  })}` as IntentInterpretationId;
+  })}`;
   return Object.freeze({
     schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
     interpretationId,
