@@ -225,11 +225,7 @@ function parsedNode(value: unknown): ProductGraphNodeV1 {
 
 function parsedEdge(value: unknown): ProductGraphEdgeV1 {
   const edge = record(value, "ChangeIntent upsert-edge edge");
-  exactKeys(
-    edge,
-    ["id", "kind", "from", "to", "attributes"],
-    "ChangeIntent upsert-edge edge",
-  );
+  exactKeys(edge, ["id", "kind", "from", "to", "attributes"], "ChangeIntent upsert-edge edge");
   const id = text(edge.id, "ChangeIntent edge id");
   const kind = text(edge.kind, "ChangeIntent edge kind");
   const from = text(edge.from, "ChangeIntent edge from");
@@ -333,10 +329,7 @@ function intentEnvelope(value: unknown, base: ProductGraphRevisionDocumentV1): C
     fail("CHANGE_INTENT_INVALID_CONFIDENCE", "ChangeIntent confidence must be between 0 and 1.");
   }
   if (!isUnknownArray(candidate.operations) || candidate.operations.length === 0) {
-    return fail(
-      "CHANGE_INTENT_INVALID_OPERATION",
-      "ChangeIntent requires at least one operation.",
-    );
+    return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent requires at least one operation.");
   }
   if (candidate.operations.length > CHANGE_INTENT_MAX_OPERATIONS) {
     return fail(
@@ -485,10 +478,7 @@ export function compileChangeIntent(
   const intent = intentEnvelope(intentValue, base);
   const firstOperation = intent.operations[0];
   if (firstOperation === undefined) {
-    return fail(
-      "CHANGE_INTENT_INVALID_OPERATION",
-      "ChangeIntent requires at least one operation.",
-    );
+    return fail("CHANGE_INTENT_INVALID_OPERATION", "ChangeIntent requires at least one operation.");
   }
   const intentDigest = digest(
     jsonValue({
