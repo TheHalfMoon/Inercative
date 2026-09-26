@@ -1,0 +1,45 @@
+name: sg-000030-format
+
+on:
+  push:
+    branches:
+      - p02/s03-t01c-user-request-interpretation-implementation
+    paths:
+      - .github/workflows/sg-000030-format.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ !contains(github.event.head_commit.message, '[formatted]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --global pnpm@12.4.2
+      - run: pnpm install --frozen-lockfile
+      - name: Format exact implementation surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write \
+            packages/product-graph/src/request-intent.ts \
+            packages/product-graph/src/request-intent.test.ts \
+            packages/product-graph/src/index.ts
+          rm .github/workflows/sg-000030-format.yml
+          git diff --check
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add \
+            packages/product-graph/src/request-intent.ts \
+            packages/product-graph/src/request-intent.test.ts \
+            packages/product-graph/src/index.ts \
+            .github/workflows/sg-000030-format.yml
+          git commit -m "style(product-graph): format SG-000030 candidate [formatted]"
+          git push origin HEAD:p02/s03-t01c-user-request-interpretation-implementation
