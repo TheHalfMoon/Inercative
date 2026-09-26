@@ -43,17 +43,7 @@ export {
 export type { IntentInterpretationV1, UserChangeRequestV1 } from "./request-intent.ts";
 
 export {
-  ASSUMPTION_STATUSES,
-  QUESTION_GATE_ERROR_CODES,
   QUESTION_GATE_HIGH_CONFIDENCE_THRESHOLD,
-  QUESTION_GATE_IMPACTS,
-  QUESTION_GATE_MAX_AFFECTED_NODE_IDS,
-  QUESTION_GATE_MAX_NODE_ID_LENGTH,
-  QUESTION_GATE_MAX_QUESTIONS_BEFORE_PREVIEW,
-  QUESTION_GATE_MAX_TEXT_LENGTH,
-  QUESTION_GATE_OUTCOMES,
-  QUESTION_GATE_REASON_CODES,
-  QUESTION_GATE_REVERSIBILITIES,
   QUESTION_GATE_SCHEMA_VERSION,
   QuestionGateError,
   evaluateQuestionGate,
@@ -61,17 +51,9 @@ export {
 } from "./question-gate.ts";
 
 export type {
-  AssumptionId,
   AssumptionRecordV1,
-  AssumptionStatus,
-  QuestionBudgetV1,
   QuestionGateDecisionInputV1,
-  QuestionGateErrorCode,
-  QuestionGateImpact,
-  QuestionGateOutcome,
-  QuestionGateReasonCode,
   QuestionGateResultV1,
-  QuestionGateReversibility,
 } from "./question-gate.ts";
 
 export {
