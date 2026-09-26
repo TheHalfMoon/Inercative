@@ -34,9 +34,7 @@ export type {
 
 export {
   INTENT_INTERPRETATION_MAX_UNCERTAINTIES,
-  INTENT_INTERPRETATION_MAX_UNCERTAINTY_LENGTH,
   REQUEST_INTENT_ERROR_CODES,
-  REQUEST_INTENT_MAX_REFERENCE_LENGTH,
   REQUEST_INTENT_SCHEMA_VERSION,
   USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
   RequestIntentError,
@@ -48,8 +46,6 @@ export {
 } from "./request-intent.ts";
 
 export type {
-  CreateIntentInterpretationInputV1,
-  CreateUserChangeRequestInputV1,
   IntentInterpretationId,
   IntentInterpretationV1,
   RequestIntentErrorCode,
