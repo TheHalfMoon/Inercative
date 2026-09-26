@@ -175,7 +175,10 @@ function provenance(value: unknown, label: string): ChangeIntentProvenanceV1 {
 }
 
 function canonical(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) return value.map((item) => canonical(item));
+  if (Array.isArray(value)) {
+    const items = value as readonly JsonValue[];
+    return items.map((item) => canonical(item));
+  }
   if (value !== null && typeof value === "object") {
     const object = value as JsonObject;
     return Object.fromEntries(
