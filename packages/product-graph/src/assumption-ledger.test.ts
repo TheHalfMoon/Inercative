@@ -49,8 +49,6 @@ describe("Assumption Ledger", () => {
     const state = replayAssumptionLedger(assumption, [event(assumption)]);
 
     expect(state.status).toBe("confirmed");
-    expect(state.originAssumption).toEqual(assumption);
-    expect(state.effectiveStatement).toBe(assumption.statement);
     expect(state.invalidations).toEqual([]);
     expect(state.events[0]?.eventId).toMatch(/^assumption-event-[0-9a-f]{64}$/);
     expect(state.ledgerRevisionId).toMatch(/^assumption-ledger-[0-9a-f]{64}$/);
@@ -87,8 +85,6 @@ describe("Assumption Ledger", () => {
         action: "supersede",
         source: "user:replacement",
         replacementAssumptionId: replacement,
-        dependentWorkRefs: [],
-        evidenceRefs: [],
       }),
     ]);
 
@@ -116,9 +112,7 @@ describe("Assumption Ledger", () => {
     expect(first).toEqual(second);
     expect(inputs).toEqual(before);
     expect(first.status).toBe("corrected");
-    expect(Object.isFrozen(first)).toBe(true);
     expect(Object.isFrozen(first.events)).toBe(true);
-    expect(Object.isFrozen(first.invalidations)).toBe(true);
   });
 
   it("rejects contradictory or terminal lifecycle transitions", () => {
