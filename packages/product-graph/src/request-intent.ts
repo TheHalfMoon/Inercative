@@ -99,12 +99,19 @@ function record(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function exactKeys(value: Record<string, unknown>, allowed: readonly string[], label: string): void {
+function exactKeys(
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  label: string,
+): void {
   const unknown = Object.keys(value)
     .filter((key) => !allowed.includes(key))
     .sort();
   if (unknown.length > 0) {
-    fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} has unknown keys: ${unknown.join(", ")}.`);
+    fail(
+      "REQUEST_INTENT_INVALID_SCHEMA",
+      `${label} has unknown keys: ${unknown.join(", ")}.`,
+    );
   }
 }
 
@@ -113,7 +120,10 @@ function boundedText(value: unknown, label: string, maxLength: number): string {
     return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} must be non-empty text.`);
   }
   if (value.length > maxLength) {
-    return fail("REQUEST_INTENT_INVALID_SCHEMA", `${label} exceeds ${maxLength.toString()} chars.`);
+    return fail(
+      "REQUEST_INTENT_INVALID_SCHEMA",
+      `${label} exceeds ${maxLength.toString()} chars.`,
+    );
   }
   return value;
 }
@@ -155,11 +165,16 @@ function canonical(value: JsonValue): JsonValue {
 
 function digest(value: unknown): string {
   const parsed = JSON.parse(JSON.stringify(value)) as JsonValue;
-  return createHash("sha256").update(JSON.stringify(canonical(parsed))).digest("hex");
+  return createHash("sha256")
+    .update(JSON.stringify(canonical(parsed)))
+    .digest("hex");
 }
 
 function requestParts(value: unknown, envelope: boolean): RequestParts {
-  const candidate = record(value, envelope ? "User change request" : "User change request input");
+  const candidate = record(
+    value,
+    envelope ? "User change request" : "User change request input",
+  );
   exactKeys(
     candidate,
     envelope
@@ -172,13 +187,20 @@ function requestParts(value: unknown, envelope: boolean): RequestParts {
   }
   return {
     baseRevision: revision(candidate.baseRevision, "User change request baseRevision"),
-    text: boundedText(candidate.text, "User change request text", USER_CHANGE_REQUEST_MAX_TEXT_LENGTH),
+    text: boundedText(
+      candidate.text,
+      "User change request text",
+      USER_CHANGE_REQUEST_MAX_TEXT_LENGTH,
+    ),
     provenance: provenance(candidate.provenance, "User change request provenance"),
   };
 }
 
 function requestFrom(parts: RequestParts): UserChangeRequestV1 {
-  const requestId = `request-${digest({ schemaVersion: REQUEST_INTENT_SCHEMA_VERSION, ...parts })}` as UserChangeRequestId;
+  const requestId = `request-${digest({
+    schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
+    ...parts,
+  })}` as UserChangeRequestId;
   return Object.freeze({ schemaVersion: REQUEST_INTENT_SCHEMA_VERSION, requestId, ...parts });
 }
 
@@ -208,7 +230,11 @@ function uncertaintyList(value: unknown): readonly string[] {
 }
 
 function operationList(value: unknown): readonly ChangeIntentOperationV1[] {
-  if (!Array.isArray(value) || value.length === 0 || value.length > CHANGE_INTENT_MAX_OPERATIONS) {
+  if (
+    !Array.isArray(value) ||
+    value.length === 0 ||
+    value.length > CHANGE_INTENT_MAX_OPERATIONS
+  ) {
     return fail("REQUEST_INTENT_INVALID_OPERATIONS", "Invalid interpretation operation count.");
   }
   return Object.freeze(JSON.parse(JSON.stringify(value)) as ChangeIntentOperationV1[]);
@@ -219,7 +245,10 @@ function interpretationParts(
   request: UserChangeRequestV1,
   envelope: boolean,
 ): InterpretationParts {
-  const candidate = record(value, envelope ? "Intent interpretation" : "Intent interpretation input");
+  const candidate = record(
+    value,
+    envelope ? "Intent interpretation" : "Intent interpretation input",
+  );
   exactKeys(
     candidate,
     envelope
@@ -247,7 +276,10 @@ function interpretationParts(
       );
     }
     if (candidate.baseRevision !== request.baseRevision) {
-      return fail("REQUEST_INTENT_BASE_MISMATCH", "Intent interpretation baseRevision is stale.");
+      return fail(
+        "REQUEST_INTENT_BASE_MISMATCH",
+        "Intent interpretation baseRevision is stale.",
+      );
     }
   }
   return {
@@ -304,9 +336,15 @@ export function validateIntentInterpretation(
 ): IntentInterpretationV1 {
   const request = validateUserChangeRequest(requestValue);
   const candidate = record(value, "Intent interpretation");
-  const parsed = interpretationFrom(request, interpretationParts(candidate, request, true));
+  const parsed = interpretationFrom(
+    request,
+    interpretationParts(candidate, request, true),
+  );
   if (candidate.interpretationId !== parsed.interpretationId) {
-    return fail("REQUEST_INTENT_INTERPRETATION_ID_MISMATCH", "Intent interpretation content changed.");
+    return fail(
+      "REQUEST_INTENT_INTERPRETATION_ID_MISMATCH",
+      "Intent interpretation content changed.",
+    );
   }
   return parsed;
 }
@@ -327,7 +365,10 @@ export function compileUserRequestInterpretation(
   }
   const request = validateUserChangeRequest(requestValue);
   if (request.baseRevision !== base.revision) {
-    return fail("REQUEST_INTENT_BASE_MISMATCH", "User change request baseRevision is stale.");
+    return fail(
+      "REQUEST_INTENT_BASE_MISMATCH",
+      "User change request baseRevision is stale.",
+    );
   }
   const interpretation = validateIntentInterpretation(request, interpretationValue);
   const proposedDelta = compileChangeIntent(base, {
