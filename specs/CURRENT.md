@@ -83,6 +83,8 @@ their current delivery state:
 | SG-000025 | IN-P02-S02-T02D | Locale and internationalization semantics | DONE (PR #58) | `docs/evidence/P02_S02_T02D_CLOSURE_2026-09-21.md` |
 | SG-000026 | IN-P02-S02-T02E | External-effect and integration consequence semantics | DONE (PR #61) | `docs/evidence/P02_S02_T02E_CLOSURE_2026-09-21.md` |
 | SG-000027 | IN-P02-S03-T01A | Change Intent and proposed graph delta core | DONE (PR #66) | `docs/evidence/P02_S03_T01A_CLOSURE_2026-09-24.md` |
+| SG-000028 | IN-P02-S03-T01B | Ordered edge/remove/multi-operation Change Intent semantics | DONE (PR #69) | `docs/evidence/P02_S03_T01B_CLOSURE_2026-09-26.md` |
+| SG-000029 | IN-P02-S06-T01A | Semantic reference node contracts | GRAIN / SHAPED (PR #70) | `docs/evidence/P02_S06_T01A_SPECGRAIN_SHAPING_2026-09-26.md` |
 
 Delivery state is repository truth. The current SpecGrain CLI surface exposes
 `draft/shape/refine/grain/next/packet/prove`; it does not yet expose a command to
@@ -336,10 +338,11 @@ across SG-000022, SG-000023, SG-000024, SG-000025, and SG-000026.
 
 Next in dependency order:
 
-1. **IN-P02-S03-T01A is complete** through SG-000027 and PR #66. The full `IN-P02-S03-T01` handle remains open for richer graph-operation proposal semantics.
-2. The next eligible action is to shape a bounded dependent Grain under `IN-P02-S03-T01` for edge/remove/multi-operation behavior before implementation authority.
-3. IN-P02-S06-T01, IN-P02-S07-T01, and IN-P02-S08-T01 remain dependency-eligible but require their own SpecGrain shaping.
-4. IN-P02-S04-T01 remains blocked behind the full IN-P02-S03-T01 handle, and IN-P02-S05-T01 behind IN-P02-S04-T01.
+1. **IN-P02-S03-T01A and IN-P02-S03-T01B are complete** through SG-000027/PR #66 and SG-000028/PR #69. The full `IN-P02-S03-T01` handle remains open because both delivered slices intentionally start from already-typed Change Intent input, while the canonical S03 outcome begins from a user request and requires uncertainty/confidence/provenance.
+2. The next required S03 action is to shape `IN-P02-S03-T01C`: a bounded provider-neutral typed user-request / intent-interpretation boundary that feeds the deterministic Change Intent compiler without introducing P03 model/provider routing.
+3. **SG-000029 / IN-P02-S06-T01A is canonically shaped through PR #70** and is independently implementation-ready for semantic reference node contracts. Later S06 relation semantics remain outside SG-000029.
+4. IN-P02-S07-T01 and IN-P02-S08-T01 remain dependency-eligible but require their own SpecGrain shaping.
+5. IN-P02-S04-T01 remains blocked behind the full IN-P02-S03-T01 handle, and IN-P02-S05-T01 behind IN-P02-S04-T01.
 
 ## Hard constraints
 
