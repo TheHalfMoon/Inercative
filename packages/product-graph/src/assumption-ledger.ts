@@ -10,9 +10,6 @@ import {
   QUESTION_GATE_SCHEMA_VERSION,
   type AssumptionId,
   type AssumptionRecordV1,
-  type QuestionGateImpact,
-  type QuestionGateReasonCode,
-  type QuestionGateReversibility,
 } from "./question-gate.ts";
 
 export const ASSUMPTION_LEDGER_SCHEMA_VERSION = 1 as const;
@@ -99,6 +96,10 @@ function fail(code: AssumptionLedgerErrorCode, message: string): never {
 
 function hash(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function prefixedId<Prefix extends string>(prefix: Prefix, value: unknown): `${Prefix}${string}` {
+  return `${prefix}${hash(value)}`;
 }
 
 function compareText(left: string, right: string): number {
@@ -213,20 +214,20 @@ function normalizeOrigin(value: unknown): AssumptionRecordV1 {
       QUESTION_GATE_REASON_CODES,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin reason",
-    ) as QuestionGateReasonCode,
+    ),
     confidence: candidate.confidence,
     impact: enumValue(
       candidate.impact,
       QUESTION_GATE_IMPACTS,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin impact",
-    ) as QuestionGateImpact,
+    ),
     reversibility: enumValue(
       candidate.reversibility,
       QUESTION_GATE_REVERSIBILITIES,
       "ASSUMPTION_LEDGER_INVALID_ORIGIN",
       "Origin reversibility",
-    ) as QuestionGateReversibility,
+    ),
     affectedNodeIds: list(
       candidate.affectedNodeIds,
       QUESTION_GATE_MAX_AFFECTED_NODE_IDS,
@@ -337,7 +338,7 @@ function manifest(event: AssumptionLedgerEventV1): AssumptionInvalidationManifes
   } as const;
   return Object.freeze({
     ...body,
-    manifestId: `assumption-invalidation-${hash(body)}` as AssumptionInvalidationManifestId,
+    manifestId: prefixedId("assumption-invalidation-", body),
   });
 }
 
@@ -369,11 +370,11 @@ export function replayAssumptionLedger(
     const sequence = offset + 1;
     const event = Object.freeze({
       ...input,
-      eventId: `assumption-event-${hash({
+      eventId: prefixedId("assumption-event-", {
         sequence,
         previousEventId,
         ...input,
-      })}` as AssumptionLedgerEventId,
+      }),
       sequence,
     });
     events.push(event);
@@ -402,6 +403,6 @@ export function replayAssumptionLedger(
   } as const;
   return Object.freeze({
     ...semantic,
-    stateId: `assumption-ledger-${hash(semantic)}` as AssumptionLedgerStateId,
+    stateId: prefixedId("assumption-ledger-", semantic),
   });
 }
