@@ -51,6 +51,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000028 | IN-P02-S03-T01B | Ordered edge/remove/multi-operation Change Intent semantics | DONE (PR #69) | `docs/evidence/P02_S03_T01B_CLOSURE_2026-09-26.md` |
 | SG-000029 | IN-P02-S06-T01A | Semantic reference node contracts | DONE (PR #72) | `docs/evidence/P02_S06_T01A_CLOSURE_2026-09-26.md` |
 | SG-000030 | IN-P02-S03-T01C | Provider-neutral user-request / intent-interpretation boundary | DONE (implementation PR #75) | `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md` |
+| SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | DONE (PR #78) | `docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md` |
+| SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | GRAIN / SHAPED | `docs/evidence/P02_S04_T01B_SPECGRAIN_SHAPING_2026-09-26.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -78,6 +80,14 @@ SG-000030 final implementation candidate `e1ecbe6033bd0719759cfa90a44bbaeb8edc10
 
 Hosted OCR LLM remained `NOT_RUN / BLOCKED`; Jev was `NOT_RUN / UNAVAILABLE` on the GitHub-hosted runner. Neither is represented as PASS. Full closure and negative-evidence history are in `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md`.
 
+### P02-S04
+
+Partially delivered. SG-000031 / `IN-P02-S04-T01A` closes the deterministic Question Gate core and immutable inferred Assumption Ledger record.
+
+SG-000032 / `IN-P02-S04-T01B` is the active shaped remainder for deterministic assumption confirmation/correction/supersession and inspectable dependent-work/evidence invalidation references. It must not mutate or rerun downstream work automatically and cannot grant runtime authority.
+
+`IN-P02-S05-T01` remains blocked until SG-000032 is implemented, qualified, merged, and the full parent `IN-P02-S04-T01` is canonically closed.
+
 ### P02-S06
 
 Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts. Later S06 relation vocabulary and behavior require separate bounded Grain(s).
@@ -88,24 +98,17 @@ Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference nod
 
 ## Current dependency-unlocking frontier
 
-The next required dependency-unlocking task is:
+The active dependency-unlocking unit is:
 
-`IN-P02-S04-T01 — Implement Question Gate and Assumption Ledger`
+`SG-000032 / IN-P02-S04-T01B — assumption lifecycle and invalidation ledger`
 
-Dependency `IN-P02-S03-T01` is now complete, so P02-S04 is eligible for shaping.
+SG-000031 is closed canonically after PR #78 plus fresh-main CI `36255715278`. SG-000032 is the bounded remainder required to finish the canonical P02-S04 correction/invalidation outcome.
 
-Canonical P02-S04 outcome from the roadmap:
+The implementation must remain deterministic/provider-neutral, preserve the immutable origin assumption, reject invalid lifecycle transitions, and emit invalidation references without deleting/mutating/rerunning dependent work. Confirmation/correction/supersession remains planning evidence and never capability authority.
 
-- impact/reversibility/confidence policy;
-- zero-question default;
-- compact blocker questions;
-- explicit assumption recording rather than hidden guessing.
+After SG-000032 closes, re-evaluate whether the full `IN-P02-S04-T01` outcome is satisfied; if yes, close the parent and unlock `IN-P02-S05-T01 — Build Product Graph user views`.
 
-P02-S04 must remain deterministic/provider-neutral. It may consume the typed confidence/uncertainty/provenance from SG-000030 and the effect/consequence/reversibility semantics from the Product Graph domain layer, but it must not introduce P03 model/provider routing or execute an external effect.
-
-`IN-P02-S05-T01 — Build Product Graph user views` remains blocked behind P02-S04.
-
-Parallel independently eligible P02 work must remain separately shaped and qualified; do not combine it into the P02-S04 Grain merely for convenience.
+Parallel P02-S06 relation vocabulary and P02-S07 dataset semantics remain separately eligible and must not be combined into SG-000032 merely for convenience.
 
 ## Truthfully not run
 
