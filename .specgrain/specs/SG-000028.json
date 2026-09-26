@@ -1,0 +1,81 @@
+{
+  "acceptance": [
+    "The stable package extends ChangeIntentV1 with deterministic upsert-edge, remove-edge, and remove-node operations while retaining no-op and upsert-node compatibility.",
+    "A bounded ChangeIntent may contain multiple operations, applies them in declared order, and rejects duplicate/conflicting targets or a sequence that becomes structurally invalid at any step with stable typed errors.",
+    "upsert-edge validates edge shape, endpoint existence, relation/domain compatibility, and rejects an existing edge kind or endpoint change under the same edge id.",
+    "remove-edge rejects unknown edge ids; remove-node rejects unknown node ids and refuses removal while incident edges remain unless those edges were removed earlier in the same ordered intent.",
+    "Every proposal preserves exact base revision, intent identity/digest, provenance, confidence, ordered operation list, deterministic delta/proposal identity, and a separately validated candidate Product Graph revision.",
+    "Compilation is pure and deterministic, does not mutate the base or intent, and produces the same candidate/proposal identity across repeated execution and JSON-key insertion order.",
+    "Focused tests plus full format, lint, typecheck, and test suites pass on the exact candidate; Diffcipline, Alibaba OCR, Jev, exact-head CI, and post-merge CI are recorded before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/change-intent.ts",
+    "packages/product-graph/src/change-intent.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7200,
+    "estimated_tokens": 5600
+  },
+  "dependencies": [
+    "SG-000027"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base identities and full changed-file accounting.",
+      "Focused tests for edge upsert/removal, node removal, ordered multi-operation application, conflict rejection, domain validation, determinism, and input immutability.",
+      "Pinned Diffcipline proof, Alibaba OCR accounting/delegation semantic review, Jev exact-diff judgments, and exact-head Ubuntu/Windows CI.",
+      "Post-merge fresh-main CI and canonical CURRENT frontier reconciliation."
+    ]
+  },
+  "id": "SG-000028",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "extend-existing",
+        "rationale": "Extend the already qualified Change Intent compiler in @ineractive/product-graph. No new package, provider, persistence layer, dependency, or model integration is needed for richer graph-operation semantics."
+      },
+      "safety": {
+        "requirements": [
+          "Compilation remains pure: no network, model inference, clock/randomness dependence, source mutation, database access, capability grant, or external effect.",
+          "Operation order is explicit and semantically meaningful; no automatic reordering may hide an invalid intermediate graph state.",
+          "Removal is fail-closed: unknown targets and node removal with remaining incident edges are rejected.",
+          "Confidence remains evidence only; proposal generation cannot grant authority or accept a candidate as canonical truth."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The stable @ineractive/product-graph Change Intent compiler can deterministically propose ordered edge/node graph mutations and bounded multi-operation deltas without canonical or source mutation.",
+  "parent_id": null,
+  "rationale": "SG-000027 intentionally stopped at no-op and one-node upsert. The canonical next frontier requires edge/remove/multi-operation proposal semantics before natural-language intent interpretation or Question Gate work.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert SG-000028 contract/compiler/test/evidence changes; SG-000027 no-op/upsert-node behavior and all previously qualified Product Graph semantics remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Extend the closed ChangeIntent operation vocabulary with upsert-edge, remove-edge, and remove-node while preserving no-op and upsert-node.",
+    "Allow a bounded non-empty ordered operation list and apply operations sequentially against an in-memory candidate graph.",
+    "Validate edge shape and stable-id updates, reject duplicate/conflicting operation targets, reject missing removal targets, and reject node deletion while incident edges remain at that step.",
+    "Validate structural and Product Graph domain semantics after each operation and again for the final candidate revision.",
+    "Return the ordered operation list in ProposedGraphDeltaV1 and bind the deterministic intent/delta/proposal digests to the complete sequence.",
+    "Add focused compatibility, multi-operation, edge/remove, determinism, immutability, and fail-closed tests plus closure/frontier evidence."
+  ],
+  "scope_out": [
+    "No natural-language/model/provider intent parsing, no Question Gate or Assumption Ledger, and no source-binding or compiler execution.",
+    "No canonical Product Graph commit, database migration, Git mutation, network call, credential use, capability grant, or external-effect execution.",
+    "No implicit cascade delete, operation reordering, graph merge algorithm, concurrent-intent reconciliation, or automatic conflict resolution.",
+    "No new dependency, package, lockfile change, provider-paid inference, or change to existing domain vocabularies.",
+    "No claim that later P02-S04/P02-S05 tasks are complete."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S03-T01B ordered edge/remove and multi-operation Change Intent"
+}
