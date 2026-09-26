@@ -59,7 +59,6 @@ export type {
 export {
   ASSUMPTION_LEDGER_ACTIONS,
   ASSUMPTION_LEDGER_SCHEMA_VERSION,
-  ASSUMPTION_LEDGER_STATUSES,
   AssumptionLedgerError,
   replayAssumptionLedger,
   validateAssumptionLedgerEventInput,
