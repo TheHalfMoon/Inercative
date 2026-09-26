@@ -16,6 +16,8 @@ jobs:
       CANDIDATE_SHA: 1c2005b70fedf971bfffa9495788a70340c169fd
       DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
       OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+      EVIDENCE_DIR: ${{ runner.temp }}/sg000028/evidence
+      TOOLS_DIR: ${{ runner.temp }}/sg000028/tools
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
@@ -23,9 +25,9 @@ jobs:
           ref: ${{ env.CANDIDATE_SHA }}
           fetch-depth: 0
 
-      - name: Initialize qualification evidence directories
+      - name: Initialize isolated qualification directories
         shell: bash
-        run: mkdir -p _qualification .tools
+        run: mkdir -p "$EVIDENCE_DIR" "$TOOLS_DIR"
 
       - name: Set up Node 24
         uses: actions/setup-node@v4
@@ -43,7 +45,7 @@ jobs:
         shell: bash
         run: pnpm install --frozen-lockfile
 
-      - name: Verify exact Git identities
+      - name: Verify exact Git identities and clean worktree
         shell: bash
         run: |
           set -euo pipefail
@@ -52,47 +54,48 @@ jobs:
           git cat-file -e "$BASE_SHA^{commit}"
           merge_base="$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")"
           test "$merge_base" = "$BASE_SHA"
-          printf 'base=%s\nhead=%s\nmerge_base=%s\n' "$BASE_SHA" "$CANDIDATE_SHA" "$merge_base" > _qualification/identities.txt
-          git diff --stat "$BASE_SHA..$CANDIDATE_SHA" | tee _qualification/diff-stat.txt
-          git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee _qualification/diff-numstat.txt
-          git diff --name-status "$BASE_SHA..$CANDIDATE_SHA" | tee _qualification/diff-files.txt
+          test -z "$(git status --porcelain)"
+          printf 'base=%s\nhead=%s\nmerge_base=%s\n' "$BASE_SHA" "$CANDIDATE_SHA" "$merge_base" > "$EVIDENCE_DIR/identities.txt"
+          git diff --stat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-stat.txt"
+          git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-numstat.txt"
+          git diff --name-status "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-files.txt"
 
       - name: Download and verify Diffcipline v1.0.0
         shell: bash
         run: |
           set -euo pipefail
-          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o .tools/diffcipline
-          echo "$DIFFCIPLINE_SHA256  .tools/diffcipline" | sha256sum --check
-          chmod +x .tools/diffcipline
-          printf 'release=v1.0.0\nasset=diffcipline-x86_64-unknown-linux-gnu\nsha256=%s\n' "$DIFFCIPLINE_SHA256" > _qualification/diffcipline-tool.txt
+          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o "$TOOLS_DIR/diffcipline"
+          echo "$DIFFCIPLINE_SHA256  $TOOLS_DIR/diffcipline" | sha256sum --check
+          chmod +x "$TOOLS_DIR/diffcipline"
+          printf 'release=v1.0.0\nasset=diffcipline-x86_64-unknown-linux-gnu\nsha256=%s\n' "$DIFFCIPLINE_SHA256" > "$EVIDENCE_DIR/diffcipline-tool.txt"
 
       - name: Run Diffcipline R2 exact-candidate proof
         shell: bash
         run: |
           set -euo pipefail
-          .tools/diffcipline check --base "$BASE_SHA" --risk R2 --run --json | tee _qualification/diffcipline-proof.json
+          "$TOOLS_DIR/diffcipline" check --base "$BASE_SHA" --risk R2 --run --json | tee "$EVIDENCE_DIR/diffcipline-proof.json"
 
       - name: Download and verify Alibaba OCR v1.12.7
         shell: bash
         run: |
           set -euo pipefail
-          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o .tools/ocr
-          echo "$OCR_SHA256  .tools/ocr" | sha256sum --check
-          chmod +x .tools/ocr
-          printf 'release=v1.12.7\nasset=opencodereview-linux-amd64\nsha256=%s\n' "$OCR_SHA256" > _qualification/ocr-tool.txt
+          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o "$TOOLS_DIR/ocr"
+          echo "$OCR_SHA256  $TOOLS_DIR/ocr" | sha256sum --check
+          chmod +x "$TOOLS_DIR/ocr"
+          printf 'release=v1.12.7\nasset=opencodereview-linux-amd64\nsha256=%s\n' "$OCR_SHA256" > "$EVIDENCE_DIR/ocr-tool.txt"
 
       - name: Run OCR deterministic accounting and rule resolution
         shell: bash
         run: |
           set -euo pipefail
-          .tools/ocr delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee _qualification/ocr-preview.json
-          .tools/ocr delegate rule --format json packages/product-graph/src/change-intent.ts packages/product-graph/src/index.ts | tee _qualification/ocr-rules.json
-          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/product-graph/src/change-intent.test.ts > _qualification/excluded-test-review.diff
+          "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/product-graph/src/change-intent.ts packages/product-graph/src/index.ts | tee "$EVIDENCE_DIR/ocr-rules.json"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/product-graph/src/change-intent.test.ts > "$EVIDENCE_DIR/excluded-test-review.diff"
 
       - name: Upload qualification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sg-000028-exact-candidate-qualification
-          path: _qualification/
+          path: ${{ runner.temp }}/sg000028/evidence/
           if-no-files-found: error
