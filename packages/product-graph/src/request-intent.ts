@@ -184,7 +184,7 @@ function canonical(value: JsonValue): JsonValue {
     return Object.fromEntries(
       Object.keys(object)
         .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0))
-        .map((key) => [key, canonical(object[key])]),
+        .map((key) => [key, canonical(object[key] as JsonValue)]),
     );
   }
   return value;
@@ -225,7 +225,7 @@ function requestParts(value: unknown, envelope: boolean): RequestParts {
 }
 
 function requestFrom(parts: RequestParts): UserChangeRequestV1 {
-  const requestId = `request-${digest({
+  const requestId: UserChangeRequestId = `request-${digest({
     schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
     ...parts,
   })}`;
@@ -318,7 +318,7 @@ function interpretationFrom(
   request: UserChangeRequestV1,
   parts: InterpretationParts,
 ): IntentInterpretationV1 {
-  const interpretationId = `interpretation-${digest({
+  const interpretationId: IntentInterpretationId = `interpretation-${digest({
     schemaVersion: REQUEST_INTENT_SCHEMA_VERSION,
     requestId: request.requestId,
     baseRevision: request.baseRevision,
