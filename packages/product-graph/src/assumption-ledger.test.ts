@@ -108,15 +108,15 @@ describe("Assumption lifecycle ledger", () => {
   });
 
   it("rejects contradictory, terminal, stale-identity, and cross-assumption transitions", () => {
-    expect(() => replayAssumptionLedger(origin(), [event("confirm"), event("confirm")])).toThrowError(
-      expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }),
-    );
-    expect(() => replayAssumptionLedger(origin(), [event("correct"), event("confirm")])).toThrowError(
-      expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }),
-    );
-    expect(() => replayAssumptionLedger(origin(), [event("supersede"), event("correct")])).toThrowError(
-      expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }),
-    );
+    expect(() =>
+      replayAssumptionLedger(origin(), [event("confirm"), event("confirm")]),
+    ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }));
+    expect(() =>
+      replayAssumptionLedger(origin(), [event("correct"), event("confirm")]),
+    ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }));
+    expect(() =>
+      replayAssumptionLedger(origin(), [event("supersede"), event("correct")]),
+    ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_TRANSITION" }));
     const stale = origin();
     expect(() => replayAssumptionLedger({ ...stale, statement: "tampered" }, [])).toThrowError(
       expect.objectContaining({ code: "ASSUMPTION_LEDGER_STALE_ASSUMPTION_ID" }),
