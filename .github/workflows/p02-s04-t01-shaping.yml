@@ -1,0 +1,109 @@
+name: p02-s04-t01-shaping
+
+on:
+  push:
+    branches:
+      - p02/s04-t01-question-gate-shaping
+    paths:
+      - .github/workflows/p02-s04-t01-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: 65395ddc119d76376639ebcc045e80edce9d92af
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S04-T01 Question Gate and Assumption Ledger" \
+            --outcome "A typed UserRequestProposal can be evaluated deterministically into a zero-question proceed state or a compact blocker-question state using explicit confidence, impact, and reversibility policy while every uncertainty is preserved as an inspectable assumption ledger entry and no external effect executes." \
+            --rationale "IN-P02-S03-T01 is canonically complete through SG-000027, SG-000028, and SG-000030. The roadmap now requires a deterministic Question Gate and Assumption Ledger before Product Graph user views. Existing request-proposal confidence/uncertainty/provenance plus Product Graph external-effect consequence semantics are sufficient; no provider/model routing or new graph semantics are needed." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000031"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Define closed provider-neutral QuestionGatePolicyV1, QuestionGateDecisionV1, AssumptionLedgerEntryV1, and BlockerQuestionV1 contracts with stable deterministic identities and bounded fields." \
+            --scope-in "Implement deterministic proposal-local impact and reversibility assessment from the already-qualified UserRequestProposalV1 operations, including external-effect consequence metadata, without inspecting unrelated graph state or invoking a model." \
+            --scope-in "Implement an explicit confidence threshold and bounded blocker-question policy: zero questions is the default, every uncertainty is recorded as an assumption, and questions are emitted only when an uncertainty intersects a configured confidence/impact/reversibility blocker condition." \
+            --scope-in "Keep blocker questions compact and deterministic by binding each question to one recorded assumption; a question cap may limit questions but must never drop the remaining assumptions from the ledger." \
+            --scope-in "Add focused tests for zero-question default, high-confidence assumptions, low-confidence blockers, material/irreversible effects, question caps, deterministic identity, input immutability, and the invariant that confidence/impact/reversibility never grants capability or executes an effect." \
+            --scope-in "Export only the minimal Question Gate/Assumption Ledger surface through @ineractive/product-graph with no new runtime dependency." \
+            --scope-out "No LLM/model/provider invocation, prompt routing, retrieval, CLM/Jev decision routing, tool execution, or natural-language interpretation generation; P03 owns provider intelligence." \
+            --scope-out "No canonical Product Graph mutation and no automatic creation of assumption nodes/affects edges; this Grain produces a deterministic ledger/decision record only." \
+            --scope-out "No UI, Product Graph user views, source/Git/database mutation, network access, credential use, capability grant, deployment, production confirmation UI, or external-effect execution." \
+            --scope-out "No new Product Graph node/edge kinds or external-effect consequence vocabulary; reuse the existing P02-S02 semantics." \
+            --acceptance "The Question Gate contracts are closed, deterministic, bounded, and reject malformed/out-of-range policy input; policy values are explicit rather than hidden business constants." \
+            --acceptance "A proposal with no blocker condition emits zero questions. Uncertainties that do not cross a blocker condition are preserved as explicit assumption ledger entries rather than silently guessed away." \
+            --acceptance "When a blocker condition is met, every emitted compact question references a recorded assumption, the configured question cap is respected, and capped uncertainties remain present in the ledger." \
+            --acceptance "Impact/reversibility classification is derived only from the proposal operations and existing qualified external-effect consequence semantics; confidence, impact, reversibility, and question state never become capability authority or execute an external effect." \
+            --acceptance "Focused tests cover deterministic identity, policy bounds, zero-question default, high-confidence proceed-with-assumptions, low-confidence blockers, material/irreversible external-effect cases, question caps, and input immutability." \
+            --acceptance "The exact candidate passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR deterministic/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI before closure." \
+            --dependency SG-000030 \
+            --risk-level medium \
+            --recovery "Revert the Question Gate module, exports, tests, and evidence. IN-P02-S03-T01 remains canonically complete while IN-P02-S05-T01 returns to blocked behind P02-S04." \
+            --context-budget 7600 \
+            --context-estimate 5600 \
+            --change-surface "packages/product-graph/src/question-gate.ts" \
+            --change-surface "packages/product-graph/src/question-gate.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused Question Gate/Assumption Ledger tests plus full repository gates." \
+            --evidence "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI." \
+            --minimality-choice reuse-existing \
+            --minimality-rationale "SG-000030 already supplies confidence, uncertainty, provenance, exact request/base binding, and a deterministic proposed delta. P02-S02 already supplies external-effect consequence semantics and the Product Graph assumption vocabulary. The smallest missing layer is one deterministic gate/ledger module; adding a provider router, new graph semantics, or UI would duplicate later-phase authority." \
+            --safety-status requirements-defined \
+            --safety-requirement "Confidence, impact, reversibility, question count, and assumption state are decision metadata only and cannot grant capability, authorization, trust, or execution authority." \
+            --safety-requirement "Zero questions is the default. The gate may ask only about explicit recorded uncertainties that cross an explicit blocker condition; it may not invent hidden uncertainty or expand into a conversational interrogation loop." \
+            --safety-requirement "Irreversible external-effect consequence metadata cannot be downgraded by confidence, and this Grain never executes the external effect it classifies." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Persist only SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s04-t01-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows/p02-s04-t01-shaping.yml
+          git commit -m "spec(p02): shape Question Gate and Assumption Ledger [shaped]"
+          git push origin HEAD:p02/s04-t01-question-gate-shaping
