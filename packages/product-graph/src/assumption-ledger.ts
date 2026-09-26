@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   ASSUMPTION_STATUSES,
   QUESTION_GATE_IMPACTS,
+  QUESTION_GATE_MAX_AFFECTED_NODE_IDS,
   QUESTION_GATE_REASON_CODES,
   QUESTION_GATE_REVERSIBILITIES,
   QUESTION_GATE_SCHEMA_VERSION,
@@ -15,12 +16,6 @@ import {
 
 export const ASSUMPTION_LEDGER_SCHEMA_VERSION = 1 as const;
 export const ASSUMPTION_LEDGER_ACTIONS = ["confirm", "correct", "supersede"] as const;
-export const ASSUMPTION_LEDGER_STATUSES = [
-  "inferred",
-  "confirmed",
-  "corrected",
-  "superseded",
-] as const;
 export const ASSUMPTION_LEDGER_MAX_SOURCE_LENGTH = 1_024 as const;
 export const ASSUMPTION_LEDGER_MAX_STATEMENT_LENGTH = 1_024 as const;
 export const ASSUMPTION_LEDGER_MAX_REFERENCES = 128 as const;
@@ -37,7 +32,7 @@ export const ASSUMPTION_LEDGER_ERROR_CODES = [
 ] as const;
 
 export type AssumptionLedgerAction = (typeof ASSUMPTION_LEDGER_ACTIONS)[number];
-export type AssumptionLedgerStatus = (typeof ASSUMPTION_LEDGER_STATUSES)[number];
+export type AssumptionLedgerStatus = "inferred" | "confirmed" | "corrected" | "superseded";
 export type AssumptionLedgerErrorCode = (typeof ASSUMPTION_LEDGER_ERROR_CODES)[number];
 export type AssumptionLedgerEventId = `assumption-event-${string}`;
 export type AssumptionInvalidationManifestId = `assumption-invalidation-${string}`;
@@ -196,6 +191,12 @@ function validateOriginAssumption(value: unknown): AssumptionRecordV1 {
     !QUESTION_GATE_REVERSIBILITIES.includes(candidate.reversibility as QuestionGateReversibility)
   ) {
     return fail("ASSUMPTION_LEDGER_INVALID_ASSUMPTION", "Origin assumption is invalid.");
+  }
+  if (
+    !Array.isArray(candidate.affectedNodeIds) ||
+    candidate.affectedNodeIds.length > QUESTION_GATE_MAX_AFFECTED_NODE_IDS
+  ) {
+    return fail("ASSUMPTION_LEDGER_INVALID_ASSUMPTION", "Origin affected node count is invalid.");
   }
 
   const id = assumptionId(candidate.assumptionId, "Origin assumptionId");
