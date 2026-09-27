@@ -54,7 +54,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | DONE (PR #78) | `docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md` |
 | SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | DONE (PR #80) | `docs/evidence/P02_S04_T01B_CLOSURE_2026-09-27.md` |
 | SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | DONE (PR #83) | `docs/evidence/P02_S05_T01A_CLOSURE_2026-09-27.md` |
-| SG-000034 | IN-P02-S07-T01A | Core Dataset semantic node contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01A_SPECGRAIN_SHAPING_2026-09-27.md` |
+| SG-000034 | IN-P02-S07-T01A | Core Dataset semantic node contracts | DONE (PR #85) | `docs/evidence/P02_S07_T01A_CLOSURE_2026-09-27.md` |
+| SG-000035 | IN-P02-S07-T01B | Profile, quality, seed, and synthetic semantic node contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01B_SPECGRAIN_SHAPING_2026-09-27.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -78,11 +79,7 @@ Complete. SG-000031 + SG-000032 close parent `IN-P02-S04-T01 — Implement Quest
 
 ### P02-S05
 
-Complete.
-
-SG-000033 exact candidate `0072d2e96fc845a6d1aa328608847fb6b1c0cd75` passed exact-head CI `36295840807` on Ubuntu and Windows, checksum-verified Diffcipline/OCR qualification `36295867287`, and exact-head semantic review with zero material findings. It merged normally through PR #83 as `bb66129903fba267d558eede00b94debac7d63e4`; fresh-main CI `36296032599` / #326 passed.
-
-The canonical P02-S05 roadmap outcome is the five read-only Data, Roles, Pages, Workflows, and Assumptions views. That outcome is satisfied by SG-000033; React/editable designer work remains downstream and is not silently pulled into P02-S05.
+Complete. SG-000033 closes the five canonical read-only Product Graph view families and passed exact-head plus fresh-main qualification before closure.
 
 ### P02-S06
 
@@ -92,9 +89,13 @@ The canonical relation examples (`BOUND_TO`, `MAY_USE`, `FORKS`, `PROMOTES`, `TA
 
 ### P02-S07
 
-In progress. SG-000034 / `IN-P02-S07-T01A` is the active shaped first slice for Dataset, DatasetVersion, DataImport, and DataMapping semantic node contracts. It is metadata-only and cannot read, import, transform, move, or authorize data.
+In progress.
 
-Later S07 slices remain required for DataProfile, DataQualityRule, SeedDataset, SyntheticDataset, relation vocabulary, and deterministic cross-node rules before parent `IN-P02-S07-T01` can close.
+SG-000034 / `IN-P02-S07-T01A` is closed canonically through PR #85 / merge `651738db84bcc99aeaf6141b469b476951509007`, with exact-head CI `36303672973`, qualification `36303714127`, and fresh-main CI `36303817244` all successful. It delivers metadata-only Dataset, DatasetVersion, DataImport, and DataMapping node contracts.
+
+SG-000035 / `IN-P02-S07-T01B` is the active shaped unit for DataProfile, DataQualityRule, SeedDataset, and SyntheticDataset metadata contracts. It cannot profile, execute quality rules, generate or insert records, read sources, access secrets/network, call models/providers, mutate persistence, copy production data, or write environments.
+
+A later S07 relation/cross-node Grain remains required before parent `IN-P02-S07-T01` can close.
 
 ### P02-S08
 
@@ -104,17 +105,19 @@ Blocked by the unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompleten
 
 The active dependency-unlocking unit is:
 
-`SG-000034 / IN-P02-S07-T01A — core Dataset semantic node contracts`
+`SG-000035 / IN-P02-S07-T01B — profile, quality, seed, and synthetic semantic node contracts`
 
-This is the smallest clear unit that advances the independently eligible S07 parent and eventually unlocks P02-S08. It must extend only the existing deterministic Product Graph domain contract and focused tests; it must not perform data-plane execution, persistence writes, source access, provider/model calls, or P02-S06 endpoint repair.
+This is the smallest bounded unit that completes the remaining non-relational V1 dataset node vocabulary. It must extend only the existing deterministic Product Graph domain metadata contract and focused tests. It must not perform profiling, generation, persistence writes, source access, provider/model calls, relation widening, ProductCompleteness work, or P02-S06 endpoint repair.
 
-P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000034.
+After SG-000035 closes, S07 relation/cross-node semantics remain the next blocker before P02-S08 can become dependency-ready.
+
+P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000035.
 
 ## Truthfully not run
 
 - Alibaba OCR hosted-LLM review: `NOT_RUN / BLOCKED` unless a scoped endpoint/token is actually configured. Deterministic OCR accounting/rule resolution and host/delegation semantic-review evidence must be described separately and truthfully.
 - Jev on GitHub-hosted runners: `NOT_RUN / UNAVAILABLE` when the executable/runtime is absent.
-- Jev via the authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` as of the 2026-09-27 S07 shaping turn. Never claim Jev PASS without execution evidence.
+- Jev via the authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` in this 2026-09-27 execution window. Never claim Jev PASS without execution evidence.
 - SpecGrain repository-completion lifecycle transition: not modeled by the current CLI surface; repository/evidence state remains canonical.
 
 Generic bot summaries or statuses are not qualification evidence.
