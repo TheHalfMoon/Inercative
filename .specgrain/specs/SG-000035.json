@@ -1,0 +1,74 @@
+{
+  "acceptance": [
+    "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include exactly the four new profile/quality/seed/synthetic kinds with closed deterministic field schemas while all previously qualified node kinds remain compatible.",
+    "SeedDataset and SyntheticDataset contracts make reproducibility, target environment, provenance, coverage, and verification intent explicit; SyntheticDataset additionally carries explicit privacy/schema-or-product constraint identity and must not imply copied private production values.",
+    "DataProfile and DataQualityRule contracts remain metadata only and cannot claim observations/rules were executed merely because nodes exist.",
+    "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, invalid privacy-class where reused, deterministic issue ordering, and full canonical domain-validation compatibility.",
+    "The exact implementation candidate passes repository format/lint/typecheck/tests, Diffcipline R2, checksum-verified Alibaba OCR deterministic accounting/rule resolution where applicable, Jev where actually available, exact-head CI, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/domain.ts",
+    "packages/product-graph/src/domain.test.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7000,
+    "estimated_tokens": 5200
+  },
+  "dependencies": [
+    "SG-000034"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused metadata-contract tests plus full repository format/lint/typecheck/test suites.",
+      "Diffcipline exact-candidate proof, Alibaba OCR deterministic accounting/rule resolution, exact-head semantic review, Jev where available, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000035",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "The current Product Graph domain kind/spec validator is already the canonical metadata contract. A separate profiling or generation runtime in this Grain would duplicate authority and conflate representation with execution."
+      },
+      "safety": {
+        "requirements": [
+          "A profile or quality-rule node is evidence/requirement metadata, never proof that data was inspected or a rule was executed.",
+          "Seed/synthetic metadata never grants write authority and must not copy private production values by default.",
+          "Synthetic/seed reproducibility metadata is not permission to call a model, read a source, or write an environment."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Product Graph can represent DataProfile, DataQualityRule, SeedDataset, and SyntheticDataset as closed deterministic metadata nodes with inspectable profile/quality evidence identity and reproducibility/privacy constraints, without profiling or generating data.",
+  "parent_id": null,
+  "rationale": "SG-000034 canonically established the four core Dataset identity/provenance nodes. The next bounded S07 slice adds the remaining non-relational V1 dataset metadata concepts before relation/cross-node semantics are introduced in a separate Grain.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the four profile/quality/seed/synthetic node-kind/spec additions, their focused tests, exports, and evidence; canonical dataset-core semantics through SG-000034 remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add closed Product Graph domain node kinds for DataProfile, DataQualityRule, SeedDataset, and SyntheticDataset through the existing deterministic domain validator.",
+    "DataProfile metadata must identify the dataset-version observation/provenance context and support inspectable statistics/quality characteristic references without claiming profiling execution occurred.",
+    "DataQualityRule metadata must express a deterministic, human-inspectable validity/reconciliation/integrity requirement without embedding executable code or granting mutation authority.",
+    "SeedDataset metadata must preserve deterministic/reproducible development/test intent, target environment identity, representative role/state/edge-case coverage references, provenance, and verification identity.",
+    "SyntheticDataset metadata must preserve schema/product-semantics and privacy-policy constraint references, deterministic/reproducible generation intent, target environment, provenance, coverage references, and verification identity.",
+    "Reuse the existing data-classification vocabulary where privacy classification is represented, and add focused deterministic validation tests while preserving all previously qualified domain kinds."
+  ],
+  "scope_out": [
+    "No data profiling, statistics calculation, quality-rule execution, record generation, seed insertion, file/database/API read, persistence mutation, Supabase operation, model/provider call, network/secret access, production-data copying, or environment write.",
+    "No Dataset/DataProfile/DataQualityRule/SeedDataset/SyntheticDataset relation vocabulary or cross-node existence validation; relation semantics remain the next bounded S07 slice.",
+    "No VectorCorpus/EvalDataset AI-dataset semantics, no ProductCompletenessManifest, no P02-S06 endpoint repair, and no P03 work."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S07-T01B profile quality seed and synthetic semantic node contracts"
+}
