@@ -61,6 +61,10 @@ export const DOMAIN_NODE_KINDS = [
   "datasetversion",
   "dataimport",
   "datamapping",
+  "dataprofile",
+  "dataqualityrule",
+  "seeddataset",
+  "syntheticdataset",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -277,6 +281,54 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
       verificationRefs: "string-list",
     },
   },
+  {
+    kind: "dataprofile",
+    required: {
+      datasetVersionRef: "string",
+      provenanceRef: "string",
+      statisticsRefs: "string-list",
+    },
+    optional: {
+      qualityFindingRefs: "string-list",
+      status: "string",
+      verificationRefs: "string-list",
+    },
+  },
+  {
+    kind: "dataqualityrule",
+    required: { name: "string", provenanceRef: "string", requirement: "string" },
+    optional: { dimension: "string", status: "string", verificationRefs: "string-list" },
+  },
+  {
+    kind: "seeddataset",
+    required: {
+      constraintRefs: "string-list",
+      coverageRefs: "string-list",
+      environment: "string",
+      intentRef: "string",
+      privacyClass: "string",
+      privacyPolicyRef: "string",
+      provenanceRef: "string",
+      reproducibilityRef: "string",
+      verificationRefs: "string-list",
+    },
+    optional: { status: "string" },
+  },
+  {
+    kind: "syntheticdataset",
+    required: {
+      constraintRefs: "string-list",
+      coverageRefs: "string-list",
+      environment: "string",
+      intentRef: "string",
+      privacyClass: "string",
+      privacyPolicyRef: "string",
+      provenanceRef: "string",
+      reproducibilityRef: "string",
+      verificationRefs: "string-list",
+    },
+    optional: { status: "string" },
+  },
 ];
 
 export const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = [
@@ -488,6 +540,8 @@ export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [
   { field: "privacyClass", kind: "dataset", values: DOMAIN_DATA_CLASS_LEVELS },
   { field: "privacyClass", kind: "datasetversion", values: DOMAIN_DATA_CLASS_LEVELS },
   { field: "privacyClass", kind: "dataimport", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "privacyClass", kind: "seeddataset", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "privacyClass", kind: "syntheticdataset", values: DOMAIN_DATA_CLASS_LEVELS },
   { field: "audit", kind: "datapolicy", values: DOMAIN_AUDIT_VALUES },
   { field: "collection", kind: "datapolicy", values: DOMAIN_COLLECTION_VALUES },
   { field: "consent", kind: "datapolicy", values: DOMAIN_CONSENT_VALUES },

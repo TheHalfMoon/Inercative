@@ -129,6 +129,38 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
     sourceRef: "source:orders",
     targetRef: "entity:order",
   },
+  dataprofile: {
+    datasetVersionRef: "dataset-version:orders-v1",
+    provenanceRef: "provenance:orders-profile",
+    statisticsRefs: ["stats:orders-missingness", "stats:orders-uniqueness"],
+  },
+  dataqualityrule: {
+    name: "Order IDs are unique",
+    provenanceRef: "provenance:quality-policy",
+    requirement: "Every order ID must be unique within the dataset version.",
+  },
+  seeddataset: {
+    constraintRefs: ["schema:orders", "product:orders-workflow"],
+    coverageRefs: ["role:operator", "state:pending", "edge-case:empty-note"],
+    environment: "development",
+    intentRef: "intent:browser-verification-seed",
+    privacyClass: "internal",
+    privacyPolicyRef: "policy:no-private-production-copy",
+    provenanceRef: "provenance:orders-seed-recipe",
+    reproducibilityRef: "recipe:orders-seed-v1",
+    verificationRefs: ["verification:orders-seed-v1"],
+  },
+  syntheticdataset: {
+    constraintRefs: ["schema:orders", "product:orders-workflow"],
+    coverageRefs: ["role:operator", "state:refunded", "edge-case:large-total"],
+    environment: "test",
+    intentRef: "intent:synthetic-browser-verification",
+    privacyClass: "internal",
+    privacyPolicyRef: "policy:no-private-production-copy",
+    provenanceRef: "provenance:orders-synthetic-recipe",
+    reproducibilityRef: "recipe:orders-synthetic-v1",
+    verificationRefs: ["verification:orders-synthetic-v1"],
+  },
 };
 
 const probeNodes: readonly ProductGraphNodeV1[] = DOMAIN_NODE_KINDS.map((kind) => ({
@@ -312,6 +344,150 @@ describe("Product Graph domain node semantics", () => {
     expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([
       ["probe:a", "DOMAIN_INVALID_ENUM_VALUE", "privacyClass"],
       ["probe:z", "DOMAIN_UNKNOWN_FIELD", "mystery"],
+    ]);
+    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);
+  });
+
+  it("pins the four SG-000035 profile quality seed and synthetic contracts", () => {
+    expect(
+      DOMAIN_NODE_KIND_SPECS.filter((spec) =>
+        ["dataprofile", "dataqualityrule", "seeddataset", "syntheticdataset"].includes(spec.kind),
+      ),
+    ).toEqual([
+      {
+        kind: "dataprofile",
+        required: {
+          datasetVersionRef: "string",
+          provenanceRef: "string",
+          statisticsRefs: "string-list",
+        },
+        optional: {
+          qualityFindingRefs: "string-list",
+          status: "string",
+          verificationRefs: "string-list",
+        },
+      },
+      {
+        kind: "dataqualityrule",
+        required: { name: "string", provenanceRef: "string", requirement: "string" },
+        optional: { dimension: "string", status: "string", verificationRefs: "string-list" },
+      },
+      {
+        kind: "seeddataset",
+        required: {
+          constraintRefs: "string-list",
+          coverageRefs: "string-list",
+          environment: "string",
+          intentRef: "string",
+          privacyClass: "string",
+          privacyPolicyRef: "string",
+          provenanceRef: "string",
+          reproducibilityRef: "string",
+          verificationRefs: "string-list",
+        },
+        optional: { status: "string" },
+      },
+      {
+        kind: "syntheticdataset",
+        required: {
+          constraintRefs: "string-list",
+          coverageRefs: "string-list",
+          environment: "string",
+          intentRef: "string",
+          privacyClass: "string",
+          privacyPolicyRef: "string",
+          provenanceRef: "string",
+          reproducibilityRef: "string",
+          verificationRefs: "string-list",
+        },
+        optional: { status: "string" },
+      },
+    ]);
+  });
+
+  it("accepts inspectable profile and quality metadata without execution claims", () => {
+    expect(
+      collectProductGraphDomainIssues(
+        graphWith([
+          {
+            id: "profile:orders",
+            kind: "dataprofile",
+            attributes: {
+              ...minimalAttributes.dataprofile,
+              qualityFindingRefs: ["finding:duplicate-order-id"],
+              status: "observed",
+              verificationRefs: ["evidence:profile-orders-v1"],
+            },
+          },
+          {
+            id: "quality:unique-order-id",
+            kind: "dataqualityrule",
+            attributes: {
+              ...minimalAttributes.dataqualityrule,
+              dimension: "uniqueness",
+              status: "required",
+              verificationRefs: ["evidence:quality-rule-definition"],
+            },
+          },
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  it.each(["seeddataset", "syntheticdataset"] as DomainNodeKind[])(
+    "reuses the closed data-class vocabulary for %s privacyClass",
+    (kind) => {
+      const attributes: Record<string, JsonValue> = {
+        ...minimalAttributes[kind],
+        privacyClass: "confidential",
+      };
+      const issues = collectProductGraphDomainIssues(singleNode(kind, attributes));
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({
+        code: "DOMAIN_INVALID_ENUM_VALUE",
+        phase: "node",
+        target: "probe:node",
+        field: "privacyClass",
+      });
+    },
+  );
+
+  it("keeps private production copying outside seed and synthetic metadata contracts", () => {
+    for (const kind of ["seeddataset", "syntheticdataset"] as DomainNodeKind[]) {
+      const issues = collectProductGraphDomainIssues(
+        singleNode(kind, {
+          ...minimalAttributes[kind],
+          productionSourceRef: "production:customers",
+        }),
+      );
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({
+        code: "DOMAIN_UNKNOWN_FIELD",
+        phase: "node",
+        target: "probe:node",
+        field: "productionSourceRef",
+      });
+    }
+  });
+
+  it("orders SG-000035 metadata findings deterministically across node insertion order", () => {
+    const broken = graphWith([
+      {
+        id: "probe:z",
+        kind: "dataprofile",
+        attributes: { ...minimalAttributes.dataprofile, executableProfileCode: "scan()" },
+      },
+      {
+        id: "probe:a",
+        kind: "syntheticdataset",
+        attributes: { ...minimalAttributes.syntheticdataset, privacyClass: "confidential" },
+      },
+    ]);
+    const reordered = graphWith([...broken.nodes].reverse());
+    const baseline = collectProductGraphDomainIssues(broken);
+    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([
+      ["probe:a", "DOMAIN_INVALID_ENUM_VALUE", "privacyClass"],
+      ["probe:z", "DOMAIN_UNKNOWN_FIELD", "executableProfileCode"],
     ]);
     expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);
   });
