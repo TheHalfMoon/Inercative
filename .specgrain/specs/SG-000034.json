@@ -1,0 +1,72 @@
+{
+  "acceptance": [
+    "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include exactly the four new dataset-core kinds with closed deterministic field schemas while every previously qualified node kind remains compatible.",
+    "Dataset-core schemas make provenance, privacy/environment context, lineage/verification intent, and import/mapping identity explicit without claiming that an external source exists or has been read.",
+    "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, invalid privacy-class where reused, deterministic issue ordering, and compatibility with canonical domain validation.",
+    "The exact implementation candidate passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR deterministic review/accounting where applicable, Jev where actually available, exact-head CI, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/domain.ts",
+    "packages/product-graph/src/domain.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7000,
+    "estimated_tokens": 5000
+  },
+  "dependencies": [
+    "SG-000026"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused dataset-core domain validation tests plus full repository format/lint/typecheck/test suites.",
+      "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where actually available, exact-head CI, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000034",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "The existing Product Graph domain node-kind/spec/validator machinery is the correct deterministic extension point; a new package or data runtime would duplicate authority and prematurely couple semantic contracts to import execution."
+      },
+      "safety": {
+        "requirements": [
+          "Dataset nodes are semantic metadata only; they never authorize access to source data, secrets, files, databases, APIs, or environments.",
+          "A provenance/source reference is not proof that data was read, imported, verified, or safe; execution evidence remains separate.",
+          "Production or sensitive data must never be copied into lower-trust environments merely because a Dataset node exists."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Product Graph can represent Dataset, DatasetVersion, DataImport, and DataMapping as closed deterministic semantic nodes carrying explicit provenance, privacy/environment context, transformation/verification metadata, and no data-plane side effects.",
+  "parent_id": null,
+  "rationale": "IN-P02-S07-T01 is dependency-eligible because IN-P02-S02-T02 is canonically complete. Dataset semantics are broad, so this first Grain is deliberately bounded to the four core identity/provenance node contracts before profiling, quality, seed/synthetic, and relation semantics.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the four dataset-core node-kind/spec additions, their focused tests, exports, and evidence; all canonical Product Graph semantics through SG-000033 remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add closed Product Graph domain node kinds for Dataset, DatasetVersion, DataImport, and DataMapping using the existing deterministic domain validator machinery.",
+    "Define bounded required/optional scalar/list attributes so dataset identities expose provenance, privacy classification, environment, transformation lineage, verification requirements, source/import identity, and human-inspectable status where applicable.",
+    "Reuse existing Product Graph privacy/data-class vocabulary where semantically applicable instead of creating a competing sensitivity taxonomy.",
+    "Add focused positive and negative tests for required fields, unknown fields, field types, deterministic issue ordering, canonical graph validation compatibility, and preservation of all previously qualified node kinds."
+  ],
+  "scope_out": [
+    "No file/spreadsheet/database/API reading, import execution, row transformation, schema inference, model call, source mutation, persistence write, Supabase operation, network access, secret access, or production-data handling.",
+    "No DataProfile, DataQualityRule, SeedDataset, SyntheticDataset, VectorCorpus, EvalDataset, or dataset relation/cross-node semantics; those remain later bounded S07 slices.",
+    "No ProductCompletenessManifest work, no P02-S06 semantic-reference relation repair, and no P03 context/model routing."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S07-T01A core Dataset semantic node contracts"
+}
