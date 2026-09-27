@@ -29,178 +29,7 @@ jobs:
           test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
 
       - name: Apply bounded SG-000036 patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-
-          domain = Path('packages/product-graph/src/domain.ts')
-          s = domain.read_text()
-          old = '  "syntheticdataset",\n] as const;'
-          new = '  "syntheticdataset",\n  "datasource",\n  "field",\n] as const;'
-          if old not in s:
-              raise SystemExit('DOMAIN_NODE_KINDS anchor not found')
-          s = s.replace(old, new, 1)
-
-          anchor = '\n];\n\nexport const DOMAIN_EDGE_KIND_SPECS: readonly DomainEdgeKindSpec[] = ['
-          insertion = '''
-  {
-    kind: "datasource",
-    required: { name: "string", provenanceRef: "string", sourceType: "string" },
-    optional: {
-      environment: "string",
-      status: "string",
-      verificationRefs: "string-list",
-    },
-  },
-  {
-    kind: "field",
-    required: { name: "string", provenanceRef: "string", valueType: "string" },
-    optional: {
-      description: "string",
-      status: "string",
-      verificationRefs: "string-list",
-    },
-  },'''
-          if anchor not in s:
-              raise SystemExit('node spec closing anchor not found')
-          s = s.replace(anchor, insertion + anchor, 1)
-          domain.write_text(s)
-
-          tests = Path('packages/product-graph/src/domain.test.ts')
-          t = tests.read_text()
-          fixture_anchor = '\n};\n\nconst probeNodes: readonly ProductGraphNodeV1[] = DOMAIN_NODE_KINDS.map((kind) => ({'
-          fixture_insert = '''
-  datasource: {
-    name: "Orders source",
-    provenanceRef: "provenance:orders-source",
-    sourceType: "supabase-table",
-  },
-  field: {
-    name: "order_id",
-    provenanceRef: "provenance:orders-field",
-    valueType: "uuid",
-  },'''
-          if fixture_anchor not in t:
-              raise SystemExit('minimalAttributes closing anchor not found')
-          t = t.replace(fixture_anchor, fixture_insert + fixture_anchor, 1)
-
-          required_anchor = '  const requiredCases = DOMAIN_NODE_KIND_SPECS.flatMap((spec) =>\n'
-          focused = '''  it("pins the two SG-000036 relation-endpoint metadata contracts", () => {
-    expect(
-      DOMAIN_NODE_KIND_SPECS.filter((spec) => ["datasource", "field"].includes(spec.kind)),
-    ).toEqual([
-      {
-        kind: "datasource",
-        required: { name: "string", provenanceRef: "string", sourceType: "string" },
-        optional: {
-          environment: "string",
-          status: "string",
-          verificationRefs: "string-list",
-        },
-      },
-      {
-        kind: "field",
-        required: { name: "string", provenanceRef: "string", valueType: "string" },
-        optional: {
-          description: "string",
-          status: "string",
-          verificationRefs: "string-list",
-        },
-      },
-    ]);
-  });
-
-  it("accepts bounded DataSource and Field evidence metadata without runtime authority", () => {
-    expect(
-      collectProductGraphDomainIssues(
-        graphWith([
-          {
-            id: "source:orders",
-            kind: "datasource",
-            attributes: {
-              ...minimalAttributes.datasource,
-              environment: "development",
-              status: "declared",
-              verificationRefs: ["evidence:source-contract"],
-            },
-          },
-          {
-            id: "field:order-id",
-            kind: "field",
-            attributes: {
-              ...minimalAttributes.field,
-              description: "Stable order identifier",
-              status: "declared",
-              verificationRefs: ["evidence:field-contract"],
-            },
-          },
-        ]),
-      ),
-    ).toEqual([]);
-  });
-
-  it("rejects connection and synchronization authority from DataSource metadata", () => {
-    const issues = collectProductGraphDomainIssues(
-      singleNode("datasource", {
-        ...minimalAttributes.datasource,
-        connectionString: "postgres://secret",
-        synchronized: true,
-      }),
-    );
-    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
-      ["DOMAIN_UNKNOWN_FIELD", "connectionString"],
-      ["DOMAIN_UNKNOWN_FIELD", "synchronized"],
-    ]);
-  });
-
-  it("rejects ownership, storage, classification, and mapping authority from Field metadata", () => {
-    const issues = collectProductGraphDomainIssues(
-      singleNode("field", {
-        ...minimalAttributes.field,
-        classificationRef: "class:sensitive",
-        entityRef: "entity:order",
-        mappingRef: "mapping:order-id",
-        storageRef: "column:orders.id",
-      }),
-    );
-    expect(issues.map((issue) => [issue.code, issue.field])).toEqual([
-      ["DOMAIN_UNKNOWN_FIELD", "classificationRef"],
-      ["DOMAIN_UNKNOWN_FIELD", "entityRef"],
-      ["DOMAIN_UNKNOWN_FIELD", "mappingRef"],
-      ["DOMAIN_UNKNOWN_FIELD", "storageRef"],
-    ]);
-  });
-
-  it("orders SG-000036 endpoint findings deterministically across node insertion order", () => {
-    const broken = graphWith([
-      {
-        id: "probe:z",
-        kind: "datasource",
-        attributes: { ...minimalAttributes.datasource, connectionString: "forbidden" },
-      },
-      {
-        id: "probe:a",
-        kind: "field",
-        attributes: { ...minimalAttributes.field, entityRef: "entity:order" },
-      },
-    ]);
-    const reordered = graphWith([...broken.nodes].reverse());
-    const baseline = collectProductGraphDomainIssues(broken);
-    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([
-      ["probe:a", "DOMAIN_UNKNOWN_FIELD", "entityRef"],
-      ["probe:z", "DOMAIN_UNKNOWN_FIELD", "connectionString"],
-    ]);
-    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);
-  });
-
-'''
-          if required_anchor not in t:
-              raise SystemExit('requiredCases anchor not found')
-          t = t.replace(required_anchor, focused + required_anchor, 1)
-          tests.write_text(t)
-          PY
+        run: python .github/scripts/sg000036_author.py
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -226,13 +55,13 @@ jobs:
           pnpm test
           git diff --check
 
-      - name: Persist authored candidate and remove authoring workflow
+      - name: Persist authored candidate and remove temporary authoring files
         shell: bash
         run: |
           set -euo pipefail
-          rm .github/workflows/sg-000036-authoring.yml
+          rm .github/workflows/sg-000036-authoring.yml .github/scripts/sg000036_author.py
           git config user.name "TheHalfMoon"
           git config user.email "alshehriofficial@gmail.com"
-          git add packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts .github/workflows/sg-000036-authoring.yml
+          git add packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts .github/workflows/sg-000036-authoring.yml .github/scripts/sg000036_author.py
           git commit -m "feat(product-graph): add SG-000036 relation endpoint contracts [authored]"
           git push origin HEAD:p02/s07-t01c-endpoint-contracts
