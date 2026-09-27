@@ -1,0 +1,71 @@
+{
+  "acceptance": [
+    "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include DataSource and Field with closed deterministic metadata schemas while every previously qualified node/edge kind remains compatible.",
+    "DataSource metadata cannot be interpreted as proof that a source was connected, reachable, authenticated, read, or synchronized.",
+    "Field metadata cannot grant entity ownership, storage, classification, or mapping authority merely because the node exists.",
+    "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, deterministic issue ordering, and full canonical domain-validation compatibility.",
+    "The exact implementation candidate must pass repository format/lint/typecheck/tests, Diffcipline at the truthful risk tier, checksum-verified Alibaba Open Code Review, Jev semantic review when credentialed, exact-head CI, normal merge, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/domain.ts",
+    "packages/product-graph/src/domain.test.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 6500,
+    "estimated_tokens": 4300
+  },
+  "dependencies": [
+    "SG-000035"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused DataSource/Field metadata-contract tests plus full repository format/lint/typecheck/test suites.",
+      "Diffcipline proof, Alibaba OCR review evidence, Jev review evidence when credentialed, exact-head semantic review, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000036",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "Canonical dataset relations require DataSource and Field node endpoints. Adding only those endpoint contracts before relation semantics avoids wildcard/string-reference authority and keeps relation validation independently reviewable."
+      },
+      "safety": {
+        "requirements": [
+          "DataSource metadata never grants network, credential, read, synchronization, or persistence capability.",
+          "Field metadata never grants entity ownership, classification, storage, or mapping authority.",
+          "No endpoint metadata may be treated as evidence that an external source or stored field exists at runtime."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Product Graph can represent DataSource and Field as closed deterministic metadata nodes, providing typed endpoints required by canonical dataset relations without using string-reference authority or wildcard substitutes.",
+  "parent_id": null,
+  "rationale": "SG-000034 and SG-000035 established Dataset-family metadata nodes. Canonical S07 relations require DataSource and Field endpoints that do not yet exist in the qualified domain-v1 vocabulary, so these endpoint contracts must be introduced before relation authority can be added safely.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the DataSource and Field node-kind/spec additions and their focused tests; canonical Dataset-family metadata through SG-000035 remains intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add a closed DataSource Product Graph node contract that records human-inspectable source identity/type plus provenance and optional environment/status/verification metadata without opening a connection or reading data.",
+    "Add a closed Field Product Graph node contract that records human-inspectable field name/type plus provenance and optional description/status/verification metadata without claiming storage, entity ownership, classification, or mapping relations.",
+    "Extend the existing deterministic node validator and focused tests only; preserve all previously qualified node and edge kinds unchanged.",
+    "Use these node kinds only as typed prerequisites for the later S07 relation Grain covering BINDS_TO, VERSION_OF, PRODUCES, MAPS_TO, DESCRIBES, VALIDATES, SUPPORTS, and relevant field classification semantics."
+  ],
+  "scope_out": [
+    "No new edge kind, endpoint pair, cross-node existence rule, relation widening, source read, database/API connection, network access, secret access, persistence mutation, Supabase operation, model/provider call, import execution, profiling, mapping execution, quality-rule execution, generation, or environment write.",
+    "No P02-S06 Component/Feature/ProductRevision/DeploymentTarget repair, no ProductCompletenessManifest, no VectorCorpus/EvalDataset, and no P03 work."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S07-T01C DataSource and Field relation endpoint contracts"
+}
