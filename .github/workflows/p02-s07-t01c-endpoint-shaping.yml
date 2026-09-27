@@ -79,7 +79,7 @@ jobs:
             --evidence "Exact base/head/merge-base and changed-file accounting." \
             --evidence "Focused DataSource/Field metadata-contract tests plus full repository format/lint/typecheck/test suites." \
             --evidence "Diffcipline proof, Alibaba OCR review evidence, Jev review evidence when credentialed, exact-head semantic review, and post-merge fresh-main CI." \
-            --minimality-choice prerequisite \
+            --minimality-choice reuse-existing \
             --minimality-rationale "Canonical dataset relations require DataSource and Field node endpoints. Adding only those endpoint contracts before relation semantics avoids wildcard/string-reference authority and keeps relation validation independently reviewable." \
             --safety-status requirements-defined \
             --safety-requirement "DataSource metadata never grants network, credential, read, synchronization, or persistence capability." \
