@@ -101,15 +101,18 @@ function event(
 describe("Product Graph user views", () => {
   it("projects all five canonical view families with stable semantic identity", () => {
     const origin = assumption("Use email identity");
-    const views = buildProductGraphUserViews(graph(), [replayAssumptionLedger(origin, [])]);
+    const source = graph();
+    const views = buildProductGraphUserViews(source, [replayAssumptionLedger(origin, [])]);
 
     expect(views.graphId).toBe("graph:user-views");
+    expect(views.graphRevision).toBe(source.revision);
     expect(views.projectionId).toMatch(/^product-graph-user-views-[0-9a-f]{64}$/);
     expect(views.data.map((item) => item.nodeId)).toEqual(["entity:order"]);
     expect(views.roles.map((item) => item.nodeId)).toEqual(["role:manager"]);
     expect(views.pages.map((item) => item.nodeId)).toEqual(["page:orders"]);
     expect(views.workflows.map((item) => item.nodeId)).toEqual(["workflow:fulfill"]);
     expect(views.assumptions.map((item) => item.assumptionId)).toEqual([origin.assumptionId]);
+    expect(views.pages[0]?.attributes).toEqual({ name: "Orders", route: "/orders" });
     expect(views.pages[0]?.relations.map((item) => item.edgeId)).toEqual([
       "edge:displays",
       "edge:triggers",
@@ -179,7 +182,7 @@ describe("Product Graph user views", () => {
     expect(Object.isFrozen(empty)).toBe(true);
   });
 
-  it("fails closed on stale assumption references and duplicate ledger identities", () => {
+  it("fails closed on stale assumption references, duplicates, and oversized input", () => {
     const stale = assumption("Stale", ["page:missing"]);
     expect(() =>
       buildProductGraphUserViews(graph(), [replayAssumptionLedger(stale, [])]),
@@ -188,6 +191,9 @@ describe("Product Graph user views", () => {
     const duplicate = replayAssumptionLedger(assumption("Duplicate"), []);
     expect(() => buildProductGraphUserViews(graph(), [duplicate, duplicate])).toThrowError(
       expect.objectContaining({ code: "USER_VIEWS_DUPLICATE_ASSUMPTION" }),
+    );
+    expect(() => buildProductGraphUserViews(graph(), Array(129).fill(duplicate))).toThrowError(
+      expect.objectContaining({ code: "USER_VIEWS_TOO_MANY_ASSUMPTIONS" }),
     );
   });
 
