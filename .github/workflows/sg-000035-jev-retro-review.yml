@@ -1,0 +1,106 @@
+name: sg-000035-jev-retro-review
+
+on:
+  push:
+    branches:
+      - evidence/sg-000035-jev-retro-review
+    paths:
+      - .github/workflows/sg-000035-jev-retro-review.yml
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: 452620b7129e96aa61bd197569ffabaed5dda087
+      CANDIDATE_SHA: 5b49dbfae36a7df33de71459cb9c5fa5d8ff6c98
+      JEV_VERSION: v2026.919.0
+      JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
+      JEV_API_KEY: ${{ secrets.JEV_API_KEY || secrets.TYPESAFE_API_KEY }}
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify exact candidate ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$BASE_SHA^{commit}"
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          test "$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")" = "$BASE_SHA"
+          git diff --binary "$BASE_SHA" "$CANDIDATE_SHA" -- \
+            packages/product-graph/src/domain.ts \
+            packages/product-graph/src/domain.test.ts > pr.diff
+          test -s pr.diff
+          printf 'BASE_SHA=%s\nCANDIDATE_SHA=%s\n' "$BASE_SHA" "$CANDIDATE_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install pinned Jev CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL -o jev "https://github.com/model-clis/jev/releases/download/${JEV_VERSION}/jev-linux-x86_64"
+          printf '%s  %s\n' "$JEV_SHA256" jev | sha256sum -c -
+          chmod +x jev
+          ./jev --version
+
+      - name: Require configured Jev credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${JEV_API_KEY:-}" ]; then
+            echo 'JEV_STATUS=BLOCKED_MISSING_GITHUB_SECRET' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Neither JEV_API_KEY nor TYPESAFE_API_KEY is configured for this workflow.' >&2
+            exit 1
+          fi
+
+      - name: Run exact-diff Jev semantic review
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./jev noul \
+            "Does this exact SG-000035 diff violate its bounded scope by adding execution, persistence mutation, network/model calls, relation authority, or behavior beyond metadata contracts and focused tests?" \
+            --true "The diff adds behavior or authority outside the bounded metadata-and-tests scope." \
+            --false "The diff stays within bounded metadata node contracts and focused validation tests." \
+            --state @pr.diff \
+            --assert 'answers.q.noul <= 0.35' > jev-scope.json
+
+          ./jev noul \
+            "Does this exact diff grant or imply runtime, permission, write, or external-effect authority merely because Product Graph metadata nodes exist?" \
+            --true "Metadata is being treated as execution or authorization authority." \
+            --false "Metadata remains descriptive only and does not grant execution or authorization authority." \
+            --state @pr.diff \
+            --assert 'answers.q.noul <= 0.35' > jev-authority.json
+
+          ./jev noul \
+            "Does this exact diff allow SeedDataset or SyntheticDataset metadata to represent direct copying of private production values into lower-trust development or test environments?" \
+            --true "The contracts allow or normalize private production-value copying." \
+            --false "The contracts do not authorize production-value copying and reject such a field." \
+            --state @pr.diff \
+            --assert 'answers.q.noul <= 0.35' > jev-production-copy.json
+
+          ./jev choice \
+            "How well does this exact diff align with SG-000035: DataProfile, DataQualityRule, SeedDataset, and SyntheticDataset metadata-only contracts with deterministic validation and no execution authority?" \
+            --opt aligned="The diff implements the requested metadata-only contracts and tests without material scope gaps." \
+            --opt partial="The diff is directionally correct but has a material acceptance gap." \
+            --opt misaligned="The diff materially violates or misses the Grain." \
+            --state @pr.diff \
+            --assert 'answers.q.choice == "aligned"' > jev-alignment.json
+
+          printf 'JEV_STATUS=PASS\nJEV_VERSION=%s\n' "$JEV_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          for f in jev-scope.json jev-authority.json jev-production-copy.json jev-alignment.json; do
+            jq -c . "$f" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Upload Jev review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000035-jev-review
+          path: |
+            pr.diff
+            jev-*.json
+          if-no-files-found: ignore
