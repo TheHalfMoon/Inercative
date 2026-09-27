@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "The projection contract is closed, bounded, provider-neutral, deterministic, and fails closed on malformed/unvalidated input rather than inventing missing semantics.",
+    "Data, Roles, Pages, Workflows, and Assumptions projections expose stable semantic identities with deterministic ordering and explicit empty collections.",
+    "Assumption rows preserve immutable origin identity and accurately represent inferred/confirmed/corrected/superseded state plus replacement/invalidation-reference summaries without executing any invalidation effect.",
+    "Focused tests prove all five view families, empty and mixed inputs, stable projection identity/order, lifecycle variants, provenance preservation, malformed input rejection, and caller-input immutability.",
+    "The exact implementation candidate later passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR review/accounting where applicable, Jev where available, exact-head CI, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/user-views.ts",
+    "packages/product-graph/src/user-views.test.ts",
+    "packages/product-graph/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 8000,
+    "estimated_tokens": 5800
+  },
+  "dependencies": [
+    "SG-000032"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused deterministic user-view projection tests plus full repository gates.",
+      "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where available, exact-head CI, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000033",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "new-code",
+        "rationale": "The canonical graph and assumption contracts exist, but there is no user-view projection layer. A single bounded read-only projection module can reuse those contracts without adding UI, persistence, or new graph semantics."
+      },
+      "safety": {
+        "requirements": [
+          "User-view projections are read-only evidence surfaces and never capability, security, billing, publication, deployment, or external-effect authority.",
+          "Projection code must not infer or silently synthesize missing Product Graph semantics; malformed or stale input fails closed.",
+          "Assumption invalidation references remain inspectable data only and never delete, mutate, cancel, or rerun downstream work."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "A canonical Product Graph revision can be deterministically projected into bounded human-inspectable Data, Roles, Pages, Workflows, and Assumptions view models with stable ordering, provenance-preserving identities, and no mutation or runtime authority.",
+  "parent_id": null,
+  "rationale": "SG-000031 and SG-000032 complete the Question Gate and Assumption Ledger parent, unlocking P02-S05. The smallest useful S05 slice is a provider-neutral read-only projection layer over existing canonical graph/assumption state; interactive UI editing and later designer/developer surfaces remain downstream.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the Product Graph user-view projection module, exports, tests, and evidence. P02-S04 remains closed and IN-P02-S05-T01 returns to not-yet-delivered without affecting graph persistence or semantics."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a closed ProductGraphUserViewsV1 read-only projection contract for the canonical P02-S05 view families: Data, Roles, Pages, Workflows, and Assumptions.",
+    "Project existing validated Product Graph node/edge semantics into stable view items that preserve semantic node identity, kind/status/name/provenance where available, and only the bounded relationship summaries needed for inspection.",
+    "Project Assumption Ledger state into inspectable assumption rows with inferred/confirmed/corrected/superseded status, effective statement, immutable origin identity, replacement identity when present, and deterministic invalidation-reference summaries.",
+    "Canonicalize every view with deterministic ordering and explicit empty collections so equivalent validated input produces byte-equivalent semantic projection output and a stable projection identity.",
+    "Add focused tests covering all five view families, empty/mixed graphs, stable ordering/identity, assumption lifecycle states, malformed or stale inputs, duplicate/reference handling, provenance preservation, and caller-input immutability."
+  ],
+  "scope_out": [
+    "No React/UI components, visual styling, browser interaction, editable inspector, graph mutation, source/Git mutation, persistence/database writes, or live provider/model calls.",
+    "No capability/security authorization, role enforcement, RLS generation, deployment/publication, billing, credentials, external effects, or automatic invalidation/rerun behavior.",
+    "No new Product Graph node/edge semantics, P02-S06 relation vocabulary, P02-S07 dataset semantics, P02-S08 completeness semantics, or P03 context/model routing.",
+    "No attempt to infer missing product semantics; projections expose only validated canonical state and explicit assumption state."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S05-T01A deterministic Product Graph user-view projections"
+}
