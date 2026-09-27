@@ -1,6 +1,6 @@
 # Ineractive Current Frontier
 
-**Date:** 2026-09-26  
+**Date:** 2026-09-27  
 **Status:** P02_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative  
@@ -52,7 +52,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000029 | IN-P02-S06-T01A | Semantic reference node contracts | DONE (PR #72) | `docs/evidence/P02_S06_T01A_CLOSURE_2026-09-26.md` |
 | SG-000030 | IN-P02-S03-T01C | Provider-neutral user-request / intent-interpretation boundary | DONE (implementation PR #75) | `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md` |
 | SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | DONE (PR #78) | `docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md` |
-| SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | GRAIN / SHAPED | `docs/evidence/P02_S04_T01B_SPECGRAIN_SHAPING_2026-09-26.md` |
+| SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | DONE (PR #80) | `docs/evidence/P02_S04_T01B_CLOSURE_2026-09-27.md` |
+| SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | GRAIN / SHAPED | `docs/evidence/P02_S05_T01A_SPECGRAIN_SHAPING_2026-09-27.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -82,11 +83,18 @@ Hosted OCR LLM remained `NOT_RUN / BLOCKED`; Jev was `NOT_RUN / UNAVAILABLE` on 
 
 ### P02-S04
 
-Partially delivered. SG-000031 / `IN-P02-S04-T01A` closes the deterministic Question Gate core and immutable inferred Assumption Ledger record.
+Complete.
 
-SG-000032 / `IN-P02-S04-T01B` is the active shaped remainder for deterministic assumption confirmation/correction/supersession and inspectable dependent-work/evidence invalidation references. It must not mutate or rerun downstream work automatically and cannot grant runtime authority.
+The parent `IN-P02-S04-T01 — Implement Question Gate and Assumption Ledger` is satisfied by the bounded chain:
 
-`IN-P02-S05-T01` remains blocked until SG-000032 is implemented, qualified, merged, and the full parent `IN-P02-S04-T01` is canonically closed.
+1. SG-000031 / `IN-P02-S04-T01A` — deterministic Question Gate core plus immutable inferred `AssumptionRecordV1`;
+2. SG-000032 / `IN-P02-S04-T01B` — deterministic confirm/correct/supersede lifecycle plus reference-only invalidation manifests.
+
+SG-000032 exact candidate `34ce66274ce81026c531281a5531a2061a717724` passed exact-head CI `36294347297`, checksum-verified Diffcipline/OCR qualification `36294409207`, merged normally through PR #80 as `67fe1fac6a7f0b52b08f12fbf3c120f609b0a99e`, and fresh-main CI `36294551847` passed on Ubuntu and Windows.
+
+### P02-S05
+
+In progress. SG-000033 / `IN-P02-S05-T01A` is the active shaped first slice for deterministic read-only Data, Roles, Pages, Workflows, and Assumptions projections over canonical Product Graph / Assumption Ledger state. No UI mutation, persistence, new graph semantics, provider call, or runtime authority belongs in this Grain.
 
 ### P02-S06
 
@@ -100,15 +108,13 @@ Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference nod
 
 The active dependency-unlocking unit is:
 
-`SG-000032 / IN-P02-S04-T01B — assumption lifecycle and invalidation ledger`
+`SG-000033 / IN-P02-S05-T01A — deterministic Product Graph user-view projections`
 
-SG-000031 is closed canonically after PR #78 plus fresh-main CI `36255715278`. SG-000032 is the bounded remainder required to finish the canonical P02-S04 correction/invalidation outcome.
+P02-S04 is closed canonically after SG-000031 + SG-000032. SG-000033 is the smallest provider-neutral read-only slice of `IN-P02-S05-T01`, covering Data, Roles, Pages, Workflows, and Assumptions projection contracts with deterministic ordering and provenance-preserving semantic identity.
 
-The implementation must remain deterministic/provider-neutral, preserve the immutable origin assumption, reject invalid lifecycle transitions, and emit invalidation references without deleting/mutating/rerunning dependent work. Confirmation/correction/supersession remains planning evidence and never capability authority.
+It must not add UI mutation, new graph semantics, persistence, authorization enforcement, provider/model calls, or external effects. If the full P02-S05 user-facing outcome still requires a later interactive presentation slice after SG-000033, shape that remainder separately rather than widening this Grain.
 
-After SG-000032 closes, re-evaluate whether the full `IN-P02-S04-T01` outcome is satisfied; if yes, close the parent and unlock `IN-P02-S05-T01 — Build Product Graph user views`.
-
-Parallel P02-S06 relation vocabulary and P02-S07 dataset semantics remain separately eligible and must not be combined into SG-000032 merely for convenience.
+Parallel P02-S06 relation vocabulary and P02-S07 dataset semantics remain separately eligible and must not be bundled into SG-000033.
 
 ## Truthfully not run
 
