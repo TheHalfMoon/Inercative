@@ -74,6 +74,22 @@ export type {
 } from "./assumption-ledger.ts";
 
 export {
+  PRODUCT_GRAPH_USER_VIEW_FAMILIES,
+  PRODUCT_GRAPH_USER_VIEWS_SCHEMA_VERSION,
+  ProductGraphUserViewsError,
+  buildProductGraphUserViews,
+} from "./user-views.ts";
+
+export type {
+  AssumptionUserViewItemV1,
+  ProductGraphUserViewFamily,
+  ProductGraphUserViewsErrorCode,
+  ProductGraphUserViewsV1,
+  ProductGraphViewItemV1,
+  ProductGraphViewRelationV1,
+} from "./user-views.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
