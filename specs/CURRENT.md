@@ -55,7 +55,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | DONE (PR #80) | `docs/evidence/P02_S04_T01B_CLOSURE_2026-09-27.md` |
 | SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | DONE (PR #83) | `docs/evidence/P02_S05_T01A_CLOSURE_2026-09-27.md` |
 | SG-000034 | IN-P02-S07-T01A | Core Dataset semantic node contracts | DONE (PR #85) | `docs/evidence/P02_S07_T01A_CLOSURE_2026-09-27.md` |
-| SG-000035 | IN-P02-S07-T01B | Profile, quality, seed, and synthetic semantic node contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01B_SPECGRAIN_SHAPING_2026-09-27.md` |
+| SG-000035 | IN-P02-S07-T01B | Profile, quality, seed, and synthetic semantic node contracts | MERGED / FRESH_MAIN_PASS / JEV_BLOCKED | `docs/evidence/P02_S07_T01B_POST_MERGE_JEV_STATUS_2026-09-27.md` |
+| SG-000036 | IN-P02-S07-T01C | DataSource and Field relation endpoint contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01C_SPECGRAIN_SHAPING_2026-09-27.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -93,9 +94,11 @@ In progress.
 
 SG-000034 / `IN-P02-S07-T01A` is closed canonically through PR #85 / merge `651738db84bcc99aeaf6141b469b476951509007`, with exact-head CI `36303672973`, qualification `36303714127`, and fresh-main CI `36303817244` all successful. It delivers metadata-only Dataset, DatasetVersion, DataImport, and DataMapping node contracts.
 
-SG-000035 / `IN-P02-S07-T01B` is the active shaped unit for DataProfile, DataQualityRule, SeedDataset, and SyntheticDataset metadata contracts. It cannot profile, execute quality rules, generate or insert records, read sources, access secrets/network, call models/providers, mutate persistence, copy production data, or write environments.
+SG-000035 / `IN-P02-S07-T01B` was implemented through PR #87 and merged as `76cc78d90189195d70594b628083a5495c05252b`; fresh-main CI `36312373576` succeeded. The strengthened Jev directive was then re-tested with pinned Jev CLI `v2026.919.0`: binary installation and SHA-256 verification succeeded, but run `36333537434` proved that neither `JEV_API_KEY` nor `TYPESAFE_API_KEY` is configured in GitHub Actions. Therefore `JEV_SEMANTIC_REVIEW = NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET`; no Jev PASS is claimed.
 
-A later S07 relation/cross-node Grain remains required before parent `IN-P02-S07-T01` can close.
+SG-000036 / `IN-P02-S07-T01C` is shaped for the missing `DataSource` and `Field` metadata endpoint contracts required before canonical S07 relation semantics can be introduced without wildcard or string-reference authority. The first shaping run `36333647889` failed on an unsupported SpecGrain minimality enum and was fixed forward; corrected run `36333743748` succeeded.
+
+After SG-000036 implementation, a later S07 relation/cross-node Grain remains required before parent `IN-P02-S07-T01` can close. Any meaningful code-changing merge remains subject to the required Jev gate.
 
 ### P02-S08
 
@@ -105,18 +108,20 @@ Blocked by the unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompleten
 
 The active dependency-unlocking unit is:
 
-`SG-000035 / IN-P02-S07-T01B — profile, quality, seed, and synthetic semantic node contracts`
+`SG-000036 / IN-P02-S07-T01C — DataSource and Field relation endpoint contracts`
 
-This is the smallest bounded unit that completes the remaining non-relational V1 dataset node vocabulary. It must extend only the existing deterministic Product Graph domain metadata contract and focused tests. It must not perform profiling, generation, persistence writes, source access, provider/model calls, relation widening, ProductCompleteness work, or P02-S06 endpoint repair.
+This is the smallest bounded prerequisite for the remaining S07 relation/cross-node semantics. It must extend only the existing deterministic Product Graph node metadata vocabulary and focused tests. It must not add relations, source access, provider/model calls, persistence mutation, ProductCompleteness work, or P02-S06 endpoint repair.
 
-After SG-000035 closes, S07 relation/cross-node semantics remain the next blocker before P02-S08 can become dependency-ready.
+SG-000035 implementation is already on canonical main with fresh-main CI success, but the strengthened Jev review gate remains externally blocked by a missing GitHub Actions credential. That blocker must remain explicit and cannot be relabeled as PASS.
 
-P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000035.
+After SG-000036 implementation, the next S07 Grain must add the canonical dataset relation/cross-node semantics before P02-S08 becomes dependency-ready.
+
+P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000036.
 
 ## Truthfully not run
 
 - Alibaba OCR hosted-LLM review: `NOT_RUN / BLOCKED` unless a scoped endpoint/token is actually configured. Deterministic OCR accounting/rule resolution and host/delegation semantic-review evidence must be described separately and truthfully.
-- Jev on GitHub-hosted runners: `NOT_RUN / UNAVAILABLE` when the executable/runtime is absent.
+- Jev CLI on GitHub-hosted runners: pinned binary install and checksum verification are now proven, but semantic review is `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET` until `JEV_API_KEY` or compatible `TYPESAFE_API_KEY` is privately configured.
 - Jev via the authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` in this 2026-09-27 execution window. Never claim Jev PASS without execution evidence.
 - SpecGrain repository-completion lifecycle transition: not modeled by the current CLI surface; repository/evidence state remains canonical.
 
