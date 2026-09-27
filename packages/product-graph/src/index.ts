@@ -57,6 +57,23 @@ export type {
 } from "./question-gate.ts";
 
 export {
+  ASSUMPTION_LEDGER_ACTIONS,
+  ASSUMPTION_LEDGER_SCHEMA_VERSION,
+  AssumptionLedgerError,
+  replayAssumptionLedger,
+  validateAssumptionLedgerEventInput,
+} from "./assumption-ledger.ts";
+
+export type {
+  AssumptionInvalidationManifestV1,
+  AssumptionLedgerAction,
+  AssumptionLedgerEventInputV1,
+  AssumptionLedgerEventV1,
+  AssumptionLedgerStateV1,
+  AssumptionLedgerStatus,
+} from "./assumption-ledger.ts";
+
+export {
   DOMAIN_AUDIT_VALUES,
   DOMAIN_ANY_NODE_KIND,
   DOMAIN_COLLECTION_VALUES,
