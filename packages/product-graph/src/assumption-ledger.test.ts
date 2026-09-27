@@ -94,7 +94,7 @@ describe("Assumption Ledger", () => {
 
     expect(state.status).toBe("superseded");
     expect(state.replacementAssumptionId).toBe(replacement);
-    expect(state.invalidations).toHaveLength(1);
+    expect(state.invalidations[0]).toMatchObject({ dependentWorkRefs: [], evidenceRefs: [] });
   });
 
   it("allows correction after confirmation and replays deterministically without input mutation", () => {
