@@ -1,0 +1,103 @@
+name: p02-s07-t01c-endpoint-shaping
+
+on:
+  push:
+    branches:
+      - p02/s07-t01c-endpoint-shaping
+    paths:
+      - .github/workflows/p02-s07-t01c-endpoint-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: 76cc78d90189195d70594b628083a5495c05252b
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S07-T01C DataSource and Field relation endpoint contracts" \
+            --outcome "The Product Graph can represent DataSource and Field as closed deterministic metadata nodes, providing typed endpoints required by canonical dataset relations without using string-reference authority or wildcard substitutes." \
+            --rationale "SG-000034 and SG-000035 established Dataset-family metadata nodes. Canonical S07 relations require DataSource and Field endpoints that do not yet exist in the qualified domain-v1 vocabulary, so these endpoint contracts must be introduced before relation authority can be added safely." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000036"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Add a closed DataSource Product Graph node contract that records human-inspectable source identity/type plus provenance and optional environment/status/verification metadata without opening a connection or reading data." \
+            --scope-in "Add a closed Field Product Graph node contract that records human-inspectable field name/type plus provenance and optional description/status/verification metadata without claiming storage, entity ownership, classification, or mapping relations." \
+            --scope-in "Extend the existing deterministic node validator and focused tests only; preserve all previously qualified node and edge kinds unchanged." \
+            --scope-in "Use these node kinds only as typed prerequisites for the later S07 relation Grain covering BINDS_TO, VERSION_OF, PRODUCES, MAPS_TO, DESCRIBES, VALIDATES, SUPPORTS, and relevant field classification semantics." \
+            --scope-out "No new edge kind, endpoint pair, cross-node existence rule, relation widening, source read, database/API connection, network access, secret access, persistence mutation, Supabase operation, model/provider call, import execution, profiling, mapping execution, quality-rule execution, generation, or environment write." \
+            --scope-out "No P02-S06 Component/Feature/ProductRevision/DeploymentTarget repair, no ProductCompletenessManifest, no VectorCorpus/EvalDataset, and no P03 work." \
+            --acceptance "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include DataSource and Field with closed deterministic metadata schemas while every previously qualified node/edge kind remains compatible." \
+            --acceptance "DataSource metadata cannot be interpreted as proof that a source was connected, reachable, authenticated, read, or synchronized." \
+            --acceptance "Field metadata cannot grant entity ownership, storage, classification, or mapping authority merely because the node exists." \
+            --acceptance "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, deterministic issue ordering, and full canonical domain-validation compatibility." \
+            --acceptance "The exact implementation candidate must pass repository format/lint/typecheck/tests, Diffcipline at the truthful risk tier, checksum-verified Alibaba Open Code Review, Jev semantic review when credentialed, exact-head CI, normal merge, and fresh-main CI before closure." \
+            --dependency SG-000035 \
+            --risk-level medium \
+            --recovery "Revert the DataSource and Field node-kind/spec additions and their focused tests; canonical Dataset-family metadata through SG-000035 remains intact." \
+            --context-budget 6500 \
+            --context-estimate 4300 \
+            --change-surface "packages/product-graph/src/domain.ts" \
+            --change-surface "packages/product-graph/src/domain.test.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused DataSource/Field metadata-contract tests plus full repository format/lint/typecheck/test suites." \
+            --evidence "Diffcipline proof, Alibaba OCR review evidence, Jev review evidence when credentialed, exact-head semantic review, and post-merge fresh-main CI." \
+            --minimality-choice prerequisite \
+            --minimality-rationale "Canonical dataset relations require DataSource and Field node endpoints. Adding only those endpoint contracts before relation semantics avoids wildcard/string-reference authority and keeps relation validation independently reviewable." \
+            --safety-status requirements-defined \
+            --safety-requirement "DataSource metadata never grants network, credential, read, synchronization, or persistence capability." \
+            --safety-requirement "Field metadata never grants entity ownership, classification, storage, or mapping authority." \
+            --safety-requirement "No endpoint metadata may be treated as evidence that an external source or stored field exists at runtime." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Persist only SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s07-t01c-endpoint-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows/p02-s07-t01c-endpoint-shaping.yml
+          git commit -m "spec(p02): shape S07 relation endpoint prerequisites [shaped]"
+          git push origin HEAD:p02/s07-t01c-endpoint-shaping
