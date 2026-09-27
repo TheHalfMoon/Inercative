@@ -1,0 +1,98 @@
+name: sg-000034-authoring
+
+on:
+  push:
+    branches:
+      - p02/s07-t01a-dataset-core
+    paths:
+      - .github/workflows/sg-000034-authoring.yml
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    if: ${{ !contains(github.event.head_commit.message, '[authored]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply bounded dataset-core patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          domain = Path('packages/product-graph/src/domain.ts')
+          text = domain.read_text()
+
+          old = '''  "explorationbranch",\n  "release",\n] as const;'''
+          new = '''  "explorationbranch",\n  "release",\n  "dataset",\n  "datasetversion",\n  "dataimport",\n  "datamapping",\n] as const;'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          old = '''  {\n    kind: "release",\n    required: { productRevision: "string", releaseId: "string" },\n    optional: { name: "string", status: "string" },\n  },\n];'''
+          new = '''  {\n    kind: "release",\n    required: { productRevision: "string", releaseId: "string" },\n    optional: { name: "string", status: "string" },\n  },\n  {\n    kind: "dataset",\n    required: {\n      environment: "string",\n      name: "string",\n      privacyClass: "string",\n      provenanceRef: "string",\n      sourceRef: "string",\n    },\n    optional: { description: "string", status: "string", verificationRefs: "string-list" },\n  },\n  {\n    kind: "datasetversion",\n    required: {\n      datasetRef: "string",\n      environment: "string",\n      privacyClass: "string",\n      provenanceRef: "string",\n      version: "string",\n    },\n    optional: {\n      sourceRef: "string",\n      status: "string",\n      transformationRefs: "string-list",\n      verificationRefs: "string-list",\n    },\n  },\n  {\n    kind: "dataimport",\n    required: {\n      environment: "string",\n      privacyClass: "string",\n      provenanceRef: "string",\n      sourceRef: "string",\n    },\n    optional: {\n      format: "string",\n      status: "string",\n      targetDatasetRef: "string",\n      verificationRefs: "string-list",\n    },\n  },\n  {\n    kind: "datamapping",\n    required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },\n    optional: {\n      status: "string",\n      transformationRefs: "string-list",\n      verificationRefs: "string-list",\n    },\n  },\n];'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          old = '''export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [\n  { field: "level", kind: "dataclass", values: DOMAIN_DATA_CLASS_LEVELS },'''
+          new = '''export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [\n  { field: "level", kind: "dataclass", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "dataset", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "datasetversion", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "dataimport", values: DOMAIN_DATA_CLASS_LEVELS },'''
+          assert old in text
+          text = text.replace(old, new, 1)
+          domain.write_text(text)
+
+          tests = Path('packages/product-graph/src/domain.test.ts')
+          text = tests.read_text()
+
+          old = '''  release: {\n    productRevision: "sha256:product-revision",\n    releaseId: "release:2026-09-26.1",\n  },\n};'''
+          new = '''  release: {\n    productRevision: "sha256:product-revision",\n    releaseId: "release:2026-09-26.1",\n  },\n  dataset: {\n    environment: "development",\n    name: "Orders dataset",\n    privacyClass: "internal",\n    provenanceRef: "provenance:orders",\n    sourceRef: "source:orders",\n  },\n  datasetversion: {\n    datasetRef: "dataset:orders",\n    environment: "development",\n    privacyClass: "internal",\n    provenanceRef: "provenance:orders-v1",\n    version: "v1",\n  },\n  dataimport: {\n    environment: "development",\n    privacyClass: "internal",\n    provenanceRef: "provenance:orders-import",\n    sourceRef: "file:orders.csv",\n  },\n  datamapping: {\n    provenanceRef: "provenance:orders-mapping",\n    sourceRef: "source:orders",\n    targetRef: "entity:order",\n  },\n};'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          anchor = '''  const requiredCases = DOMAIN_NODE_KIND_SPECS.flatMap((spec) =>'''
+          insert = '''  it("pins the four SG-000034 dataset-core node contracts", () => {\n    expect(\n      DOMAIN_NODE_KIND_SPECS.filter((spec) =>\n        ["dataset", "datasetversion", "dataimport", "datamapping"].includes(spec.kind),\n      ),\n    ).toEqual([\n      {\n        kind: "dataset",\n        required: {\n          environment: "string",\n          name: "string",\n          privacyClass: "string",\n          provenanceRef: "string",\n          sourceRef: "string",\n        },\n        optional: { description: "string", status: "string", verificationRefs: "string-list" },\n      },\n      {\n        kind: "datasetversion",\n        required: {\n          datasetRef: "string",\n          environment: "string",\n          privacyClass: "string",\n          provenanceRef: "string",\n          version: "string",\n        },\n        optional: {\n          sourceRef: "string",\n          status: "string",\n          transformationRefs: "string-list",\n          verificationRefs: "string-list",\n        },\n      },\n      {\n        kind: "dataimport",\n        required: {\n          environment: "string",\n          privacyClass: "string",\n          provenanceRef: "string",\n          sourceRef: "string",\n        },\n        optional: {\n          format: "string",\n          status: "string",\n          targetDatasetRef: "string",\n          verificationRefs: "string-list",\n        },\n      },\n      {\n        kind: "datamapping",\n        required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },\n        optional: {\n          status: "string",\n          transformationRefs: "string-list",\n          verificationRefs: "string-list",\n        },\n      },\n    ]);\n  });\n\n  it("accepts bounded dataset lineage and verification metadata without performing data access", () => {\n    expect(\n      collectProductGraphDomainIssues(\n        singleNode("datasetversion", {\n          ...minimalAttributes.datasetversion,\n          sourceRef: "source:orders",\n          status: "qualified",\n          transformationRefs: ["mapping:orders-v1"],\n          verificationRefs: ["evidence:orders-v1"],\n        }),\n      ),\n    ).toEqual([]);\n  });\n\n  it.each(["dataset", "datasetversion", "dataimport"] as DomainNodeKind[])(\n    "reuses the closed data-class vocabulary for %s privacyClass",\n    (kind) => {\n      const attributes: Record<string, JsonValue> = {\n        ...minimalAttributes[kind],\n        privacyClass: "confidential",\n      };\n      const issues = collectProductGraphDomainIssues(singleNode(kind, attributes));\n      expect(issues).toHaveLength(1);\n      expect(issues[0]).toMatchObject({\n        code: "DOMAIN_INVALID_ENUM_VALUE",\n        phase: "node",\n        target: "probe:node",\n        field: "privacyClass",\n      });\n    },\n  );\n\n  it("orders dataset-core validation findings deterministically across node insertion order", () => {\n    const broken = graphWith([\n      { id: "probe:z", kind: "dataset", attributes: { ...minimalAttributes.dataset, mystery: "x" } },\n      { id: "probe:a", kind: "dataimport", attributes: { ...minimalAttributes.dataimport, privacyClass: "confidential" } },\n    ]);\n    const reordered = graphWith([...broken.nodes].reverse());\n    const baseline = collectProductGraphDomainIssues(broken);\n    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([\n      ["probe:a", "DOMAIN_INVALID_ENUM_VALUE", "privacyClass"],\n      ["probe:z", "DOMAIN_UNKNOWN_FIELD", "mystery"],\n    ]);\n    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);\n  });\n\n'''
+          assert anchor in text
+          text = text.replace(anchor, insert + anchor, 1)
+          tests.write_text(text)
+          PY
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Canonicalize formatting and verify repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+
+      - name: Persist authored candidate and remove authoring workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/sg-000034-authoring.yml
+          git diff --check
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts .github/workflows/sg-000034-authoring.yml
+          git commit -m "feat(product-graph): add SG-000034 dataset core semantics [authored]"
+          git push origin HEAD:p02/s07-t01a-dataset-core
