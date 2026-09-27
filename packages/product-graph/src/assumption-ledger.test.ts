@@ -27,7 +27,7 @@ function origin(): AssumptionRecordV1 {
 }
 
 function assumptionId(fill: string): AssumptionRecordV1["assumptionId"] {
-  return `assumption-${fill.repeat(64)}` as AssumptionRecordV1["assumptionId"];
+  return `assumption-${fill.repeat(64)}`;
 }
 
 function event(
