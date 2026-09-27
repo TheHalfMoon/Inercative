@@ -26,6 +26,10 @@ function origin(): AssumptionRecordV1 {
   return result.assumption;
 }
 
+function assumptionId(fill: string): AssumptionRecordV1["assumptionId"] {
+  return `assumption-${fill.repeat(64)}` as AssumptionRecordV1["assumptionId"];
+}
+
 function event(
   assumption: AssumptionRecordV1,
   overrides: Partial<AssumptionLedgerEventInputV1> = {},
@@ -79,7 +83,7 @@ describe("Assumption Ledger", () => {
 
   it("supersedes an assumption with a different canonical assumption identity", () => {
     const assumption = origin();
-    const replacement = `assumption-${"a".repeat(64)}` as AssumptionRecordV1["assumptionId"];
+    const replacement = assumptionId("a");
     const state = replayAssumptionLedger(assumption, [
       event(assumption, {
         action: "supersede",
@@ -146,10 +150,7 @@ describe("Assumption Ledger", () => {
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_ACTION_FIELDS" }));
     expect(() =>
       replayAssumptionLedger(assumption, [
-        {
-          ...event(assumption),
-          assumptionId: `assumption-${"b".repeat(64)}` as AssumptionRecordV1["assumptionId"],
-        },
+        { ...event(assumption), assumptionId: assumptionId("b") },
       ]),
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_STALE_ASSUMPTION" }));
   });
@@ -182,13 +183,7 @@ describe("Assumption Ledger", () => {
       }),
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_REFERENCES" }));
     expect(() =>
-      replayAssumptionLedger(
-        {
-          ...assumption,
-          assumptionId: `assumption-${"c".repeat(64)}` as AssumptionRecordV1["assumptionId"],
-        },
-        [],
-      ),
+      replayAssumptionLedger({ ...assumption, assumptionId: assumptionId("c") }, []),
     ).toThrowError(expect.objectContaining({ code: "ASSUMPTION_LEDGER_INVALID_ASSUMPTION" }));
   });
 });
