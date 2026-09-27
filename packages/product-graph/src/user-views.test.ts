@@ -16,18 +16,46 @@ function graph(): ProductGraphRevisionDocumentV1 {
     schemaVersion: 1,
     graphId: "graph:user-views",
     nodes: [
-      { id: "workflow:fulfill", kind: "workflow", attributes: { name: "Fulfill", steps: ["pick"] } },
+      {
+        id: "workflow:fulfill",
+        kind: "workflow",
+        attributes: { name: "Fulfill", steps: ["pick"] },
+      },
       { id: "page:orders", kind: "page", attributes: { name: "Orders", route: "/orders" } },
       { id: "entity:order", kind: "entity", attributes: { name: "Order" } },
       { id: "role:manager", kind: "role", attributes: { name: "Manager" } },
       { id: "action:fulfill", kind: "action", attributes: { name: "Fulfill order" } },
     ],
     edges: [
-      { id: "edge:reads", kind: "reads", from: "workflow:fulfill", to: "entity:order", attributes: {} },
-      { id: "edge:starts", kind: "starts", from: "action:fulfill", to: "workflow:fulfill", attributes: {} },
+      {
+        id: "edge:reads",
+        kind: "reads",
+        from: "workflow:fulfill",
+        to: "entity:order",
+        attributes: {},
+      },
+      {
+        id: "edge:starts",
+        kind: "starts",
+        from: "action:fulfill",
+        to: "workflow:fulfill",
+        attributes: {},
+      },
       { id: "edge:may", kind: "may", from: "role:manager", to: "action:fulfill", attributes: {} },
-      { id: "edge:displays", kind: "displays", from: "page:orders", to: "entity:order", attributes: {} },
-      { id: "edge:triggers", kind: "triggers", from: "page:orders", to: "action:fulfill", attributes: {} },
+      {
+        id: "edge:displays",
+        kind: "displays",
+        from: "page:orders",
+        to: "entity:order",
+        attributes: {},
+      },
+      {
+        id: "edge:triggers",
+        kind: "triggers",
+        from: "page:orders",
+        to: "action:fulfill",
+        attributes: {},
+      },
     ],
   });
 }
@@ -98,7 +126,14 @@ describe("Product Graph user views", () => {
       replayAssumptionLedger(inferred, []),
       replayAssumptionLedger(confirmed, [event(confirmed, "confirm")]),
       replayAssumptionLedger(corrected, [
-        event(corrected, "correct", "Corrected statement", null, ["task:b", "task:a"], ["e:2", "e:1"]),
+        event(
+          corrected,
+          "correct",
+          "Corrected statement",
+          null,
+          ["task:b", "task:a"],
+          ["e:2", "e:1"],
+        ),
       ]),
       replayAssumptionLedger(superseded, [
         event(superseded, "supersede", null, replacement.assumptionId),
@@ -107,7 +142,12 @@ describe("Product Graph user views", () => {
 
     const rows = buildProductGraphUserViews(graph(), states).assumptions;
     const byStatus = new Map(rows.map((item) => [item.status, item]));
-    expect([...byStatus.keys()].sort()).toEqual(["confirmed", "corrected", "inferred", "superseded"]);
+    expect([...byStatus.keys()].sort()).toEqual([
+      "confirmed",
+      "corrected",
+      "inferred",
+      "superseded",
+    ]);
     expect(byStatus.get("corrected")?.effectiveStatement).toBe("Corrected statement");
     expect(byStatus.get("corrected")?.dependentWorkRefs).toEqual(["task:a", "task:b"]);
     expect(byStatus.get("corrected")?.evidenceRefs).toEqual(["e:1", "e:2"]);
@@ -123,7 +163,12 @@ describe("Product Graph user views", () => {
     expect(left).toEqual(right);
 
     const empty = buildProductGraphUserViews(
-      createProductGraphRevision({ schemaVersion: 1, graphId: "graph:empty", nodes: [], edges: [] }),
+      createProductGraphRevision({
+        schemaVersion: 1,
+        graphId: "graph:empty",
+        nodes: [],
+        edges: [],
+      }),
       [],
     );
     expect(empty.data).toEqual([]);
@@ -136,9 +181,9 @@ describe("Product Graph user views", () => {
 
   it("fails closed on stale assumption references and duplicate ledger identities", () => {
     const stale = assumption("Stale", ["page:missing"]);
-    expect(() => buildProductGraphUserViews(graph(), [replayAssumptionLedger(stale, [])])).toThrowError(
-      expect.objectContaining({ code: "USER_VIEWS_STALE_ASSUMPTION_REFERENCE" }),
-    );
+    expect(() =>
+      buildProductGraphUserViews(graph(), [replayAssumptionLedger(stale, [])]),
+    ).toThrowError(expect.objectContaining({ code: "USER_VIEWS_STALE_ASSUMPTION_REFERENCE" }));
 
     const duplicate = replayAssumptionLedger(assumption("Duplicate"), []);
     expect(() => buildProductGraphUserViews(graph(), [duplicate, duplicate])).toThrowError(
@@ -149,7 +194,9 @@ describe("Product Graph user views", () => {
   it("rejects tampered ledger state and malformed domain input", () => {
     const state = replayAssumptionLedger(assumption("Tampered"), []);
     expect(() =>
-      buildProductGraphUserViews(graph(), [{ ...state, ledgerRevisionId: "assumption-ledger-tampered" }]),
+      buildProductGraphUserViews(graph(), [
+        { ...state, ledgerRevisionId: "assumption-ledger-tampered" },
+      ]),
     ).toThrowError(ProductGraphUserViewsError);
 
     const malformed = createProductGraphRevision({

@@ -119,7 +119,10 @@ function exactKeys(
   }
 }
 
-function observedEvent(value: unknown, index: number): {
+function observedEvent(
+  value: unknown,
+  index: number,
+): {
   readonly input: Record<string, unknown>;
   readonly event: Record<string, unknown>;
 } {
@@ -156,14 +159,7 @@ function observedInvalidation(value: unknown, index: number): Record<string, unk
   const candidate = record(value, `Assumption invalidation ${index.toString()}`);
   exactKeys(
     candidate,
-    [
-      "schemaVersion",
-      "manifestId",
-      "assumptionId",
-      "eventId",
-      "dependentWorkRefs",
-      "evidenceRefs",
-    ],
+    ["schemaVersion", "manifestId", "assumptionId", "eventId", "dependentWorkRefs", "evidenceRefs"],
     `Assumption invalidation ${index.toString()}`,
   );
   return {
