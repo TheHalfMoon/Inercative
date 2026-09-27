@@ -53,7 +53,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000030 | IN-P02-S03-T01C | Provider-neutral user-request / intent-interpretation boundary | DONE (implementation PR #75) | `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md` |
 | SG-000031 | IN-P02-S04-T01A | Deterministic Question Gate core and inferred Assumption Ledger record | DONE (PR #78) | `docs/evidence/P02_S04_T01A_CLOSURE_2026-09-26.md` |
 | SG-000032 | IN-P02-S04-T01B | Assumption lifecycle and invalidation ledger | DONE (PR #80) | `docs/evidence/P02_S04_T01B_CLOSURE_2026-09-27.md` |
-| SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | GRAIN / SHAPED | `docs/evidence/P02_S05_T01A_SPECGRAIN_SHAPING_2026-09-27.md` |
+| SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | DONE (PR #83) | `docs/evidence/P02_S05_T01A_CLOSURE_2026-09-27.md` |
+| SG-000034 | IN-P02-S07-T01A | Core Dataset semantic node contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01A_SPECGRAIN_SHAPING_2026-09-27.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -65,61 +66,55 @@ Complete. Product Graph v1 representation and stable contracts are merged and qu
 
 ### P02-S02
 
-Complete. The domain layer covers node/edge semantics plus data classification, lifecycle, privacy, locale, and external-effect/integration consequence semantics with deterministic validators.
+Complete. The domain layer covers the roadmap-required node/edge semantics plus data classification, lifecycle, privacy, locale, and external-effect/integration consequence semantics with deterministic validators.
 
 ### P02-S03
 
-Complete.
-
-The parent `IN-P02-S03-T01 — Implement Change Intent -> proposed graph delta` is satisfied by the bounded chain:
-
-1. SG-000027 / `IN-P02-S03-T01A` — Change Intent + proposed graph delta core;
-2. SG-000028 / `IN-P02-S03-T01B` — ordered graph-operation semantics;
-3. SG-000030 / `IN-P02-S03-T01C` — raw user-request + typed provider-neutral interpretation bridge.
-
-SG-000030 final implementation candidate `e1ecbe6033bd0719759cfa90a44bbaeb8edc10bd` passed exact-head CI `36253536460` on Ubuntu and Windows, checksum-verified Diffcipline v1.0.0 R2 qualification in run `36253606629`, and Alibaba OCR deterministic delegation accounting/rule resolution. It merged normally through PR #75 as `1b07ac99374952533ffaf98f38708dfadc4b05b6`; fresh-main CI run `36253759531` / #286 passed on Ubuntu and Windows.
-
-Hosted OCR LLM remained `NOT_RUN / BLOCKED`; Jev was `NOT_RUN / UNAVAILABLE` on the GitHub-hosted runner. Neither is represented as PASS. Full closure and negative-evidence history are in `docs/evidence/P02_S03_T01C_CLOSURE_2026-09-26.md`.
+Complete. SG-000027 + SG-000028 + SG-000030 close parent `IN-P02-S03-T01 — Implement Change Intent -> proposed graph delta`.
 
 ### P02-S04
 
-Complete.
-
-The parent `IN-P02-S04-T01 — Implement Question Gate and Assumption Ledger` is satisfied by the bounded chain:
-
-1. SG-000031 / `IN-P02-S04-T01A` — deterministic Question Gate core plus immutable inferred `AssumptionRecordV1`;
-2. SG-000032 / `IN-P02-S04-T01B` — deterministic confirm/correct/supersede lifecycle plus reference-only invalidation manifests.
-
-SG-000032 exact candidate `34ce66274ce81026c531281a5531a2061a717724` passed exact-head CI `36294347297`, checksum-verified Diffcipline/OCR qualification `36294409207`, merged normally through PR #80 as `67fe1fac6a7f0b52b08f12fbf3c120f609b0a99e`, and fresh-main CI `36294551847` passed on Ubuntu and Windows.
+Complete. SG-000031 + SG-000032 close parent `IN-P02-S04-T01 — Implement Question Gate and Assumption Ledger`.
 
 ### P02-S05
 
-In progress. SG-000033 / `IN-P02-S05-T01A` is the active shaped first slice for deterministic read-only Data, Roles, Pages, Workflows, and Assumptions projections over canonical Product Graph / Assumption Ledger state. No UI mutation, persistence, new graph semantics, provider call, or runtime authority belongs in this Grain.
+Complete.
+
+SG-000033 exact candidate `0072d2e96fc845a6d1aa328608847fb6b1c0cd75` passed exact-head CI `36295840807` on Ubuntu and Windows, checksum-verified Diffcipline/OCR qualification `36295867287`, and exact-head semantic review with zero material findings. It merged normally through PR #83 as `bb66129903fba267d558eede00b94debac7d63e4`; fresh-main CI `36296032599` / #326 passed.
+
+The canonical P02-S05 roadmap outcome is the five read-only Data, Roles, Pages, Workflows, and Assumptions views. That outcome is satisfied by SG-000033; React/editable designer work remains downstream and is not silently pulled into P02-S05.
 
 ### P02-S06
 
-Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts. Later S06 relation vocabulary and behavior require separate bounded Grain(s).
+Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts for DesignSystemRevisionRef, SkillRef, ExplorationBranch, and Release.
 
-### P02-S07 / P02-S08
+The canonical relation examples (`BOUND_TO`, `MAY_USE`, `FORKS`, `PROMOTES`, `TARGETS`) reference endpoint concepts such as Component, Feature, ProductRevision, and DeploymentTarget that are not currently represented in the qualified domain-v1 vocabulary. No overly broad substitute relation is authorized. A later bounded S06 Grain must resolve those endpoint contracts explicitly before relation semantics can close the parent.
 
-`IN-P02-S07-T01` is dependency-eligible and requires its own SpecGrain shaping. `IN-P02-S08-T01` depends on P02-S07 and remains downstream.
+### P02-S07
+
+In progress. SG-000034 / `IN-P02-S07-T01A` is the active shaped first slice for Dataset, DatasetVersion, DataImport, and DataMapping semantic node contracts. It is metadata-only and cannot read, import, transform, move, or authorize data.
+
+Later S07 slices remain required for DataProfile, DataQualityRule, SeedDataset, SyntheticDataset, relation vocabulary, and deterministic cross-node rules before parent `IN-P02-S07-T01` can close.
+
+### P02-S08
+
+Blocked by the unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompletenessManifest semantics early.
 
 ## Current dependency-unlocking frontier
 
 The active dependency-unlocking unit is:
 
-`SG-000033 / IN-P02-S05-T01A — deterministic Product Graph user-view projections`
+`SG-000034 / IN-P02-S07-T01A — core Dataset semantic node contracts`
 
-P02-S04 is closed canonically after SG-000031 + SG-000032. SG-000033 is the smallest provider-neutral read-only slice of `IN-P02-S05-T01`, covering Data, Roles, Pages, Workflows, and Assumptions projection contracts with deterministic ordering and provenance-preserving semantic identity.
+This is the smallest clear unit that advances the independently eligible S07 parent and eventually unlocks P02-S08. It must extend only the existing deterministic Product Graph domain contract and focused tests; it must not perform data-plane execution, persistence writes, source access, provider/model calls, or P02-S06 endpoint repair.
 
-It must not add UI mutation, new graph semantics, persistence, authorization enforcement, provider/model calls, or external effects. If the full P02-S05 user-facing outcome still requires a later interactive presentation slice after SG-000033, shape that remainder separately rather than widening this Grain.
-
-Parallel P02-S06 relation vocabulary and P02-S07 dataset semantics remain separately eligible and must not be bundled into SG-000033.
+P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000034.
 
 ## Truthfully not run
 
 - Alibaba OCR hosted-LLM review: `NOT_RUN / BLOCKED` unless a scoped endpoint/token is actually configured. Deterministic OCR accounting/rule resolution and host/delegation semantic-review evidence must be described separately and truthfully.
-- Jev: `NOT_RUN / UNAVAILABLE` when the executable/runtime is absent. Never claim Jev PASS without execution evidence.
+- Jev on GitHub-hosted runners: `NOT_RUN / UNAVAILABLE` when the executable/runtime is absent.
+- Jev via the authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` as of the 2026-09-27 S07 shaping turn. Never claim Jev PASS without execution evidence.
 - SpecGrain repository-completion lifecycle transition: not modeled by the current CLI surface; repository/evidence state remains canonical.
 
 Generic bot summaries or statuses are not qualification evidence.
