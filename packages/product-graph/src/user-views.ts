@@ -164,11 +164,11 @@ function observedInvalidation(value: unknown, index: number): Record<string, unk
   );
   return {
     schemaVersion: candidate.schemaVersion,
-    manifestId: candidate.manifestId,
     assumptionId: candidate.assumptionId,
     eventId: candidate.eventId,
     dependentWorkRefs: candidate.dependentWorkRefs,
     evidenceRefs: candidate.evidenceRefs,
+    manifestId: candidate.manifestId,
   };
 }
 
