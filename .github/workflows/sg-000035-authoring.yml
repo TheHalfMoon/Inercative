@@ -1,0 +1,98 @@
+name: sg-000035-authoring
+
+on:
+  push:
+    branches:
+      - p02/s07-t01b-profile-quality-seed
+    paths:
+      - .github/workflows/sg-000035-authoring.yml
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    if: ${{ !contains(github.event.head_commit.message, '[authored]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply bounded SG-000035 patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          domain = Path('packages/product-graph/src/domain.ts')
+          text = domain.read_text()
+
+          old = '''  "dataimport",\n  "datamapping",\n] as const;'''
+          new = '''  "dataimport",\n  "datamapping",\n  "dataprofile",\n  "dataqualityrule",\n  "seeddataset",\n  "syntheticdataset",\n] as const;'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          old = '''  {\n    kind: "datamapping",\n    required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },\n    optional: {\n      status: "string",\n      transformationRefs: "string-list",\n      verificationRefs: "string-list",\n    },\n  },\n];'''
+          new = '''  {\n    kind: "datamapping",\n    required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },\n    optional: {\n      status: "string",\n      transformationRefs: "string-list",\n      verificationRefs: "string-list",\n    },\n  },\n  {\n    kind: "dataprofile",\n    required: {\n      datasetVersionRef: "string",\n      provenanceRef: "string",\n      statisticsRefs: "string-list",\n    },\n    optional: {\n      qualityFindingRefs: "string-list",\n      status: "string",\n      verificationRefs: "string-list",\n    },\n  },\n  {\n    kind: "dataqualityrule",\n    required: { name: "string", provenanceRef: "string", requirement: "string" },\n    optional: { dimension: "string", status: "string", verificationRefs: "string-list" },\n  },\n  {\n    kind: "seeddataset",\n    required: {\n      constraintRefs: "string-list",\n      coverageRefs: "string-list",\n      environment: "string",\n      intentRef: "string",\n      privacyClass: "string",\n      privacyPolicyRef: "string",\n      provenanceRef: "string",\n      reproducibilityRef: "string",\n      verificationRefs: "string-list",\n    },\n    optional: { status: "string" },\n  },\n  {\n    kind: "syntheticdataset",\n    required: {\n      constraintRefs: "string-list",\n      coverageRefs: "string-list",\n      environment: "string",\n      intentRef: "string",\n      privacyClass: "string",\n      privacyPolicyRef: "string",\n      provenanceRef: "string",\n      reproducibilityRef: "string",\n      verificationRefs: "string-list",\n    },\n    optional: { status: "string" },\n  },\n];'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          old = '''  { field: "privacyClass", kind: "dataset", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "datasetversion", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "dataimport", values: DOMAIN_DATA_CLASS_LEVELS },'''
+          new = '''  { field: "privacyClass", kind: "dataset", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "datasetversion", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "dataimport", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "seeddataset", values: DOMAIN_DATA_CLASS_LEVELS },\n  { field: "privacyClass", kind: "syntheticdataset", values: DOMAIN_DATA_CLASS_LEVELS },'''
+          assert old in text
+          text = text.replace(old, new, 1)
+          domain.write_text(text)
+
+          tests = Path('packages/product-graph/src/domain.test.ts')
+          text = tests.read_text()
+
+          old = '''  datamapping: {\n    provenanceRef: "provenance:orders-mapping",\n    sourceRef: "source:orders",\n    targetRef: "entity:order",\n  },\n};'''
+          new = '''  datamapping: {\n    provenanceRef: "provenance:orders-mapping",\n    sourceRef: "source:orders",\n    targetRef: "entity:order",\n  },\n  dataprofile: {\n    datasetVersionRef: "dataset-version:orders-v1",\n    provenanceRef: "provenance:orders-profile",\n    statisticsRefs: ["stats:orders-missingness", "stats:orders-uniqueness"],\n  },\n  dataqualityrule: {\n    name: "Order IDs are unique",\n    provenanceRef: "provenance:quality-policy",\n    requirement: "Every order ID must be unique within the dataset version.",\n  },\n  seeddataset: {\n    constraintRefs: ["schema:orders", "product:orders-workflow"],\n    coverageRefs: ["role:operator", "state:pending", "edge-case:empty-note"],\n    environment: "development",\n    intentRef: "intent:browser-verification-seed",\n    privacyClass: "internal",\n    privacyPolicyRef: "policy:no-private-production-copy",\n    provenanceRef: "provenance:orders-seed-recipe",\n    reproducibilityRef: "recipe:orders-seed-v1",\n    verificationRefs: ["verification:orders-seed-v1"],\n  },\n  syntheticdataset: {\n    constraintRefs: ["schema:orders", "product:orders-workflow"],\n    coverageRefs: ["role:operator", "state:refunded", "edge-case:large-total"],\n    environment: "test",\n    intentRef: "intent:synthetic-browser-verification",\n    privacyClass: "internal",\n    privacyPolicyRef: "policy:no-private-production-copy",\n    provenanceRef: "provenance:orders-synthetic-recipe",\n    reproducibilityRef: "recipe:orders-synthetic-v1",\n    verificationRefs: ["verification:orders-synthetic-v1"],\n  },\n};'''
+          assert old in text
+          text = text.replace(old, new, 1)
+
+          anchor = '''  const requiredCases = DOMAIN_NODE_KIND_SPECS.flatMap((spec) =>'''
+          insert = '''  it("pins the four SG-000035 profile quality seed and synthetic contracts", () => {\n    expect(\n      DOMAIN_NODE_KIND_SPECS.filter((spec) =>\n        ["dataprofile", "dataqualityrule", "seeddataset", "syntheticdataset"].includes(spec.kind),\n      ),\n    ).toEqual([\n      {\n        kind: "dataprofile",\n        required: {\n          datasetVersionRef: "string",\n          provenanceRef: "string",\n          statisticsRefs: "string-list",\n        },\n        optional: {\n          qualityFindingRefs: "string-list",\n          status: "string",\n          verificationRefs: "string-list",\n        },\n      },\n      {\n        kind: "dataqualityrule",\n        required: { name: "string", provenanceRef: "string", requirement: "string" },\n        optional: { dimension: "string", status: "string", verificationRefs: "string-list" },\n      },\n      {\n        kind: "seeddataset",\n        required: {\n          constraintRefs: "string-list",\n          coverageRefs: "string-list",\n          environment: "string",\n          intentRef: "string",\n          privacyClass: "string",\n          privacyPolicyRef: "string",\n          provenanceRef: "string",\n          reproducibilityRef: "string",\n          verificationRefs: "string-list",\n        },\n        optional: { status: "string" },\n      },\n      {\n        kind: "syntheticdataset",\n        required: {\n          constraintRefs: "string-list",\n          coverageRefs: "string-list",\n          environment: "string",\n          intentRef: "string",\n          privacyClass: "string",\n          privacyPolicyRef: "string",\n          provenanceRef: "string",\n          reproducibilityRef: "string",\n          verificationRefs: "string-list",\n        },\n        optional: { status: "string" },\n      },\n    ]);\n  });\n\n  it("accepts inspectable profile and quality metadata without execution claims", () => {\n    expect(\n      collectProductGraphDomainIssues(\n        graphWith([\n          {\n            id: "profile:orders",\n            kind: "dataprofile",\n            attributes: {\n              ...minimalAttributes.dataprofile,\n              qualityFindingRefs: ["finding:duplicate-order-id"],\n              status: "observed",\n              verificationRefs: ["evidence:profile-orders-v1"],\n            },\n          },\n          {\n            id: "quality:unique-order-id",\n            kind: "dataqualityrule",\n            attributes: {\n              ...minimalAttributes.dataqualityrule,\n              dimension: "uniqueness",\n              status: "required",\n              verificationRefs: ["evidence:quality-rule-definition"],\n            },\n          },\n        ]),\n      ),\n    ).toEqual([]);\n  });\n\n  it.each(["seeddataset", "syntheticdataset"] as DomainNodeKind[])(\n    "reuses the closed data-class vocabulary for %s privacyClass",\n    (kind) => {\n      const attributes: Record<string, JsonValue> = {\n        ...minimalAttributes[kind],\n        privacyClass: "confidential",\n      };\n      const issues = collectProductGraphDomainIssues(singleNode(kind, attributes));\n      expect(issues).toHaveLength(1);\n      expect(issues[0]).toMatchObject({\n        code: "DOMAIN_INVALID_ENUM_VALUE",\n        phase: "node",\n        target: "probe:node",\n        field: "privacyClass",\n      });\n    },\n  );\n\n  it("keeps private production copying outside seed and synthetic metadata contracts", () => {\n    for (const kind of ["seeddataset", "syntheticdataset"] as DomainNodeKind[]) {\n      const issues = collectProductGraphDomainIssues(\n        singleNode(kind, {\n          ...minimalAttributes[kind],\n          productionSourceRef: "production:customers",\n        }),\n      );\n      expect(issues).toHaveLength(1);\n      expect(issues[0]).toMatchObject({\n        code: "DOMAIN_UNKNOWN_FIELD",\n        phase: "node",\n        target: "probe:node",\n        field: "productionSourceRef",\n      });\n    }\n  });\n\n  it("orders SG-000035 metadata findings deterministically across node insertion order", () => {\n    const broken = graphWith([\n      {\n        id: "probe:z",\n        kind: "dataprofile",\n        attributes: { ...minimalAttributes.dataprofile, executableProfileCode: "scan()" },\n      },\n      {\n        id: "probe:a",\n        kind: "syntheticdataset",\n        attributes: { ...minimalAttributes.syntheticdataset, privacyClass: "confidential" },\n      },\n    ]);\n    const reordered = graphWith([...broken.nodes].reverse());\n    const baseline = collectProductGraphDomainIssues(broken);\n    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([\n      ["probe:a", "DOMAIN_INVALID_ENUM_VALUE", "privacyClass"],\n      ["probe:z", "DOMAIN_UNKNOWN_FIELD", "executableProfileCode"],\n    ]);\n    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);\n  });\n\n'''
+          assert anchor in text
+          text = text.replace(anchor, insert + anchor, 1)
+          tests.write_text(text)
+          PY
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Canonicalize formatting and verify repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+
+      - name: Persist authored candidate and remove authoring workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/sg-000035-authoring.yml
+          git diff --check
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts .github/workflows/sg-000035-authoring.yml
+          git commit -m "feat(product-graph): add SG-000035 profile quality seed semantics [authored]"
+          git push origin HEAD:p02/s07-t01b-profile-quality-seed
