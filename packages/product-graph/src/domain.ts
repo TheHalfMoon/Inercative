@@ -57,6 +57,10 @@ export const DOMAIN_NODE_KINDS = [
   "skillref",
   "explorationbranch",
   "release",
+  "dataset",
+  "datasetversion",
+  "dataimport",
+  "datamapping",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -221,6 +225,57 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
     kind: "release",
     required: { productRevision: "string", releaseId: "string" },
     optional: { name: "string", status: "string" },
+  },
+  {
+    kind: "dataset",
+    required: {
+      environment: "string",
+      name: "string",
+      privacyClass: "string",
+      provenanceRef: "string",
+      sourceRef: "string",
+    },
+    optional: { description: "string", status: "string", verificationRefs: "string-list" },
+  },
+  {
+    kind: "datasetversion",
+    required: {
+      datasetRef: "string",
+      environment: "string",
+      privacyClass: "string",
+      provenanceRef: "string",
+      version: "string",
+    },
+    optional: {
+      sourceRef: "string",
+      status: "string",
+      transformationRefs: "string-list",
+      verificationRefs: "string-list",
+    },
+  },
+  {
+    kind: "dataimport",
+    required: {
+      environment: "string",
+      privacyClass: "string",
+      provenanceRef: "string",
+      sourceRef: "string",
+    },
+    optional: {
+      format: "string",
+      status: "string",
+      targetDatasetRef: "string",
+      verificationRefs: "string-list",
+    },
+  },
+  {
+    kind: "datamapping",
+    required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },
+    optional: {
+      status: "string",
+      transformationRefs: "string-list",
+      verificationRefs: "string-list",
+    },
   },
 ];
 
@@ -430,6 +485,9 @@ export interface DomainEnumFieldSpec {
  */
 export const DOMAIN_ENUM_FIELDS: readonly DomainEnumFieldSpec[] = [
   { field: "level", kind: "dataclass", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "privacyClass", kind: "dataset", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "privacyClass", kind: "datasetversion", values: DOMAIN_DATA_CLASS_LEVELS },
+  { field: "privacyClass", kind: "dataimport", values: DOMAIN_DATA_CLASS_LEVELS },
   { field: "audit", kind: "datapolicy", values: DOMAIN_AUDIT_VALUES },
   { field: "collection", kind: "datapolicy", values: DOMAIN_COLLECTION_VALUES },
   { field: "consent", kind: "datapolicy", values: DOMAIN_CONSENT_VALUES },

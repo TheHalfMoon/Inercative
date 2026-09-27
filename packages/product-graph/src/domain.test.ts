@@ -104,6 +104,31 @@ const minimalAttributes: Record<DomainNodeKind, JsonObject> = {
     productRevision: "sha256:product-revision",
     releaseId: "release:2026-09-26.1",
   },
+  dataset: {
+    environment: "development",
+    name: "Orders dataset",
+    privacyClass: "internal",
+    provenanceRef: "provenance:orders",
+    sourceRef: "source:orders",
+  },
+  datasetversion: {
+    datasetRef: "dataset:orders",
+    environment: "development",
+    privacyClass: "internal",
+    provenanceRef: "provenance:orders-v1",
+    version: "v1",
+  },
+  dataimport: {
+    environment: "development",
+    privacyClass: "internal",
+    provenanceRef: "provenance:orders-import",
+    sourceRef: "file:orders.csv",
+  },
+  datamapping: {
+    provenanceRef: "provenance:orders-mapping",
+    sourceRef: "source:orders",
+    targetRef: "entity:order",
+  },
 };
 
 const probeNodes: readonly ProductGraphNodeV1[] = DOMAIN_NODE_KINDS.map((kind) => ({
@@ -175,6 +200,120 @@ describe("Product Graph domain node semantics", () => {
         optional: { name: "string", status: "string" },
       },
     ]);
+  });
+
+  it("pins the four SG-000034 dataset-core node contracts", () => {
+    expect(
+      DOMAIN_NODE_KIND_SPECS.filter((spec) =>
+        ["dataset", "datasetversion", "dataimport", "datamapping"].includes(spec.kind),
+      ),
+    ).toEqual([
+      {
+        kind: "dataset",
+        required: {
+          environment: "string",
+          name: "string",
+          privacyClass: "string",
+          provenanceRef: "string",
+          sourceRef: "string",
+        },
+        optional: { description: "string", status: "string", verificationRefs: "string-list" },
+      },
+      {
+        kind: "datasetversion",
+        required: {
+          datasetRef: "string",
+          environment: "string",
+          privacyClass: "string",
+          provenanceRef: "string",
+          version: "string",
+        },
+        optional: {
+          sourceRef: "string",
+          status: "string",
+          transformationRefs: "string-list",
+          verificationRefs: "string-list",
+        },
+      },
+      {
+        kind: "dataimport",
+        required: {
+          environment: "string",
+          privacyClass: "string",
+          provenanceRef: "string",
+          sourceRef: "string",
+        },
+        optional: {
+          format: "string",
+          status: "string",
+          targetDatasetRef: "string",
+          verificationRefs: "string-list",
+        },
+      },
+      {
+        kind: "datamapping",
+        required: { provenanceRef: "string", sourceRef: "string", targetRef: "string" },
+        optional: {
+          status: "string",
+          transformationRefs: "string-list",
+          verificationRefs: "string-list",
+        },
+      },
+    ]);
+  });
+
+  it("accepts bounded dataset lineage and verification metadata without performing data access", () => {
+    expect(
+      collectProductGraphDomainIssues(
+        singleNode("datasetversion", {
+          ...minimalAttributes.datasetversion,
+          sourceRef: "source:orders",
+          status: "qualified",
+          transformationRefs: ["mapping:orders-v1"],
+          verificationRefs: ["evidence:orders-v1"],
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it.each(["dataset", "datasetversion", "dataimport"] as DomainNodeKind[])(
+    "reuses the closed data-class vocabulary for %s privacyClass",
+    (kind) => {
+      const attributes: Record<string, JsonValue> = {
+        ...minimalAttributes[kind],
+        privacyClass: "confidential",
+      };
+      const issues = collectProductGraphDomainIssues(singleNode(kind, attributes));
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({
+        code: "DOMAIN_INVALID_ENUM_VALUE",
+        phase: "node",
+        target: "probe:node",
+        field: "privacyClass",
+      });
+    },
+  );
+
+  it("orders dataset-core validation findings deterministically across node insertion order", () => {
+    const broken = graphWith([
+      {
+        id: "probe:z",
+        kind: "dataset",
+        attributes: { ...minimalAttributes.dataset, mystery: "x" },
+      },
+      {
+        id: "probe:a",
+        kind: "dataimport",
+        attributes: { ...minimalAttributes.dataimport, privacyClass: "confidential" },
+      },
+    ]);
+    const reordered = graphWith([...broken.nodes].reverse());
+    const baseline = collectProductGraphDomainIssues(broken);
+    expect(baseline.map((issue) => [issue.target, issue.code, issue.field])).toEqual([
+      ["probe:a", "DOMAIN_INVALID_ENUM_VALUE", "privacyClass"],
+      ["probe:z", "DOMAIN_UNKNOWN_FIELD", "mystery"],
+    ]);
+    expect(collectProductGraphDomainIssues(reordered)).toEqual(baseline);
   });
 
   const requiredCases = DOMAIN_NODE_KIND_SPECS.flatMap((spec) =>
