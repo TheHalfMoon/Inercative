@@ -1,0 +1,177 @@
+name: sg-000036-qualification
+
+on:
+  push:
+    branches:
+      - evidence/sg-000036-qualification
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: 0a13e40b52e735e752e15c5d18ee5a164320df66
+      CANDIDATE_SHA: f8ec65a9f776ad45d1fb0a6669c566bcccee6dbc
+      DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
+      OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+      JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
+      JEV_API_KEY: ${{ secrets.JEV_API_KEY || secrets.TYPESAFE_API_KEY }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+
+      - name: Initialize isolated qualification directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="$RUNNER_TEMP/sg000036/evidence"
+          tools_dir="$RUNNER_TEMP/sg000036/tools"
+          mkdir -p "$evidence_dir" "$tools_dir"
+          echo "EVIDENCE_DIR=$evidence_dir" >> "$GITHUB_ENV"
+          echo "TOOLS_DIR=$tools_dir" >> "$GITHUB_ENV"
+
+      - name: Install canonical repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global pnpm@12.4.2
+          node --version | tee "$EVIDENCE_DIR/node-version.txt"
+          pnpm --version | tee "$EVIDENCE_DIR/pnpm-version.txt"
+          pnpm install --frozen-lockfile
+
+      - name: Verify exact identities and clean worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          merge_base="$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")"
+          test "$merge_base" = "$BASE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'base=%s\nhead=%s\nmerge_base=%s\n' "$BASE_SHA" "$CANDIDATE_SHA" "$merge_base" | tee "$EVIDENCE_DIR/identities.txt"
+          git diff --stat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-stat.txt"
+          git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-numstat.txt"
+          git diff --name-status "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-files.txt"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/product-graph/src/domain.ts packages/product-graph/src/domain.test.ts > "$EVIDENCE_DIR/exact-review.diff"
+
+      - name: Run repository verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check "$BASE_SHA..$CANDIDATE_SHA"
+
+      - name: Run checksum-verified Diffcipline R2 proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o "$TOOLS_DIR/diffcipline"
+          echo "$DIFFCIPLINE_SHA256  $TOOLS_DIR/diffcipline" | sha256sum --check
+          chmod +x "$TOOLS_DIR/diffcipline"
+          "$TOOLS_DIR/diffcipline" check --base "$BASE_SHA" --risk R2 --run --json | tee "$EVIDENCE_DIR/diffcipline-proof.json"
+
+      - name: Run checksum-verified Alibaba Open Code Review accounting
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o "$TOOLS_DIR/ocr"
+          echo "$OCR_SHA256  $TOOLS_DIR/ocr" | sha256sum --check
+          chmod +x "$TOOLS_DIR/ocr"
+          "$TOOLS_DIR/ocr" --version 2>&1 | tee "$EVIDENCE_DIR/ocr-version.txt"
+          "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/product-graph/src/domain.ts | tee "$EVIDENCE_DIR/ocr-domain-rules.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/product-graph/src/domain.test.ts | tee "$EVIDENCE_DIR/ocr-domain-test-rules.json"
+
+      - name: Install checksum-verified Jev CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/model-clis/jev/releases/download/v2026.919.0/jev-linux-x86_64' -o "$TOOLS_DIR/jev"
+          echo "$JEV_SHA256  $TOOLS_DIR/jev" | sha256sum --check
+          chmod +x "$TOOLS_DIR/jev"
+          "$TOOLS_DIR/jev" --version 2>&1 | tee "$EVIDENCE_DIR/jev-version.txt"
+
+      - name: Build exact-diff Jev review request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib
+          evidence = pathlib.Path(os.environ['EVIDENCE_DIR'])
+          diff = (evidence / 'exact-review.diff').read_text()
+          request = {
+              'state': {
+                  'grain': 'SG-000036 / IN-P02-S07-T01C',
+                  'base': os.environ['BASE_SHA'],
+                  'candidate': os.environ['CANDIDATE_SHA'],
+                  'scope': 'Closed metadata-only DataSource and Field Product Graph node contracts. No relation, runtime, network, secret, persistence, provider, import, profiling, mapping, quality execution, or generation authority.',
+                  'diff': diff,
+              },
+              'questions': {
+                  'scope_escape': {
+                      'type': 'noul',
+                      'instructions': 'Does this exact diff introduce behavior or authority outside the declared metadata-only SG-000036 scope?',
+                      'criteria': {
+                          'true': 'Any runtime/source/network/secret/persistence/provider/execution/capability authority, relation widening, or hidden side effect is introduced.',
+                          'false': 'Only closed metadata schemas, fail-closed validation, and focused tests are added.'
+                      }
+                  },
+                  'authority_leak': {
+                      'type': 'noul',
+                      'instructions': 'Can DataSource or Field existence/attributes in this diff be interpreted as granting or proving runtime authority?',
+                      'criteria': {
+                          'true': 'The contract can grant or prove connection, synchronization, entity ownership, storage, classification, mapping, credentials, or other runtime authority.',
+                          'false': 'The contract remains descriptive metadata and rejects authority-looking fields.'
+                      }
+                  },
+                  'regression_risk': {
+                      'type': 'noul',
+                      'instructions': 'Does this exact diff materially widen or break previously qualified Product Graph node/edge validation semantics?',
+                      'criteria': {
+                          'true': 'Existing validation or relation semantics are widened, weakened, made nondeterministic, or broken.',
+                          'false': 'Existing semantics are preserved and the two new kinds compose deterministically.'
+                      }
+                  }
+              }
+          }
+          (evidence / 'jev-request.json').write_text(json.dumps(request, sort_keys=True))
+          PY
+
+      - name: Run required Jev semantic review
+        id: jev_review
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${JEV_API_KEY:-}" ]; then
+            printf 'state=BLOCKED_MISSING_GITHUB_SECRET\nreason=JEV_API_KEY and compatible TYPESAFE_API_KEY are absent\n' | tee "$EVIDENCE_DIR/jev-status.txt"
+            exit 1
+          fi
+          printf 'state=RUN\n' | tee "$EVIDENCE_DIR/jev-status.txt"
+          "$TOOLS_DIR/jev" ask "$EVIDENCE_DIR/jev-request.json" \
+            --assert 'answers.scope_escape.noul <= 0.5 and answers.authority_leak.noul <= 0.5 and answers.regression_risk.noul <= 0.5' \
+            | tee "$EVIDENCE_DIR/jev-result.json"
+          printf 'state=PASS\n' > "$EVIDENCE_DIR/jev-status.txt"
+
+      - name: Upload exact qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000036-exact-candidate-qualification
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+
+      - name: Enforce required Jev gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.jev_review.outcome }}' = 'success'
