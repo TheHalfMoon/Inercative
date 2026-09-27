@@ -1,0 +1,104 @@
+name: p02-s07-t01a-shaping
+
+on:
+  push:
+    branches:
+      - p02/s05-closeout-s07-t01a-shaping
+    paths:
+      - .github/workflows/p02-s07-t01a-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: bb66129903fba267d558eede00b94debac7d63e4
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$CANONICAL_BASE^{commit}"
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P02-S07-T01A core Dataset semantic node contracts" \
+            --outcome "The Product Graph can represent Dataset, DatasetVersion, DataImport, and DataMapping as closed deterministic semantic nodes carrying explicit provenance, privacy/environment context, transformation/verification metadata, and no data-plane side effects." \
+            --rationale "IN-P02-S07-T01 is dependency-eligible because IN-P02-S02-T02 is canonically complete. Dataset semantics are broad, so this first Grain is deliberately bounded to the four core identity/provenance node contracts before profiling, quality, seed/synthetic, and relation semantics." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000034"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Add closed Product Graph domain node kinds for Dataset, DatasetVersion, DataImport, and DataMapping using the existing deterministic domain validator machinery." \
+            --scope-in "Define bounded required/optional scalar/list attributes so dataset identities expose provenance, privacy classification, environment, transformation lineage, verification requirements, source/import identity, and human-inspectable status where applicable." \
+            --scope-in "Reuse existing Product Graph privacy/data-class vocabulary where semantically applicable instead of creating a competing sensitivity taxonomy." \
+            --scope-in "Add focused positive and negative tests for required fields, unknown fields, field types, deterministic issue ordering, canonical graph validation compatibility, and preservation of all previously qualified node kinds." \
+            --scope-out "No file/spreadsheet/database/API reading, import execution, row transformation, schema inference, model call, source mutation, persistence write, Supabase operation, network access, secret access, or production-data handling." \
+            --scope-out "No DataProfile, DataQualityRule, SeedDataset, SyntheticDataset, VectorCorpus, EvalDataset, or dataset relation/cross-node semantics; those remain later bounded S07 slices." \
+            --scope-out "No ProductCompletenessManifest work, no P02-S06 semantic-reference relation repair, and no P03 context/model routing." \
+            --acceptance "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include exactly the four new dataset-core kinds with closed deterministic field schemas while every previously qualified node kind remains compatible." \
+            --acceptance "Dataset-core schemas make provenance, privacy/environment context, lineage/verification intent, and import/mapping identity explicit without claiming that an external source exists or has been read." \
+            --acceptance "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, invalid privacy-class where reused, deterministic issue ordering, and compatibility with canonical domain validation." \
+            --acceptance "The exact implementation candidate passes full repository format/lint/typecheck/tests, Diffcipline R2, Alibaba OCR deterministic review/accounting where applicable, Jev where actually available, exact-head CI, and fresh-main CI before closure." \
+            --dependency SG-000026 \
+            --risk-level medium \
+            --recovery "Revert the four dataset-core node-kind/spec additions, their focused tests, exports, and evidence; all canonical Product Graph semantics through SG-000033 remain intact." \
+            --context-budget 7000 \
+            --context-estimate 5000 \
+            --change-surface "packages/product-graph/src/domain.ts" \
+            --change-surface "packages/product-graph/src/domain.test.ts" \
+            --change-surface "packages/product-graph/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and changed-file accounting." \
+            --evidence "Focused dataset-core domain validation tests plus full repository format/lint/typecheck/test suites." \
+            --evidence "Diffcipline exact-candidate proof, Alibaba OCR accounting/delegated review where applicable, Jev where actually available, exact-head CI, and post-merge fresh-main CI." \
+            --minimality-choice reuse-existing \
+            --minimality-rationale "The existing Product Graph domain node-kind/spec/validator machinery is the correct deterministic extension point; a new package or data runtime would duplicate authority and prematurely couple semantic contracts to import execution." \
+            --safety-status requirements-defined \
+            --safety-requirement "Dataset nodes are semantic metadata only; they never authorize access to source data, secrets, files, databases, APIs, or environments." \
+            --safety-requirement "A provenance/source reference is not proof that data was read, imported, verified, or safe; execution evidence remains separate." \
+            --safety-requirement "Production or sensitive data must never be copied into lower-trust environments merely because a Dataset node exists." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Persist only SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p02-s07-t01a-shaping.yml
+          git status --short
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows/p02-s07-t01a-shaping.yml
+          git commit -m "spec(p02): shape S07 dataset core semantics [shaped]"
+          git push origin HEAD:p02/s05-closeout-s07-t01a-shaping
