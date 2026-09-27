@@ -154,7 +154,7 @@ describe("Product Graph user views", () => {
     expect(byStatus.get("superseded")?.replacementAssumptionId).toBe(replacement.assumptionId);
   });
 
-  it("is deterministic across input ordering and exposes explicit empty collections", () => {
+  it("is order-independent and exposes explicit empty collections", () => {
     const first = assumption("First");
     const second = assumption("Second");
     const states = [replayAssumptionLedger(first, []), replayAssumptionLedger(second, [])];
