@@ -1,0 +1,106 @@
+name: p03-s01-t01a-run-lifecycle-shaping
+
+on:
+  push:
+    branches:
+      - p03/s01-t01a-run-lifecycle-shaping
+    paths:
+      - .github/workflows/p03-s01-t01a-run-lifecycle-shaping.yml
+
+permissions:
+  contents: write
+
+jobs:
+  shape:
+    if: ${{ !contains(github.event.head_commit.message, '[shaped]') }}
+    runs-on: ubuntu-latest
+    env:
+      CANONICAL_BASE: 89806e1fef35f5978e4f97148096dd7a70a8d69c
+      SPEC_GRAIN_SOURCE: 5de7d6499bb0a9e3a191fc0934399cf099d1980a
+    steps:
+      - name: Checkout shaping branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify canonical ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base "$CANONICAL_BASE" HEAD)" = "$CANONICAL_BASE"
+
+      - name: Install exact SpecGrain source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps "https://github.com/TheHalfMoon/SpecGrain/archive/${SPEC_GRAIN_SOURCE}.zip"
+          specgrain --help >/dev/null
+
+      - name: Draft with native SpecGrain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _shaping
+          specgrain draft . \
+            --title "IN-P03-S01-T01A deterministic Run lifecycle and continuation semantics" \
+            --outcome "The harness has a deterministic provider-neutral Run lifecycle contract with explicit allowed transitions, terminal-state behavior, cancellation/blocking semantics, and parent/child continuation rules before any persistence adapter or model/provider work is introduced." \
+            --rationale "SG-000011 established validated Run/Event/Evidence/Finding record shapes and Run states, but it intentionally did not define legal Run state transitions or resume/continuation semantics. P03-S01 requires Run lifecycle, cancellation, and resume behavior before the event store can become authoritative." \
+            --json | tee _shaping/draft.json
+          SPEC_ID="$(python -c 'import json; print(json.load(open("_shaping/draft.json"))["spec_id"])')"
+          test "$SPEC_ID" = "SG-000038"
+          echo "SPEC_ID=$SPEC_ID" >> "$GITHUB_ENV"
+
+      - name: Shape bounded Grain
+        shell: bash
+        run: |
+          set -euo pipefail
+          specgrain shape "$SPEC_ID" . \
+            --scope-in "Define a pure deterministic Run lifecycle transition contract over the existing PLANNED, RUNNING, COMPLETED, FAILED, CANCELLED, and BLOCKED states without changing the canonical RunRecord wire shape." \
+            --scope-in "Define explicit terminal/closed-state behavior so COMPLETED, FAILED, CANCELLED, and BLOCKED cannot silently return to RUNNING by in-place mutation." \
+            --scope-in "Define a provider-neutral continuation/resume contract in which a resumed attempt is a distinct child Run with parentRunId pointing to the prior Run, preserving the prior Run as historical evidence." \
+            --scope-in "Require a continuation child to start in PLANNED state and remain bound to the same exact target revision as its parent; a changed target is a distinct Run rather than a resume." \
+            --scope-in "Add deterministic focused tests for allowed/forbidden transitions, terminal behavior, valid and invalid continuation, target mismatch, and order-independent validation outcomes." \
+            --scope-out "No event-store persistence adapter, database schema, Supabase mutation, artifact store, budget accounting, scheduler, model/provider routing, network access, secret handling, wall-clock policy, retry execution, or P02 changes." \
+            --scope-out "No modification to SG-000011 Run/Event/Evidence/Finding JSON wire contracts and no migration of existing canonical records." \
+            --scope-out "No automatic resume execution and no capability or permission grant from Run state, parentRunId, or lifecycle validation." \
+            --acceptance "A closed deterministic transition table defines every allowed in-place Run state transition and rejects every undeclared transition without consulting time, randomness, network, models, or persistence." \
+            --acceptance "COMPLETED, FAILED, CANCELLED, and BLOCKED cannot transition back to RUNNING in place; continuation is represented by a distinct child Run so historical state is preserved." \
+            --acceptance "Continuation validation requires a distinct child identity, parentRunId bound to the parent Run, child state PLANNED, and exact target revision equality; mismatches fail closed with stable machine-readable issues." \
+            --acceptance "Existing SG-000011 RunRecord validation remains compatible and unchanged; lifecycle semantics compose on top of the existing protocol contract rather than redefining it." \
+            --acceptance "Focused tests cover the complete transition matrix plus continuation success/failure cases and deterministic repeated results." \
+            --acceptance "Any implementation candidate must pass repository format/lint/typecheck/tests, truthful Diffcipline proof, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI before closure." \
+            --dependency SG-000011 \
+            --dependency SG-000014 \
+            --risk-level medium \
+            --recovery "Revert only the P03 Run lifecycle module, exports, and focused tests; SG-000011 protocol record contracts and P01 control-plane persistence remain unchanged." \
+            --context-budget 7500 \
+            --context-estimate 5200 \
+            --change-surface "packages/protocol/src/run-lifecycle.ts" \
+            --change-surface "packages/protocol/src/run-lifecycle.test.ts" \
+            --change-surface "packages/protocol/src/index.ts" \
+            --change-surface "docs/evidence/**" \
+            --change-surface "specs/CURRENT.md" \
+            --evidence "Exact base/head/merge-base and complete changed-file accounting." \
+            --evidence "Complete transition-matrix tests and continuation/resume invariant tests plus full repository verification." \
+            --evidence "Diffcipline proof, Alibaba OCR evidence, credentialed Jev semantic review, exact-head semantic review, and post-merge fresh-main CI." \
+            --minimality-choice reuse-existing \
+            --minimality-rationale "Reuse SG-000011 RunRecord/RunState identities and validators. The smallest dependency-unlocking P03 slice is pure lifecycle and continuation semantics; persistence, budgets, artifacts, and execution remain separate later Grains." \
+            --safety-status requirements-defined \
+            --safety-requirement "Lifecycle state and parentRunId are evidence/coordination semantics only and never grant capabilities, credentials, network access, deployment authority, or provider authority." \
+            --safety-requirement "Resume preserves history through a distinct child Run and must not rewrite a terminal parent into RUNNING." \
+            --safety-requirement "Lifecycle validation is deterministic, side-effect free, provider-neutral, and fail-closed for undeclared transitions or target mismatches." \
+            --json | tee _shaping/shape.json
+          specgrain refine "$SPEC_ID" . --json | tee _shaping/refine.json
+          specgrain grain "$SPEC_ID" . --json | tee _shaping/grain.json
+          specgrain check . --json | tee _shaping/check.json
+
+      - name: Persist only SpecGrain state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/p03-s01-t01a-run-lifecycle-shaping.yml
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          git add .specgrain .github/workflows/p03-s01-t01a-run-lifecycle-shaping.yml
+          git commit -m "spec(p03): shape Run lifecycle semantics [shaped]"
+          git push origin HEAD:p03/s01-t01a-run-lifecycle-shaping
