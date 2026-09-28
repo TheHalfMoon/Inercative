@@ -1,0 +1,74 @@
+{
+  "acceptance": [
+    "DOMAIN_NODE_KINDS and DOMAIN_NODE_KIND_SPECS include Component, Feature, ProductRevision, and DeploymentTarget with closed deterministic metadata schemas while all previously qualified node and edge semantics remain compatible.",
+    "Component and Feature metadata cannot be interpreted as DesignSystemRevision binding, SkillRef execution, capability admission, or runtime proof.",
+    "ProductRevision metadata cannot grant source mutation, release, promotion, or deployment authority merely because the node exists.",
+    "DeploymentTarget metadata cannot contain or grant secret/network/deployment capability and cannot be interpreted as proof that a provider target is reachable or authorized.",
+    "Focused tests prove valid examples plus missing-required, unknown-field, wrong-type, deterministic issue ordering, and full canonical domain-validation compatibility.",
+    "The exact implementation candidate must pass repository format/lint/typecheck/tests, Diffcipline at the truthful risk tier, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/product-graph/src/domain.ts",
+    "packages/product-graph/src/domain.test.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7000,
+    "estimated_tokens": 4700
+  },
+  "dependencies": [
+    "SG-000029"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and changed-file accounting.",
+      "Focused endpoint metadata-contract tests plus full repository format/lint/typecheck/test suites.",
+      "Diffcipline proof, Alibaba OCR evidence, credentialed Jev semantic review, exact-head semantic review, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000037",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "The smallest safe S06 continuation is to add only the four missing endpoint node contracts required by already-canonical reference relations. Relation semantics remain a later independently reviewable Grain."
+      },
+      "safety": {
+        "requirements": [
+          "Metadata node existence never grants capability, credential, network, source-mutation, release, or deployment authority.",
+          "Component and Feature remain descriptive Product Graph semantics until explicit qualified relations are added later.",
+          "DeploymentTarget stores no secret material and is not proof of provider reachability or authorization."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Product Graph can represent Component, Feature, ProductRevision, and DeploymentTarget as closed deterministic metadata nodes, providing typed endpoints required by canonical semantic-reference relations without widening existing relations or granting runtime authority.",
+  "parent_id": null,
+  "rationale": "SG-000029 established DesignSystemRevisionRef, SkillRef, ExplorationBranch, and Release. Canonical S06 relations BOUND_TO, MAY_USE, FORKS, PROMOTES, and TARGETS require Component, Feature, ProductRevision, and DeploymentTarget endpoints that are not yet present in the qualified domain-v1 vocabulary.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert the Component, Feature, ProductRevision, and DeploymentTarget node-kind/spec additions and their focused tests; SG-000029 semantic reference nodes remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Add a closed Component Product Graph node contract for a reusable UI/product primitive using inspectable metadata only; its existence must not imply a DesignSystemRevision binding.",
+    "Add a closed Feature Product Graph node contract for a user-visible capability using inspectable metadata only; its existence must not imply SkillRef execution or tool capability.",
+    "Add a closed ProductRevision Product Graph node contract for immutable/inspectable product revision identity and provenance metadata; its existence must not grant source mutation, release, or deployment authority.",
+    "Add a closed DeploymentTarget Product Graph node contract for target identity/type/environment/provenance metadata; its existence must not grant credentials, network access, deployment permission, or provider authority.",
+    "Extend only the existing deterministic Product Graph node validator and focused tests; preserve all previously qualified node and edge semantics unchanged."
+  ],
+  "scope_out": [
+    "No BOUND_TO, MAY_USE, FORKS, PROMOTES, TARGETS edge kinds or endpoint pairs; no cross-node existence rules; no relation widening.",
+    "No component rendering, skill execution, branch mutation, source writes, release creation, deployment, provider calls, network access, secret handling, persistence/Supabase mutation, or P03 work.",
+    "No S07 DataSource/Field work, dataset relation work, ProductCompletenessManifest, VectorCorpus, or EvalDataset work."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P02-S06-T01B semantic reference relation endpoint contracts"
+}
