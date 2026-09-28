@@ -50,7 +50,7 @@ jobs:
           rm .github/workflows/sg-000037-authoring.yml .github/scripts/sg-000037-author.py
           git add -A
           changed="$(git diff --cached --name-only)"
-          expected="$(printf '%s\n' packages/product-graph/src/domain.test.ts packages/product-graph/src/domain.ts)"
+          expected="$(printf '%s\n' .github/scripts/sg-000037-author.py .github/workflows/sg-000037-authoring.yml packages/product-graph/src/domain.test.ts packages/product-graph/src/domain.ts)"
           test "$changed" = "$expected"
           git commit -m "feat(product-graph): add SG-000037 semantic reference endpoints [authored]"
           git push origin HEAD:p02/s06-t01b-endpoint-contracts
