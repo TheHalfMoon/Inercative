@@ -6,6 +6,8 @@
  * SG-000010 owns logical identity and immutable exact-revision primitives.
  * SG-000011 adds provider-neutral Run/Event/Evidence/Finding records without
  * persistence, authorization, clocks, provider payloads, or acceptance/PASS authority.
+ * SG-000038 adds deterministic Run lifecycle and continuation semantics without
+ * changing the SG-000011 wire contracts or granting execution authority.
  */
 export {
   bindRevision,
@@ -30,6 +32,14 @@ export {
   validateFindingRecord,
   validateRunRecord,
 } from "./run-event-evidence-finding.ts";
+
+export {
+  RUN_STATE_TRANSITIONS,
+  TERMINAL_RUN_STATES,
+  isRunStateTransitionAllowed,
+  validateRunContinuation,
+  validateRunStateTransition,
+} from "./run-lifecycle.ts";
 
 export type {
   ExactRevision,
@@ -56,3 +66,11 @@ export type {
   RunRecord,
   RunState,
 } from "./run-event-evidence-finding.ts";
+
+export type {
+  RunContinuation,
+  RunLifecycleIssue,
+  RunLifecycleIssueCode,
+  RunLifecycleValidationResult,
+  RunStateTransition,
+} from "./run-lifecycle.ts";
