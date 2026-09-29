@@ -17,10 +17,7 @@ const ROOT_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456
 const CHILD_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789702");
 const EVENT_ZERO_ID = formatLogicalIdentity("event", "018f9f3a-7b2a-7f11-8a4c-123456789703");
 const EVENT_ONE_ID = formatLogicalIdentity("event", "018f9f3a-7b2a-7f11-8a4c-123456789704");
-const TARGET_ID = formatLogicalIdentity(
-  "productrevision",
-  "018f9f3a-7b2a-7f11-8a4c-123456789705",
-);
+const TARGET_ID = formatLogicalIdentity("productrevision", "018f9f3a-7b2a-7f11-8a4c-123456789705");
 const SOURCE_ID = formatLogicalIdentity("agent", "018f9f3a-7b2a-7f11-8a4c-123456789706");
 
 function exactRevision(value: string): ExactRevision {
@@ -89,13 +86,15 @@ function createDurableFakeClient(): SupabaseClient {
             return query;
           },
           maybeSingle() {
-            const match = runs.find(
-              (row) =>
-                [...filters.entries()].every(
-                  ([column, value]) => row[column as keyof RunRow] === value,
-                ),
+            const match = runs.find((row) =>
+              [...filters.entries()].every(
+                ([column, value]) => row[column as keyof RunRow] === value,
+              ),
             );
-            return Promise.resolve({ data: match === undefined ? null : cloneRunRow(match), error: null });
+            return Promise.resolve({
+              data: match === undefined ? null : cloneRunRow(match),
+              error: null,
+            });
           },
         };
         return query;
@@ -125,11 +124,10 @@ function createDurableFakeClient(): SupabaseClient {
           select() {
             return {
               maybeSingle() {
-                const match = runs.find(
-                  (row) =>
-                    [...filters.entries()].every(
-                      ([column, filterValue]) => row[column as keyof RunRow] === filterValue,
-                    ),
+                const match = runs.find((row) =>
+                  [...filters.entries()].every(
+                    ([column, filterValue]) => row[column as keyof RunRow] === filterValue,
+                  ),
                 );
                 if (match === undefined) return Promise.resolve({ data: null, error: null });
                 match.state = patch.state;
