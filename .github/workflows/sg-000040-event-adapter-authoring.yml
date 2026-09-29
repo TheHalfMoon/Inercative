@@ -1,0 +1,82 @@
+name: sg-000040-event-adapter-authoring
+
+on:
+  push:
+    branches:
+      - p03/s01-t01c-durable-event-adapter
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: fb8cc7cf3e26b25b9ed13841df7d820719210f24
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: p03/s01-t01c-durable-event-adapter
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Normalize workspace lockfile and bounded source formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --no-frozen-lockfile
+          pnpm exec prettier --write \
+            packages/control-plane/package.json \
+            packages/control-plane/src/run-event-store.ts \
+            packages/control-plane/src/run-event-store.test.ts \
+            pnpm-lock.yaml
+
+      - name: Verify repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check "$BASE_SHA..HEAD"
+
+      - name: Enforce bounded product surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          allowed='^(packages/control-plane/package.json|packages/control-plane/src/run-event-store.ts|packages/control-plane/src/run-event-store.test.ts|pnpm-lock.yaml|.github/workflows/sg-000040-event-adapter-authoring.yml)$'
+          git status --porcelain
+          bad="$(git diff --name-only "$BASE_SHA"; git ls-files --others --exclude-standard)"
+          if printf '%s\n' "$bad" | sed '/^$/d' | grep -Ev "$allowed"; then
+            echo 'Unexpected SG-000040 adapter path detected.' >&2
+            exit 1
+          fi
+          additions="$(git diff --numstat "$BASE_SHA" | awk '{a += $1} END {print a + 0}')"
+          test "$additions" -le 600
+
+      - name: Persist verified candidate and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'TheHalfMoon'
+          git config user.email 'alshehriofficial@gmail.com'
+          git add packages/control-plane/package.json packages/control-plane/src/run-event-store.ts packages/control-plane/src/run-event-store.test.ts pnpm-lock.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m 'test(control-plane): normalize durable EventStore adapter candidate'
+          fi
+          git rm .github/workflows/sg-000040-event-adapter-authoring.yml
+          git commit -m 'chore(authoring): remove SG-000040 adapter workflow'
+          git push origin HEAD:p03/s01-t01c-durable-event-adapter
