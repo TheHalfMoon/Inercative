@@ -13,10 +13,7 @@ import { SupabaseRunStore } from "./run-store.ts";
 const PROJECT_ID = "55555555-5555-4555-8555-555555555555";
 const RUN_A = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789601");
 const RUN_B = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789602");
-const TARGET_ID = formatLogicalIdentity(
-  "productrevision",
-  "018f9f3a-7b2a-7f11-8a4c-123456789603",
-);
+const TARGET_ID = formatLogicalIdentity("productrevision", "018f9f3a-7b2a-7f11-8a4c-123456789603");
 
 function exactRevision(value: string): ExactRevision {
   const parsed = parseExactRevision(value);
@@ -266,10 +263,10 @@ describe("SupabaseRunStore hardening", () => {
       target: { identity: TARGET_ID, revision: exactRevision(`sha256:${"b".repeat(64)}`) },
     };
     const validationFake = fakeClient({ reads: [{ data: row(parent), error: null }] });
-    const validationResult = await new SupabaseRunStore(
-      validationFake.client,
-      PROJECT_ID,
-    ).continue(RUN_A, badChild);
+    const validationResult = await new SupabaseRunStore(validationFake.client, PROJECT_ID).continue(
+      RUN_A,
+      badChild,
+    );
 
     expect(validationResult.ok ? null : validationResult.issues[0]?.code).toBe(
       "CONTINUATION_REJECTED",
@@ -290,7 +287,9 @@ describe("SupabaseRunStore hardening", () => {
         },
       ],
     });
-    const duplicate = await new SupabaseRunStore(duplicateFake.client, PROJECT_ID).createRoot(run());
+    const duplicate = await new SupabaseRunStore(duplicateFake.client, PROJECT_ID).createRoot(
+      run(),
+    );
     expect(duplicate.ok ? null : duplicate.issues[0]?.code).toBe("DUPLICATE_RUN_ID");
 
     const outageFake = fakeClient({
