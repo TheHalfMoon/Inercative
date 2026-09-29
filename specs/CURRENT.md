@@ -1,6 +1,6 @@
 # Ineractive Current Frontier
 
-**Date:** 2026-09-27  
+**Date:** 2026-09-29  
 **Status:** P02_IN_PROGRESS  
 **Canonical product name:** Ineractive  
 **Repository locator:** TheHalfMoon/Inercative  
@@ -13,7 +13,8 @@ This file is the compact live execution frontier. Historical proof remains in `d
 - P00 — complete.
 - P01 — complete.
 - P02 — in progress.
-- P03-P15 — planned and dependency-governed; not current execution authority unless a task is independently dependency-eligible and explicitly shaped.
+- P03 — planned and dependency-governed; `IN-P03-S01-T01` is independently dependency-eligible and its bounded shaping set is complete, but implementation is not complete and downstream P03 tasks remain dependency-blocked.
+- P04-P15 — planned and dependency-governed; not current execution authority unless a task is independently dependency-eligible and explicitly shaped.
 
 The current task index contains 189 planned task handles after the 2026-09-24 competitive/source amendment.
 
@@ -56,7 +57,11 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000033 | IN-P02-S05-T01A | Deterministic Product Graph user-view projections | DONE (PR #83) | `docs/evidence/P02_S05_T01A_CLOSURE_2026-09-27.md` |
 | SG-000034 | IN-P02-S07-T01A | Core Dataset semantic node contracts | DONE (PR #85) | `docs/evidence/P02_S07_T01A_CLOSURE_2026-09-27.md` |
 | SG-000035 | IN-P02-S07-T01B | Profile, quality, seed, and synthetic semantic node contracts | MERGED / FRESH_MAIN_PASS / JEV_BLOCKED | `docs/evidence/P02_S07_T01B_POST_MERGE_JEV_STATUS_2026-09-27.md` |
-| SG-000036 | IN-P02-S07-T01C | DataSource and Field relation endpoint contracts | GRAIN / SHAPED | `docs/evidence/P02_S07_T01C_SPECGRAIN_SHAPING_2026-09-27.md` |
+| SG-000036 | IN-P02-S07-T01C | DataSource and Field relation endpoint contracts | GRAIN / SHAPED / IMPLEMENTATION_DRAFT_JEV_BLOCKED | PR #89; `docs/evidence/P02_S07_T01C_SPECGRAIN_SHAPING_2026-09-27.md` |
+| SG-000037 | IN-P02-S06-T01B | Component, Feature, ProductRevision, and DeploymentTarget endpoint contracts | GRAIN / SHAPED / IMPLEMENTATION_DRAFT_JEV_BLOCKED | PR #90; implementation PR #92; `docs/evidence/FRONTIER_RECONCILIATION_2026-09-29.md` |
+| SG-000038 | IN-P03-S01-T01A | Deterministic Run lifecycle and continuation semantics | GRAIN / SHAPED | PR #91; `docs/evidence/FRONTIER_RECONCILIATION_2026-09-29.md` |
+| SG-000039 | IN-P03-S01-T01B | Provider-neutral append-only Run event-store contract | GRAIN / SHAPED | PR #94; `docs/evidence/P03_S01_SHAPING_FRONTIER_2026-09-29.md` |
+| SG-000040 | IN-P03-S01-T01C | Authenticated durable Run/Event control-plane persistence | GRAIN / SHAPED | PR #95; `docs/evidence/P03_S01_SHAPING_FRONTIER_2026-09-29.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -84,9 +89,15 @@ Complete. SG-000033 closes the five canonical read-only Product Graph view famil
 
 ### P02-S06
 
-Partially delivered. SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts for DesignSystemRevisionRef, SkillRef, ExplorationBranch, and Release.
+In progress.
 
-The canonical relation examples (`BOUND_TO`, `MAY_USE`, `FORKS`, `PROMOTES`, `TARGETS`) reference endpoint concepts such as Component, Feature, ProductRevision, and DeploymentTarget that are not currently represented in the qualified domain-v1 vocabulary. No overly broad substitute relation is authorized. A later bounded S06 Grain must resolve those endpoint contracts explicitly before relation semantics can close the parent.
+SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts for DesignSystemRevisionRef, SkillRef, ExplorationBranch, and Release.
+
+SG-000037 / `IN-P02-S06-T01B` is now canonically shaped through spec-only PR #90 for the missing Component, Feature, ProductRevision, and DeploymentTarget endpoint contracts required by canonical `BOUND_TO`, `MAY_USE`, `FORKS`, `PROMOTES`, and `TARGETS` examples.
+
+Implementation PR #92 remains Draft. Candidate `c34e790f00bae19de985c12a696e0fe8dc89d90d` was qualified against former canonical base `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`; canonical main has since advanced through spec/documentation merges, so that candidate is now stale and is not current merge authority. Its last qualification proved repository verification, 662 tests, Diffcipline R2, and checksum-verified Alibaba OCR accounting/rule resolution, but Jev semantic review remained `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET`. Before any merge, PR #92 requires forward-only reconciliation to then-current main plus fresh exact-head qualification and credentialed Jev PASS.
+
+After SG-000037 implementation, a later bounded S06 relation Grain remains required before parent `IN-P02-S06-T01` can close. No broad substitute relation is authorized.
 
 ### P02-S07
 
@@ -96,33 +107,58 @@ SG-000034 / `IN-P02-S07-T01A` is closed canonically through PR #85 / merge `6517
 
 SG-000035 / `IN-P02-S07-T01B` was implemented through PR #87 and merged as `76cc78d90189195d70594b628083a5495c05252b`; fresh-main CI `36312373576` succeeded. The strengthened Jev directive was then re-tested with pinned Jev CLI `v2026.919.0`: binary installation and SHA-256 verification succeeded, but run `36333537434` proved that neither `JEV_API_KEY` nor `TYPESAFE_API_KEY` is configured in GitHub Actions. Therefore `JEV_SEMANTIC_REVIEW = NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET`; no Jev PASS is claimed.
 
-SG-000036 / `IN-P02-S07-T01C` is shaped for the missing `DataSource` and `Field` metadata endpoint contracts required before canonical S07 relation semantics can be introduced without wildcard or string-reference authority. The first shaping run `36333647889` failed on an unsupported SpecGrain minimality enum and was fixed forward; corrected run `36333743748` succeeded.
+SG-000036 / `IN-P02-S07-T01C` is shaped for the missing DataSource and Field metadata endpoint contracts required before canonical S07 relation semantics can be introduced without wildcard or string-reference authority. Implementation PR #89 remains Draft. Its prior candidate is not current merge authority because canonical main advanced after its original base, and Jev remains blocked. Before merge it requires forward-only reconciliation, fresh exact-head qualification, and credentialed Jev PASS.
 
 After SG-000036 implementation, a later S07 relation/cross-node Grain remains required before parent `IN-P02-S07-T01` can close. Any meaningful code-changing merge remains subject to the required Jev gate.
 
 ### P02-S08
 
-Blocked by the unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompletenessManifest semantics early.
+Blocked by unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompletenessManifest semantics early.
+
+## P03 independently eligible state
+
+### P03-S01
+
+Shaping complete; implementation is not complete.
+
+The bounded parent-task shaping set is now canonical:
+
+- SG-000038 / `IN-P03-S01-T01A` — deterministic Run lifecycle and continuation semantics; PR #91 merged as `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`; fresh-main CI `36408501348` passed Ubuntu and Windows.
+- SG-000039 / `IN-P03-S01-T01B` — provider-neutral append-only Run EventStore contract/reference semantics; PR #94 merged as `8bb0e36600f610af9af360b32c57b4334af059b7`; fresh-main CI `36571131041` passed Ubuntu and Windows.
+- SG-000040 / `IN-P03-S01-T01C` — authenticated durable project-owned Run/Event control-plane persistence with RLS/tenant isolation and no service-role/generated-app credential authority; PR #95 merged as `091ac844f918627fb64b9582482eda81851f1ee8`; fresh-main CI `36571905540` passed Ubuntu and Windows.
+
+Together these Grains define the bounded implementation authority required for parent `IN-P03-S01-T01 — Implement Run lifecycle/event store`: pure lifecycle/continuation semantics, provider-neutral append/replay semantics, and the security-sensitive durable control-plane adapter boundary.
+
+They do **not** implement the parent task. Implementation of SG-000038, SG-000039, and SG-000040 must still land through qualified code changes before `IN-P03-S01-T01` can be marked complete.
+
+Because `IN-P03-S02-T01` depends on `IN-P03-S01-T01`, P03-S02 and its downstream chain remain dependency-blocked. Do not shape or implement P03-S02 early merely because the P03-S01 specifications are complete.
+
+All meaningful P03-S01 code-changing candidates remain subject to repository verification, truthful Diffcipline at the applicable risk tier, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI.
 
 ## Current dependency-unlocking frontier
 
-The active dependency-unlocking unit is:
+There are two kinds of frontier and they must not be conflated.
 
-`SG-000036 / IN-P02-S07-T01C — DataSource and Field relation endpoint contracts`
+### Code merge frontier — externally blocked
 
-This is the smallest bounded prerequisite for the remaining S07 relation/cross-node semantics. It must extend only the existing deterministic Product Graph node metadata vocabulary and focused tests. It must not add relations, source access, provider/model calls, persistence mutation, ProductCompleteness work, or P02-S06 endpoint repair.
+- PR #92 / SG-000037 implementation: all demonstrated local/repository/Diffcipline/OCR gates pass, but required Jev semantic review is blocked by missing GitHub Actions secret.
+- PR #89 / SG-000036 implementation: Draft, stale relative to current main, and subject to the same Jev blocker; do not spend merge authority on stale qualification.
 
-SG-000035 implementation is already on canonical main with fresh-main CI success, but the strengthened Jev review gate remains externally blocked by a missing GitHub Actions credential. That blocker must remain explicit and cannot be relabeled as PASS.
+The external unblocker is private configuration of `JEV_API_KEY` or compatible `TYPESAFE_API_KEY`. Until then, these code PRs remain Draft and MUST_NOT_MERGE.
 
-After SG-000036 implementation, the next S07 Grain must add the canonical dataset relation/cross-node semantics before P02-S08 becomes dependency-ready.
+### Safe reversible/spec-only frontier
 
-P02-S06 remains a separately eligible architecture-repair frontier and must not be bundled into SG-000036.
+- Reconcile canonical documentation to the completed P03-S01 shaping set.
+- Keep P03-S02 and later task-level dependents blocked until `IN-P03-S01-T01` is genuinely implemented and qualified.
+- Continue only documentation/governance maintenance that does not bypass required implementation qualification; no additional speculative P03-S01 shaping Grain is authorized by current evidence.
 
-## Truthfully not run
+After SG-000037 implementation, shape/implement S06 relations. After SG-000036 implementation, shape/implement S07 relations, which then unlock P02-S08.
 
-- Alibaba OCR hosted-LLM review: `NOT_RUN / BLOCKED` unless a scoped endpoint/token is actually configured. Deterministic OCR accounting/rule resolution and host/delegation semantic-review evidence must be described separately and truthfully.
-- Jev CLI on GitHub-hosted runners: pinned binary install and checksum verification are now proven, but semantic review is `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET` until `JEV_API_KEY` or compatible `TYPESAFE_API_KEY` is privately configured.
-- Jev via the authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` in this 2026-09-27 execution window. Never claim Jev PASS without execution evidence.
+## Truthfully not run / blocked
+
+- Jev semantic review for current code candidates: `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET`. Pinned Jev CLI installation, checksum verification, and version execution are proven; the semantic request cannot run until `JEV_API_KEY` or compatible `TYPESAFE_API_KEY` is privately configured.
+- Jev via authorized Desktop Commander devices: `NOT_RUN / DEVICE_OFFLINE` when re-checked on 2026-09-29.
+- Alibaba OCR hosted-LLM semantic review: `NOT_RUN / BLOCKED` unless a scoped endpoint/token is actually configured. Deterministic OCR accounting/rule resolution remains distinct and is proven where cited.
 - SpecGrain repository-completion lifecycle transition: not modeled by the current CLI surface; repository/evidence state remains canonical.
 
 Generic bot summaries or statuses are not qualification evidence.
