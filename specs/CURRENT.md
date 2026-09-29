@@ -13,7 +13,7 @@ This file is the compact live execution frontier. Historical proof remains in `d
 - P00 — complete.
 - P01 — complete.
 - P02 — in progress.
-- P03 — planned and dependency-governed; `IN-P03-S01-T01` is independently dependency-eligible and its first bounded Grain is now shaped canonically.
+- P03 — planned and dependency-governed; `IN-P03-S01-T01` is independently dependency-eligible and its bounded shaping set is complete, but implementation is not complete and downstream P03 tasks remain dependency-blocked.
 - P04-P15 — planned and dependency-governed; not current execution authority unless a task is independently dependency-eligible and explicitly shaped.
 
 The current task index contains 189 planned task handles after the 2026-09-24 competitive/source amendment.
@@ -60,6 +60,8 @@ The current task index contains 189 planned task handles after the 2026-09-24 co
 | SG-000036 | IN-P02-S07-T01C | DataSource and Field relation endpoint contracts | GRAIN / SHAPED / IMPLEMENTATION_DRAFT_JEV_BLOCKED | PR #89; `docs/evidence/P02_S07_T01C_SPECGRAIN_SHAPING_2026-09-27.md` |
 | SG-000037 | IN-P02-S06-T01B | Component, Feature, ProductRevision, and DeploymentTarget endpoint contracts | GRAIN / SHAPED / IMPLEMENTATION_DRAFT_JEV_BLOCKED | PR #90; implementation PR #92; `docs/evidence/FRONTIER_RECONCILIATION_2026-09-29.md` |
 | SG-000038 | IN-P03-S01-T01A | Deterministic Run lifecycle and continuation semantics | GRAIN / SHAPED | PR #91; `docs/evidence/FRONTIER_RECONCILIATION_2026-09-29.md` |
+| SG-000039 | IN-P03-S01-T01B | Provider-neutral append-only Run event-store contract | GRAIN / SHAPED | PR #94; `docs/evidence/P03_S01_SHAPING_FRONTIER_2026-09-29.md` |
+| SG-000040 | IN-P03-S01-T01C | Authenticated durable Run/Event control-plane persistence | GRAIN / SHAPED | PR #95; `docs/evidence/P03_S01_SHAPING_FRONTIER_2026-09-29.md` |
 
 The current SpecGrain CLI exposes `draft/shape/refine/grain/next/packet/prove` but no trustworthy command to transition repository-complete Grains to `VERIFIED`/`CONTROLLED`. Repository delivery truth and exact evidence are canonical; lifecycle state is never fabricated.
 
@@ -93,7 +95,7 @@ SG-000029 / `IN-P02-S06-T01A` closes semantic reference node contracts for Desig
 
 SG-000037 / `IN-P02-S06-T01B` is now canonically shaped through spec-only PR #90 for the missing Component, Feature, ProductRevision, and DeploymentTarget endpoint contracts required by canonical `BOUND_TO`, `MAY_USE`, `FORKS`, `PROMOTES`, and `TARGETS` examples.
 
-Implementation PR #92 is Draft at exact candidate `c34e790f00bae19de985c12a696e0fe8dc89d90d` against canonical base `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`. Current qualification proves repository verification, 662 tests, Diffcipline R2, and checksum-verified Alibaba OCR accounting/rule resolution. Jev v2026.919.0 installs and verifies successfully, but its semantic review is `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET` because neither `JEV_API_KEY` nor compatible `TYPESAFE_API_KEY` is configured. PR #92 MUST_NOT_MERGE until that exact hard gate passes.
+Implementation PR #92 remains Draft. Candidate `c34e790f00bae19de985c12a696e0fe8dc89d90d` was qualified against former canonical base `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`; canonical main has since advanced through spec/documentation merges, so that candidate is now stale and is not current merge authority. Its last qualification proved repository verification, 662 tests, Diffcipline R2, and checksum-verified Alibaba OCR accounting/rule resolution, but Jev semantic review remained `NOT_RUN / BLOCKED_MISSING_GITHUB_SECRET`. Before any merge, PR #92 requires forward-only reconciliation to then-current main plus fresh exact-head qualification and credentialed Jev PASS.
 
 After SG-000037 implementation, a later bounded S06 relation Grain remains required before parent `IN-P02-S06-T01` can close. No broad substitute relation is authorized.
 
@@ -117,15 +119,21 @@ Blocked by unfinished parent `IN-P02-S07-T01`. Do not shape ProductCompletenessM
 
 ### P03-S01
 
-Shaping in progress; implementation has not begun.
+Shaping complete; implementation is not complete.
 
-SG-000038 / `IN-P03-S01-T01A` is canonical through spec-only PR #91 / merge `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`. Fresh-main CI run `36408501348` passed on Ubuntu and Windows.
+The bounded parent-task shaping set is now canonical:
 
-SG-000038 defines deterministic Run lifecycle and continuation semantics over the existing SG-000011 RunRecord/RunState contract. It does not implement event persistence, artifacts, budgets, scheduling, providers/models, network, secrets, or execution authority.
+- SG-000038 / `IN-P03-S01-T01A` — deterministic Run lifecycle and continuation semantics; PR #91 merged as `1b1f14ff3e2ee3378fc31c411c63d6cc3a1deaaf`; fresh-main CI `36408501348` passed Ubuntu and Windows.
+- SG-000039 / `IN-P03-S01-T01B` — provider-neutral append-only Run EventStore contract/reference semantics; PR #94 merged as `8bb0e36600f610af9af360b32c57b4334af059b7`; fresh-main CI `36571131041` passed Ubuntu and Windows.
+- SG-000040 / `IN-P03-S01-T01C` — authenticated durable project-owned Run/Event control-plane persistence with RLS/tenant isolation and no service-role/generated-app credential authority; PR #95 merged as `091ac844f918627fb64b9582482eda81851f1ee8`; fresh-main CI `36571905540` passed Ubuntu and Windows.
 
-Parent `IN-P03-S01-T01 — Implement Run lifecycle/event store` is independently dependency-eligible because `IN-P01-S02-T02` and `IN-P01-S05-T01` are complete. The next bounded shaping unit may define append-only event-store persistence semantics over existing EventRecord without starting provider/model work or absorbing P03-S08 Budget Governor / P03-S09 Artifact Store responsibilities.
+Together these Grains define the bounded implementation authority required for parent `IN-P03-S01-T01 — Implement Run lifecycle/event store`: pure lifecycle/continuation semantics, provider-neutral append/replay semantics, and the security-sensitive durable control-plane adapter boundary.
 
-Any later P03 code candidate remains subject to the same Jev hard gate before merge.
+They do **not** implement the parent task. Implementation of SG-000038, SG-000039, and SG-000040 must still land through qualified code changes before `IN-P03-S01-T01` can be marked complete.
+
+Because `IN-P03-S02-T01` depends on `IN-P03-S01-T01`, P03-S02 and its downstream chain remain dependency-blocked. Do not shape or implement P03-S02 early merely because the P03-S01 specifications are complete.
+
+All meaningful P03-S01 code-changing candidates remain subject to repository verification, truthful Diffcipline at the applicable risk tier, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI.
 
 ## Current dependency-unlocking frontier
 
@@ -140,9 +148,9 @@ The external unblocker is private configuration of `JEV_API_KEY` or compatible `
 
 ### Safe reversible/spec-only frontier
 
-- Reconcile canonical documentation to current live truth.
-- Shape the next bounded P03-S01 event-store semantics Grain using existing EventRecord and SG-000038 as prerequisites.
-- Continue only spec/documentation/governance work that does not bypass required implementation qualification.
+- Reconcile canonical documentation to the completed P03-S01 shaping set.
+- Keep P03-S02 and later task-level dependents blocked until `IN-P03-S01-T01` is genuinely implemented and qualified.
+- Continue only documentation/governance maintenance that does not bypass required implementation qualification; no additional speculative P03-S01 shaping Grain is authorized by current evidence.
 
 After SG-000037 implementation, shape/implement S06 relations. After SG-000036 implementation, shape/implement S07 relations, which then unlock P02-S08.
 
