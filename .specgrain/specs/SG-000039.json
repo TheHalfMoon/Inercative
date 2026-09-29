@@ -1,0 +1,75 @@
+{
+  "acceptance": [
+    "The Harness package exposes a small provider-neutral EventStore contract that consumes existing validated EventRecord values and has no dependency on a concrete database, model/provider, browser, or UI framework.",
+    "Focused tests prove the zero-based contiguous sequence invariant for each Run, independent Run isolation, immutable append-only history, and deterministic ascending replay.",
+    "Duplicate event identity, duplicate sequence position, skipped sequence, regressed sequence, cross-Run substitution, and invalid EventRecord input fail closed with stable machine-readable error/result semantics and cannot mutate accepted history.",
+    "Repeated reads/replay of the same accepted history are deterministic, do not mutate stored records, and preserve exact EventRecord identity/content.",
+    "The implementation and evidence explicitly state that the in-memory reference is not durable persistence; a later bounded adapter Grain is required before parent IN-P03-S01-T01 can close.",
+    "Any implementation candidate must pass repository format/lint/typecheck/tests, truthful Diffcipline proof, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/harness/**",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 8500,
+    "estimated_tokens": 6200
+  },
+  "dependencies": [
+    "SG-000011",
+    "SG-000038"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and complete changed-file accounting.",
+      "Focused append/replay invariant tests plus full repository format/lint/typecheck/test suites.",
+      "Diffcipline proof, Alibaba OCR evidence, credentialed Jev semantic review, exact-head semantic review, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000039",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "Reuse SG-000011 EventRecord validation and SG-000038 Run semantics. Define only the provider-neutral append/replay boundary and deterministic reference behavior now; defer durable storage and operational adapters to an independently reviewable Grain."
+      },
+      "safety": {
+        "requirements": [
+          "Event presence, sequence position, or successful append never grants capability, authorization, credential, network, provider, release, deployment, or PASS authority.",
+          "Accepted event history is immutable and fail-closed under identity/sequence conflict; no silent overwrite, gap repair, or cross-Run substitution is allowed.",
+          "The reference implementation is deterministic and side-effect bounded; durable persistence is explicitly deferred rather than simulated or fabricated."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The Harness Kernel has a deterministic provider-neutral EventStore contract and reference semantics for validated EventRecord append/replay, with zero-based contiguous per-Run ordering, immutable history, conflict rejection, and no capability authority before any durable database adapter is introduced.",
+  "parent_id": null,
+  "rationale": "SG-000011 defined EventRecord wire validation, SG-000038 shaped Run lifecycle/continuation semantics, and the current session shell already emits per-Run zero-based sequences in memory. P03-S01 still lacks a canonical event-store boundary. The smallest safe next step is to define append/replay semantics independently from Supabase, network, providers, artifacts, and budgets so durable persistence can be implemented and reviewed as a later adapter Grain.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert only the new Harness EventStore contract/reference implementation and exports; SG-000011 protocol records, SG-000038 Run lifecycle shaping, and existing session-shell behavior remain intact."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Introduce the minimal P03 Harness Kernel package boundary needed to own provider-neutral Run event-store semantics without moving or redefining SG-000011 protocol records.",
+    "Define an EventStore port over validated EventRecord values with append and per-Run ordered read/replay behavior; the store must not invent, repair, or silently coerce invalid protocol records.",
+    "Define canonical per-Run ordering as zero-based contiguous sequence values: the first persisted event for a Run is sequence 0 and each subsequent event is exactly the prior persisted sequence plus one.",
+    "Make event history append-only and immutable: reject duplicate event identities, duplicate per-Run sequence positions, sequence gaps, sequence regression, and any attempt to overwrite or mutate an already accepted event.",
+    "Require deterministic Run isolation and replay: reading a Run returns only that Run's accepted events in ascending sequence order, independent of insertion/query implementation details or other Runs.",
+    "Allow a deterministic in-memory reference implementation for contract qualification while explicitly preserving that it is not durable persistence and does not close the parent P03-S01 task by itself."
+  ],
+  "scope_out": [
+    "No Supabase/Postgres/database schema, migration, durable storage adapter, network call, secret, browser storage, filesystem persistence, queue, cache, or hosted service operation.",
+    "No change to EventRecord or RunRecord wire schemas, no new timestamps/cost/provider fields, no lifecycle state mutation, and no automatic derivation of Run state from event presence.",
+    "No artifact store, budget governor, model/provider/tool routing, retry execution, scheduler, capability grant, evidence PASS authority, release/deployment behavior, or P02 changes."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P03-S01-T01B provider-neutral append-only Run event-store contract"
+}
