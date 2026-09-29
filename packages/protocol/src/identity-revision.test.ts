@@ -142,7 +142,7 @@ describe("@ineractive/protocol package boundary", () => {
     expect(manifest.devDependencies).toBeUndefined();
   });
 
-  it("exports only the runtime helpers earned through SG-000011", async () => {
+  it("exports only the runtime helpers earned through SG-000038", async () => {
     const protocolModule = await import("./index.ts");
 
     expect(Object.keys(protocolModule).sort()).toEqual(
@@ -154,17 +154,22 @@ describe("@ineractive/protocol package boundary", () => {
         "FRESHNESS_STATES",
         "PROTOCOL_RECORD_SCHEMA_VERSION",
         "RUN_STATES",
+        "RUN_STATE_TRANSITIONS",
+        "TERMINAL_RUN_STATES",
         "bindRevision",
         "formatGitRevision",
         "formatLogicalIdentity",
         "formatSha256Revision",
+        "isRunStateTransitionAllowed",
         "parseExactRevision",
         "parseLogicalIdentity",
         "parseLogicalIdentityForKind",
         "validateEventRecord",
         "validateEvidenceRecord",
         "validateFindingRecord",
+        "validateRunContinuation",
         "validateRunRecord",
+        "validateRunStateTransition",
       ].sort(),
     );
   });

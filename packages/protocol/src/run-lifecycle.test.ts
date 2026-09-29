@@ -18,10 +18,7 @@ const PARENT_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-1234
 const CHILD_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-1234567890c2");
 const OTHER_RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-1234567890c3");
 const PROJECT_ID = formatLogicalIdentity("project", "550e8400-e29b-41d4-a716-446655440010");
-const OTHER_PROJECT_ID = formatLogicalIdentity(
-  "project",
-  "550e8400-e29b-41d4-a716-446655440011",
-);
+const OTHER_PROJECT_ID = formatLogicalIdentity("project", "550e8400-e29b-41d4-a716-446655440011");
 const TARGET = bindRevision(
   PROJECT_ID,
   formatGitRevision("0123456789abcdef0123456789abcdef01234567"),
@@ -161,10 +158,7 @@ describe("Run continuation contract", () => {
   });
 
   it("composes with SG-000011 RunRecord validation instead of redefining it", () => {
-    const invalidParent = validateRunContinuation(
-      { ...PARENT, id: PROJECT_ID },
-      CHILD,
-    );
+    const invalidParent = validateRunContinuation({ ...PARENT, id: PROJECT_ID }, CHILD);
     expect(issueCodes(invalidParent)).toContain("INVALID_PARENT_RUN");
     if (!invalidParent.ok) {
       expect(invalidParent.issues.some((item) => item.protocolCode === "INVALID_IDENTITY")).toBe(

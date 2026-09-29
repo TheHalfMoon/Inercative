@@ -13,14 +13,16 @@ export const TERMINAL_RUN_STATES = Object.freeze([
   "BLOCKED",
 ] as const satisfies readonly RunState[]);
 
-export const RUN_STATE_TRANSITIONS: Readonly<Record<RunState, readonly RunState[]>> = Object.freeze({
-  PLANNED: Object.freeze(["RUNNING", "CANCELLED", "BLOCKED"] as const),
-  RUNNING: Object.freeze(["COMPLETED", "FAILED", "CANCELLED", "BLOCKED"] as const),
-  COMPLETED: Object.freeze([] as const),
-  FAILED: Object.freeze([] as const),
-  CANCELLED: Object.freeze([] as const),
-  BLOCKED: Object.freeze([] as const),
-});
+export const RUN_STATE_TRANSITIONS: Readonly<Record<RunState, readonly RunState[]>> = Object.freeze(
+  {
+    PLANNED: Object.freeze(["RUNNING", "CANCELLED", "BLOCKED"] as const),
+    RUNNING: Object.freeze(["COMPLETED", "FAILED", "CANCELLED", "BLOCKED"] as const),
+    COMPLETED: Object.freeze([] as const),
+    FAILED: Object.freeze([] as const),
+    CANCELLED: Object.freeze([] as const),
+    BLOCKED: Object.freeze([] as const),
+  },
+);
 
 export type RunLifecycleIssueCode =
   | "INVALID_FROM_STATE"
