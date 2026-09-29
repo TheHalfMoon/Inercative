@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatLogicalIdentity } from "@ineractive/protocol";
+import { formatLogicalIdentity, type LogicalIdentity } from "@ineractive/protocol";
 
 import { InMemoryEventStore, type EventStoreAppendResult } from "./event-store.ts";
 
@@ -12,7 +12,7 @@ function eventId(suffix: string) {
   return formatLogicalIdentity("event", `018f9f3a-7b2a-7f11-8a4c-${suffix}`);
 }
 
-function event(runId: typeof RUN_A | typeof RUN_B, sequence: number, suffix: string) {
+function event(runId: LogicalIdentity<"run">, sequence: number, suffix: string) {
   return {
     schemaVersion: 1,
     id: eventId(suffix),

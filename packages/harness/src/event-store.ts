@@ -27,7 +27,11 @@ export type EventStoreAppendResult =
   | { readonly ok: false; readonly issues: readonly EventStoreIssue[] };
 
 export type EventStoreReadResult =
-  | { readonly ok: true; readonly runId: LogicalIdentity<"run">; readonly events: readonly EventRecord[] }
+  | {
+      readonly ok: true;
+      readonly runId: LogicalIdentity<"run">;
+      readonly events: readonly EventRecord[];
+    }
   | { readonly ok: false; readonly issues: readonly EventStoreIssue[] };
 
 export interface EventStore {
@@ -120,7 +124,8 @@ export class InMemoryEventStore implements EventStore {
   }
 
   read(runIdInput: unknown): EventStoreReadResult {
-    const runId = parseLogicalIdentityForKind("run", runIdInput);
+    const runId =
+      typeof runIdInput === "string" ? parseLogicalIdentityForKind("run", runIdInput) : null;
     if (runId === null) {
       return {
         ok: false,
