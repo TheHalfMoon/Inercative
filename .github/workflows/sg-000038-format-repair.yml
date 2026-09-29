@@ -34,10 +34,42 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format exact SG-000038 files
-        run: pnpm exec prettier --write packages/protocol/src/run-lifecycle.ts packages/protocol/src/run-lifecycle.test.ts
+      - name: Update SG-000038 protocol export boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
 
-      - name: Verify repository after formatting
+          path = Path('packages/protocol/src/identity-revision.test.ts')
+          text = path.read_text()
+          text = text.replace(
+              'it("exports only the runtime helpers earned through SG-000011", async () => {',
+              'it("exports only the runtime helpers earned through SG-000038", async () => {',
+              1,
+          )
+          text = text.replace(
+              '        "RUN_STATES",\n        "bindRevision",',
+              '        "RUN_STATES",\n        "RUN_STATE_TRANSITIONS",\n        "TERMINAL_RUN_STATES",\n        "bindRevision",',
+              1,
+          )
+          text = text.replace(
+              '        "formatSha256Revision",\n        "parseExactRevision",',
+              '        "formatSha256Revision",\n        "isRunStateTransitionAllowed",\n        "parseExactRevision",',
+              1,
+          )
+          text = text.replace(
+              '        "validateFindingRecord",\n        "validateRunRecord",',
+              '        "validateFindingRecord",\n        "validateRunContinuation",\n        "validateRunRecord",\n        "validateRunStateTransition",',
+              1,
+          )
+          path.write_text(text)
+          PY
+
+      - name: Format exact SG-000038 files
+        run: pnpm exec prettier --write packages/protocol/src/run-lifecycle.ts packages/protocol/src/run-lifecycle.test.ts packages/protocol/src/identity-revision.test.ts
+
+      - name: Verify repository after repair
         shell: bash
         run: |
           set -euo pipefail
@@ -47,7 +79,7 @@ jobs:
           pnpm run test
           git diff --check
 
-      - name: Persist forward formatting repair and self-delete workflow
+      - name: Persist forward repair and self-delete workflow
         shell: bash
         run: |
           set -euo pipefail
@@ -56,7 +88,7 @@ jobs:
           rm .github/workflows/sg-000038-format-repair.yml
           git add -A
           changed="$(git diff --cached --name-only | sort)"
-          expected="$(printf '%s\n' .github/workflows/sg-000038-format-repair.yml packages/protocol/src/run-lifecycle.test.ts packages/protocol/src/run-lifecycle.ts | sort)"
+          expected="$(printf '%s\n' .github/workflows/sg-000038-format-repair.yml packages/protocol/src/identity-revision.test.ts packages/protocol/src/run-lifecycle.test.ts packages/protocol/src/run-lifecycle.ts | sort)"
           test "$changed" = "$expected"
-          git commit -m "style(protocol): format SG-000038 candidate"
+          git commit -m "test(protocol): admit SG-000038 runtime surface"
           git push origin HEAD:p03/s01-t01a-run-lifecycle-implementation
