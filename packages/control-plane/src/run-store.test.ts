@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formatLogicalIdentity, type RunRecord } from "@ineractive/protocol";
+import {
+  formatLogicalIdentity,
+  parseExactRevision,
+  type ExactRevision,
+  type RunRecord,
+} from "@ineractive/protocol";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { SupabaseRunStore } from "./run-store.ts";
@@ -12,7 +17,14 @@ const TARGET_ID = formatLogicalIdentity(
   "productrevision",
   "018f9f3a-7b2a-7f11-8a4c-123456789603",
 );
-const TARGET_REVISION = `sha256:${"a".repeat(64)}`;
+
+function exactRevision(value: string): ExactRevision {
+  const parsed = parseExactRevision(value);
+  if (parsed === null) throw new Error("Test fixture revision must be an exact revision.");
+  return parsed.value;
+}
+
+const TARGET_REVISION = exactRevision(`sha256:${"a".repeat(64)}`);
 
 type FakeError = {
   readonly code: string;
