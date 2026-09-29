@@ -57,9 +57,15 @@ describe("SG-000040 durable Run/Event database contract", () => {
       expect(sql).toContain(`alter table public.${table} enable row level security`);
       expect(sql).toContain(`revoke all on table public.${table} from anon, authenticated`);
     }
-    expect(sql).toContain("grant select, insert, update on table public.ineractive_runs to authenticated");
-    expect(sql).toContain("grant select, insert on table public.ineractive_run_events to authenticated");
-    expect(sql).not.toContain("grant delete on table public.ineractive_run_events to authenticated");
+    expect(sql).toContain(
+      "grant select, insert, update on table public.ineractive_runs to authenticated",
+    );
+    expect(sql).toContain(
+      "grant select, insert on table public.ineractive_run_events to authenticated",
+    );
+    expect(sql).not.toContain(
+      "grant delete on table public.ineractive_run_events to authenticated",
+    );
     expect(sql).toContain("membership.role = 'editor'");
     expect(sql).toContain('create policy "runs_select_project_member"');
     expect(sql).toContain('create policy "runs_insert_owner_or_editor"');
