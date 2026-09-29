@@ -12,7 +12,6 @@ import {
   validateRunRecord,
   validateRunStateTransition,
   type EventRecord,
-  type LogicalIdentity,
   type RunRecord,
   type RunState,
 } from "@ineractive/protocol";
@@ -94,10 +93,7 @@ function classifyEventInsertError(error: StoreErrorLike): EventStoreIssue {
   if (error.code === "23505" && message.includes("ineractive_run_events_pkey")) {
     return eventStorageIssue("DUPLICATE_EVENT_ID", "Event identity already exists.");
   }
-  if (
-    error.code === "23505" &&
-    message.includes("ineractive_run_events_run_sequence_unique")
-  ) {
+  if (error.code === "23505" && message.includes("ineractive_run_events_run_sequence_unique")) {
     return eventStorageIssue("DUPLICATE_SEQUENCE", "Run event sequence is already occupied.");
   }
   if (message.includes("ineractive_event_sequence_gap")) {
@@ -127,7 +123,9 @@ function mapEventRow(row: EventRow): EventStoreAppendResult {
   if (!validated.ok) {
     return {
       ok: false,
-      issues: [eventStorageIssue("STORAGE_CORRUPTION", "Durable EventStore returned invalid data.")],
+      issues: [
+        eventStorageIssue("STORAGE_CORRUPTION", "Durable EventStore returned invalid data."),
+      ],
     };
   }
   return { ok: true, event: validated.value };
@@ -164,7 +162,9 @@ export class SupabaseRunEventStore implements EventStore {
     if (!UUID_PATTERN.test(projectId)) {
       return {
         ok: false,
-        issues: [runStorageIssue("INVALID_PROJECT_ID", "$.projectId", "Project id must be a UUID.")],
+        issues: [
+          runStorageIssue("INVALID_PROJECT_ID", "$.projectId", "Project id must be a UUID."),
+        ],
       };
     }
 
@@ -211,7 +211,11 @@ export class SupabaseRunEventStore implements EventStore {
       return {
         ok: false,
         issues: [
-          runStorageIssue("INVALID_RUN_ID", "$.runId", "Run read requires a canonical Run identity."),
+          runStorageIssue(
+            "INVALID_RUN_ID",
+            "$.runId",
+            "Run read requires a canonical Run identity.",
+          ),
         ],
       };
     }
@@ -245,7 +249,9 @@ export class SupabaseRunEventStore implements EventStore {
     if (currentResult.run === null) {
       return {
         ok: false,
-        issues: [runStorageIssue("RUN_NOT_FOUND", "$.runId", "Run does not exist or is not visible.")],
+        issues: [
+          runStorageIssue("RUN_NOT_FOUND", "$.runId", "Run does not exist or is not visible."),
+        ],
       };
     }
 

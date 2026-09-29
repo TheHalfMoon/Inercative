@@ -263,7 +263,10 @@ export async function createVerifiedControlPlaneStore(
   config: ControlPlaneSupabaseConfig,
   actor: VerifiedControlPlaneActor,
 ): Promise<SupabaseControlPlaneStore> {
-  return new SupabaseControlPlaneStore(await createVerifiedControlPlaneClient(config, actor), actor);
+  return new SupabaseControlPlaneStore(
+    await createVerifiedControlPlaneClient(config, actor),
+    actor,
+  );
 }
 
 export async function createVerifiedControlPlaneRunEventStore(

@@ -93,8 +93,12 @@ describe("SG-000040 durable migration contract", () => {
       expect(sql).toContain(`alter table public.${table} enable row level security`);
       expect(sql).toContain(`revoke all on table public.${table} from anon, authenticated`);
     }
-    expect(sql).toContain("grant select, insert, update on table public.ineractive_runs to authenticated");
-    expect(sql).toContain("grant select, insert on table public.ineractive_run_events to authenticated");
+    expect(sql).toContain(
+      "grant select, insert, update on table public.ineractive_runs to authenticated",
+    );
+    expect(sql).toContain(
+      "grant select, insert on table public.ineractive_run_events to authenticated",
+    );
     expect(sql).not.toContain(
       "grant select, insert, update, delete on table public.ineractive_run_events to authenticated",
     );
