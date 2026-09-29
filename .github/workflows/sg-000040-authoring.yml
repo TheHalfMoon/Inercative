@@ -1,0 +1,61 @@
+name: sg-000040-authoring
+
+on:
+  push:
+    branches:
+      - stack/p03-s01-t01c-durable-run-event
+    paths:
+      - .github/workflows/sg-000040-authoring.yml
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout stack candidate
+        uses: actions/checkout@v4
+        with:
+          ref: stack/p03-s01-t01c-durable-run-event
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.4.2
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Normalize workspace lockfile
+        run: pnpm install --no-frozen-lockfile
+      - name: Format bounded product files
+        run: pnpm exec prettier --write packages/control-plane/package.json packages/control-plane/src/control-plane-store.ts packages/control-plane/src/run-event-store.ts packages/control-plane/src/run-event-store.test.ts pnpm-lock.yaml
+      - name: Verify full repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check
+      - name: Persist verified product tree and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          rm .github/workflows/sg-000040-authoring.yml
+          git add -A
+          changed="$(git diff --cached --name-only)"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/sg-000040-authoring.yml|pnpm-lock.yaml|packages/control-plane/package.json|packages/control-plane/src/control-plane-store.ts|packages/control-plane/src/run-event-store.ts|packages/control-plane/src/run-event-store.test.ts) ;;
+              *) echo "Unexpected SG-000040 authoring path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          git commit -m "test(control-plane): qualify SG-000040 product tree"
+          git push origin HEAD:stack/p03-s01-t01c-durable-run-event
