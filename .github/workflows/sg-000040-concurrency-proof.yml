@@ -1,0 +1,153 @@
+name: sg-000040-concurrency-proof
+
+on:
+  push:
+    branches:
+      - evidence/sg-000040-db-integration
+
+permissions:
+  contents: read
+
+jobs:
+  concurrency-proof:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ineractive_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ineractive_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      CANDIDATE_SHA: fb8cc7cf3e26b25b9ed13841df7d820719210f24
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ineractive_test
+      PGPASSWORD: postgres
+      OWNER_ID: 11111111-1111-4111-8111-111111111111
+      PROJECT_ID: 55555555-5555-4555-8555-555555555555
+      RUN_ID: ineractive:run:018f9f3a-7b2a-7f11-8a4c-123456789401
+      TARGET_ID: ineractive:productrevision:018f9f3a-7b2a-7f11-8a4c-123456789402
+      TARGET_REV: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      SOURCE_ID: ineractive:tool:018f9f3a-7b2a-7f11-8a4c-123456789403
+    steps:
+      - name: Checkout exact database candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+
+      - name: Install PostgreSQL client
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+
+      - name: Bootstrap exact database candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          create role anon nologin;
+          create role authenticated nologin;
+          create schema auth;
+          create table auth.users (id uuid primary key);
+          create or replace function auth.uid()
+          returns uuid
+          language sql
+          stable
+          as $$
+            select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
+          $$;
+          grant usage on schema auth to anon, authenticated;
+          grant execute on function auth.uid() to anon, authenticated;
+          SQL
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f packages/control-plane/supabase/migrations/20260920192409_control_plane_user_project_store.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f packages/control-plane/supabase/migrations/20260929175000_control_plane_run_event_store.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v owner="$OWNER_ID" -v project="$PROJECT_ID" -v run="$RUN_ID" -v target="$TARGET_ID" -v rev="$TARGET_REV" <<'SQL'
+          insert into auth.users(id) values (:'owner'::uuid);
+          insert into public.ineractive_projects(id, owner_user_id, name, slug)
+          values (:'project'::uuid, :'owner'::uuid, 'Concurrency Proof', 'concurrency-proof');
+          set role authenticated;
+          select set_config('request.jwt.claim.sub', :'owner', false);
+          insert into public.ineractive_runs(id, project_id, target_identity, target_revision, state)
+          values (:'run', :'project'::uuid, :'target', :'rev', 'PLANNED');
+          SQL
+
+      - name: Prove conflicting sequence-zero appends serialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          first_sql="$RUNNER_TEMP/first.sql"
+          second_sql="$RUNNER_TEMP/second.sql"
+          first_log="$RUNNER_TEMP/first.log"
+          second_log="$RUNNER_TEMP/second.log"
+
+          cat >"$first_sql" <<'SQL'
+          set role authenticated;
+          select set_config('request.jwt.claim.sub', :'uid', false);
+          begin;
+          insert into public.ineractive_run_events(
+            id, project_id, run_id, sequence, kind, source, references_json
+          ) values (
+            'ineractive:event:018f9f3a-7b2a-7f11-8a4c-123456789404',
+            :'project'::uuid, :'run', 0, 'tool.observed', :'source', '[]'::jsonb
+          );
+          select pg_sleep(2);
+          commit;
+          SQL
+
+          cat >"$second_sql" <<'SQL'
+          set role authenticated;
+          select set_config('request.jwt.claim.sub', :'uid', false);
+          insert into public.ineractive_run_events(
+            id, project_id, run_id, sequence, kind, source, references_json
+          ) values (
+            'ineractive:event:018f9f3a-7b2a-7f11-8a4c-123456789405',
+            :'project'::uuid, :'run', 0, 'tool.observed', :'source', '[]'::jsonb
+          );
+          SQL
+
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -v uid="$OWNER_ID" -v project="$PROJECT_ID" -v run="$RUN_ID" -v source="$SOURCE_ID" \
+            -f "$first_sql" >"$first_log" 2>&1 &
+          first_pid=$!
+          sleep 0.5
+
+          set +e
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -v uid="$OWNER_ID" -v project="$PROJECT_ID" -v run="$RUN_ID" -v source="$SOURCE_ID" \
+            -f "$second_sql" >"$second_log" 2>&1
+          second_status=$?
+          set -e
+
+          wait "$first_pid"
+          test "$second_status" -ne 0
+          grep -q 'ineractive_event_sequence_regression' "$second_log"
+
+          count="$(psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -v uid="$OWNER_ID" -v run="$RUN_ID" <<'SQL'
+          set role authenticated;
+          select set_config('request.jwt.claim.sub', :'uid', false);
+          select count(*) from public.ineractive_run_events where run_id = :'run';
+          SQL
+          )"
+          test "${count##*$'\n'}" = "1"
+
+          printf 'candidate=%s\nsecond_status=%s\nfinal_count=%s\n' "$CANDIDATE_SHA" "$second_status" "${count##*$'\n'}" > "$RUNNER_TEMP/concurrency-proof.txt"
+
+      - name: Upload concurrency evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000040-concurrency-proof
+          path: |
+            ${{ runner.temp }}/concurrency-proof.txt
+            ${{ runner.temp }}/first.log
+            ${{ runner.temp }}/second.log
+          if-no-files-found: warn
