@@ -1,0 +1,74 @@
+name: sg-000040-db-identity-repair
+
+on:
+  push:
+    branches:
+      - p03/s01-t01c-durable-db
+    paths:
+      - .github/workflows/sg-000040-db-identity-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout packet
+        uses: actions/checkout@v4
+        with:
+          ref: p03/s01-t01c-durable-db
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.4.2
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Align SQL identity grammar with protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          migration = Path('packages/control-plane/supabase/migrations/20260929175000_control_plane_run_event_store.sql')
+          text = migration.read_text()
+          text = text.replace('[1-5][0-9a-f]{3}', '[1-8][0-9a-f]{3}')
+          text = text.replace('[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*:', '[a-z][a-z0-9-]{0,31}:')
+          migration.write_text(text)
+
+          test = Path('packages/control-plane/src/run-event-migration.test.ts')
+          test_text = test.read_text()
+          marker = '    expect(sql).not.toMatch(/service_role|generated[_-]app[_-]data/iu);\n'
+          addition = marker + '    expect(sql).toContain("[1-8][0-9a-f]{3}");\n    expect(sql).toContain("[a-z][a-z0-9-]{0,31}");\n    expect(sql).not.toContain("[1-5][0-9a-f]{3}");\n'
+          if marker not in test_text:
+              raise SystemExit('expected test marker missing')
+          test.write_text(test_text.replace(marker, addition, 1))
+          PY
+      - name: Install and verify repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm exec prettier --write packages/control-plane/src/run-event-migration.test.ts
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check
+      - name: Persist repair and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          rm .github/workflows/sg-000040-db-identity-repair.yml
+          git add -A
+          changed="$(git diff --cached --name-only | sort)"
+          expected="$(printf '%s\n' .github/workflows/sg-000040-db-identity-repair.yml packages/control-plane/src/run-event-migration.test.ts packages/control-plane/supabase/migrations/20260929175000_control_plane_run_event_store.sql | sort)"
+          test "$changed" = "$expected"
+          git commit -m "fix(control-plane): align durable identity constraints"
+          git push origin HEAD:p03/s01-t01c-durable-db
