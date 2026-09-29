@@ -23,6 +23,9 @@ describe("SG-000040 durable Run/Event database contract", () => {
     expect(sql).toContain("references public.ineractive_projects(id) on delete cascade");
     expect(sql).toContain("foreign key (project_id, run_id)");
     expect(sql).not.toMatch(/service_role|generated[_-]app[_-]data/iu);
+    expect(sql).toContain("[1-8][0-9a-f]{3}");
+    expect(sql).toContain("[a-z][a-z0-9-]{0,31}");
+    expect(sql).not.toContain("[1-5][0-9a-f]{3}");
   });
 
   it("enforces exact lifecycle state changes at the database boundary", () => {

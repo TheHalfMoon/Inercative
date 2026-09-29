@@ -13,9 +13,9 @@ create table public.ineractive_runs (
   updated_at timestamptz not null default now(),
   constraint ineractive_runs_project_id_id_unique unique (project_id, id),
   constraint ineractive_runs_id_format
-    check (id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
+    check (id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
   constraint ineractive_runs_target_identity_format
-    check (target_identity ~ '^ineractive:[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
+    check (target_identity ~ '^ineractive:[a-z][a-z0-9-]{0,31}:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
   constraint ineractive_runs_target_revision_format
     check (target_revision ~ '^(?:git:[0-9a-f]{40}|git:[0-9a-f]{64}|sha256:[0-9a-f]{64})$'),
   constraint ineractive_runs_state
@@ -25,7 +25,7 @@ create table public.ineractive_runs (
   constraint ineractive_runs_parent_format
     check (
       parent_run_id is null
-      or parent_run_id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      or parent_run_id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ),
   constraint ineractive_runs_parent_fk
     foreign key (project_id, parent_run_id)
@@ -53,20 +53,20 @@ create table public.ineractive_run_events (
     on delete cascade,
   constraint ineractive_run_events_run_sequence_unique unique (run_id, sequence),
   constraint ineractive_run_events_id_format
-    check (id ~ '^ineractive:event:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
+    check (id ~ '^ineractive:event:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
   constraint ineractive_run_events_run_id_format
-    check (run_id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
+    check (run_id ~ '^ineractive:run:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
   constraint ineractive_run_events_sequence_nonnegative check (sequence >= 0),
   constraint ineractive_run_events_kind_format
     check (kind ~ '^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$' and char_length(kind) <= 128),
   constraint ineractive_run_events_source_format
-    check (source ~ '^ineractive:[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
+    check (source ~ '^ineractive:[a-z][a-z0-9-]{0,31}:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'),
   constraint ineractive_run_events_target_pair
     check ((target_identity is null) = (target_revision is null)),
   constraint ineractive_run_events_target_identity_format
     check (
       target_identity is null
-      or target_identity ~ '^ineractive:[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      or target_identity ~ '^ineractive:[a-z][a-z0-9-]{0,31}:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ),
   constraint ineractive_run_events_target_revision_format
     check (
