@@ -59,15 +59,35 @@ function appendIssues(error: PostgrestError): readonly EventStoreIssue[] {
   }
   if (diagnostic.includes("ineractive_event_sequence_regression")) {
     return [
-      issue("DUPLICATE_SEQUENCE", "$.sequence", "Durable EventStore rejected an occupied sequence."),
-      issue("SEQUENCE_REGRESSION", "$.sequence", "Durable EventStore rejected a sequence regression."),
+      issue(
+        "DUPLICATE_SEQUENCE",
+        "$.sequence",
+        "Durable EventStore rejected an occupied sequence.",
+      ),
+      issue(
+        "SEQUENCE_REGRESSION",
+        "$.sequence",
+        "Durable EventStore rejected a sequence regression.",
+      ),
     ];
   }
   if (diagnostic.includes("ineractive_run_events_run_sequence_unique")) {
-    return [issue("DUPLICATE_SEQUENCE", "$.sequence", "Durable EventStore rejected an occupied sequence.")];
+    return [
+      issue(
+        "DUPLICATE_SEQUENCE",
+        "$.sequence",
+        "Durable EventStore rejected an occupied sequence.",
+      ),
+    ];
   }
   if (diagnostic.includes("ineractive_run_events_pkey")) {
-    return [issue("DUPLICATE_EVENT_ID", "$.id", "Durable EventStore rejected a duplicate Event identity.")];
+    return [
+      issue(
+        "DUPLICATE_EVENT_ID",
+        "$.id",
+        "Durable EventStore rejected a duplicate Event identity.",
+      ),
+    ];
   }
   return [issue("STORE_UNAVAILABLE", "$", "Durable EventStore could not persist the Event.")];
 }
@@ -125,7 +145,13 @@ export class SupabaseRunEventStore implements EventStore {
     if (stored === null || stored.id !== event.id || stored.runId !== event.runId) {
       return {
         ok: false,
-        issues: [issue("STORAGE_CORRUPTION", "$", "Durable EventStore returned an invalid persisted Event.")],
+        issues: [
+          issue(
+            "STORAGE_CORRUPTION",
+            "$",
+            "Durable EventStore returned an invalid persisted Event.",
+          ),
+        ],
       };
     }
     return { ok: true, event: stored };
@@ -138,7 +164,11 @@ export class SupabaseRunEventStore implements EventStore {
       return {
         ok: false,
         issues: [
-          issue("INVALID_RUN_ID", "$.runId", "EventStore read requires a canonical Run logical identity."),
+          issue(
+            "INVALID_RUN_ID",
+            "$.runId",
+            "EventStore read requires a canonical Run logical identity.",
+          ),
         ],
       };
     }
@@ -161,7 +191,13 @@ export class SupabaseRunEventStore implements EventStore {
     if (rows === null) {
       return {
         ok: false,
-        issues: [issue("STORAGE_CORRUPTION", "$", "Durable EventStore returned a malformed history payload.")],
+        issues: [
+          issue(
+            "STORAGE_CORRUPTION",
+            "$",
+            "Durable EventStore returned a malformed history payload.",
+          ),
+        ],
       };
     }
 
@@ -171,7 +207,9 @@ export class SupabaseRunEventStore implements EventStore {
       if (event === null || event.runId !== runId || event.sequence !== events.length) {
         return {
           ok: false,
-          issues: [issue("STORAGE_CORRUPTION", "$", "Durable EventStore returned invalid Run history.")],
+          issues: [
+            issue("STORAGE_CORRUPTION", "$", "Durable EventStore returned invalid Run history."),
+          ],
         };
       }
       events.push(event);

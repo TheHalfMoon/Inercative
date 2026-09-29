@@ -8,10 +8,7 @@ import { SupabaseRunEventStore } from "./run-event-store.ts";
 const PROJECT_ID = "55555555-5555-4555-8555-555555555555";
 const RUN_ID = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789501");
 const SOURCE_ID = formatLogicalIdentity("tool", "018f9f3a-7b2a-7f11-8a4c-123456789502");
-const TARGET_ID = formatLogicalIdentity(
-  "productrevision",
-  "018f9f3a-7b2a-7f11-8a4c-123456789503",
-);
+const TARGET_ID = formatLogicalIdentity("productrevision", "018f9f3a-7b2a-7f11-8a4c-123456789503");
 const TARGET_REVISION = `sha256:${"a".repeat(64)}`;
 
 type FakeError = {
@@ -138,7 +135,8 @@ describe("SupabaseRunEventStore", () => {
     const result = await store.append({ schemaVersion: 1, runId: RUN_ID });
 
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.issues.every((item) => item.code === "INVALID_EVENT_RECORD")).toBe(true);
+    if (!result.ok)
+      expect(result.issues.every((item) => item.code === "INVALID_EVENT_RECORD")).toBe(true);
     expect(fake.snapshot().fromCalls).toBe(0);
   });
 
@@ -157,9 +155,7 @@ describe("SupabaseRunEventStore", () => {
       event(),
     );
 
-    expect(gapResult.ok ? [] : gapResult.issues.map((item) => item.code)).toEqual([
-      "SEQUENCE_GAP",
-    ]);
+    expect(gapResult.ok ? [] : gapResult.issues.map((item) => item.code)).toEqual(["SEQUENCE_GAP"]);
     expect(regressionResult.ok ? [] : regressionResult.issues.map((item) => item.code)).toEqual([
       "DUPLICATE_SEQUENCE",
       "SEQUENCE_REGRESSION",
@@ -223,7 +219,9 @@ describe("SupabaseRunEventStore", () => {
       { data: [row(1, "000000000507")], error: null },
     );
 
-    const malformedResult = await new SupabaseRunEventStore(malformed.client, PROJECT_ID).read(RUN_ID);
+    const malformedResult = await new SupabaseRunEventStore(malformed.client, PROJECT_ID).read(
+      RUN_ID,
+    );
     const gappedResult = await new SupabaseRunEventStore(gapped.client, PROJECT_ID).read(RUN_ID);
 
     expect(malformedResult.ok ? null : malformedResult.issues[0]?.code).toBe("STORAGE_CORRUPTION");
