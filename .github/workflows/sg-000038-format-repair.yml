@@ -1,0 +1,62 @@
+name: sg-000038-format-repair
+
+on:
+  push:
+    branches:
+      - p03/s01-t01a-run-lifecycle-implementation
+    paths:
+      - .github/workflows/sg-000038-format-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: p03/s01-t01a-run-lifecycle-implementation
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format exact SG-000038 files
+        run: pnpm exec prettier --write packages/protocol/src/run-lifecycle.ts packages/protocol/src/run-lifecycle.test.ts
+
+      - name: Verify repository after formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check
+
+      - name: Persist forward formatting repair and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          rm .github/workflows/sg-000038-format-repair.yml
+          git add -A
+          changed="$(git diff --cached --name-only | sort)"
+          expected="$(printf '%s\n' .github/workflows/sg-000038-format-repair.yml packages/protocol/src/run-lifecycle.test.ts packages/protocol/src/run-lifecycle.ts | sort)"
+          test "$changed" = "$expected"
+          git commit -m "style(protocol): format SG-000038 candidate"
+          git push origin HEAD:p03/s01-t01a-run-lifecycle-implementation
