@@ -13,7 +13,9 @@ export type EventStoreIssueCode =
   | "CROSS_RUN_EVENT_ID"
   | "DUPLICATE_SEQUENCE"
   | "SEQUENCE_REGRESSION"
-  | "SEQUENCE_GAP";
+  | "SEQUENCE_GAP"
+  | "STORE_UNAVAILABLE"
+  | "STORAGE_CORRUPTION";
 
 export interface EventStoreIssue {
   readonly code: EventStoreIssueCode;
@@ -53,7 +55,15 @@ export class InMemoryEventStore implements EventStore {
   readonly #historyByRun = new Map<LogicalIdentity<"run">, readonly EventRecord[]>();
   readonly #runByEvent = new Map<LogicalIdentity<"event">, LogicalIdentity<"run">>();
 
-  async append(input: unknown): Promise<EventStoreAppendResult> {
+  append(input: unknown): Promise<EventStoreAppendResult> {
+    return Promise.resolve(this.#appendNow(input));
+  }
+
+  read(runIdInput: unknown): Promise<EventStoreReadResult> {
+    return Promise.resolve(this.#readNow(runIdInput));
+  }
+
+  #appendNow(input: unknown): EventStoreAppendResult {
     const validated = validateEventRecord(input);
     if (!validated.ok) {
       return {
@@ -123,7 +133,7 @@ export class InMemoryEventStore implements EventStore {
     return { ok: true, event: stored };
   }
 
-  async read(runIdInput: unknown): Promise<EventStoreReadResult> {
+  #readNow(runIdInput: unknown): EventStoreReadResult {
     const runId =
       typeof runIdInput === "string" ? parseLogicalIdentityForKind("run", runIdInput) : null;
     if (runId === null) {
