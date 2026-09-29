@@ -263,10 +263,10 @@ describe("SupabaseRunStore hardening", () => {
       target: { identity: TARGET_ID, revision: exactRevision(`sha256:${"b".repeat(64)}`) },
     };
     const validationFake = fakeClient({ reads: [{ data: row(parent), error: null }] });
-    const validationResult = await new SupabaseRunStore(
-      validationFake.client,
-      PROJECT_ID,
-    ).continue(RUN_A, badChild);
+    const validationResult = await new SupabaseRunStore(validationFake.client, PROJECT_ID).continue(
+      RUN_A,
+      badChild,
+    );
 
     expect(validationResult.ok ? null : validationResult.issues[0]?.code).toBe(
       "CONTINUATION_REJECTED",
@@ -287,7 +287,9 @@ describe("SupabaseRunStore hardening", () => {
         },
       ],
     });
-    const duplicate = await new SupabaseRunStore(duplicateFake.client, PROJECT_ID).createRoot(run());
+    const duplicate = await new SupabaseRunStore(duplicateFake.client, PROJECT_ID).createRoot(
+      run(),
+    );
     expect(duplicate.ok ? null : duplicate.issues[0]?.code).toBe("DUPLICATE_RUN_ID");
 
     const outageFake = fakeClient({
