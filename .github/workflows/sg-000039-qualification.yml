@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_SHA: 3a4713c47d36722c564f185bc4a8c02ad57da05c
-      CANDIDATE_SHA: 7a488fac2a51b97b5a3b31208757b742655265d8
+      CANDIDATE_SHA: 47dde035178b9528d0bd634f124e00c7654ce2db
       DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
       OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
       JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
@@ -122,16 +122,16 @@ jobs:
                   'grain': 'SG-000039 / IN-P03-S01-T01B',
                   'base': os.environ['BASE_SHA'],
                   'candidate': os.environ['CANDIDATE_SHA'],
-                  'scope': 'Provider-neutral in-memory append-only EventStore contract over existing EventRecord validation. No durable persistence, provider/model calls, network, secrets, lifecycle mutation, capability grants, or release authority.',
+                  'scope': 'Provider-neutral async append-only EventStore contract over existing EventRecord validation, plus deterministic in-memory reference. No durable persistence, provider/model calls, network, secrets, lifecycle mutation, capability grants, or release authority.',
                   'diff': (evidence / 'exact-review.diff').read_text(),
               },
               'questions': {
                   'scope_escape': {
                       'type': 'noul',
-                      'instructions': 'Does this exact diff introduce behavior or authority outside the declared SG-000039 in-memory EventStore scope?',
+                      'instructions': 'Does this exact diff introduce behavior or authority outside the declared SG-000039 EventStore scope?',
                       'criteria': {
                           'true': 'It introduces durable persistence, network/provider/model/secret behavior, lifecycle mutation, capability/permission authority, hidden side effects, or release/deployment authority.',
-                          'false': 'It adds only the Harness EventStore port/reference implementation, package wiring, lockfile entry, and focused tests.'
+                          'false': 'It adds only the async Harness EventStore port/reference implementation, package wiring, lockfile entry, and focused tests.'
                       }
                   },
                   'append_only_gap': {
@@ -157,6 +157,14 @@ jobs:
                           'true': 'Invalid input can be accepted or can expose/mutate another history.',
                           'false': 'Append composes validateEventRecord and read requires canonical Run identity; invalid input fails closed.'
                       }
+                  },
+                  'durable_adapter_mismatch': {
+                      'type': 'noul',
+                      'instructions': 'Does this port shape prevent a later durable/network-backed EventStore implementation without breaking the public contract?',
+                      'criteria': {
+                          'true': 'The public methods require synchronous completion or otherwise assume in-memory-only execution.',
+                          'false': 'The Promise-based boundary supports both immediate in-memory and later durable async adapters without a contract break.'
+                      }
                   }
               }
           }
@@ -174,7 +182,7 @@ jobs:
             exit 1
           fi
           "$TOOLS_DIR/jev" ask "$EVIDENCE_DIR/jev-request.json" \
-            --assert 'answers.scope_escape.noul <= 0.5 and answers.append_only_gap.noul <= 0.5 and answers.sequence_gap.noul <= 0.5 and answers.validation_bypass.noul <= 0.5' \
+            --assert 'answers.scope_escape.noul <= 0.5 and answers.append_only_gap.noul <= 0.5 and answers.sequence_gap.noul <= 0.5 and answers.validation_bypass.noul <= 0.5 and answers.durable_adapter_mismatch.noul <= 0.5' \
             | tee "$EVIDENCE_DIR/jev-result.json"
           printf 'state=PASS\n' > "$EVIDENCE_DIR/jev-status.txt"
 
@@ -182,7 +190,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sg-000039-exact-candidate-qualification
+          name: sg-000039-async-exact-candidate-qualification
           path: ${{ env.EVIDENCE_DIR }}/
           if-no-files-found: error
 
