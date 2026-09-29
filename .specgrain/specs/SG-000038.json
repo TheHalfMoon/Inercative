@@ -1,0 +1,76 @@
+{
+  "acceptance": [
+    "A closed deterministic transition table defines every allowed in-place Run state transition and rejects every undeclared transition without consulting time, randomness, network, models, or persistence.",
+    "COMPLETED, FAILED, CANCELLED, and BLOCKED cannot transition back to RUNNING in place; continuation is represented by a distinct child Run so historical state is preserved.",
+    "Continuation validation requires a distinct child identity, parentRunId bound to the parent Run, child state PLANNED, and exact target revision equality; mismatches fail closed with stable machine-readable issues.",
+    "Existing SG-000011 RunRecord validation remains compatible and unchanged; lifecycle semantics compose on top of the existing protocol contract rather than redefining it.",
+    "Focused tests cover the complete transition matrix plus continuation success/failure cases and deterministic repeated results.",
+    "Any implementation candidate must pass repository format/lint/typecheck/tests, truthful Diffcipline proof, checksum-verified Alibaba Open Code Review, required credentialed Jev semantic review, exact-head CI, normal merge, and fresh-main CI before closure."
+  ],
+  "change_surface": [
+    "packages/protocol/src/run-lifecycle.ts",
+    "packages/protocol/src/run-lifecycle.test.ts",
+    "packages/protocol/src/index.ts",
+    "docs/evidence/**",
+    "specs/CURRENT.md"
+  ],
+  "children": [],
+  "context": {
+    "budget_tokens": 7500,
+    "estimated_tokens": 5200
+  },
+  "dependencies": [
+    "SG-000011",
+    "SG-000014"
+  ],
+  "evidence": {
+    "required": [
+      "Exact base/head/merge-base and complete changed-file accounting.",
+      "Complete transition-matrix tests and continuation/resume invariant tests plus full repository verification.",
+      "Diffcipline proof, Alibaba OCR evidence, credentialed Jev semantic review, exact-head semantic review, and post-merge fresh-main CI."
+    ]
+  },
+  "id": "SG-000038",
+  "labels": [],
+  "metadata": {
+    "readiness": {
+      "minimality": {
+        "choice": "reuse-existing",
+        "rationale": "Reuse SG-000011 RunRecord/RunState identities and validators. The smallest dependency-unlocking P03 slice is pure lifecycle and continuation semantics; persistence, budgets, artifacts, and execution remain separate later Grains."
+      },
+      "safety": {
+        "requirements": [
+          "Lifecycle state and parentRunId are evidence/coordination semantics only and never grant capabilities, credentials, network access, deployment authority, or provider authority.",
+          "Resume preserves history through a distinct child Run and must not rewrite a terminal parent into RUNNING.",
+          "Lifecycle validation is deterministic, side-effect free, provider-neutral, and fail-closed for undeclared transitions or target mismatches."
+        ],
+        "status": "requirements-defined"
+      },
+      "unresolved_decisions": [],
+      "version": 1
+    }
+  },
+  "method": "quick",
+  "outcome": "The harness has a deterministic provider-neutral Run lifecycle contract with explicit allowed transitions, terminal-state behavior, cancellation/blocking semantics, and parent/child continuation rules before any persistence adapter or model/provider work is introduced.",
+  "parent_id": null,
+  "rationale": "SG-000011 established validated Run/Event/Evidence/Finding record shapes and Run states, but it intentionally did not define legal Run state transitions or resume/continuation semantics. P03-S01 requires Run lifecycle, cancellation, and resume behavior before the event store can become authoritative.",
+  "risk": {
+    "level": "medium",
+    "recovery": "Revert only the P03 Run lifecycle module, exports, and focused tests; SG-000011 protocol record contracts and P01 control-plane persistence remain unchanged."
+  },
+  "schema_version": 1,
+  "scope_in": [
+    "Define a pure deterministic Run lifecycle transition contract over the existing PLANNED, RUNNING, COMPLETED, FAILED, CANCELLED, and BLOCKED states without changing the canonical RunRecord wire shape.",
+    "Define explicit terminal/closed-state behavior so COMPLETED, FAILED, CANCELLED, and BLOCKED cannot silently return to RUNNING by in-place mutation.",
+    "Define a provider-neutral continuation/resume contract in which a resumed attempt is a distinct child Run with parentRunId pointing to the prior Run, preserving the prior Run as historical evidence.",
+    "Require a continuation child to start in PLANNED state and remain bound to the same exact target revision as its parent; a changed target is a distinct Run rather than a resume.",
+    "Add deterministic focused tests for allowed/forbidden transitions, terminal behavior, valid and invalid continuation, target mismatch, and order-independent validation outcomes."
+  ],
+  "scope_out": [
+    "No event-store persistence adapter, database schema, Supabase mutation, artifact store, budget accounting, scheduler, model/provider routing, network access, secret handling, wall-clock policy, retry execution, or P02 changes.",
+    "No modification to SG-000011 Run/Event/Evidence/Finding JSON wire contracts and no migration of existing canonical records.",
+    "No automatic resume execution and no capability or permission grant from Run state, parentRunId, or lifecycle validation."
+  ],
+  "state": "GRAIN",
+  "title": "IN-P03-S01-T01A deterministic Run lifecycle and continuation semantics"
+}
