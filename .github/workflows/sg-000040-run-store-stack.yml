@@ -1,0 +1,53 @@
+name: sg-000040-run-store-stack
+
+on:
+  push:
+    branches:
+      - stack/p03-s01-t01c-run-store
+
+permissions:
+  contents: write
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    env:
+      LIFECYCLE_SHA: d21ac82de1c905bddbc68a60bdeec1ae150666c0
+      EVENT_ADAPTER_SHA: 7ac2eb285688ab443e561e14d8f4ad6fc088bd7d
+    steps:
+      - name: Checkout stack branch
+        uses: actions/checkout@v4
+        with:
+          ref: stack/p03-s01-t01c-run-store
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compose lifecycle candidate by forward merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'TheHalfMoon'
+          git config user.email 'alshehriofficial@gmail.com'
+          test "$(git merge-base "$EVENT_ADAPTER_SHA" HEAD)" = "$EVENT_ADAPTER_SHA"
+          git merge --no-ff "$LIFECYCLE_SHA" -m 'merge(stack): compose SG-000038 lifecycle for durable RunStore'
+          git merge-base --is-ancestor "$EVENT_ADAPTER_SHA" HEAD
+          git merge-base --is-ancestor "$LIFECYCLE_SHA" HEAD
+
+      - name: Install and verify composed repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global pnpm@12.4.2
+          pnpm install --frozen-lockfile
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+
+      - name: Persist stack and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/sg-000040-run-store-stack.yml
+          git commit -m 'chore(stack): remove SG-000040 RunStore composer'
+          git push origin HEAD:stack/p03-s01-t01c-run-store
