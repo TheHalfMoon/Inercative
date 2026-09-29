@@ -9,7 +9,10 @@ vi.mock("@supabase/supabase-js", () => ({
   createClient: supabaseMocks.createClient,
 }));
 
-import { createVerifiedControlPlaneStore, readControlPlaneSupabaseConfig } from "./control-plane-store.ts";
+import {
+  createVerifiedControlPlaneStore,
+  readControlPlaneSupabaseConfig,
+} from "./control-plane-store.ts";
 import { SupabaseRunEventStore } from "./run-event-store.ts";
 import { SupabaseRunStore } from "./run-store.ts";
 
