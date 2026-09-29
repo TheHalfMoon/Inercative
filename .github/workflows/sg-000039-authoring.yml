@@ -1,0 +1,67 @@
+name: sg-000039-authoring
+
+on:
+  push:
+    branches:
+      - p03/s01-t01b-event-store-implementation
+    paths:
+      - .github/workflows/sg-000039-authoring.yml
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: p03/s01-t01b-event-store-implementation
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.4.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+
+      - name: Normalize workspace lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Format bounded SG-000039 files
+        run: pnpm exec prettier --write packages/harness/package.json packages/harness/tsconfig.json packages/harness/src/index.ts packages/harness/src/event-store.ts packages/harness/src/event-store.test.ts pnpm-lock.yaml
+
+      - name: Verify repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check
+
+      - name: Persist verified candidate and self-delete workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "TheHalfMoon"
+          git config user.email "alshehriofficial@gmail.com"
+          rm .github/workflows/sg-000039-authoring.yml
+          git add -A
+          changed="$(git diff --cached --name-only)"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/sg-000039-authoring.yml|pnpm-lock.yaml|packages/harness/package.json|packages/harness/tsconfig.json|packages/harness/src/index.ts|packages/harness/src/event-store.ts|packages/harness/src/event-store.test.ts) ;;
+              *) echo "Unexpected authoring path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          git commit -m "test(harness): qualify SG-000039 reference store"
+          git push origin HEAD:p03/s01-t01b-event-store-implementation
