@@ -129,7 +129,9 @@ export class SupabaseRunStore {
     if (runId === null) {
       return {
         ok: false,
-        issues: [issue("INVALID_RUN_ID", "$.runId", "RunStore read requires a canonical Run identity.")],
+        issues: [
+          issue("INVALID_RUN_ID", "$.runId", "RunStore read requires a canonical Run identity."),
+        ],
       };
     }
     return this.readValidated(runId);
@@ -141,7 +143,11 @@ export class SupabaseRunStore {
       return {
         ok: false,
         issues: [
-          issue("INVALID_RUN_ID", "$.runId", "RunStore transition requires a canonical Run identity."),
+          issue(
+            "INVALID_RUN_ID",
+            "$.runId",
+            "RunStore transition requires a canonical Run identity.",
+          ),
         ],
       };
     }
@@ -197,7 +203,9 @@ export class SupabaseRunStore {
     ) {
       return {
         ok: false,
-        issues: [issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned an invalid transition row.")],
+        issues: [
+          issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned an invalid transition row."),
+        ],
       };
     }
     return { ok: true, run: stored };
@@ -209,7 +217,11 @@ export class SupabaseRunStore {
       return {
         ok: false,
         issues: [
-          issue("INVALID_RUN_ID", "$.parentRunId", "Run continuation requires a canonical parent Run identity."),
+          issue(
+            "INVALID_RUN_ID",
+            "$.parentRunId",
+            "Run continuation requires a canonical parent Run identity.",
+          ),
         ],
       };
     }
@@ -243,11 +255,19 @@ export class SupabaseRunStore {
       return { ok: false, issues: [storageIssue(error, "read the Run")] };
     }
     if (data === null) {
-      return { ok: false, issues: [issue("RUN_NOT_FOUND", "$.runId", "Run was not found in this project.")] };
+      return {
+        ok: false,
+        issues: [issue("RUN_NOT_FOUND", "$.runId", "Run was not found in this project.")],
+      };
     }
     const run = rowToRun(data);
     return run === null
-      ? { ok: false, issues: [issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned a malformed Run row.")] }
+      ? {
+          ok: false,
+          issues: [
+            issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned a malformed Run row."),
+          ],
+        }
       : { ok: true, run };
   }
 
@@ -272,7 +292,9 @@ export class SupabaseRunStore {
     if (stored === null || !sameRun(stored, run)) {
       return {
         ok: false,
-        issues: [issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned an invalid persisted Run.")],
+        issues: [
+          issue("STORAGE_CORRUPTION", "$", "Durable RunStore returned an invalid persisted Run."),
+        ],
       };
     }
     return { ok: true, run: stored };
