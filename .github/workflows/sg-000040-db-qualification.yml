@@ -1,0 +1,190 @@
+name: sg-000040-db-qualification
+
+on:
+  push:
+    branches:
+      - evidence/sg-000040-db-qualification
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: 54b0ddf358ce8c93c0b8977a8d17e65b4e32b18d
+      CANDIDATE_SHA: fb8cc7cf3e26b25b9ed13841df7d820719210f24
+      DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
+      OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+      JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
+      JEV_API_KEY: ${{ secrets.JEV_API_KEY || secrets.TYPESAFE_API_KEY }}
+    steps:
+      - name: Checkout exact database candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+
+      - name: Initialize evidence and tool directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sg000040/evidence" "$RUNNER_TEMP/sg000040/tools"
+          echo "EVIDENCE_DIR=$RUNNER_TEMP/sg000040/evidence" >> "$GITHUB_ENV"
+          echo "TOOLS_DIR=$RUNNER_TEMP/sg000040/tools" >> "$GITHUB_ENV"
+
+      - name: Verify exact identities and repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global pnpm@12.4.2
+          pnpm install --frozen-lockfile
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")" = "$BASE_SHA"
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check "$BASE_SHA..$CANDIDATE_SHA"
+          git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-numstat.txt"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- \
+            packages/control-plane/supabase/migrations/20260929175000_control_plane_run_event_store.sql \
+            packages/control-plane/src/run-event-migration.test.ts \
+            > "$EVIDENCE_DIR/exact-review.diff"
+
+      - name: Run and record Diffcipline R3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o "$TOOLS_DIR/diffcipline"
+          echo "$DIFFCIPLINE_SHA256  $TOOLS_DIR/diffcipline" | sha256sum --check
+          chmod +x "$TOOLS_DIR/diffcipline"
+          set +e
+          "$TOOLS_DIR/diffcipline" check --base "$BASE_SHA" --risk R3 --run --json > "$EVIDENCE_DIR/diffcipline-raw.log" 2>&1
+          rc=$?
+          set -e
+          cat "$EVIDENCE_DIR/diffcipline-raw.log"
+          DIFFCIPLINE_RC="$rc" python - <<'PY'
+          import json, os, pathlib
+          evidence = pathlib.Path(os.environ['EVIDENCE_DIR'])
+          proof = None
+          for line in evidence.joinpath('diffcipline-raw.log').read_text().splitlines():
+              line = line.strip()
+              if not line.startswith('{'):
+                  continue
+              try:
+                  item = json.loads(line)
+              except json.JSONDecodeError:
+                  continue
+              if item.get('schema') == 'diffcipline.proof/v1':
+                  proof = item
+          assert proof is not None, 'Diffcipline proof JSON was not captured'
+          assert proof['scope_violations'] == [], proof
+          assert all(item['state'] == 'PASS' for item in proof['verification']), proof
+          assert proof['verdict'] in {'PASS', 'REVIEW'}, proof
+          evidence.joinpath('diffcipline-proof.json').write_text(json.dumps(proof, sort_keys=True))
+          evidence.joinpath('diffcipline-disposition.txt').write_text(
+              f"verdict={proof['verdict']}\nreasons={json.dumps(proof['reasons'], sort_keys=True)}\n"
+              + ('disposition=PASS\n' if proof['verdict'] == 'PASS' else 'disposition=REVIEW_REQUIRES_EXPLICIT_SEMANTIC_DISPOSITION\n')
+          )
+          if proof['verdict'] == 'PASS':
+              assert int(os.environ['DIFFCIPLINE_RC']) == 0
+          else:
+              assert int(os.environ['DIFFCIPLINE_RC']) != 0
+          PY
+
+      - name: Run checksum-verified Alibaba Open Code Review
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o "$TOOLS_DIR/ocr"
+          echo "$OCR_SHA256  $TOOLS_DIR/ocr" | sha256sum --check
+          chmod +x "$TOOLS_DIR/ocr"
+          "$TOOLS_DIR/ocr" --version 2>&1 | tee "$EVIDENCE_DIR/ocr-version.txt"
+          "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
+          for path in \
+            packages/control-plane/supabase/migrations/20260929175000_control_plane_run_event_store.sql \
+            packages/control-plane/src/run-event-migration.test.ts; do
+            safe="$(echo "$path" | tr '/.' '__')"
+            "$TOOLS_DIR/ocr" delegate rule --format json "$path" | tee "$EVIDENCE_DIR/ocr-$safe-rules.json"
+          done
+
+      - name: Install checksum-verified Jev
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/model-clis/jev/releases/download/v2026.919.0/jev-linux-x86_64' -o "$TOOLS_DIR/jev"
+          echo "$JEV_SHA256  $TOOLS_DIR/jev" | sha256sum --check
+          chmod +x "$TOOLS_DIR/jev"
+          "$TOOLS_DIR/jev" --version 2>&1 | tee "$EVIDENCE_DIR/jev-version.txt"
+
+      - name: Build Jev exact-diff request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib
+          evidence = pathlib.Path(os.environ['EVIDENCE_DIR'])
+          request = {
+              'state': {
+                  'grain': 'SG-000040 / IN-P03-S01-T01C database packet',
+                  'base': os.environ['BASE_SHA'],
+                  'candidate': os.environ['CANDIDATE_SHA'],
+                  'scope': 'Authenticated project-owned durable Run/Event PostgreSQL enforcement only: RLS, lifecycle invariants, append-only contiguous sequence enforcement, concurrency serialization, and migration contract tests. No service-role authority, generated-app backend, provider/model routing, artifacts, budgets, or release authority.',
+                  'diff': evidence.joinpath('exact-review.diff').read_text(),
+              },
+              'questions': {
+                  'tenant_escape': {
+                      'type': 'noul',
+                      'instructions': 'Can an unrelated authenticated user, viewer, or anonymous actor gain read or mutation authority beyond SG-000040 policy?',
+                      'criteria': {'true': 'RLS/grants/policies permit unauthorized cross-tenant or viewer mutation.', 'false': 'Reads and writes remain project-scoped with viewer read-only and anonymous denial.'}
+                  },
+                  'lifecycle_bypass': {
+                      'type': 'noul',
+                      'instructions': 'Can durable Run state bypass the canonical lifecycle or mutate immutable identity/target/parent fields?',
+                      'criteria': {'true': 'Invalid creation/transition or immutable-field mutation can persist.', 'false': 'Database triggers fail closed and preserve prior durable state.'}
+                  },
+                  'append_only_race': {
+                      'type': 'noul',
+                      'instructions': 'Can concurrent or conflicting event appends create gaps, duplicate positions, overwrite history, or cross-bind projects/Runs?',
+                      'criteria': {'true': 'Concurrency can violate append-only contiguous ordering or identity ownership.', 'false': 'Parent locking plus constraints/triggers serialize admission and conflicts fail closed.'}
+                  },
+                  'authority_widening': {
+                      'type': 'noul',
+                      'instructions': 'Does database presence grant capability, external execution, acceptance/PASS, provider, or deployment authority?',
+                      'criteria': {'true': 'Persistence is used as authority outside typed storage semantics.', 'false': 'Persistence records state/evidence only and does not grant external authority.'}
+                  }
+              }
+          }
+          evidence.joinpath('jev-request.json').write_text(json.dumps(request, sort_keys=True))
+          PY
+
+      - name: Run required Jev semantic review
+        id: jev_review
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${JEV_API_KEY:-}" ]; then
+            printf 'state=BLOCKED_MISSING_GITHUB_SECRET\nreason=JEV_API_KEY and compatible TYPESAFE_API_KEY are absent\n' | tee "$EVIDENCE_DIR/jev-status.txt"
+            exit 1
+          fi
+          "$TOOLS_DIR/jev" ask "$EVIDENCE_DIR/jev-request.json" \
+            --assert 'answers.tenant_escape.noul <= 0.5 and answers.lifecycle_bypass.noul <= 0.5 and answers.append_only_race.noul <= 0.5 and answers.authority_widening.noul <= 0.5' \
+            | tee "$EVIDENCE_DIR/jev-result.json"
+          printf 'state=PASS\n' > "$EVIDENCE_DIR/jev-status.txt"
+
+      - name: Upload exact qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000040-db-exact-qualification
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+
+      - name: Enforce required Jev gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.jev_review.outcome }}' = 'success'
