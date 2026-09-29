@@ -35,8 +35,8 @@ export type EventStoreReadResult =
   | { readonly ok: false; readonly issues: readonly EventStoreIssue[] };
 
 export interface EventStore {
-  append(input: unknown): EventStoreAppendResult;
-  read(runIdInput: unknown): EventStoreReadResult;
+  append(input: unknown): Promise<EventStoreAppendResult>;
+  read(runIdInput: unknown): Promise<EventStoreReadResult>;
 }
 
 const EMPTY_EVENTS = Object.freeze([] as readonly EventRecord[]);
@@ -53,7 +53,7 @@ export class InMemoryEventStore implements EventStore {
   readonly #historyByRun = new Map<LogicalIdentity<"run">, readonly EventRecord[]>();
   readonly #runByEvent = new Map<LogicalIdentity<"event">, LogicalIdentity<"run">>();
 
-  append(input: unknown): EventStoreAppendResult {
+  async append(input: unknown): Promise<EventStoreAppendResult> {
     const validated = validateEventRecord(input);
     if (!validated.ok) {
       return {
@@ -123,7 +123,7 @@ export class InMemoryEventStore implements EventStore {
     return { ok: true, event: stored };
   }
 
-  read(runIdInput: unknown): EventStoreReadResult {
+  async read(runIdInput: unknown): Promise<EventStoreReadResult> {
     const runId =
       typeof runIdInput === "string" ? parseLogicalIdentityForKind("run", runIdInput) : null;
     if (runId === null) {
