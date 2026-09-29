@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import { SupabaseRunEventStore } from "./run-event-store.ts";
+
 const CONTROL_PLANE_SCOPE = "CONTROL_PLANE" as const;
 const CONTROL_PLANE_CONFIG_BRAND = Symbol("ineractive.control-plane-supabase-config");
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
@@ -224,10 +226,10 @@ class SupabaseControlPlaneStore {
   }
 }
 
-export async function createVerifiedControlPlaneStore(
+async function createVerifiedControlPlaneClient(
   config: ControlPlaneSupabaseConfig,
   actor: VerifiedControlPlaneActor,
-): Promise<SupabaseControlPlaneStore> {
+): Promise<SupabaseClient> {
   requireServerRuntime();
   validateActor(actor);
   if (config.scope !== CONTROL_PLANE_SCOPE || config[CONTROL_PLANE_CONFIG_BRAND] !== true) {
@@ -254,6 +256,19 @@ export async function createVerifiedControlPlaneStore(
   if (error !== null || data.user?.id !== actor.userId) {
     throw new Error("Control-plane actor identity could not be verified by Supabase Auth.");
   }
+  return client;
+}
 
-  return new SupabaseControlPlaneStore(client, actor);
+export async function createVerifiedControlPlaneStore(
+  config: ControlPlaneSupabaseConfig,
+  actor: VerifiedControlPlaneActor,
+): Promise<SupabaseControlPlaneStore> {
+  return new SupabaseControlPlaneStore(await createVerifiedControlPlaneClient(config, actor), actor);
+}
+
+export async function createVerifiedControlPlaneRunEventStore(
+  config: ControlPlaneSupabaseConfig,
+  actor: VerifiedControlPlaneActor,
+): Promise<SupabaseRunEventStore> {
+  return new SupabaseRunEventStore(await createVerifiedControlPlaneClient(config, actor));
 }
