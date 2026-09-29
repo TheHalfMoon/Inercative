@@ -31,6 +31,27 @@ jobs:
           node-version: 24.x
           cache: pnpm
 
+      - name: Repair bounded test typing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('packages/harness/src/event-store.test.ts')
+          text = path.read_text()
+          text = text.replace(
+              'import { formatLogicalIdentity } from "@ineractive/protocol";',
+              'import { formatLogicalIdentity, type LogicalIdentity } from "@ineractive/protocol";',
+              1,
+          )
+          text = text.replace(
+              'function event(runId: typeof RUN_A | typeof RUN_B, sequence: number, suffix: string) {',
+              'function event(runId: LogicalIdentity<"run">, sequence: number, suffix: string) {',
+              1,
+          )
+          path.write_text(text)
+          PY
+
       - name: Normalize workspace lockfile
         run: pnpm install --no-frozen-lockfile
 
