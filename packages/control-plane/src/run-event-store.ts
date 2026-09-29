@@ -16,17 +16,6 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3
 const EVENT_COLUMNS =
   "id,run_id,sequence,kind,source,target_identity,target_revision,references_json";
 
-interface EventRow {
-  readonly id: unknown;
-  readonly run_id: unknown;
-  readonly sequence: unknown;
-  readonly kind: unknown;
-  readonly source: unknown;
-  readonly target_identity: unknown;
-  readonly target_revision: unknown;
-  readonly references_json: unknown;
-}
-
 function issue(code: EventStoreIssue["code"], path: string, message: string): EventStoreIssue {
   return { code, path, message };
 }
@@ -39,7 +28,13 @@ function freezeEvent(event: EventRecord): EventRecord {
   });
 }
 
-function rowToEvent(row: EventRow): EventRecord | null {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function rowToEvent(row: unknown): EventRecord | null {
+  if (!isRecord(row)) return null;
+
   const target =
     row.target_identity === null && row.target_revision === null
       ? null
@@ -77,9 +72,8 @@ function appendIssues(error: PostgrestError): readonly EventStoreIssue[] {
   return [issue("STORE_UNAVAILABLE", "$", "Durable EventStore could not persist the Event.")];
 }
 
-function normalizeRows(value: unknown): readonly EventRow[] | null {
-  if (!Array.isArray(value)) return null;
-  return value as readonly EventRow[];
+function normalizeRows(value: unknown): readonly unknown[] | null {
+  return Array.isArray(value) ? value : null;
 }
 
 export class SupabaseRunEventStore implements EventStore {
