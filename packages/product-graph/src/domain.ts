@@ -65,6 +65,8 @@ export const DOMAIN_NODE_KINDS = [
   "dataqualityrule",
   "seeddataset",
   "syntheticdataset",
+  "datasource",
+  "field",
 ] as const;
 export type DomainNodeKind = (typeof DOMAIN_NODE_KINDS)[number];
 
@@ -328,6 +330,24 @@ export const DOMAIN_NODE_KIND_SPECS: readonly DomainNodeKindSpec[] = [
       verificationRefs: "string-list",
     },
     optional: { status: "string" },
+  },
+  {
+    kind: "datasource",
+    required: { name: "string", provenanceRef: "string", sourceType: "string" },
+    optional: {
+      environment: "string",
+      status: "string",
+      verificationRefs: "string-list",
+    },
+  },
+  {
+    kind: "field",
+    required: { name: "string", provenanceRef: "string", valueType: "string" },
+    optional: {
+      description: "string",
+      status: "string",
+      verificationRefs: "string-list",
+    },
   },
 ];
 
