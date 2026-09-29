@@ -191,6 +191,9 @@ importers:
 
   packages/control-plane:
     dependencies:
+      '@ineractive/harness':
+        specifier: workspace:*
+        version: link:../harness
       '@ineractive/protocol':
         specifier: workspace:*
         version: link:../protocol
