@@ -13,7 +13,10 @@ import { SupabaseRunStore } from "./run-store.ts";
 const PROJECT_ID = "55555555-5555-4555-8555-555555555555";
 const RUN_A = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789601");
 const RUN_B = formatLogicalIdentity("run", "018f9f3a-7b2a-7f11-8a4c-123456789602");
-const TARGET_ID = formatLogicalIdentity("productrevision", "018f9f3a-7b2a-7f11-8a4c-123456789603");
+const TARGET_ID = formatLogicalIdentity(
+  "productrevision",
+  "018f9f3a-7b2a-7f11-8a4c-123456789603",
+);
 
 function exactRevision(value: string): ExactRevision {
   const parsed = parseExactRevision(value);
