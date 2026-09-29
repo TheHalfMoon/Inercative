@@ -73,8 +73,8 @@ function fakeClient(insertResponse: FakeResponse, readResponse: FakeResponse) {
           return {
             select() {
               return {
-                async single() {
-                  return insertResponse;
+                single() {
+                  return Promise.resolve(insertResponse);
                 },
               };
             },
@@ -86,9 +86,9 @@ function fakeClient(insertResponse: FakeResponse, readResponse: FakeResponse) {
               filters.push([column, value]);
               return builder;
             },
-            async order(column: string, options: { readonly ascending: boolean }) {
+            order(column: string, options: { readonly ascending: boolean }) {
               order = [column, options];
-              return readResponse;
+              return Promise.resolve(readResponse);
             },
           };
           return builder;
