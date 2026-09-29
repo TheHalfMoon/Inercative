@@ -1,5 +1,8 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import { SupabaseRunEventStore } from "./run-event-store.ts";
+import { SupabaseRunStore } from "./run-store.ts";
+
 const CONTROL_PLANE_SCOPE = "CONTROL_PLANE" as const;
 const CONTROL_PLANE_CONFIG_BRAND = Symbol("ineractive.control-plane-supabase-config");
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
@@ -29,6 +32,11 @@ export interface ControlPlaneProject {
 export interface CreateControlPlaneProjectInput {
   readonly name: string;
   readonly slug: string;
+}
+
+export interface VerifiedProjectDurableStores {
+  readonly runs: SupabaseRunStore;
+  readonly events: SupabaseRunEventStore;
 }
 
 interface ProjectRow {
@@ -124,6 +132,12 @@ function validateActor(actor: VerifiedControlPlaneActor): void {
   }
 }
 
+function validateProjectId(projectId: string): void {
+  if (!UUID_PATTERN.test(projectId)) {
+    throw new Error("Project id must be a UUID.");
+  }
+}
+
 function normalizeProjectInput(
   input: CreateControlPlaneProjectInput,
 ): CreateControlPlaneProjectInput {
@@ -162,6 +176,14 @@ class SupabaseControlPlaneStore {
     validateActor(actor);
   }
 
+  public durableStoresForProject(projectId: string): VerifiedProjectDurableStores {
+    validateProjectId(projectId);
+    return Object.freeze({
+      runs: new SupabaseRunStore(this.client, projectId),
+      events: new SupabaseRunEventStore(this.client, projectId),
+    });
+  }
+
   public async ensureProfile(displayName: string | null): Promise<void> {
     const normalizedName = displayName?.trim() || null;
     const { error } = await this.client.from("ineractive_profiles").upsert(
@@ -190,9 +212,7 @@ class SupabaseControlPlaneStore {
   }
 
   public async getProject(projectId: string): Promise<ControlPlaneProject | null> {
-    if (!UUID_PATTERN.test(projectId)) {
-      throw new Error("Project id must be a UUID.");
-    }
+    validateProjectId(projectId);
     const { data, error } = await this.client
       .from("ineractive_projects")
       .select(projectColumns())
