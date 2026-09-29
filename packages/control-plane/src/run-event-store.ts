@@ -127,7 +127,7 @@ export class SupabaseRunEventStore implements EventStore {
       return { ok: false, issues: appendIssues(error) };
     }
 
-    const stored = rowToEvent(data as unknown as EventRow);
+    const stored = rowToEvent(data);
     if (stored === null || stored.id !== event.id || stored.runId !== event.runId) {
       return {
         ok: false,
