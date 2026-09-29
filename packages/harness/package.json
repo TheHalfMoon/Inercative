@@ -1,0 +1,17 @@
+{
+  "name": "@ineractive/harness",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Provider-neutral Ineractive Run harness contracts and deterministic reference stores.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ineractive/protocol": "workspace:*"
+  }
+}
