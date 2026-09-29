@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_SHA: 3a4713c47d36722c564f185bc4a8c02ad57da05c
-      CANDIDATE_SHA: 58255689df74ec11d1ea4e777d392bd6307e37bb
+      CANDIDATE_SHA: d21ac82de1c905bddbc68a60bdeec1ae150666c0
       DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
       OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
       JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
@@ -44,12 +44,11 @@ jobs:
           pnpm --version | tee "$EVIDENCE_DIR/pnpm-version.txt"
           pnpm install --frozen-lockfile
 
-      - name: Verify exact identities and clean worktree
+      - name: Verify exact identities and diff accounting
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          git cat-file -e "$BASE_SHA^{commit}"
           merge_base="$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")"
           test "$merge_base" = "$BASE_SHA"
           test -z "$(git status --porcelain)"
@@ -57,7 +56,12 @@ jobs:
           git diff --stat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-stat.txt"
           git diff --numstat "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-numstat.txt"
           git diff --name-status "$BASE_SHA..$CANDIDATE_SHA" | tee "$EVIDENCE_DIR/diff-files.txt"
-          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/protocol/src/index.ts packages/protocol/src/run-lifecycle.ts packages/protocol/src/run-lifecycle.test.ts > "$EVIDENCE_DIR/exact-review.diff"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- \
+            packages/protocol/src/identity-revision.test.ts \
+            packages/protocol/src/index.ts \
+            packages/protocol/src/run-lifecycle.ts \
+            packages/protocol/src/run-lifecycle.test.ts \
+            > "$EVIDENCE_DIR/exact-review.diff"
 
       - name: Run repository verification
         shell: bash
@@ -87,9 +91,14 @@ jobs:
           chmod +x "$TOOLS_DIR/ocr"
           "$TOOLS_DIR/ocr" --version 2>&1 | tee "$EVIDENCE_DIR/ocr-version.txt"
           "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
-          "$TOOLS_DIR/ocr" delegate rule --format json packages/protocol/src/run-lifecycle.ts | tee "$EVIDENCE_DIR/ocr-run-lifecycle-rules.json"
-          "$TOOLS_DIR/ocr" delegate rule --format json packages/protocol/src/run-lifecycle.test.ts | tee "$EVIDENCE_DIR/ocr-run-lifecycle-test-rules.json"
-          "$TOOLS_DIR/ocr" delegate rule --format json packages/protocol/src/index.ts | tee "$EVIDENCE_DIR/ocr-index-rules.json"
+          for path in \
+            packages/protocol/src/identity-revision.test.ts \
+            packages/protocol/src/index.ts \
+            packages/protocol/src/run-lifecycle.ts \
+            packages/protocol/src/run-lifecycle.test.ts; do
+            safe="$(echo "$path" | tr '/.' '__')"
+            "$TOOLS_DIR/ocr" delegate rule --format json "$path" | tee "$EVIDENCE_DIR/ocr-$safe-rules.json"
+          done
 
       - name: Install checksum-verified Jev CLI
         shell: bash
@@ -107,48 +116,19 @@ jobs:
           python - <<'PY'
           import json, os, pathlib
           evidence = pathlib.Path(os.environ['EVIDENCE_DIR'])
-          diff = (evidence / 'exact-review.diff').read_text()
           request = {
               'state': {
                   'grain': 'SG-000038 / IN-P03-S01-T01A',
                   'base': os.environ['BASE_SHA'],
                   'candidate': os.environ['CANDIDATE_SHA'],
-                  'scope': 'Pure deterministic Run lifecycle and continuation semantics over existing SG-000011 RunRecord. No persistence, provider/model calls, network, secrets, scheduling, retries, capability grants, or wire-schema changes.',
-                  'diff': diff,
+                  'scope': 'Pure deterministic Run lifecycle and continuation semantics over SG-000011 RunRecord; no persistence, provider/model calls, network, secrets, scheduling, retries, capability grants, or wire-schema changes.',
+                  'diff': (evidence / 'exact-review.diff').read_text(),
               },
               'questions': {
-                  'scope_escape': {
-                      'type': 'noul',
-                      'instructions': 'Does this exact diff introduce behavior or authority outside the declared pure SG-000038 lifecycle/continuation scope?',
-                      'criteria': {
-                          'true': 'Any persistence, provider/model/network/secret/scheduler/retry/capability/permission authority, hidden side effect, or wire-schema mutation is introduced.',
-                          'false': 'Only deterministic transition and continuation validation, exports, and focused tests are added.'
-                      }
-                  },
-                  'history_rewrite': {
-                      'type': 'noul',
-                      'instructions': 'Can the continuation semantics rewrite a terminal parent Run or otherwise lose historical parent state instead of requiring a distinct child Run?',
-                      'criteria': {
-                          'true': 'Continuation can mutate/reuse the parent identity/state or resume in place.',
-                          'false': 'Continuation requires a distinct child identity, exact parentRunId binding, PLANNED child state, and preserves the parent record.'
-                      }
-                  },
-                  'transition_gap': {
-                      'type': 'noul',
-                      'instructions': 'Does the closed transition table or its validation materially violate SG-000038 acceptance or leave undeclared transitions accidentally allowed?',
-                      'criteria': {
-                          'true': 'An undeclared transition is allowed, terminal states can return to RUNNING in place, or validation is not closed/deterministic.',
-                          'false': 'The table is closed, deterministic, and tests cover the full 6x6 matrix plus terminal closure.'
-                      }
-                  },
-                  'sg000011_regression': {
-                      'type': 'noul',
-                      'instructions': 'Does this exact diff redefine, weaken, or incompatibly replace SG-000011 RunRecord validation/wire semantics?',
-                      'criteria': {
-                          'true': 'Existing RunRecord schema/validator semantics are modified or bypassed incompatibly.',
-                          'false': 'Lifecycle validation composes the existing validator and leaves the existing wire contract unchanged.'
-                      }
-                  }
+                  'scope_escape': {'type': 'noul', 'instructions': 'Does this exact diff escape the declared pure lifecycle/continuation scope?', 'criteria': {'true': 'It introduces persistence, external side effects, authority, hidden network/provider behavior, or wire-schema mutation.', 'false': 'It adds only deterministic lifecycle/continuation validation, intended exports, and focused tests.'}},
+                  'history_rewrite': {'type': 'noul', 'instructions': 'Can continuation rewrite/reuse the parent Run instead of requiring a distinct child?', 'criteria': {'true': 'Parent identity/state can be reused or resumed in place.', 'false': 'A distinct PLANNED child with exact parent binding and target revision is required.'}},
+                  'transition_gap': {'type': 'noul', 'instructions': 'Does the transition table violate SG-000038 or accidentally permit undeclared transitions?', 'criteria': {'true': 'An undeclared transition is allowed or terminal states can return to RUNNING in place.', 'false': 'The table is closed and the full matrix is covered.'}},
+                  'sg000011_regression': {'type': 'noul', 'instructions': 'Does the diff weaken or replace SG-000011 RunRecord validation/wire semantics?', 'criteria': {'true': 'Existing RunRecord schema/validator is changed or bypassed incompatibly.', 'false': 'The lifecycle layer composes existing validation and preserves the wire contract.'}}
               }
           }
           (evidence / 'jev-request.json').write_text(json.dumps(request, sort_keys=True))
@@ -164,7 +144,6 @@ jobs:
             printf 'state=BLOCKED_MISSING_GITHUB_SECRET\nreason=JEV_API_KEY and compatible TYPESAFE_API_KEY are absent\n' | tee "$EVIDENCE_DIR/jev-status.txt"
             exit 1
           fi
-          printf 'state=RUN\n' | tee "$EVIDENCE_DIR/jev-status.txt"
           "$TOOLS_DIR/jev" ask "$EVIDENCE_DIR/jev-request.json" \
             --assert 'answers.scope_escape.noul <= 0.5 and answers.history_rewrite.noul <= 0.5 and answers.transition_gap.noul <= 0.5 and answers.sg000011_regression.noul <= 0.5' \
             | tee "$EVIDENCE_DIR/jev-result.json"
@@ -174,7 +153,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sg-000038-exact-candidate-qualification
+          name: sg-000038-final-exact-candidate-qualification
           path: ${{ env.EVIDENCE_DIR }}/
           if-no-files-found: error
 
