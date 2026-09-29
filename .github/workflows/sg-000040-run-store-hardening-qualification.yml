@@ -1,0 +1,127 @@
+name: sg-000040-run-store-hardening-qualification
+
+on:
+  push:
+    branches:
+      - evidence/sg-000040-run-store-hardening-qualification
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: 68885b243f65fceb9d216097f3ae32f8612e6439
+      CANDIDATE_SHA: 303b2b31b4bf9297611a0616fb821b88c8fc3e02
+      DIFFCIPLINE_SHA256: a456a35bbfe03c087737118a05176af33604e2b2d1e634f8810bef6762f4a2f0
+      OCR_SHA256: 56649575421b8ca3be3cfaededc0a9037ae7cc9ae560f167bf504bfb4054451a
+      JEV_SHA256: 1f54c1aec0ca3790d8e4d215aa50c227a758b4cc967dbf90607672ec34cad2a0
+      JEV_API_KEY: ${{ secrets.JEV_API_KEY || secrets.TYPESAFE_API_KEY }}
+    steps:
+      - name: Checkout exact hardening candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+      - name: Initialize evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sg000040-runstore-hardening/evidence" "$RUNNER_TEMP/sg000040-runstore-hardening/tools"
+          echo "EVIDENCE_DIR=$RUNNER_TEMP/sg000040-runstore-hardening/evidence" >> "$GITHUB_ENV"
+          echo "TOOLS_DIR=$RUNNER_TEMP/sg000040-runstore-hardening/tools" >> "$GITHUB_ENV"
+      - name: Verify repository and exact range
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global pnpm@12.4.2
+          pnpm install --frozen-lockfile
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git merge-base "$BASE_SHA" "$CANDIDATE_SHA")" = "$BASE_SHA"
+          pnpm run format:check
+          pnpm run lint
+          pnpm run typecheck
+          pnpm run test
+          git diff --check "$BASE_SHA..$CANDIDATE_SHA"
+          git diff "$BASE_SHA..$CANDIDATE_SHA" -- packages/control-plane/src/run-store.test.ts > "$EVIDENCE_DIR/exact-review.diff"
+      - name: Run Diffcipline R3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/TheHalfMoon/Diffcipline/releases/download/v1.0.0/diffcipline-x86_64-unknown-linux-gnu' -o "$TOOLS_DIR/diffcipline"
+          echo "$DIFFCIPLINE_SHA256  $TOOLS_DIR/diffcipline" | sha256sum --check
+          chmod +x "$TOOLS_DIR/diffcipline"
+          "$TOOLS_DIR/diffcipline" check --base "$BASE_SHA" --risk R3 --run --json 2>&1 | tee "$EVIDENCE_DIR/diffcipline-raw.log"
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ['EVIDENCE_DIR'])/'diffcipline-raw.log'
+          proof=None
+          for line in p.read_text().splitlines():
+              if line.strip().startswith('{'):
+                  try: item=json.loads(line)
+                  except json.JSONDecodeError: continue
+                  if item.get('schema')=='diffcipline.proof/v1': proof=item
+          assert proof is not None
+          assert proof['verdict']=='PASS', proof
+          assert proof['scope_violations']==[], proof
+          assert all(x['state']=='PASS' for x in proof['verification']), proof
+          pathlib.Path(os.environ['EVIDENCE_DIR'],'diffcipline-proof.json').write_text(json.dumps(proof,sort_keys=True))
+          PY
+      - name: Run checksum-verified Alibaba Open Code Review
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/alibaba/open-code-review/releases/download/v1.12.7/opencodereview-linux-amd64' -o "$TOOLS_DIR/ocr"
+          echo "$OCR_SHA256  $TOOLS_DIR/ocr" | sha256sum --check
+          chmod +x "$TOOLS_DIR/ocr"
+          "$TOOLS_DIR/ocr" --version 2>&1 | tee "$EVIDENCE_DIR/ocr-version.txt"
+          "$TOOLS_DIR/ocr" delegate preview --from "$BASE_SHA" --to "$CANDIDATE_SHA" --format json | tee "$EVIDENCE_DIR/ocr-preview.json"
+          "$TOOLS_DIR/ocr" delegate rule --format json packages/control-plane/src/run-store.test.ts | tee "$EVIDENCE_DIR/ocr-rules.json"
+      - name: Install checksum-verified Jev
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://github.com/model-clis/jev/releases/download/v2026.919.0/jev-linux-x86_64' -o "$TOOLS_DIR/jev"
+          echo "$JEV_SHA256  $TOOLS_DIR/jev" | sha256sum --check
+          chmod +x "$TOOLS_DIR/jev"
+          "$TOOLS_DIR/jev" --version 2>&1 | tee "$EVIDENCE_DIR/jev-version.txt"
+      - name: Build Jev exact-diff request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib
+          e=pathlib.Path(os.environ['EVIDENCE_DIR'])
+          request={'state':{'grain':'SG-000040 RunStore hardening test packet','base':os.environ['BASE_SHA'],'candidate':os.environ['CANDIDATE_SHA'],'scope':'Test-only hardening for corruption, forbidden transitions, optimistic races, continuation mismatch, duplicate IDs, and provider-error secrecy.','diff':e.joinpath('exact-review.diff').read_text()},'questions':{
+            'scope_escape':{'type':'noul','instructions':'Does this exact diff change product implementation or widen authority rather than only harden tests?','criteria':{'true':'It changes product behavior or authority.','false':'It is test-only hardening.'}},
+            'coverage_gap':{'type':'noul','instructions':'Do the tests materially fail to exercise the stated corruption, race, lifecycle, continuation, duplicate, or secrecy cases?','criteria':{'true':'A stated case is not meaningfully tested.','false':'The stated hardening cases are directly exercised.'}},
+            'false_assurance':{'type':'noul','instructions':'Do these tests assert success/PASS authority not supported by the implementation?','criteria':{'true':'They create unsupported assurance claims.','false':'They only assert bounded storage/lifecycle behavior.'}}
+          }}
+          e.joinpath('jev-request.json').write_text(json.dumps(request,sort_keys=True))
+          PY
+      - name: Run required Jev semantic review
+        id: jev_review
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${JEV_API_KEY:-}" ]; then
+            printf 'state=BLOCKED_MISSING_GITHUB_SECRET\nreason=JEV_API_KEY and compatible TYPESAFE_API_KEY are absent\n' | tee "$EVIDENCE_DIR/jev-status.txt"
+            exit 1
+          fi
+          "$TOOLS_DIR/jev" ask "$EVIDENCE_DIR/jev-request.json" --assert 'answers.scope_escape.noul <= 0.5 and answers.coverage_gap.noul <= 0.5 and answers.false_assurance.noul <= 0.5' | tee "$EVIDENCE_DIR/jev-result.json"
+          printf 'state=PASS\n' > "$EVIDENCE_DIR/jev-status.txt"
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-000040-run-store-hardening-exact-qualification
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+      - name: Enforce required Jev gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.jev_review.outcome }}' = 'success'
