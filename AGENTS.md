@@ -107,3 +107,15 @@ A Grain may be considered complete only when:
 4. Alibaba OCR has reviewed the exact diff or its omission is explicitly inapplicable and accounted for;
 5. material findings are fixed, dispositioned, or explicitly block the change;
 6. no acceptance-critical evidence is stale for the candidate head.
+
+<!-- graft:start -->
+## Graft — repository context layer
+
+Use Graft (https://github.com/trailhq/Graft, `@nanonets/graft`) as local developer/agent repository-context and navigation tooling. Graft and its MCP integration are untrusted tooling inputs under the existing security model; they do not create SpecGrain readiness, capability authority, acceptance, provider truth, or product/runtime architecture authority.
+
+If Graft is unavailable or the local `graft/` graph is absent/stale, run `graft init`, select the active agent(s), then run `graft build`. Before broad source exploration prefer `graft check`, `graft map`, `graft ask "<question>" --source`, `graft skeleton <file>`, `graft callers <symbol>`, and `graft grep "<literal>"`. After material code changes, run `graft build` again.
+
+Treat `graft/` as a local regenerable cache and do not commit it. Never place secrets, Supabase service-role credentials, production credentials, or user-private runtime data into Graft context. Keep usage zero-cost; do not introduce paid model/API usage or unauthorized external egress.
+
+Graft output is context only, never live repository truth, Diffcipline PASS evidence, Alibaba OCR review evidence, security evidence, capability authority, or completion proof. Continue all SpecGrain, Diffcipline, exact-head, Alibaba Open Code Review, Jev where applicable, CI, security, donor/provenance, and runtime-isolation gates. Never fabricate Graft output, execution, reviews, or evidence.
+<!-- graft:end -->
